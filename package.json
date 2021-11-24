@@ -8,7 +8,8 @@
   "scripts": {
     "build": "npm run build:browser && npm run build:main",
     "build:browser": "tsc --project tsconfig.json --module ESNext --outDir ./browser",
-    "build:main": "tsc --project tsconfig.json --module CommonJS --outDir ./build"
+    "build:main": "tsc --project tsconfig.json --module CommonJS --outDir ./build",
+    "build:tests": "tsc --project tsconfig.json --module CommonJS --outDir ./test-app/remix-validated-form"
   },
   "author": {
     "name": "Aaron Pettengill",
