@@ -32,7 +32,12 @@
   "devDependencies": {
     "@remix-run/react": "^1.0.0",
     "@remix-run/server-runtime": "^1.0.0",
+    "@types/react": "^17.0.36",
     "react": "^17.0.2",
-    "typescript": "^4.5.2"
+    "typescript": "^4.5.2",
+    "yup": "^0.32.11"
+  },
+  "dependencies": {
+    "tiny-invariant": "^1.2.0"
   }
 }
