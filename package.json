@@ -1,10 +1,14 @@
 {
   "name": "remix-validated-form",
   "version": "1.0.0",
-  "description": "Form component for easy client-side validation in remix",
-  "main": "dist/index.ts",
+  "description": "Form component and utils for easy form validation in remix",
+  "browser": "./browser/index.js",
+  "main": "./build/index.js",
+  "sideEffects": false,
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "npm run build:browser && npm run build:main",
+    "build:browser": "tsc --project tsconfig.json --module ESNext --outDir ./browser",
+    "build:main": "tsc --project tsconfig.json --module CommonJS --outDir ./build"
   },
   "author": {
     "name": "Aaron Pettengill",
