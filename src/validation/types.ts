@@ -1,8 +1,8 @@
 export type FieldErrors = Record<string, string>;
 
 export type ValidationResult<DataType> =
-  | { data: DataType }
-  | { error: FieldErrors };
+  | { data: DataType; error: undefined }
+  | { error: FieldErrors; data: undefined };
 
 export type ValidateFieldResult = { error?: string };
 

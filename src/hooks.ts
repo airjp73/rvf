@@ -5,6 +5,7 @@ export const useField = (name: string) => {
   const { fieldErrors, clearError, validateField, defaultValues } =
     useContext(FormContext);
 
+  console.log(fieldErrors);
   const field = useMemo(
     () => ({
       error: fieldErrors[name],

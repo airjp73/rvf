@@ -8,6 +8,6 @@ Cypress.Commands.add("visitWithoutJs", (url) => {
       "When you disable script you also have to set 'chromeWebSecurity' in your config to 'false'"
     );
   }
-  iframe.sandbox = "";
+  iframe.sandbox = "allow-forms";
   return cy.visit(url);
 });

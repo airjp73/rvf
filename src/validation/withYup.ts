@@ -19,9 +19,12 @@ export const withYup = <Schema extends AnyObjectSchema>(
         Object.fromEntries(formData),
         { abortEarly: false }
       );
-      return { data: validated };
+      return { data: validated, error: undefined };
     } catch (err) {
-      return { error: validationErrorToFieldErrors(err as ValidationError) };
+      return {
+        error: validationErrorToFieldErrors(err as ValidationError),
+        data: undefined,
+      };
     }
   },
   validateField: (formData, field) => {
