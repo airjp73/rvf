@@ -16,7 +16,7 @@ export const withYup = <Schema extends AnyObjectSchema>(
   validateAll: (formData): ValidationResult<InferType<Schema>> => {
     try {
       const validated = validationSchema.validateSync(
-        Object.entries(formData),
+        Object.fromEntries(formData),
         { abortEarly: false }
       );
       return { data: validated };
@@ -24,9 +24,9 @@ export const withYup = <Schema extends AnyObjectSchema>(
       return { error: validationErrorToFieldErrors(err as ValidationError) };
     }
   },
-  validateField: (values, field) => {
+  validateField: (formData, field) => {
     try {
-      validationSchema.validateSyncAt(field, values);
+      validationSchema.validateSyncAt(field, Object.fromEntries(formData));
       return {};
     } catch (err) {
       return { error: (err as ValidationError).message };

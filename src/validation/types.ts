@@ -8,5 +8,5 @@ export type ValidateFieldResult = { error?: string };
 
 export type Validator<DataType> = {
   validateAll: (formData: FormData) => ValidationResult<DataType>;
-  validateField: (values: any, field: string) => ValidateFieldResult;
+  validateField: (formData: FormData, field: string) => ValidateFieldResult;
 };

@@ -82,8 +82,10 @@ export function ValidatedForm<DataType>({
       },
       validateField: (fieldName) => {
         invariant(formRef.current, "Cannot find reference to form");
-        const data = Object.entries(new FormData(formRef.current));
-        const { error } = validator.validateField(data, fieldName as any);
+        const { error } = validator.validateField(
+          new FormData(formRef.current),
+          fieldName as any
+        );
         if (error) {
           setFieldErrors((prev) => ({
             ...prev,
