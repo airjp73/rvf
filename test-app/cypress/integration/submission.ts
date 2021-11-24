@@ -11,7 +11,7 @@ describe("Validation", () => {
 
     cy.findByText("Submit alt form").click();
     cy.findByText("Submitting main form").should("not.exist");
-    // cy.findByText("Submitting fetcher form").should("not.exist");
+    cy.findByText("Submitting fetcher form").should("not.exist");
     cy.findByText("Submitting alt form").should("exist");
 
     cy.findByText("Submitting alt form").should("not.exist");

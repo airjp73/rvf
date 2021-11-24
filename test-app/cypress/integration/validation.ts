@@ -51,7 +51,7 @@ describe("Validation", () => {
     cy.findByText("Submitted for John Doe!").should("exist");
   });
 
-  it.only("should show validation errors even with JS disabled", () => {
+  it("should show validation errors even with JS disabled", () => {
     cy.visitWithoutJs("/validation");
 
     cy.findByText("Submit").click();
