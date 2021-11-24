@@ -12,16 +12,16 @@ import {
   useFormAction,
   useTransition,
 } from "@remix-run/react";
-import { omit, mergeRefs, validationErrorToFieldErrors } from "./util";
+import { omit, mergeRefs, validationErrorToFieldErrors } from "./internal/util";
 import type * as yup from "yup";
 import { ValidationError } from "yup";
-import { FormContext, FormContextValue } from "./formContext";
+import { FormContext, FormContextValue } from "./internal/formContext";
 import invariant from "tiny-invariant";
 
-export type FormProps<T> = {
-  validationSchema: yup.SchemaOf<T>;
+export type FormProps<T extends yup.AnyObjectSchema> = {
+  validationSchema: T;
   onSubmit?: (
-    data: yup.InferType<yup.SchemaOf<T>>,
+    data: yup.InferType<T>,
     event: React.FormEvent<HTMLFormElement>
   ) => void;
   fetcher?: ReturnType<typeof useFetcher>;
@@ -66,7 +66,7 @@ const useIsSubmitting = (
   return isSubmitting;
 };
 
-export function ValidatedForm<T>({
+export function ValidatedForm<T extends yup.AnyObjectSchema>({
   validationSchema,
   onSubmit,
   children,
@@ -83,7 +83,6 @@ export function ValidatedForm<T>({
 
   const contextValue = useMemo<FormContextValue>(
     () => ({
-      insideFormContext: true,
       fieldErrors,
       action,
       defaultValues,
