@@ -48,12 +48,11 @@ const useIsSubmitting = (
 ) => {
   const actionForCurrentPage = useFormAction();
   const pendingFormSubmit = useTransition().submission;
-  const isSubmitting =
-    fetcher?.state === "submitting" ||
-    (pendingFormSubmit &&
-      pendingFormSubmit.action.endsWith(action ?? actionForCurrentPage));
-
-  return isSubmitting;
+  if (fetcher) console.log(fetcher);
+  return fetcher
+    ? fetcher.state === "submitting"
+    : pendingFormSubmit &&
+        pendingFormSubmit.action.endsWith(action ?? actionForCurrentPage);
 };
 
 export function ValidatedForm<DataType>({

@@ -1,8 +1,18 @@
-import { useIsSubmitting } from "../../../build";
+import { useIsSubmitting } from "../../remix-validated-form";
 
-export const SubmitButton = () => {
+type Props = {
+  label?: string;
+  submittingLabel?: string;
+};
+
+export const SubmitButton = ({
+  label = "Submit",
+  submittingLabel = "Submitting...",
+}: Props) => {
   const isSubmitting = useIsSubmitting();
   return (
-    <button type="submit">{isSubmitting ? "Submitting..." : "Submit"}</button>
+    <button type="submit" disabled={isSubmitting}>
+      {isSubmitting ? submittingLabel : label}
+    </button>
   );
 };
