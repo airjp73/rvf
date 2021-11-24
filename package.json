@@ -23,5 +23,8 @@
     "form",
     "yup",
     "validation"
-  ]
+  ],
+  "devDependencies": {
+    "typescript": "^4.5.2"
+  }
 }
