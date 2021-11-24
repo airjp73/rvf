@@ -1,10 +1,8 @@
-import { createContext, useContext, useMemo } from "react";
-import type * as yup from "yup";
+import { createContext } from "react";
+import { FieldErrors } from "../validation/types";
 
 export type FormContextValue = {
-  fieldErrors: {
-    [fieldName: string]: yup.ValidationError;
-  };
+  fieldErrors: FieldErrors;
   clearError: (...names: string[]) => void;
   validateField: (fieldName: string) => void;
   action?: string;

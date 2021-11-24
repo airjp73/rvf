@@ -12,45 +12,35 @@ import {
   useFormAction,
   useTransition,
 } from "@remix-run/react";
-import { omit, mergeRefs, validationErrorToFieldErrors } from "./internal/util";
-import type * as yup from "yup";
-import { ValidationError } from "yup";
+import { omit, mergeRefs } from "./internal/util";
 import { FormContext, FormContextValue } from "./internal/formContext";
 import invariant from "tiny-invariant";
+import { FieldErrors, Validator } from "./validation/types";
 
-export type FormProps<T extends yup.AnyObjectSchema> = {
-  validationSchema: T;
-  onSubmit?: (
-    data: yup.InferType<T>,
-    event: React.FormEvent<HTMLFormElement>
-  ) => void;
+export type FormProps<DataType> = {
+  validator: Validator<DataType>;
+  onSubmit?: (data: DataType, event: React.FormEvent<HTMLFormElement>) => void;
   fetcher?: ReturnType<typeof useFetcher>;
-  defaultValues?: Partial<T>;
+  defaultValues?: Partial<DataType>;
   formRef?: React.RefObject<HTMLFormElement>;
 } & Omit<ComponentProps<typeof RemixForm>, "onSubmit">;
 
-const formDataObject = (formElement: HTMLFormElement) =>
-  Object.fromEntries(new FormData(formElement));
-
-const useFieldErrors = (
+function useFieldErrors(
   fetcher?: ReturnType<typeof useFetcher>
-): [
-  Record<string, yup.ValidationError>,
-  React.Dispatch<React.SetStateAction<Record<string, yup.ValidationError>>>
-] => {
+): [FieldErrors, React.Dispatch<React.SetStateAction<FieldErrors>>] {
   const actionData = useActionData<any>();
   const dataToUse = fetcher ? fetcher.data : actionData;
   const fieldErrorsFromAction = dataToUse?.fieldErrors;
 
-  const [fieldErrors, setFieldErrors] = useState<
-    FormContextValue["fieldErrors"]
-  >(fieldErrorsFromAction ?? {});
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>(
+    fieldErrorsFromAction ?? {}
+  );
   useEffect(() => {
     if (fieldErrorsFromAction) setFieldErrors(fieldErrorsFromAction);
   }, [fieldErrorsFromAction]);
 
   return [fieldErrors, setFieldErrors];
-};
+}
 
 const useIsSubmitting = (
   action?: string,
@@ -66,8 +56,8 @@ const useIsSubmitting = (
   return isSubmitting;
 };
 
-export function ValidatedForm<T extends yup.AnyObjectSchema>({
-  validationSchema,
+export function ValidatedForm<DataType>({
+  validator,
   onSubmit,
   children,
   fetcher,
@@ -75,7 +65,7 @@ export function ValidatedForm<T extends yup.AnyObjectSchema>({
   defaultValues,
   formRef: formRefProp,
   ...rest
-}: FormProps<T>) {
+}: FormProps<DataType>) {
   const [fieldErrors, setFieldErrors] = useFieldErrors(fetcher);
   const isSubmitting = useIsSubmitting(action, fetcher);
 
@@ -92,17 +82,13 @@ export function ValidatedForm<T extends yup.AnyObjectSchema>({
       },
       validateField: (fieldName) => {
         invariant(formRef.current, "Cannot find reference to form");
-        const data = formDataObject(formRef.current);
-        try {
-          validationSchema.validateSyncAt(fieldName, data);
-        } catch (err) {
-          if (err instanceof ValidationError) {
-            const error = err;
-            setFieldErrors((prev) => ({
-              ...prev,
-              [fieldName]: error,
-            }));
-          }
+        const data = Object.entries(new FormData(formRef.current));
+        const { error } = validator.validateField(data, fieldName as any);
+        if (error) {
+          setFieldErrors((prev) => ({
+            ...prev,
+            [fieldName]: error,
+          }));
         }
       },
     }),
@@ -112,7 +98,7 @@ export function ValidatedForm<T extends yup.AnyObjectSchema>({
       defaultValues,
       isSubmitting,
       setFieldErrors,
-      validationSchema,
+      validator,
     ]
   );
 
@@ -124,17 +110,12 @@ export function ValidatedForm<T extends yup.AnyObjectSchema>({
       {...rest}
       action={action}
       onSubmit={(event) => {
-        const data = formDataObject(event.currentTarget);
-        try {
-          const validated = validationSchema.validateSync(data, {
-            abortEarly: false,
-          });
-          onSubmit?.(validated, event);
-        } catch (err) {
+        const result = validator.validateAll(new FormData(event.currentTarget));
+        if ("error" in result) {
           event.preventDefault();
-          if (err instanceof ValidationError) {
-            setFieldErrors(validationErrorToFieldErrors(err));
-          }
+          setFieldErrors(result.error);
+        } else {
+          onSubmit?.(result.data, event);
         }
       }}
     >

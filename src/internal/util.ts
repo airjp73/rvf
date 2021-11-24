@@ -1,5 +1,4 @@
 import type React from "react";
-import { ValidationError } from "yup";
 
 export const omit = (obj: any, ...keys: string[]) => {
   const result = { ...obj };
@@ -21,15 +20,4 @@ export const mergeRefs = <T = any>(
       }
     });
   };
-};
-
-export const validationErrorToFieldErrors = (
-  error: ValidationError
-): Record<string, ValidationError> => {
-  const fieldErrors: Record<string, ValidationError> = {};
-  error.inner.forEach((innerError) => {
-    if (!innerError.path) return;
-    fieldErrors[innerError.path] = innerError;
-  });
-  return fieldErrors;
 };
