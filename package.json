@@ -24,7 +24,15 @@
     "yup",
     "validation"
   ],
+  "peerDependencies": {
+    "@remix-run/react": "^1.0.0",
+    "@remix-run/server-runtime": "^1.0.0",
+    "react": "^17.0.2"
+  },
   "devDependencies": {
+    "@remix-run/react": "^1.0.0",
+    "@remix-run/server-runtime": "^1.0.0",
+    "react": "^17.0.2",
     "typescript": "^4.5.2"
   }
 }
