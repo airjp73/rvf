@@ -5,3 +5,4 @@ test-app/build
 test-app/remix-validated-form
 node_modules
 public
+package-lock.json
