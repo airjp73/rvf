@@ -18,8 +18,8 @@ jobs:
       - name: Install Deps
         run: npm install
 
-      # - name: Lint
-      #   run: npm run lint
+      - name: Lint
+        run: npm run lint
 
       - name: Jest Tests
         run: npm run test
