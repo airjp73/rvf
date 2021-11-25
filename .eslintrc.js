@@ -11,6 +11,7 @@ module.exports = {
     "test-app/remix-validated-form",
   ],
   extends: ["react-app"],
+  plugins: ["prettier"],
   rules: {
     "import/no-anonymous-default-export": "off",
     "import/order": [
@@ -32,6 +33,7 @@ module.exports = {
         "newlines-between": "never",
       },
     ],
+    "prettier/prettier": "error",
   },
   overrides: [
     {
