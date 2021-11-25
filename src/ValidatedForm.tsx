@@ -111,7 +111,7 @@ export function ValidatedForm<DataType>({
       {...rest}
       action={action}
       onSubmit={(event) => {
-        const result = validator.validateAll(new FormData(event.currentTarget));
+        const result = validator.validate(new FormData(event.currentTarget));
         if (result.error) {
           event.preventDefault();
           setFieldErrors(result.error);

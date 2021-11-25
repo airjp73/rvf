@@ -13,12 +13,11 @@ const validationErrorToFieldErrors = (error: ValidationError): FieldErrors => {
 export const withYup = <Schema extends AnyObjectSchema>(
   validationSchema: Schema
 ): Validator<InferType<Schema>> => ({
-  validateAll: (formData): ValidationResult<InferType<Schema>> => {
+  validate: (data): ValidationResult<InferType<Schema>> => {
     try {
-      const validated = validationSchema.validateSync(
-        Object.fromEntries(formData),
-        { abortEarly: false }
-      );
+      const validated = validationSchema.validateSync(data, {
+        abortEarly: false,
+      });
       return { data: validated, error: undefined };
     } catch (err) {
       return {
@@ -27,9 +26,9 @@ export const withYup = <Schema extends AnyObjectSchema>(
       };
     }
   },
-  validateField: (formData, field) => {
+  validateField: (data, field) => {
     try {
-      validationSchema.validateSyncAt(field, Object.fromEntries(formData));
+      validationSchema.validateSyncAt(field, data);
       return {};
     } catch (err) {
       return { error: (err as ValidationError).message };

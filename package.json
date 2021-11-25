@@ -9,7 +9,8 @@
     "build": "npm run build:browser && npm run build:main",
     "build:browser": "tsc --project tsconfig.json --module ESNext --outDir ./browser",
     "build:main": "tsc --project tsconfig.json --module CommonJS --outDir ./build",
-    "build:tests": "tsc --project tsconfig.json --module CommonJS --outDir ./test-app/remix-validated-form"
+    "build:tests": "tsc --project tsconfig.json --module CommonJS --outDir ./test-app/remix-validated-form",
+    "test": "jest src"
   },
   "author": {
     "name": "Aaron Pettengill",
@@ -33,8 +34,12 @@
   "devDependencies": {
     "@remix-run/react": "^1.0.0",
     "@remix-run/server-runtime": "^1.0.0",
+    "@types/jest": "^27.0.3",
     "@types/react": "^17.0.36",
+    "fetch-blob": "^3.1.3",
+    "jest": "^27.3.1",
     "react": "^17.0.2",
+    "ts-jest": "^27.0.7",
     "typescript": "^4.5.2",
     "yup": "^0.32.11"
   },
