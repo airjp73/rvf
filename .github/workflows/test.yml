@@ -26,17 +26,11 @@ jobs:
       # - name: Lint
       #   run: npm run lint
 
-      - name: Test
+      - name: Jest Tests
         run: npm run test
 
       - name: Build
         run: npm run build
 
-      - name: Go to test app
-        run: cd ./test-app
-
-      - name: Install deps
-        run: npm install
-
-      - name: Run cypress tests
-        run: npm run test
+      - name: Cypress Tests
+        run: cd ./test-app && npm install && npm run test
