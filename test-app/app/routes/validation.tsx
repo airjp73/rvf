@@ -1,12 +1,12 @@
+import { ActionFunction, useActionData } from "remix";
+import * as yup from "yup";
+import { Input } from "~/components/Input";
+import { SubmitButton } from "~/components/SubmitButton";
 import {
   fieldErrors,
   ValidatedForm,
   withYup,
 } from "../../remix-validated-form";
-import * as yup from "yup";
-import { Input } from "~/components/Input";
-import { SubmitButton } from "~/components/SubmitButton";
-import { ActionFunction, useActionData } from "remix";
 
 const schema = yup.object({
   firstName: yup.string().label("First Name").required(),

@@ -1,8 +1,8 @@
-import { ValidatedForm, withYup } from "../../remix-validated-form";
+import { LoaderFunction, useLoaderData } from "remix";
 import * as yup from "yup";
 import { Input } from "~/components/Input";
 import { SubmitButton } from "~/components/SubmitButton";
-import { LoaderFunction, useLoaderData } from "remix";
+import { ValidatedForm, withYup } from "../../remix-validated-form";
 
 const schema = yup.object({});
 const validator = withYup(schema);

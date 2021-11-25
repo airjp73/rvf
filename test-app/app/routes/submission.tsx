@@ -1,7 +1,7 @@
-import { ValidatedForm, withYup } from "../../remix-validated-form";
+import { ActionFunction, json, useFetcher } from "remix";
 import * as yup from "yup";
 import { SubmitButton } from "~/components/SubmitButton";
-import { ActionFunction, json, useFetcher } from "remix";
+import { ValidatedForm, withYup } from "../../remix-validated-form";
 
 const schema = yup.object({});
 const validator = withYup(schema);

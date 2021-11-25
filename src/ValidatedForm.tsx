@@ -1,10 +1,3 @@
-import React, {
-  ComponentProps,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
 import {
   Form as RemixForm,
   useActionData,
@@ -12,9 +5,16 @@ import {
   useFormAction,
   useTransition,
 } from "@remix-run/react";
-import { omit, mergeRefs } from "./internal/util";
-import { FormContext, FormContextValue } from "./internal/formContext";
+import React, {
+  ComponentProps,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import invariant from "tiny-invariant";
+import { FormContext, FormContextValue } from "./internal/formContext";
+import { omit, mergeRefs } from "./internal/util";
 import { FieldErrors, Validator } from "./validation/types";
 
 export type FormProps<DataType> = {

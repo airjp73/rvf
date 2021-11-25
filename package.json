@@ -10,7 +10,8 @@
     "build:browser": "tsc --project tsconfig.json --module ESNext --outDir ./browser",
     "build:main": "tsc --project tsconfig.json --module CommonJS --outDir ./build",
     "build:tests": "tsc --project tsconfig.json --module CommonJS --outDir ./test-app/remix-validated-form",
-    "test": "jest src"
+    "test": "jest src",
+    "lint": "eslint ."
   },
   "author": {
     "name": "Aaron Pettengill",
@@ -36,6 +37,16 @@
     "@remix-run/server-runtime": "^1.0.0",
     "@types/jest": "^27.0.3",
     "@types/react": "^17.0.36",
+    "@typescript-eslint/eslint-plugin": "^4.33.0",
+    "@typescript-eslint/parser": "^4.33.0",
+    "babel-eslint": "^10.1.0",
+    "eslint": "^7.32.0",
+    "eslint-config-react-app": "^6.0.0",
+    "eslint-plugin-cypress": "^2.12.1",
+    "eslint-plugin-import": "^2.25.3",
+    "eslint-plugin-jsx-a11y": "^6.5.1",
+    "eslint-plugin-react": "^7.27.1",
+    "eslint-plugin-react-hooks": "^4.3.0",
     "fetch-blob": "^3.1.3",
     "jest": "^27.3.1",
     "react": "^17.0.2",
