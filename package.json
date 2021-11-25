@@ -13,7 +13,8 @@
     "test": "jest src",
     "lint": "eslint .",
     "prettier": "prettier . --write",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "prepublishOnly": "npm run build:browser && npm run build:main"
   },
   "author": {
     "name": "Aaron Pettengill",
