@@ -55,6 +55,9 @@ const useIsSubmitting = (
         pendingFormSubmit.action.endsWith(action ?? actionForCurrentPage);
 };
 
+const getDataFromForm = (el: HTMLFormElement) =>
+  Object.fromEntries(new FormData(el));
+
 export function ValidatedForm<DataType>({
   validator,
   onSubmit,
@@ -82,7 +85,7 @@ export function ValidatedForm<DataType>({
       validateField: (fieldName) => {
         invariant(formRef.current, "Cannot find reference to form");
         const { error } = validator.validateField(
-          new FormData(formRef.current),
+          getDataFromForm(formRef.current),
           fieldName as any
         );
         if (error) {
@@ -111,7 +114,7 @@ export function ValidatedForm<DataType>({
       {...rest}
       action={action}
       onSubmit={(event) => {
-        const result = validator.validate(new FormData(event.currentTarget));
+        const result = validator.validate(getDataFromForm(event.currentTarget));
         if (result.error) {
           event.preventDefault();
           setFieldErrors(result.error);
