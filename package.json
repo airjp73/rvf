@@ -6,7 +6,7 @@
   "main": "./build/index.js",
   "sideEffects": false,
   "scripts": {
-    "build": "npm run build:browser && npm run build:main",
+    "build": "npm run build:browser && npm run build:main && npm run build:tests",
     "build:browser": "tsc --project tsconfig.json --module ESNext --outDir ./browser",
     "build:main": "tsc --project tsconfig.json --module CommonJS --outDir ./build",
     "build:tests": "tsc --project tsconfig.json --module CommonJS --outDir ./test-app/remix-validated-form",
