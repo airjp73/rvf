@@ -4,6 +4,10 @@
   "description": "Form component and utils for easy form validation in remix",
   "browser": "./browser/index.js",
   "main": "./build/index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/airjp73/remix-validated-form"
+  },
   "sideEffects": false,
   "scripts": {
     "build": "npm run build:browser && npm run build:main && npm run build:tests",
