@@ -3,7 +3,7 @@ import * as yup from "yup";
 import { Input } from "~/components/Input";
 import { SubmitButton } from "~/components/SubmitButton";
 import {
-  fieldErrors,
+  validationError,
   ValidatedForm,
   withYup,
 } from "../../remix-validated-form";
@@ -20,7 +20,7 @@ export const action: ActionFunction = async ({ request }) => {
   const result = validator.validate(
     Object.fromEntries(await request.formData())
   );
-  if (result.error) return fieldErrors(result.error);
+  if (result.error) return validationError(result.error);
   const { firstName, lastName } = result.data;
 
   return { message: `Submitted for ${firstName} ${lastName}!` };

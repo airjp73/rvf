@@ -7,6 +7,9 @@ export type ValidationResult<DataType> =
 export type ValidateFieldResult = { error?: string };
 
 export type Validator<DataType> = {
-  validate: (formData: unknown) => ValidationResult<DataType>;
-  validateField: (formData: unknown, field: string) => ValidateFieldResult;
+  validate: (unvalidatedData: unknown) => ValidationResult<DataType>;
+  validateField: (
+    unvalidatedData: unknown,
+    field: string
+  ) => ValidateFieldResult;
 };
