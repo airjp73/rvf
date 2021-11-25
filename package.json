@@ -11,7 +11,8 @@
     "build:main": "tsc --project tsconfig.json --module CommonJS --outDir ./build",
     "build:tests": "tsc --project tsconfig.json --module CommonJS --outDir ./test-app/remix-validated-form",
     "test": "jest src",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "prettier": "prettier . --write"
   },
   "author": {
     "name": "Aaron Pettengill",
@@ -55,6 +56,7 @@
     "yup": "^0.32.11"
   },
   "dependencies": {
+    "prettier": "^2.5.0",
     "tiny-invariant": "^1.2.0"
   }
 }
