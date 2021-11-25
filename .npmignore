@@ -1,0 +1,11 @@
+/test-app
+/.github
+/.husky
+/config
+/src
+/test
+.eslintrc.js
+.gitignore
+.npmignore
+.npmrc
+tsconfig.json
