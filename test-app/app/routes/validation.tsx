@@ -20,7 +20,6 @@ export const action: ActionFunction = async ({ request }) => {
   const result = validator.validate(
     Object.fromEntries(await request.formData())
   );
-  console.log(result);
   if (result.error) return fieldErrors(result.error);
   const { firstName, lastName } = result.data;
 
