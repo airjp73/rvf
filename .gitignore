@@ -4,3 +4,4 @@ browser
 .cache
 test-app/remix-validated-form
 test-app/cypress/videos
+.eslintcache
