@@ -6,8 +6,10 @@
   "scripts": {
     "build": "remix build",
     "dev": "start-server-and-test dev:remix http-get://localhost:3000 cy:open",
+    "test": "start-server-and-test dev:remix http-get://localhost:3000 cy:run",
     "dev:remix": "remix dev",
     "cy:open": "cypress open",
+    "cy:run": "cypress run",
     "postinstall": "remix setup node",
     "start": "remix-serve build"
   },
