@@ -48,7 +48,6 @@ const useIsSubmitting = (
 ) => {
   const actionForCurrentPage = useFormAction();
   const pendingFormSubmit = useTransition().submission;
-  if (fetcher) console.log(fetcher);
   return fetcher
     ? fetcher.state === "submitting"
     : pendingFormSubmit &&
