@@ -129,7 +129,7 @@ export default function MyForm() {
 
 # Validation Library Support
 
-This lbirary currently includes an out-of-the-box adapter for `yup`,
+This library currently includes an out-of-the-box adapter for `yup`,
 but you can easily support whatever library you want by creating your own adapter.
 
 And if you create an adapter for a library, feel free to make a PR on this library to add official support 😊
