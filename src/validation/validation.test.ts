@@ -1,5 +1,7 @@
 import * as yup from "yup";
+import { z } from "zod";
 import { Validator, withYup } from "..";
+import { withZod } from "./withZod";
 
 // If adding an adapter, write a validator that validates this shape
 type Shape = {
@@ -21,6 +23,16 @@ const validationTestCases: ValidationTestCase[] = [
         firstName: yup.string().required(),
         lastName: yup.string().required(),
         age: yup.number(),
+      })
+    ),
+  },
+  {
+    name: "zod",
+    validator: withZod(
+      z.object({
+        firstName: z.string().nonempty(),
+        lastName: z.string().nonempty(),
+        age: z.optional(z.number()),
       })
     ),
   },
@@ -59,7 +71,10 @@ describe("Validation", () => {
 
     describe("validateField", () => {
       it("should not return an error if field is valid", () => {
-        const obj = { firstName: "John", lastName: 123 };
+        const obj = {
+          firstName: "John",
+          lastName: {}, // invalid, but we should only be validating firstName
+        };
         expect(validator.validateField(obj, "firstName")).toEqual({
           error: undefined,
         });
@@ -71,6 +86,61 @@ describe("Validation", () => {
           error: anyString,
         });
       });
+    });
+  });
+});
+
+describe("withZod", () => {
+  it("returns coherent errors for complex schemas", () => {
+    const schema = z.union([
+      z.object({
+        type: z.literal("foo"),
+        foo: z.string(),
+      }),
+      z.object({
+        type: z.literal("bar"),
+        bar: z.string(),
+      }),
+    ]);
+    const obj = {
+      type: "foo",
+      bar: 123,
+      foo: 123,
+    };
+
+    expect(withZod(schema).validate(obj)).toEqual({
+      data: undefined,
+      error: {
+        type: anyString,
+        bar: anyString,
+        foo: anyString,
+      },
+    });
+  });
+
+  it("returns errors for fields that are unions", () => {
+    const schema = z.object({
+      field1: z.union([z.literal("foo"), z.literal("bar")]),
+      field2: z.union([z.literal("foo"), z.literal("bar")]),
+    });
+    const obj = {
+      field1: "a value",
+      // field2 missing
+    };
+
+    const validator = withZod(schema);
+    expect(validator.validate(obj)).toEqual({
+      data: undefined,
+      error: {
+        field1: anyString,
+        field2: anyString,
+      },
+    });
+    expect(validator.validateField(obj, "field1")).toEqual({
+      error: anyString,
+    });
+    expect(validator.validateField(obj, "field2")).toEqual({
+      error: anyString,
     });
   });
 });
