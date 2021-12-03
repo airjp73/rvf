@@ -51,7 +51,7 @@ const useIsSubmitting = (
   return fetcher
     ? fetcher.state === "submitting"
     : pendingFormSubmit &&
-        pendingFormSubmit.action.endsWith(action ?? actionForCurrentPage);
+        pendingFormSubmit.action === (action ?? actionForCurrentPage);
 };
 
 const getDataFromForm = (el: HTMLFormElement) =>
