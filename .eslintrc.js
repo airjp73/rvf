@@ -9,6 +9,8 @@ module.exports = {
     "build/",
     "test-app/build",
     "test-app/remix-validated-form",
+    "sample-app/build",
+    "sample-app/remix-validated-form",
   ],
   extends: ["react-app"],
   plugins: ["prettier"],
