@@ -17,7 +17,7 @@
     "build:sample": "tsc --project tsconfig.json --module CommonJS --outDir ./sample-app/remix-validated-form",
     "sample-app": "npm run build:sample && cd sample-app && npm run dev",
     "test": "jest src",
-    "test-watch": "jest src --watch",
+    "test:watch": "jest src --watch",
     "lint": "eslint .",
     "prettier": "prettier . --write",
     "prepare": "husky install",
