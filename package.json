@@ -75,7 +75,7 @@
     "tiny-invariant": "^1.2.0"
   },
   "lint-staged": {
-    "**/!(test-app|sample-app)/*.{ts,tsx,js,jsx}": [
+    "**/*.{ts,tsx,js,jsx}": [
       "prettier --write",
       "eslint --cache --fix"
     ]
