@@ -1,4 +1,5 @@
-import { isEqual, set, toPath } from "lodash";
+import isEqual from "lodash/isEqual";
+import toPath from "lodash/toPath";
 import type { z } from "zod";
 import { FieldErrors, Validator } from "..";
 import { createValidator } from "./createValidator";

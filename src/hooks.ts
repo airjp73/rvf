@@ -1,4 +1,5 @@
-import { get, toPath } from "lodash";
+import get from "lodash/get";
+import toPath from "lodash/toPath";
 import { useContext, useMemo } from "react";
 import { FormContext } from "./internal/formContext";
 
