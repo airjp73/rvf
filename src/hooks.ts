@@ -1,3 +1,4 @@
+import { get, toPath } from "lodash";
 import { useContext, useMemo } from "react";
 import { FormContext } from "./internal/formContext";
 
@@ -12,7 +13,9 @@ export const useField = (name: string) => {
         clearError(name);
       },
       validate: () => validateField(name),
-      defaultValue: defaultValues?.[name],
+      defaultValue: defaultValues
+        ? get(defaultValues, toPath(name), undefined)
+        : undefined,
     }),
     [clearError, defaultValues, fieldErrors, name, validateField]
   );

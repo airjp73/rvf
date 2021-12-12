@@ -87,7 +87,7 @@ export function SubjectForm({
                   {daysKeys.map((key, index) => (
                     <Stack direction="row" width="full" key={key}>
                       <FormSelect
-                        name={`programDays[${index}].day`}
+                        name={`subjectDays[${index}].day`}
                         label="Subject Day"
                         isRequired
                         placeholder="Select Day"

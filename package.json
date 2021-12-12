@@ -69,6 +69,8 @@
     "zod": "^3.11.6"
   },
   "dependencies": {
+    "flattenjs": "^2.1.3",
+    "lodash": "^4.17.21",
     "tiny-invariant": "^1.2.0"
   },
   "lint-staged": {

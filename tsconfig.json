@@ -6,6 +6,7 @@
     "moduleResolution": "Node",
     "target": "ES2019",
     "strict": true,
+    "noImplicitAny": false,
     "skipLibCheck": true,
     "declaration": true,
     "jsx": "react-jsx"
