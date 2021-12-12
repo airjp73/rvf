@@ -98,19 +98,20 @@ export function SubjectForm({
                         <option value="Sunday">Sunday</option>
                       </FormSelect>
                       {daysKeys.length > 1 && (
-                        <Button
-                          alignSelf="flex-end"
-                          colorScheme="blue"
-                          onClick={() =>
-                            setDaysKeys(
-                              daysKeys.filter(
-                                (key2, index2) => index !== index2
+                        <Box pt="8">
+                          <Button
+                            colorScheme="blue"
+                            onClick={() =>
+                              setDaysKeys(
+                                daysKeys.filter(
+                                  (key2, index2) => index !== index2
+                                )
                               )
-                            )
-                          }
-                        >
-                          Delete
-                        </Button>
+                            }
+                          >
+                            Delete
+                          </Button>
+                        </Box>
                       )}
                     </Stack>
                   ))}
