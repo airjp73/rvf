@@ -1,7 +1,6 @@
-import { isEqual, toPath } from "lodash";
+import { isEqual, set, toPath } from "lodash";
 import type { z } from "zod";
 import { FieldErrors, Validator } from "..";
-import { unflatten } from "../flatten";
 import { createValidator } from "./createValidator";
 
 const getIssuesForError = (err: z.ZodError<any>): z.ZodIssue[] => {
@@ -14,23 +13,28 @@ const getIssuesForError = (err: z.ZodError<any>): z.ZodIssue[] => {
   });
 };
 
+function pathToString(array: (string | number)[]): string {
+  return array.reduce(function (string: string, item: string | number) {
+    var prefix = string === "" ? "" : ".";
+    return string + (isNaN(Number(item)) ? prefix + item : "[" + item + "]");
+  }, "");
+}
+
 export function withZod<T>(zodSchema: z.Schema<T>): Validator<T> {
   return createValidator({
     validate: (value) => {
-      const flatValue = unflatten(value);
-      const result = zodSchema.safeParse(flatValue);
+      const result = zodSchema.safeParse(value);
       if (result.success) return { data: result.data, error: undefined };
 
       const fieldErrors: FieldErrors = {};
       getIssuesForError(result.error).forEach((issue) => {
-        const path = issue.path.join(".");
+        const path = pathToString(issue.path);
         if (!fieldErrors[path]) fieldErrors[path] = issue.message;
       });
       return { error: fieldErrors, data: undefined };
     },
     validateField: (data, field) => {
-      const flatData = unflatten(data);
-      const result = zodSchema.safeParse(flatData);
+      const result = zodSchema.safeParse(data);
       if (result.success) return { error: undefined };
       return {
         error: getIssuesForError(result.error).find((issue) => {

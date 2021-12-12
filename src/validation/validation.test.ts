@@ -4,15 +4,24 @@ import { Validator, withYup } from "..";
 import { withZod } from "./withZod";
 
 // If adding an adapter, write a validator that validates this shape
-type Shape = {
+type Person = {
   firstName: string;
   lastName: string;
   age?: number;
+  address: {
+    streetAddress: string;
+    city: string;
+    country: string;
+  };
+  pets?: {
+    animal: string;
+    name: string;
+  }[];
 };
 
 type ValidationTestCase = {
   name: string;
-  validator: Validator<Shape>;
+  validator: Validator<Person>;
 };
 
 const validationTestCases: ValidationTestCase[] = [
@@ -23,6 +32,19 @@ const validationTestCases: ValidationTestCase[] = [
         firstName: yup.string().required(),
         lastName: yup.string().required(),
         age: yup.number(),
+        address: yup
+          .object({
+            streetAddress: yup.string().required(),
+            city: yup.string().required(),
+            country: yup.string().required(),
+          })
+          .required(),
+        pets: yup.array().of(
+          yup.object({
+            animal: yup.string().required(),
+            name: yup.string().required(),
+          })
+        ),
       })
     ),
   },
@@ -33,6 +55,21 @@ const validationTestCases: ValidationTestCase[] = [
         firstName: z.string().nonempty(),
         lastName: z.string().nonempty(),
         age: z.optional(z.number()),
+        address: z.preprocess(
+          (value) => (value == null ? {} : value),
+          z.object({
+            streetAddress: z.string().nonempty(),
+            city: z.string().nonempty(),
+            country: z.string().nonempty(),
+          })
+        ),
+        pets: z
+          .object({
+            animal: z.string().nonempty(),
+            name: z.string().nonempty(),
+          })
+          .array()
+          .optional(),
       })
     ),
   },
@@ -45,25 +82,35 @@ describe("Validation", () => {
   describe.each(validationTestCases)("Adapter for $name", ({ validator }) => {
     describe("validate", () => {
       it("should return the data when valid", () => {
-        const obj: Shape = {
+        const person: Person = {
           firstName: "John",
           lastName: "Doe",
           age: 30,
+          address: {
+            streetAddress: "123 Main St",
+            city: "Anytown",
+            country: "USA",
+          },
+          pets: [{ animal: "dog", name: "Fido" }],
         };
-        expect(validator.validate(obj)).toEqual({
-          data: obj,
+        expect(validator.validate(person)).toEqual({
+          data: person,
           error: undefined,
         });
       });
 
       it("should return field errors when invalid", () => {
-        const obj = { age: "hi!" };
+        const obj = { age: "hi!", pets: [{ animal: "dog" }] };
         expect(validator.validate(obj)).toEqual({
           data: undefined,
           error: {
             firstName: anyString,
             lastName: anyString,
             age: anyString,
+            "address.city": anyString,
+            "address.country": anyString,
+            "address.streetAddress": anyString,
+            "pets[0].name": anyString,
           },
         });
       });
@@ -71,18 +118,18 @@ describe("Validation", () => {
 
     describe("validateField", () => {
       it("should not return an error if field is valid", () => {
-        const obj = {
+        const person = {
           firstName: "John",
           lastName: {}, // invalid, but we should only be validating firstName
         };
-        expect(validator.validateField(obj, "firstName")).toEqual({
+        expect(validator.validateField(person, "firstName")).toEqual({
           error: undefined,
         });
       });
 
       it("should return an error if field is invalid", () => {
-        const obj = { firstName: "John", lastName: {} };
-        expect(validator.validateField(obj, "lastName")).toEqual({
+        const person = { firstName: "John", lastName: {} };
+        expect(validator.validateField(person, "lastName")).toEqual({
           error: anyString,
         });
       });
