@@ -58,6 +58,7 @@ export function SubjectForm({
               validator={subjectFormValidator}
               defaultValues={defaultValues}
               method="post"
+              noValidate
             >
               <Stack spacing="6" direction="column">
                 <Stack direction="row" spacing="6" align="center" width="full">
