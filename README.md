@@ -57,7 +57,7 @@ export const MyInput = ({ name, label }: InputProps) => {
 To best take advantage of the per-form submission detection, we can create a submit button component.
 
 ```tsx
-import { useIsSubmitting } from "../../remix-validated-form";
+import { useIsSubmitting } from "remix-validated-form";
 
 export const MySubmitButton = () => {
   const isSubmitting = useIsSubmitting();

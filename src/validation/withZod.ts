@@ -1,7 +1,7 @@
-import { flatten, inflate } from "flattenjs";
 import { isEqual, toPath } from "lodash";
 import type { z } from "zod";
-import { FieldErrors, Validator } from "..";
+import { FieldErrors, GenericObject, Validator } from "..";
+import { unflatten } from "../flatten";
 
 const getIssuesForError = (err: z.ZodError<any>): z.ZodIssue[] => {
   return err.issues.flatMap((issue) => {
@@ -15,8 +15,8 @@ const getIssuesForError = (err: z.ZodError<any>): z.ZodIssue[] => {
 
 export function withZod<T>(zodSchema: z.Schema<T>): Validator<T> {
   return {
-    validate: (value: unknown) => {
-      const flatValue = inflate(value);
+    validate: (value: GenericObject) => {
+      const flatValue = unflatten(value);
       const result = zodSchema.safeParse(flatValue);
       if (result.success) return { data: result.data, error: undefined };
 
@@ -27,8 +27,8 @@ export function withZod<T>(zodSchema: z.Schema<T>): Validator<T> {
       });
       return { error: fieldErrors, data: undefined };
     },
-    validateField: (data, field) => {
-      const flatData = inflate(data);
+    validateField: (data: GenericObject, field) => {
+      const flatData = unflatten(data);
       const result = zodSchema.safeParse(flatData);
       if (result.success) return { error: undefined };
       return {
