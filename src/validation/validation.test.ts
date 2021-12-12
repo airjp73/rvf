@@ -126,10 +126,64 @@ describe("Validation", () => {
           error: undefined,
         });
       });
+      it("should not return an error if a nested field is valid", () => {
+        const person = {
+          firstName: "John",
+          lastName: {}, // invalid, but we should only be validating firstName
+          address: {
+            streetAddress: "123 Main St",
+            city: "Anytown",
+            country: "USA",
+          },
+          pets: [{ animal: "dog", name: "Fido" }],
+        };
+        expect(
+          validator.validateField(person, "address.streetAddress")
+        ).toEqual({
+          error: undefined,
+        });
+        expect(validator.validateField(person, "address.city")).toEqual({
+          error: undefined,
+        });
+        expect(validator.validateField(person, "address.country")).toEqual({
+          error: undefined,
+        });
+        expect(validator.validateField(person, "pets[0].animal")).toEqual({
+          error: undefined,
+        });
+        expect(validator.validateField(person, "pets[0].name")).toEqual({
+          error: undefined,
+        });
+      });
 
       it("should return an error if field is invalid", () => {
-        const person = { firstName: "John", lastName: {} };
+        const person = {
+          firstName: "John",
+          lastName: {},
+          address: {
+            streetAddress: "123 Main St",
+            city: 1234,
+          },
+        };
         expect(validator.validateField(person, "lastName")).toEqual({
+          error: anyString,
+        });
+      });
+
+      it("should return an error if a nested field is invalid", () => {
+        const person = {
+          firstName: "John",
+          lastName: {},
+          address: {
+            streetAddress: "123 Main St",
+            city: 1234,
+          },
+          pets: [{ animal: "dog" }],
+        };
+        expect(validator.validateField(person, "address.country")).toEqual({
+          error: anyString,
+        });
+        expect(validator.validateField(person, "pets[0].name")).toEqual({
           error: anyString,
         });
       });
