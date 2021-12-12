@@ -100,7 +100,7 @@ export function SubjectForm({
                       {daysKeys.length > 1 && (
                         <Box pt="8">
                           <Button
-                            colorScheme="blue"
+                            colorScheme="red"
                             onClick={() =>
                               setDaysKeys(
                                 daysKeys.filter(
