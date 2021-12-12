@@ -8,6 +8,7 @@ import {
   ScrollRestoration,
   useCatch,
 } from "remix";
+import { ErrorBox } from "./components/ErrorBox";
 
 // https://remix.run/api/conventions#default-export
 // https://remix.run/api/conventions#route-filenames
@@ -24,15 +25,7 @@ export function ErrorBoundary({ error }: { error: Error }) {
   console.error(error);
   return (
     <Document title="Error!">
-      <div>
-        <h1>There was an error</h1>
-        <p>{error.message}</p>
-        <hr />
-        <p>
-          Hey, developer, you should replace this with what you want your users
-          to see.
-        </p>
-      </div>
+      <ErrorBox title={`There was an error`} description={error.message} />
     </Document>
   );
 }
@@ -63,10 +56,10 @@ export function CatchBoundary() {
 
   return (
     <Document title={`${caught.status} ${caught.statusText}`}>
-      <h1>
-        {caught.status}: {caught.statusText}
-      </h1>
-      {message}
+      <ErrorBox
+        title={`${caught.status}: ${caught.statusText}`}
+        description={message}
+      />
     </Document>
   );
 }

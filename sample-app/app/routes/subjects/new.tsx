@@ -1,5 +1,31 @@
 import { Box, Container, Heading } from "@chakra-ui/react";
-import { SubjectForm } from "~/components/SubjectForm";
+import { ActionFunction, redirect } from "remix";
+import { SubjectForm, subjectFormValidator } from "~/components/SubjectForm";
+import { db } from "~/services/db.server";
+import { validationError } from "../../../remix-validated-form";
+
+export const action: ActionFunction = async ({ request }) => {
+  const fieldValues = subjectFormValidator.validate(
+    Object.fromEntries(await request.formData())
+  );
+  if (fieldValues.error) return validationError(fieldValues.error);
+
+  const { teacher, subjectDays, ...newSubject } = fieldValues.data;
+
+  await db.subject.create({
+    data: {
+      ...newSubject,
+      teacher: {
+        create: teacher,
+      },
+      subjectDays: {
+        create: subjectDays,
+      },
+    },
+  });
+
+  return redirect("/subjects");
+};
 
 export default function NewSubject() {
   return (

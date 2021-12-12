@@ -18,11 +18,9 @@ import { FormInput } from "./FormInput";
 import { FormSelect } from "./FormSelect";
 
 const subjectSchema = z.object({
-  id: z.number().optional(),
   name: z.string().nonempty("Subject Name can't be empty"),
   description: z.string().nonempty("Subject Description can't be empty"),
   teacher: z.object({
-    id: z.number().optional(),
     name: z.string().nonempty("Teacher Name can't be empty"),
     email: z
       .string()
@@ -31,7 +29,6 @@ const subjectSchema = z.object({
   }),
   subjectDays: z
     .object({
-      id: z.number().optional(),
       day: z.string().nonempty("Day can't be empty"),
     })
     .array(),
@@ -100,27 +97,28 @@ export function SubjectForm({
                         <option value="Saturday">Saturday</option>
                         <option value="Sunday">Sunday</option>
                       </FormSelect>
-                      <Button
-                        alignSelf="flex-end"
-                        colorScheme="blue"
-                        onClick={() =>
-                          setDaysKeys(
-                            daysKeys.filter((key, index2) => index2 !== index)
-                          )
-                        }
-                      >
-                        Delete
-                      </Button>
+                      {daysKeys.length > 1 && (
+                        <Button
+                          alignSelf="flex-end"
+                          colorScheme="blue"
+                          onClick={() =>
+                            setDaysKeys(
+                              daysKeys.filter(
+                                (key2, index2) => index !== index2
+                              )
+                            )
+                          }
+                        >
+                          Delete
+                        </Button>
+                      )}
                     </Stack>
                   ))}
                   <Button
                     colorScheme="blue"
                     size="xs"
                     onClick={() =>
-                      setDaysKeys([
-                        ...daysKeys,
-                        1000 + daysKeys[daysKeys.length - 1],
-                      ])
+                      setDaysKeys([...daysKeys, Math.max(...daysKeys) + 1])
                     }
                   >
                     Add Day

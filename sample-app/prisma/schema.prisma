@@ -13,8 +13,8 @@ datasource db {
 model Subject {
   id          Int           @id @default(autoincrement())
   name        String
-  description String?
-  SubjectDays SubjectDays[]
+  description String
+  subjectDays SubjectDays[]
   teacher     Teacher?
 }
 
@@ -30,5 +30,5 @@ model SubjectDays {
   id        Int     @id @default(autoincrement())
   subject   Subject @relation(fields: [subjectId], references: [id])
   subjectId Int
-  day       Int
+  day       String
 }

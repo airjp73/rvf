@@ -13,12 +13,19 @@ import {
   Tr,
 } from "@chakra-ui/react";
 import { Subject, SubjectDays, Teacher } from "@prisma/client";
-import { json, Link, LoaderFunction, useLoaderData } from "remix";
+import {
+  json,
+  Link,
+  LoaderFunction,
+  useCatch,
+  useLoaderData,
+  useParams,
+} from "remix";
 import { db } from "~/services/db.server";
 
 export const loader: LoaderFunction = async () => {
   const subjects = await db.subject.findMany({
-    include: { teacher: true, SubjectDays: true },
+    include: { teacher: true, subjectDays: true },
   });
   return json(subjects);
 };
@@ -81,5 +88,25 @@ export default function Subjects() {
         </Container>
       </Box>
     </>
+  );
+}
+
+export function CatchBoundary() {
+  const caught = useCatch();
+  const params = useParams();
+  if (caught.status === 404) {
+    return (
+      <div className="error-container">
+        Huh? What the heck is "{params.id}"?
+      </div>
+    );
+  }
+  throw new Error(`Unhandled error: ${caught.status}`);
+}
+
+export function ErrorBoundary() {
+  const { jokeId } = useParams();
+  return (
+    <div className="error-container">{`There was an error loading joke by the id ${jokeId}. Sorry.`}</div>
   );
 }
