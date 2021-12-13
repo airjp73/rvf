@@ -80,10 +80,6 @@ const validationTestCases: ValidationTestCase[] = [
 const anyString = expect.any(String);
 
 describe("Validation", () => {
-  beforeAll(() => {
-    (global as any).FormData = TestFormData;
-  });
-
   describe.each(validationTestCases)("Adapter for $name", ({ validator }) => {
     describe("validate", () => {
       it("should return the data when valid", () => {
