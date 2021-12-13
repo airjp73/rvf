@@ -197,7 +197,10 @@ type Validator<DataType> = {
 In order to make an adapter for your validation library of choice,
 you can create a function that accepts a schema from the validation library and turns it into a validator.
 
-Note the use of `createValidator`. It takes care of unflatten the data for nested objects and arrays since the form doesn't know anything about object and arrays and this should be handled by the adapter. For more on this you can check the implementations for `withZod` and `withYup`.
+Note the use of `createValidator`.
+It takes care of unflattening the data for nested objects and arrays
+since the form doesn't know anything about object and arrays and this should be handled by the adapter.
+For more on this you can check the implementations for `withZod` and `withYup`.
 
 The out-of-the-box support for `yup` in this library works like this:
 
@@ -226,4 +229,7 @@ export const withYup = <Schema extends AnyObjectSchema>(
 
 ## Why are my fields triggering the native HTML validations before `remix-validated-form` ones?
 
-This is happening because you or the library you are using are passing the `required` attribute to the fields. This library doesn't take care of eliminating them and it's up to the user how they want to manage the validation errors. If you wan't to disable all native HTML validations you can add `noValidate` to `<ValidatedForm>`. We recommend this approach since the validation will still work even if JS is disabled.
+This is happening because you or the library you are using is passing the `required` attribute to the fields.
+This library doesn't take care of eliminating them and it's up to the user how they want to manage the validation errors.
+If you wan't to disable all native HTML validations you can add `noValidate` to `<ValidatedForm>`.
+We recommend this approach since the validation will still work even if JS is disabled.
