@@ -1,6 +1,7 @@
 import * as yup from "yup";
 import { z } from "zod";
 import { Validator, withYup } from "..";
+import { TestFormData } from "../test-data/testFormData";
 import { withZod } from "./withZod";
 
 // If adding an adapter, write a validator that validates this shape
@@ -79,6 +80,10 @@ const validationTestCases: ValidationTestCase[] = [
 const anyString = expect.any(String);
 
 describe("Validation", () => {
+  beforeAll(() => {
+    (global as any).FormData = TestFormData;
+  });
+
   describe.each(validationTestCases)("Adapter for $name", ({ validator }) => {
     describe("validate", () => {
       it("should return the data when valid", () => {
@@ -112,6 +117,75 @@ describe("Validation", () => {
             "address.streetAddress": anyString,
             "pets[0].name": anyString,
           },
+        });
+      });
+
+      it("should unflatten data when validating", () => {
+        const data = {
+          firstName: "John",
+          lastName: "Doe",
+          age: 30,
+          "address.streetAddress": "123 Main St",
+          "address.city": "Anytown",
+          "address.country": "USA",
+          "pets[0].animal": "dog",
+          "pets[0].name": "Fido",
+        };
+        expect(validator.validate(data)).toEqual({
+          data: {
+            firstName: "John",
+            lastName: "Doe",
+            age: 30,
+            address: {
+              streetAddress: "123 Main St",
+              city: "Anytown",
+              country: "USA",
+            },
+            pets: [{ animal: "dog", name: "Fido" }],
+          },
+          error: undefined,
+        });
+      });
+
+      it("should accept FormData directly and return errors", () => {
+        const formData = new TestFormData();
+        formData.set("firstName", "John");
+        formData.set("lastName", "Doe");
+        formData.set("address.streetAddress", "123 Main St");
+        formData.set("address.country", "USA");
+        formData.set("pets[0].animal", "dog");
+
+        expect(validator.validate(formData)).toEqual({
+          data: undefined,
+          error: {
+            "address.city": anyString,
+            "pets[0].name": anyString,
+          },
+        });
+      });
+
+      it("should accept FormData directly and return valid data", () => {
+        const formData = new TestFormData();
+        formData.set("firstName", "John");
+        formData.set("lastName", "Doe");
+        formData.set("address.streetAddress", "123 Main St");
+        formData.set("address.country", "USA");
+        formData.set("address.city", "Anytown");
+        formData.set("pets[0].animal", "dog");
+        formData.set("pets[0].name", "Fido");
+
+        expect(validator.validate(formData)).toEqual({
+          data: {
+            firstName: "John",
+            lastName: "Doe",
+            address: {
+              streetAddress: "123 Main St",
+              country: "USA",
+              city: "Anytown",
+            },
+            pets: [{ animal: "dog", name: "Fido" }],
+          },
+          error: undefined,
         });
       });
     });

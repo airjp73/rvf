@@ -1,24 +1,15 @@
-// `flatten` and `unflatten` are taken from https://github.com/richie5um/FlattenJS. Decided to implement them here instead of using that package because this is a core functionality of the library and this will add more flexibility in case we need to change the implementation.
+// `flatten` is taken from https://github.com/richie5um/FlattenJS. Decided to implement them here instead of using that package because this is a core functionality of the library and this will add more flexibility in case we need to change the implementation.
 import assign from "lodash/assign";
 import isArray from "lodash/isArray";
 import isObject from "lodash/isObject";
 import keys from "lodash/keys";
 import mapKeys from "lodash/mapKeys";
-import reduce from "lodash/reduce";
 import set from "lodash/set";
 import transform from "lodash/transform";
 import { GenericObject } from ".";
 
-/** Unflatten a previously flatten object */
-export function unflatten(params: GenericObject) {
-  return reduce(
-    params,
-    function (result, value, key) {
-      return set(result, key, value);
-    },
-    {}
-  );
-}
+export const objectFromPathEntries = (entries: [string, any][]) =>
+  entries.reduce((acc, [key, value]) => set(acc, key, value), {});
 
 /** Flatten an object so there are no nested objects or arrays */
 export function flatten(obj: GenericObject, preserveEmpty = false) {
