@@ -7,6 +7,7 @@ A form library built for [remix](https://remix.run) to make validation easy.
 - Re-use validation on the server
 - Show validation errors from the server even without JS
 - Detect if the current form is submitting when there are multiple forms on the page
+- Supports nested objects and arrays
 - Validation library agnostic
 
 # Demo
