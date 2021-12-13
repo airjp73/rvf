@@ -2,7 +2,10 @@ import { GenericObject, Validator } from "..";
 import { objectFromPathEntries } from "../flatten";
 
 const preprocessFormData = (data: GenericObject | FormData): GenericObject => {
-  if (data instanceof FormData) return objectFromPathEntries([...data]);
+  // A slightly janky way of determining if the data is a FormData object
+  // since node doesn't really have FormData
+  if ("entries" in data && typeof data.entries === "function")
+    return objectFromPathEntries([...data.entries()]);
   return objectFromPathEntries(Object.entries(data));
 };
 
