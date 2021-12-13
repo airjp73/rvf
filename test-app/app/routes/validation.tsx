@@ -17,9 +17,7 @@ const schema = yup.object({
 const validator = withYup(schema);
 
 export const action: ActionFunction = async ({ request }) => {
-  const result = validator.validate(
-    Object.fromEntries(await request.formData())
-  );
+  const result = validator.validate(await request.formData());
   if (result.error) return validationError(result.error);
   const { firstName, lastName } = result.data;
 

@@ -54,8 +54,7 @@ const useIsSubmitting = (
         pendingFormSubmit.action === (action ?? actionForCurrentPage);
 };
 
-const getDataFromForm = (el: HTMLFormElement) =>
-  Object.fromEntries(new FormData(el));
+const getDataFromForm = (el: HTMLFormElement) => new FormData(el);
 
 export function ValidatedForm<DataType>({
   validator,

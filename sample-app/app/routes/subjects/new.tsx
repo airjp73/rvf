@@ -5,9 +5,7 @@ import { db } from "~/services/db.server";
 import { validationError } from "../../../remix-validated-form";
 
 export const action: ActionFunction = async ({ request }) => {
-  const fieldValues = subjectFormValidator.validate(
-    Object.fromEntries(await request.formData())
-  );
+  const fieldValues = subjectFormValidator.validate(await request.formData());
   if (fieldValues.error) return validationError(fieldValues.error);
 
   const { teacher, subjectDays, ...newSubject } = fieldValues.data;
