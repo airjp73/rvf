@@ -11,6 +11,9 @@ const validationErrorToFieldErrors = (error: ValidationError): FieldErrors => {
   return fieldErrors;
 };
 
+/**
+ * Create a `Validator` using a `yup` schema.
+ */
 export const withYup = <Schema extends AnyObjectSchema>(
   validationSchema: Schema
 ): Validator<InferType<Schema>> => {

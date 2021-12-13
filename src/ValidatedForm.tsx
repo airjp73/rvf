@@ -18,10 +18,29 @@ import { omit, mergeRefs } from "./internal/util";
 import { FieldErrors, Validator } from "./validation/types";
 
 export type FormProps<DataType> = {
+  /**
+   * A `Validator` object that describes how to validate the form.
+   */
   validator: Validator<DataType>;
+  /**
+   * A submit callback that gets called when the form is submitted
+   * after all validations have been run.
+   */
   onSubmit?: (data: DataType, event: React.FormEvent<HTMLFormElement>) => void;
+  /**
+   * Allows you to provide a `fetcher` from remix's `useFetcher` hook.
+   * The form will use the fetcher for loading states, action data, etc
+   * instead of the default form action.
+   */
   fetcher?: ReturnType<typeof useFetcher>;
+  /**
+   * Accepts an object of default values for the form
+   * that will automatically be propagated to the form fields via `useField`.
+   */
   defaultValues?: Partial<DataType>;
+  /**
+   * A ref to the form element.
+   */
   formRef?: React.RefObject<HTMLFormElement>;
 } & Omit<ComponentProps<typeof RemixForm>, "onSubmit">;
 
@@ -56,6 +75,9 @@ const useIsSubmitting = (
 
 const getDataFromForm = (el: HTMLFormElement) => new FormData(el);
 
+/**
+ * The primary form component of `remix-validated-form`.
+ */
 export function ValidatedForm<DataType>({
   validator,
   onSubmit,

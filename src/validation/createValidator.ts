@@ -9,7 +9,11 @@ const preprocessFormData = (data: GenericObject | FormData): GenericObject => {
   return objectFromPathEntries(Object.entries(data));
 };
 
-/** Handles data manipulation such us flattening the data to send to the validator */
+/**
+ * Used to create a validator for a form.
+ * It provides built-in handling for unflattening nested objects and
+ * extracting the values from FormData.
+ */
 export function createValidator<T>(validator: Validator<T>): Validator<T> {
   return {
     validate: (value: GenericObject | FormData) =>
