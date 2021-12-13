@@ -12,6 +12,13 @@ const schema = yup.object({
   firstName: yup.string().label("First Name").required(),
   lastName: yup.string().label("Last Name").required(),
   email: yup.string().label("Email").email().required(),
+  contacts: yup
+    .array(
+      yup.object({
+        name: yup.string().label("Name of a contact").required(),
+      })
+    )
+    .required(),
 });
 
 const validator = withYup(schema);
@@ -32,6 +39,7 @@ export default function FrontendValidation() {
       <Input name="firstName" label="First Name" validateOnBlur />
       <Input name="lastName" label="Last Name" validateOnBlur />
       <Input name="email" label="Email" validateOnBlur />
+      <Input name="contacts[0].name" label="Name of a contact" validateOnBlur />
       <SubmitButton />
     </ValidatedForm>
   );

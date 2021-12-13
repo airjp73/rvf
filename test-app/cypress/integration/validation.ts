@@ -18,12 +18,18 @@ describe("Validation", () => {
     cy.findByLabelText("Email").blur();
     cy.findByText("Email must be a valid email").should("exist");
 
+    cy.findByLabelText("Name of a contact").focus().blur();
+    cy.findByText("Name of a contact is a required field").should("exist");
+    cy.findByLabelText("Name of a contact").type("Someone else");
+    cy.findByText("Name of a contact is a required field").should("not.exist");
+
     cy.findByLabelText("Email").clear().type("an.email@example.com").blur();
     cy.findByText("Email must be a valid email").should("not.exist");
 
     cy.findByText("Email is a required field").should("not.exist");
     cy.findByText("Last Name is a required field").should("not.exist");
     cy.findByText("First Name is a required field").should("not.exist");
+    cy.findByText("Name of a contact is a required field").should("not.exist");
 
     cy.findByText("Submit").click();
     cy.findByText("Submitted for John Doe!").should("exist");
@@ -37,6 +43,7 @@ describe("Validation", () => {
     cy.findByText("Email is a required field").should("exist");
     cy.findByText("Last Name is a required field").should("exist");
     cy.findByText("First Name is a required field").should("exist");
+    cy.findByText("Name of a contact is a required field").should("exist");
 
     cy.findByLabelText("First Name").type("John");
     cy.findByText("First Name is a required field").should("not.exist");
@@ -46,6 +53,9 @@ describe("Validation", () => {
 
     cy.findByLabelText("Email").type("an.email@example.com").blur();
     cy.findByText("Email is a required field").should("not.exist");
+
+    cy.findByLabelText("Name of a contact").type("Someone else");
+    cy.findByText("Name of a contact is a required field").should("not.exist");
 
     cy.findByText("Submit").click();
     cy.findByText("Submitted for John Doe!").should("exist");
@@ -59,10 +69,12 @@ describe("Validation", () => {
     cy.findByText("Email is a required field").should("exist");
     cy.findByText("Last Name is a required field").should("exist");
     cy.findByText("First Name is a required field").should("exist");
+    cy.findByText("Name of a contact is a required field").should("exist");
 
     cy.findByLabelText("First Name").type("John");
     cy.findByLabelText("Last Name").type("Doe");
     cy.findByLabelText("Email").type("an.email@example.com").blur();
+    cy.findByLabelText("Name of a contact").type("Someone else");
 
     cy.findByText("Submit").click();
     cy.findByText("Submitted for John Doe!").should("exist");
