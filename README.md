@@ -11,7 +11,18 @@ A form library built for [remix](https://remix.run) to make validation easy.
 
 # Demo
 
-https://user-images.githubusercontent.com/25882770/143505448-c4b7e660-7a73-4005-b2ca-17c65a15ef46.mov
+https://user-images.githubusercontent.com/2811287/145734901-700a5085-a10b-4d89-88e1-5de9142b1e85.mov
+
+To run `sample-app`:
+```
+git clone https://github.com/airjp73/remix-validated-form
+cd remix-validated-form
+npm i
+cd sample-app
+npm i
+cd ..
+npm run sample-app
+```
 
 # Getting started
 
@@ -127,6 +138,33 @@ export default function MyForm() {
 }
 ```
 
+## Nested objects and arrays
+
+You can use nested objects and arrays by using a period (`.`) or brackets (`[]`) for the field names. 
+
+```tsx
+export default function MyForm() {
+  const { defaultValues } = useLoaderData();
+  return (
+    <ValidatedForm
+      validator={validator}
+      method="post"
+      defaultValues={defaultValues}
+    >
+      <MyInput name="firstName" label="First Name" />
+      <MyInput name="lastName" label="Last Name" />
+      <MyInput name="address.street" label="Street" />
+      <MyInput name="address.city" label="City" />
+      <MyInput name="phones[0].type" label="Phone 1 Type" />
+      <MyInput name="phones[0].number" label="Phone 1 Number" />
+      <MyInput name="phones[1].type" label="Phone 2 Type" />
+      <MyInput name="phones[1].number" label="Phone 2 Number" />
+      <MySubmitButton />
+    </ValidatedForm>
+  );
+}
+```
+
 # Validation Library Support
 
 This library currently includes an out-of-the-box adapter for `yup` and `zod`,
@@ -159,13 +197,15 @@ type Validator<DataType> = {
 In order to make an adapter for your validation library of choice,
 you can create a function that accepts a schema from the validation library and turns it into a validator.
 
+Note the use of `createValidator`. It takes care of unflatten the data for nested objects and arrays since the form doesn't know anything about object and arrays and this should be handled by the adapter. For more on this you can check the implementations for `withZod` and `withYup`.  
+
 The out-of-the-box support for `yup` in this library works like this:
 
 ```ts
 export const withYup = <Schema extends AnyObjectSchema>(
   validationSchema: Schema
   // For best result with Typescript, we should type the `Validator` we return based on the provided schema
-): Validator<InferType<Schema>> => ({
+): Validator<InferType<Schema>> => createValidator({
   validate: (unvalidatedData) => {
     // Validate with yup and return the validated & typed data or the error
 
@@ -180,3 +220,10 @@ export const withYup = <Schema extends AnyObjectSchema>(
   },
 });
 ```
+
+# Frequenty Asked Questions
+
+## Why are my fields triggering the native HTML validations before `remix-validated-form` ones?
+This is happening because you or the library you are using are passing the `required` attribute to the fields. This library doesn't take care of eliminating them and it's up to the user how they want to manage the validation errors. If you wan't to disable all native HTML validations you can add `noValidate` to `<ValidatedForm>`. We recommend this approach since the validation will still work even if JS is disabled. 
+
+
