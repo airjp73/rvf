@@ -6,7 +6,7 @@ import keys from "lodash/keys";
 import mapKeys from "lodash/mapKeys";
 import set from "lodash/set";
 import transform from "lodash/transform";
-import { GenericObject } from ".";
+import { GenericObject } from "..";
 
 export const objectFromPathEntries = (entries: [string, any][]) =>
   entries.reduce((acc, [key, value]) => set(acc, key, value), {});

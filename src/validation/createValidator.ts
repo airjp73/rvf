@@ -1,5 +1,5 @@
 import { GenericObject, Validator } from "..";
-import { objectFromPathEntries } from "../flatten";
+import { objectFromPathEntries } from "../internal/flatten";
 
 const preprocessFormData = (data: GenericObject | FormData): GenericObject => {
   // A slightly janky way of determining if the data is a FormData object
