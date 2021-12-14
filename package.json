@@ -7,9 +7,9 @@
     "packages/*"
   ],
   "scripts": {
-    "build": "turbo run build",
     "sample-app": "turbo run dev --parallel --scope=sample-app --includeDependencies",
     "test-app": "turbo run dev --parallel --scope=test-app --includeDependencies",
+    "build:all": "turbo run build",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },
