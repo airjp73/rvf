@@ -1,8 +1,8 @@
 import { Box, Container, Heading } from "@chakra-ui/react";
 import { ActionFunction, redirect } from "remix";
+import { validationError } from "remix-validated-form";
 import { SubjectForm, subjectFormValidator } from "~/components/SubjectForm";
 import { db } from "~/services/db.server";
-import { validationError } from "remix-validated-form";
 
 export const action: ActionFunction = async ({ request }) => {
   const fieldValues = subjectFormValidator.validate(await request.formData());

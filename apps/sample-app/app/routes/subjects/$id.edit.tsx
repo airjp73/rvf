@@ -8,12 +8,12 @@ import {
   useLoaderData,
   useParams,
 } from "remix";
+import { validationError } from "remix-validated-form";
 import { z } from "zod";
 import { ErrorBox } from "~/components/ErrorBox";
 import { SubjectForm, subjectFormValidator } from "~/components/SubjectForm";
 import { db } from "~/services/db.server";
 import { SubjectComplete } from "~/types";
-import { validationError } from "remix-validated-form";
 
 export const loader: LoaderFunction = async ({ params }) => {
   const { id } = z.object({ id: z.string() }).parse(params);
