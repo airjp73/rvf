@@ -7593,9 +7593,9 @@ tunnel-agent@^0.6.0:
     safe-buffer "^5.0.1"
 
 turbo@latest:
-  version "1.0.10"
-  resolved "https://registry.yarnpkg.com/turbo/-/turbo-1.0.10.tgz#4615813e140ca3a6ef8962bf8c7b5ba3373b8e1f"
-  integrity sha512-XuUpfd0IeHlJzl3am+37Bi3jXM3WAd+W3diWbf8B7ZyhejpXXmYy3XOpRs3a8TSz+ctRHTAjGDi4RHFOhaWUyw==
+  version "1.0.11"
+  resolved "https://registry.yarnpkg.com/turbo/-/turbo-1.0.11.tgz#e832459ed4ec98bdd41fa7c9a12f2720c10ad5b3"
+  integrity sha512-hTvO3EXaa4D7bfuKE7w2Ba1WpoS5vTfUAbA7Y8szLcmxCTpvfiDGtudl8iu82HRRRn+v1LvpgLSPr/N+ZXbYFQ==
   dependencies:
     zlib "^1.0.5"
 
