@@ -2,8 +2,10 @@ node_modules
 build
 browser
 .cache
-test-app/remix-validated-form
-sample-app/remix-validated-form
-test-app/cypress/videos
-test-app/cypress/screenshots
 .eslintcache
+.pnp
+.pnp.js
+.DS_Store
+yarn-debug.log*
+yarn-error.log*
+.turbo
