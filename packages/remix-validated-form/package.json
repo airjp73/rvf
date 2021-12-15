@@ -10,6 +10,7 @@
   },
   "sideEffects": false,
   "scripts": {
+    "dev": "tsc --module ESNext --outDir ./browser --watch",
     "build": "npm run build:browser && npm run build:main",
     "build:browser": "tsc --module ESNext --outDir ./browser",
     "build:main": "tsc --module CommonJS --outDir ./build",
