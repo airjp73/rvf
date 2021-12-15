@@ -16,7 +16,8 @@
     "build:main": "tsc --module CommonJS --outDir ./build",
     "test": "jest src",
     "test:watch": "jest src --watch",
-    "prepublishOnly": "npm run build:browser && npm run build:main"
+    "prepublishOnly": "cp ../../README.md ./README.md && npm run build",
+    "postpublish": "rm ./README.md"
   },
   "author": {
     "name": "Aaron Pettengill",
