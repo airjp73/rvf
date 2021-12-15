@@ -14,7 +14,7 @@
     "package-tests": "turbo run test --scope=remix-validated-form --no-deps",
     "lint": "eslint .",
     "prettier": "prettier . --write",
-    "build:all": "turbo run build",
+    "build": "turbo run build",
     "prepare": "husky install"
   },
   "devDependencies": {
