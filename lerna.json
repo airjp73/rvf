@@ -1,0 +1,4 @@
+{
+  "packages": ["packages/remix-validated-form"],
+  "version": "2.0.0-beta.0"
+}
