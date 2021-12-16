@@ -1,6 +1,7 @@
 import * as yup from "yup";
 import { z } from "zod";
 import { Validator, withYup } from "..";
+import { objectFromPathEntries } from "../internal/flatten";
 import { TestFormData } from "../test-data/testFormData";
 import { withZod } from "./withZod";
 
@@ -112,6 +113,7 @@ describe("Validation", () => {
             "address.country": anyString,
             "address.streetAddress": anyString,
             "pets[0].name": anyString,
+            _submittedData: obj,
           },
         });
       });
@@ -156,6 +158,7 @@ describe("Validation", () => {
           error: {
             "address.city": anyString,
             "pets[0].name": anyString,
+            _submittedData: objectFromPathEntries([...formData.entries()]),
           },
         });
       });
@@ -285,6 +288,7 @@ describe("withZod", () => {
         type: anyString,
         bar: anyString,
         foo: anyString,
+        _submittedData: obj,
       },
     });
   });
@@ -305,6 +309,7 @@ describe("withZod", () => {
       error: {
         field1: anyString,
         field2: anyString,
+        _submittedData: obj,
       },
     });
     expect(validator.validateField(obj, "field1")).toEqual({
