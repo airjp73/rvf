@@ -101,4 +101,22 @@ describe("Validation", () => {
     cy.findByText("Submit").click();
     cy.findByText("Submitted for John Doe!").should("exist");
   });
+
+  it("should reset validation errors when resetting the form", () => {
+    cy.visit("/validation");
+
+    cy.findByText("Submit").click();
+
+    cy.findByText("Email is a required field").should("exist");
+    cy.findByText("Last Name is a required field").should("exist");
+    cy.findByText("First Name is a required field").should("exist");
+    cy.findByText("Name of a contact is a required field").should("exist");
+
+    cy.findByText("Reset").click();
+
+    cy.findByText("Email is a required field").should("not.exist");
+    cy.findByText("Last Name is a required field").should("not.exist");
+    cy.findByText("First Name is a required field").should("not.exist");
+    cy.findByText("Name of a contact is a required field").should("not.exist");
+  });
 });
