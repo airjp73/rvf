@@ -9,3 +9,5 @@ browser
 yarn-debug.log*
 yarn-error.log*
 .turbo
+apps/test-app/cypress/videos
+apps/test-app/cypress/screenshots
