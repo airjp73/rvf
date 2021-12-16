@@ -108,6 +108,7 @@ export function ValidatedForm<DataType>({
   action,
   defaultValues,
   formRef: formRefProp,
+  onReset,
   ...rest
 }: FormProps<DataType>) {
   const [fieldErrors, setFieldErrors] = useFieldErrors(fetcher);
@@ -164,6 +165,11 @@ export function ValidatedForm<DataType>({
         } else {
           onSubmit?.(result.data, event);
         }
+      }}
+      onReset={(event) => {
+        onReset?.(event);
+        if (event.defaultPrevented) return;
+        setFieldErrors({});
       }}
     >
       <FormContext.Provider value={contextValue}>
