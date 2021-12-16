@@ -37,6 +37,7 @@ export default function FrontendValidation() {
       <Input name="email" label="Email" validateOnBlur />
       <Input name="contacts[0].name" label="Name of a contact" validateOnBlur />
       <SubmitButton />
+      <button type="reset">Reset</button>
     </ValidatedForm>
   );
 }

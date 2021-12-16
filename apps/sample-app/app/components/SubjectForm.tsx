@@ -8,10 +8,11 @@ import {
 } from "@chakra-ui/react";
 import { useState } from "react";
 import { useNavigate } from "remix";
-import { ValidatedForm, withZod, useIsSubmitting } from "remix-validated-form";
+import { ValidatedForm, withZod } from "remix-validated-form";
 import * as z from "zod";
 import { FormInput } from "./FormInput";
 import { FormSelect } from "./FormSelect";
+import { SubmitButton } from "./SubmitButton";
 
 const subjectSchema = z.object({
   name: z.string().nonempty("Subject Name can't be empty"),
@@ -38,7 +39,6 @@ export function SubjectForm({
   defaultValues?: Partial<z.infer<typeof subjectSchema>>;
 }) {
   let navigate = useNavigate();
-  const isSubmitting = useIsSubmitting();
   const [daysKeys, setDaysKeys] = useState(
     defaultValues?.subjectDays && defaultValues.subjectDays.length > 0
       ? Array.from(Array(defaultValues.subjectDays.length).keys())
@@ -124,14 +124,7 @@ export function SubjectForm({
                 </VStack>
 
                 <HStack width="full" justifyContent="center" mt="8">
-                  <Button
-                    type="submit"
-                    colorScheme="blue"
-                    disabled={isSubmitting}
-                    isLoading={isSubmitting}
-                  >
-                    {isSubmitting ? "Sending..." : "Send"}
-                  </Button>
+                  <SubmitButton />
                   <Button variant="outline" onClick={() => navigate(-1)}>
                     Cancel
                   </Button>

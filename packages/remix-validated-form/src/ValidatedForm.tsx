@@ -76,6 +76,28 @@ const useIsSubmitting = (
 const getDataFromForm = (el: HTMLFormElement) => new FormData(el);
 
 /**
+ * The purpose for this logic is to handle validation errors when javascript is disabled.
+ * Normally (without js), when a form is submitted and the action returns the validation errors,
+ * the form will be reset. The errors will be displayed on the correct fields,
+ * but all the values in the form will be gone. This is not good UX.
+ *
+ * To get around this, we return the submitted form data from the server,
+ * and use those to populate the form via `defaultValues`.
+ * This results in a more seamless UX akin to what you would see when js is enabled.
+ *
+ * One potential downside is that resetting the form will reset the form
+ * to the _new_ default values that were returned from the server with the validation errors.
+ * However, this case is less of a problem than the janky UX caused by losing the form values.
+ * It will only ever be a problem if the form includes a `<button type="reset" />`
+ * and only if JS is disabled.
+ */
+function useDefaultValues<DataType>(defaultValues?: Partial<DataType>) {
+  const actionData = useActionData();
+  const defaultsFromValidationError = actionData?.fieldErrors?._submittedData;
+  return defaultsFromValidationError ?? defaultValues;
+}
+
+/**
  * The primary form component of `remix-validated-form`.
  */
 export function ValidatedForm<DataType>({
@@ -86,10 +108,12 @@ export function ValidatedForm<DataType>({
   action,
   defaultValues,
   formRef: formRefProp,
+  onReset,
   ...rest
 }: FormProps<DataType>) {
   const [fieldErrors, setFieldErrors] = useFieldErrors(fetcher);
   const isSubmitting = useIsSubmitting(action, fetcher);
+  const defaultsToUse = useDefaultValues(defaultValues);
 
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -97,7 +121,7 @@ export function ValidatedForm<DataType>({
     () => ({
       fieldErrors,
       action,
-      defaultValues,
+      defaultValues: defaultsToUse,
       isSubmitting: isSubmitting ?? false,
       clearError: (fieldName) => {
         setFieldErrors((prev) => omit(prev, fieldName));
@@ -119,7 +143,7 @@ export function ValidatedForm<DataType>({
     [
       fieldErrors,
       action,
-      defaultValues,
+      defaultsToUse,
       isSubmitting,
       setFieldErrors,
       validator,
@@ -141,6 +165,11 @@ export function ValidatedForm<DataType>({
         } else {
           onSubmit?.(result.data, event);
         }
+      }}
+      onReset={(event) => {
+        onReset?.(event);
+        if (event.defaultPrevented) return;
+        setFieldErrors({});
       }}
     >
       <FormContext.Provider value={contextValue}>

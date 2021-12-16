@@ -1,5 +1,11 @@
 import "@testing-library/cypress/add-commands";
 
+beforeEach(() => {
+  const parentDocument = (cy as any).state("window").parent.document;
+  const iframe = parentDocument.querySelector(".iframes-container iframe");
+  iframe.removeAttribute("sandbox");
+});
+
 Cypress.Commands.add("visitWithoutJs", (url) => {
   const parentDocument = (cy as any).state("window").parent.document;
   const iframe = parentDocument.querySelector(".iframes-container iframe");
