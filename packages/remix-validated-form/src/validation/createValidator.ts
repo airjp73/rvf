@@ -16,8 +16,18 @@ const preprocessFormData = (data: GenericObject | FormData): GenericObject => {
  */
 export function createValidator<T>(validator: Validator<T>): Validator<T> {
   return {
-    validate: (value: GenericObject | FormData) =>
-      validator.validate(preprocessFormData(value)),
+    validate: (value: GenericObject | FormData) => {
+      const data = preprocessFormData(value);
+      const result = validator.validate(data);
+      if (result.error) {
+        // Ideally, we should probably be returning a nested object like
+        // { fieldErrors: {}, submittedData: {} }
+        // We should do this in the next major version of the library
+        // but for now, we can sneak it in with the fieldErrors.
+        result.error._submittedData = data as any;
+      }
+      return result;
+    },
     validateField: (data: GenericObject | FormData, field: string) =>
       validator.validateField(preprocessFormData(data), field),
   };
