@@ -15,5 +15,11 @@ describe("Sanity", () => {
       cy.findByText("Is JS turned on?").should("exist");
       cy.findByText("JS is turned off").should("exist");
     });
+
+    it("should work with js even after a non-js test has been run", () => {
+      cy.visit("/noscript");
+      cy.findByText("Is JS turned on?").should("exist");
+      cy.findByText("JS is turned off").should("not.exist");
+    });
   });
 });
