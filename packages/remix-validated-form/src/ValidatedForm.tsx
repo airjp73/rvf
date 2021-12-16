@@ -42,6 +42,12 @@ export type FormProps<DataType> = {
    * A ref to the form element.
    */
   formRef?: React.RefObject<HTMLFormElement>;
+  /**
+   * An optional sub-action to use for the form.
+   * Setting a value here will cause the form to be submitted with an extra `subaction` value.
+   * This can be useful when there are multiple forms on the screen handled by the same action.
+   */
+  subaction?: string;
 } & Omit<ComponentProps<typeof RemixForm>, "onSubmit">;
 
 function useFieldErrors(
@@ -63,14 +69,21 @@ function useFieldErrors(
 
 const useIsSubmitting = (
   action?: string,
+  subaction?: string,
   fetcher?: ReturnType<typeof useFetcher>
 ) => {
   const actionForCurrentPage = useFormAction();
   const pendingFormSubmit = useTransition().submission;
-  return fetcher
-    ? fetcher.state === "submitting"
-    : pendingFormSubmit &&
-        pendingFormSubmit.action === (action ?? actionForCurrentPage);
+
+  if (fetcher) return fetcher.state === "submitting";
+  if (!pendingFormSubmit) return false;
+
+  const { formData, action: pendingAction } = pendingFormSubmit;
+  const pendingSubAction = formData.get("subaction");
+  const expectedAction = action ?? actionForCurrentPage;
+  if (subaction)
+    return expectedAction === pendingAction && subaction === pendingSubAction;
+  return expectedAction === pendingAction && !pendingSubAction;
 };
 
 const getDataFromForm = (el: HTMLFormElement) => new FormData(el);
@@ -109,10 +122,11 @@ export function ValidatedForm<DataType>({
   defaultValues,
   formRef: formRefProp,
   onReset,
+  subaction,
   ...rest
 }: FormProps<DataType>) {
   const [fieldErrors, setFieldErrors] = useFieldErrors(fetcher);
-  const isSubmitting = useIsSubmitting(action, fetcher);
+  const isSubmitting = useIsSubmitting(action, subaction, fetcher);
   const defaultsToUse = useDefaultValues(defaultValues);
 
   const formRef = useRef<HTMLFormElement>(null);
@@ -173,6 +187,7 @@ export function ValidatedForm<DataType>({
       }}
     >
       <FormContext.Provider value={contextValue}>
+        <input type="hidden" value={subaction} name="subaction" />
         {children}
       </FormContext.Provider>
     </Form>
