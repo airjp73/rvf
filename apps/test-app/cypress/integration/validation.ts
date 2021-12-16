@@ -79,4 +79,26 @@ describe("Validation", () => {
     cy.findByText("Submit").click();
     cy.findByText("Submitted for John Doe!").should("exist");
   });
+
+  it("should not lose field values when showing validation errors without JS", () => {
+    cy.visitWithoutJs("/validation");
+
+    cy.findByLabelText("First Name").type("John");
+    cy.findByLabelText("Last Name").type("Doe");
+    cy.findByText("Submit").click();
+
+    cy.findByText("First Name is a required field").should("not.exist");
+    cy.findByText("Last Name is a required field").should("not.exist");
+    cy.findByText("Email is a required field").should("exist");
+    cy.findByText("Name of a contact is a required field").should("exist");
+
+    cy.findByLabelText("First Name").should("have.value", "John");
+    cy.findByLabelText("Last Name").should("have.value", "Doe");
+
+    cy.findByLabelText("Email").type("an.email@example.com").blur();
+    cy.findByLabelText("Name of a contact").type("Someone else");
+
+    cy.findByText("Submit").click();
+    cy.findByText("Submitted for John Doe!").should("exist");
+  });
 });
