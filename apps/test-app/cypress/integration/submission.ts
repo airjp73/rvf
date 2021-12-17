@@ -51,4 +51,16 @@ describe("Validation", () => {
     cy.findByText("Submitting form 3").should("not.exist");
     cy.findByText("Submitted form 3").should("exist");
   });
+
+  it("should call onAfterSubmit when the form has been successfully submitted", () => {
+    cy.visit("/submission/aftersubmit");
+
+    cy.findByText("Submit").click();
+    cy.findByText("Required").should("exist");
+    cy.findByLabelText("Test input").should("have.value", "");
+
+    cy.findAllByLabelText("Test input").type("testing");
+    cy.findByText("Submit").click();
+    cy.findByLabelText("Test input").should("have.value", "Submitted!");
+  });
 });
