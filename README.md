@@ -18,12 +18,9 @@ To run `sample-app`:
 
 ```
 git clone https://github.com/airjp73/remix-validated-form
-cd remix-validated-form
-npm i
-cd sample-app
-npm i
-cd ..
-npm run sample-app
+cd ./remix-validated-form
+yarn install
+yarn sample-app
 ```
 
 # Getting started
