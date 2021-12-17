@@ -14,6 +14,7 @@ import React, {
 } from "react";
 import invariant from "tiny-invariant";
 import { FormContext, FormContextValue } from "./internal/formContext";
+import { useSubmitComplete } from "./internal/submissionCallbacks";
 import { omit, mergeRefs } from "./internal/util";
 import { FieldErrors, Validator } from "./validation/types";
 
@@ -48,14 +49,21 @@ export type FormProps<DataType> = {
    * This can be useful when there are multiple forms on the screen handled by the same action.
    */
   subaction?: string;
+  /**
+   * An optional callback that gets called after the form has been fully submitted.
+   */
+  onAfterSubmit?: (response: any) => void;
 } & Omit<ComponentProps<typeof RemixForm>, "onSubmit">;
 
-function useFieldErrors(
-  fetcher?: ReturnType<typeof useFetcher>
-): [FieldErrors, React.Dispatch<React.SetStateAction<FieldErrors>>] {
+function useFormActionData(fetcher?: ReturnType<typeof useFetcher>) {
   const actionData = useActionData<any>();
-  const dataToUse = fetcher ? fetcher.data : actionData;
-  const fieldErrorsFromAction = dataToUse?.fieldErrors;
+  return fetcher ? fetcher.data : actionData;
+}
+
+function useFieldErrors(
+  formActionData?: any
+): [FieldErrors, React.Dispatch<React.SetStateAction<FieldErrors>>] {
+  const fieldErrorsFromAction = formActionData?.fieldErrors;
 
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>(
     fieldErrorsFromAction ?? {}
@@ -123,11 +131,18 @@ export function ValidatedForm<DataType>({
   formRef: formRefProp,
   onReset,
   subaction,
+  onAfterSubmit,
   ...rest
 }: FormProps<DataType>) {
-  const [fieldErrors, setFieldErrors] = useFieldErrors(fetcher);
+  const formActionData = useFormActionData(fetcher);
+  const [fieldErrors, setFieldErrors] = useFieldErrors(formActionData);
   const isSubmitting = useIsSubmitting(action, subaction, fetcher);
   const defaultsToUse = useDefaultValues(defaultValues);
+  useSubmitComplete(isSubmitting, () => {
+    if (!(formActionData && "fieldErrors" in formActionData)) {
+      onAfterSubmit?.(formActionData);
+    }
+  });
 
   const formRef = useRef<HTMLFormElement>(null);
 
