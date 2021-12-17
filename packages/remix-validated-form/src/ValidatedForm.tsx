@@ -14,8 +14,13 @@ import React, {
 } from "react";
 import invariant from "tiny-invariant";
 import { FormContext, FormContextValue } from "./internal/formContext";
+import { useSubmitComplete } from "./internal/submissionCallbacks";
 import { omit, mergeRefs } from "./internal/util";
-import { FieldErrors, Validator } from "./validation/types";
+import {
+  FieldErrors,
+  Validator,
+  FieldErrorsWithData,
+} from "./validation/types";
 
 export type FormProps<DataType> = {
   /**
@@ -42,35 +47,67 @@ export type FormProps<DataType> = {
    * A ref to the form element.
    */
   formRef?: React.RefObject<HTMLFormElement>;
+  /**
+   * An optional sub-action to use for the form.
+   * Setting a value here will cause the form to be submitted with an extra `subaction` value.
+   * This can be useful when there are multiple forms on the screen handled by the same action.
+   */
+  subaction?: string;
+  /**
+   * Reset the form to the default values after the form has been successfully submitted.
+   * This is useful if you want to submit the same form multiple times,
+   * and don't redirect in-between submissions.
+   */
+  resetAfterSubmit?: boolean;
 } & Omit<ComponentProps<typeof RemixForm>, "onSubmit">;
 
-function useFieldErrors(
-  fetcher?: ReturnType<typeof useFetcher>
-): [FieldErrors, React.Dispatch<React.SetStateAction<FieldErrors>>] {
+function useFieldErrorsFromBackend(
+  fetcher?: ReturnType<typeof useFetcher>,
+  subaction?: string
+): FieldErrorsWithData | null {
   const actionData = useActionData<any>();
-  const dataToUse = fetcher ? fetcher.data : actionData;
-  const fieldErrorsFromAction = dataToUse?.fieldErrors;
+  if (fetcher) return (fetcher.data as any)?.fieldErrors;
+  if (!actionData) return null;
+  if (actionData.fieldErrors) {
+    const submittedData = actionData.fieldErrors?._submittedData;
+    const subactionsMatch = subaction
+      ? subaction === submittedData?.subaction
+      : !submittedData?.subaction;
+    return subactionsMatch ? actionData.fieldErrors : null;
+  }
+  return null;
+}
 
+function useFieldErrors(
+  fieldErrorsFromBackend?: any
+): [FieldErrors, React.Dispatch<React.SetStateAction<FieldErrors>>] {
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>(
-    fieldErrorsFromAction ?? {}
+    fieldErrorsFromBackend ?? {}
   );
   useEffect(() => {
-    if (fieldErrorsFromAction) setFieldErrors(fieldErrorsFromAction);
-  }, [fieldErrorsFromAction]);
+    if (fieldErrorsFromBackend) setFieldErrors(fieldErrorsFromBackend);
+  }, [fieldErrorsFromBackend]);
 
   return [fieldErrors, setFieldErrors];
 }
 
 const useIsSubmitting = (
   action?: string,
+  subaction?: string,
   fetcher?: ReturnType<typeof useFetcher>
 ) => {
   const actionForCurrentPage = useFormAction();
   const pendingFormSubmit = useTransition().submission;
-  return fetcher
-    ? fetcher.state === "submitting"
-    : pendingFormSubmit &&
-        pendingFormSubmit.action === (action ?? actionForCurrentPage);
+
+  if (fetcher) return fetcher.state === "submitting";
+  if (!pendingFormSubmit) return false;
+
+  const { formData, action: pendingAction } = pendingFormSubmit;
+  const pendingSubAction = formData.get("subaction");
+  const expectedAction = action ?? actionForCurrentPage;
+  if (subaction)
+    return expectedAction === pendingAction && subaction === pendingSubAction;
+  return expectedAction === pendingAction && !pendingSubAction;
 };
 
 const getDataFromForm = (el: HTMLFormElement) => new FormData(el);
@@ -91,9 +128,11 @@ const getDataFromForm = (el: HTMLFormElement) => new FormData(el);
  * It will only ever be a problem if the form includes a `<button type="reset" />`
  * and only if JS is disabled.
  */
-function useDefaultValues<DataType>(defaultValues?: Partial<DataType>) {
-  const actionData = useActionData();
-  const defaultsFromValidationError = actionData?.fieldErrors?._submittedData;
+function useDefaultValues<DataType>(
+  fieldErrors?: FieldErrorsWithData | null,
+  defaultValues?: Partial<DataType>
+) {
+  const defaultsFromValidationError = fieldErrors?._submittedData;
   return defaultsFromValidationError ?? defaultValues;
 }
 
@@ -109,13 +148,20 @@ export function ValidatedForm<DataType>({
   defaultValues,
   formRef: formRefProp,
   onReset,
+  subaction,
+  resetAfterSubmit,
   ...rest
 }: FormProps<DataType>) {
-  const [fieldErrors, setFieldErrors] = useFieldErrors(fetcher);
-  const isSubmitting = useIsSubmitting(action, fetcher);
-  const defaultsToUse = useDefaultValues(defaultValues);
-
+  const fieldErrorsFromBackend = useFieldErrorsFromBackend(fetcher, subaction);
+  const [fieldErrors, setFieldErrors] = useFieldErrors(fieldErrorsFromBackend);
+  const isSubmitting = useIsSubmitting(action, subaction, fetcher);
+  const defaultsToUse = useDefaultValues(fieldErrorsFromBackend, defaultValues);
   const formRef = useRef<HTMLFormElement>(null);
+  useSubmitComplete(isSubmitting, () => {
+    if (!fieldErrorsFromBackend && resetAfterSubmit) {
+      formRef.current?.reset();
+    }
+  });
 
   const contextValue = useMemo<FormContextValue>(
     () => ({
@@ -173,6 +219,7 @@ export function ValidatedForm<DataType>({
       }}
     >
       <FormContext.Provider value={contextValue}>
+        <input type="hidden" value={subaction} name="subaction" />
         {children}
       </FormContext.Provider>
     </Form>

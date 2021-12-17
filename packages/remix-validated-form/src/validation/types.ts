@@ -1,5 +1,7 @@
 export type FieldErrors = Record<string, string>;
 
+export type FieldErrorsWithData = FieldErrors & { _submittedData: any };
+
 export type GenericObject = { [key: string]: any };
 
 /**
