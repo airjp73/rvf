@@ -158,7 +158,7 @@ export function ValidatedForm<DataType>({
   const defaultsToUse = useDefaultValues(fieldErrorsFromBackend, defaultValues);
   const formRef = useRef<HTMLFormElement>(null);
   useSubmitComplete(isSubmitting, () => {
-    if (!fieldErrorsFromBackend) {
+    if (!fieldErrorsFromBackend && resetAfterSubmit) {
       formRef.current?.reset();
     }
   });

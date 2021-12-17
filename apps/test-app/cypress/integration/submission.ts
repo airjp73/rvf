@@ -52,7 +52,7 @@ describe("Validation", () => {
     cy.findByText("Submitted form 3").should("exist");
   });
 
-  it("should call onAfterSubmit when the form has been successfully submitted", () => {
+  it("should reset when the form has been successfully submitted when resetAfterSubmit", () => {
     cy.visit("/submission/aftersubmit");
 
     cy.findByLabelText("Test input").type("fail");
@@ -65,5 +65,13 @@ describe("Validation", () => {
     cy.findByText("Submit").click();
     cy.findByLabelText("Test input").should("have.value", "");
     cy.findByLabelText("Another input").should("have.value", "something"); // shouldn't reset this one
+  });
+
+  it("should not reset when the form has been successfully submitted when not resetAfterSubmit", () => {
+    cy.visit("/submission/notaftersubmit");
+
+    cy.findByLabelText("Test input").type("noreset");
+    cy.findByText("Submit").click();
+    cy.findByLabelText("Test input").should("have.value", "noreset");
   });
 });
