@@ -11,7 +11,7 @@ const validator = withYup(schema);
 export const action: ActionFunction = async ({ request }) => {
   const formData = await request.formData();
 
-  // Check this check without the validator
+  // Perform this check without the validator
   // because the validator would stop the submission on the frontend
   const testinput = formData.get("testinput");
   if (testinput === "fail")
