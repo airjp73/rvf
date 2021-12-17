@@ -15,7 +15,10 @@ export const action: ActionFunction = async ({ request }) => {
   // because the validator would stop the submission on the frontend
   const testinput = formData.get("testinput");
   if (testinput === "fail")
-    return validationError({ testinput: "Don't say that" });
+    return validationError({
+      testinput: "Don't say that",
+      _submittedData: {} as any,
+    });
 
   return json({ message: "Submitted!" });
 };
@@ -23,9 +26,20 @@ export const action: ActionFunction = async ({ request }) => {
 export default function FrontendValidation() {
   const inputRef = useRef<HTMLInputElement>(null);
   return (
-    <ValidatedForm validator={validator} method="post" resetAfterSubmit>
-      <Input name="testinput" label="Test input" ref={inputRef} />
-      <SubmitButton label="Submit" submittingLabel="Submitting" />
-    </ValidatedForm>
+    <>
+      <ValidatedForm validator={validator} method="post" resetAfterSubmit>
+        <Input name="testinput" label="Test input" ref={inputRef} />
+        <SubmitButton label="Submit" submittingLabel="Submitting" />
+      </ValidatedForm>
+      <ValidatedForm
+        validator={validator}
+        method="post"
+        resetAfterSubmit
+        subaction="another-action"
+      >
+        <Input name="anotherinput" label="Another input" ref={inputRef} />
+        <SubmitButton label="Other Submit" submittingLabel="Submitting" />
+      </ValidatedForm>
+    </>
   );
 }

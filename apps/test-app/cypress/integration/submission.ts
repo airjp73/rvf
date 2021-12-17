@@ -55,13 +55,15 @@ describe("Validation", () => {
   it("should call onAfterSubmit when the form has been successfully submitted", () => {
     cy.visit("/submission/aftersubmit");
 
-    cy.findAllByLabelText("Test input").type("fail");
+    cy.findByLabelText("Test input").type("fail");
     cy.findByText("Submit").click();
     cy.findByText("Don't say that").should("exist");
     cy.findByLabelText("Test input").should("have.value", "fail");
 
-    cy.findAllByLabelText("Test input").clear().type("testing");
+    cy.findByLabelText("Test input").clear().type("testing");
+    cy.findByLabelText("Another input").type("something");
     cy.findByText("Submit").click();
     cy.findByLabelText("Test input").should("have.value", "");
+    cy.findByLabelText("Another input").should("have.value", "something"); // shouldn't reset this one
   });
 });

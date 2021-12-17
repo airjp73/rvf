@@ -16,7 +16,11 @@ import invariant from "tiny-invariant";
 import { FormContext, FormContextValue } from "./internal/formContext";
 import { useSubmitComplete } from "./internal/submissionCallbacks";
 import { omit, mergeRefs } from "./internal/util";
-import { FieldErrors, Validator } from "./validation/types";
+import {
+  FieldErrors,
+  Validator,
+  FieldErrorsWithData,
+} from "./validation/types";
 
 export type FormProps<DataType> = {
   /**
@@ -57,22 +61,32 @@ export type FormProps<DataType> = {
   resetAfterSubmit?: boolean;
 } & Omit<ComponentProps<typeof RemixForm>, "onSubmit">;
 
-function useFormActionData(fetcher?: ReturnType<typeof useFetcher>) {
+function useFieldErrorsFromBackend(
+  fetcher?: ReturnType<typeof useFetcher>,
+  subaction?: string
+): FieldErrorsWithData | null {
   const actionData = useActionData<any>();
-  return fetcher ? fetcher.data : actionData;
+  if (fetcher) return (fetcher.data as any)?.fieldErrors;
+  if (!actionData) return null;
+  if (actionData.fieldErrors) {
+    const submittedData = actionData.fieldErrors?._submittedData;
+    const subactionsMatch = subaction
+      ? subaction === submittedData?.subaction
+      : !submittedData?.subaction;
+    return subactionsMatch ? actionData.fieldErrors : null;
+  }
+  return null;
 }
 
 function useFieldErrors(
-  formActionData?: any
+  fieldErrorsFromBackend?: any
 ): [FieldErrors, React.Dispatch<React.SetStateAction<FieldErrors>>] {
-  const fieldErrorsFromAction = formActionData?.fieldErrors;
-
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>(
-    fieldErrorsFromAction ?? {}
+    fieldErrorsFromBackend ?? {}
   );
   useEffect(() => {
-    if (fieldErrorsFromAction) setFieldErrors(fieldErrorsFromAction);
-  }, [fieldErrorsFromAction]);
+    if (fieldErrorsFromBackend) setFieldErrors(fieldErrorsFromBackend);
+  }, [fieldErrorsFromBackend]);
 
   return [fieldErrors, setFieldErrors];
 }
@@ -114,9 +128,11 @@ const getDataFromForm = (el: HTMLFormElement) => new FormData(el);
  * It will only ever be a problem if the form includes a `<button type="reset" />`
  * and only if JS is disabled.
  */
-function useDefaultValues<DataType>(defaultValues?: Partial<DataType>) {
-  const actionData = useActionData();
-  const defaultsFromValidationError = actionData?.fieldErrors?._submittedData;
+function useDefaultValues<DataType>(
+  fieldErrors?: FieldErrorsWithData | null,
+  defaultValues?: Partial<DataType>
+) {
+  const defaultsFromValidationError = fieldErrors?._submittedData;
   return defaultsFromValidationError ?? defaultValues;
 }
 
@@ -136,13 +152,13 @@ export function ValidatedForm<DataType>({
   resetAfterSubmit,
   ...rest
 }: FormProps<DataType>) {
-  const formActionData = useFormActionData(fetcher);
-  const [fieldErrors, setFieldErrors] = useFieldErrors(formActionData);
+  const fieldErrorsFromBackend = useFieldErrorsFromBackend(fetcher, subaction);
+  const [fieldErrors, setFieldErrors] = useFieldErrors(fieldErrorsFromBackend);
   const isSubmitting = useIsSubmitting(action, subaction, fetcher);
-  const defaultsToUse = useDefaultValues(defaultValues);
+  const defaultsToUse = useDefaultValues(fieldErrorsFromBackend, defaultValues);
   const formRef = useRef<HTMLFormElement>(null);
   useSubmitComplete(isSubmitting, () => {
-    if (!(formActionData && "fieldErrors" in formActionData)) {
+    if (!fieldErrorsFromBackend) {
       formRef.current?.reset();
     }
   });
