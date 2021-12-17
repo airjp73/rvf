@@ -50,9 +50,11 @@ export type FormProps<DataType> = {
    */
   subaction?: string;
   /**
-   * An optional callback that gets called after the form has been fully submitted.
+   * Reset the form to the default values after the form has been successfully submitted.
+   * This is useful if you want to submit the same form multiple times,
+   * and don't redirect in-between submissions.
    */
-  onAfterSubmit?: (response: any) => void;
+  resetAfterSubmit?: boolean;
 } & Omit<ComponentProps<typeof RemixForm>, "onSubmit">;
 
 function useFormActionData(fetcher?: ReturnType<typeof useFetcher>) {
@@ -131,20 +133,19 @@ export function ValidatedForm<DataType>({
   formRef: formRefProp,
   onReset,
   subaction,
-  onAfterSubmit,
+  resetAfterSubmit,
   ...rest
 }: FormProps<DataType>) {
   const formActionData = useFormActionData(fetcher);
   const [fieldErrors, setFieldErrors] = useFieldErrors(formActionData);
   const isSubmitting = useIsSubmitting(action, subaction, fetcher);
   const defaultsToUse = useDefaultValues(defaultValues);
+  const formRef = useRef<HTMLFormElement>(null);
   useSubmitComplete(isSubmitting, () => {
     if (!(formActionData && "fieldErrors" in formActionData)) {
-      onAfterSubmit?.(formActionData);
+      formRef.current?.reset();
     }
   });
-
-  const formRef = useRef<HTMLFormElement>(null);
 
   const contextValue = useMemo<FormContextValue>(
     () => ({
