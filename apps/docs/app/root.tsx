@@ -8,7 +8,7 @@ import {
   ScrollRestoration,
 } from "remix";
 import type { MetaFunction } from "remix";
-import stylesUrl from "./styles.css";
+import stylesUrl from "./styles/index.css";
 
 export const meta: MetaFunction = () => {
   return { title: "New Remix App" };
