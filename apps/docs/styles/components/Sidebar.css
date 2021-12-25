@@ -1,0 +1,41 @@
+@import "tailwindcss/components";
+
+@layer components {
+  .navItem {
+    &:not(.active) {
+      @apply text-zinc-300 hover:bg-zinc-700 hover:text-white;
+
+      > .navItemIcon {
+        @apply text-zinc-400 group-hover:text-zinc-300;
+      }
+
+      > .navItemCount {
+        @apply bg-zinc-900 group-hover:bg-zinc-800 focus-visible:bg-zinc-800;
+      }
+    }
+
+    &.active {
+      @apply bg-zinc-900 text-white;
+
+      > .navItemIcon {
+        @apply text-zinc-300;
+      }
+
+      > .navItemCount {
+        @apply bg-zinc-800;
+      }
+    }
+
+    &:focus-visible {
+      @apply text-white bg-zinc-700;
+
+      > .navItemIcon {
+        @apply text-zinc-300;
+      }
+
+      > .navItemCount {
+        @apply bg-zinc-800;
+      }
+    }
+  }
+}
