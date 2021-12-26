@@ -1,3 +1,4 @@
+import { ChakraProvider } from "@chakra-ui/react";
 import {
   Links,
   LinksFunction,
@@ -8,6 +9,7 @@ import {
   ScrollRestoration,
 } from "remix";
 import type { MetaFunction } from "remix";
+import { Layout } from "./components/Layout";
 import stylesUrl from "./styles/index.css";
 
 export const meta: MetaFunction = () => {
@@ -28,7 +30,11 @@ export default function App() {
         <Links />
       </head>
       <body>
-        <Outlet />
+        <ChakraProvider>
+          <Layout>
+            <Outlet />
+          </Layout>
+        </ChakraProvider>
         <ScrollRestoration />
         <Scripts />
         {process.env.NODE_ENV === "development" && <LiveReload />}
