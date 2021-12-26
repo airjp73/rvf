@@ -7,4 +7,4 @@ node_modules
 public/build
 api/_build
 
-app/styles.css
+app/styles/index.css
