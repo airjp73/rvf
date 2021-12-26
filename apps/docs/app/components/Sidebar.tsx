@@ -46,17 +46,17 @@ export const Sidebar: SidebarType = ({
   return (
     <motion.div
       className={classNames(
-        "flex-1 flex flex-col min-h-0 bg-zinc-800",
+        "flex-1 flex flex-col min-h-0 bg-zinc-900",
         className
       )}
       {...rest}
     >
       <div className="flex-1 flex flex-col pt-5 pb-4 overflow-y-auto">
-        <div className="flex items-center flex-shrink-0 px-4 text-zinc-300">
+        <div className="flex items-center flex-shrink-0 px-4 text-zinc-300 font-bold text-xl">
           Remix Validated Form
         </div>
         <nav
-          className="mt-5 flex-1 px-2 bg-zinc-800 space-y-1"
+          className="mt-5 flex-1 px-2 bg-zinc-900 space-y-1"
           aria-label="Sidebar"
         >
           {children}
@@ -128,7 +128,7 @@ const SlideOut: SidebarType["SlideOut"] = ({ children, open, onClose }) => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ type: "linear", duration: 0.3 }}
-            className="fixed inset-0 bg-zinc-600 bg-opacity-75"
+            className="fixed inset-0 bg-zinc-800 bg-opacity-75"
           />
           <Sidebar
             className="relative"
