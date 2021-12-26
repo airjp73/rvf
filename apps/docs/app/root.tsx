@@ -1,4 +1,5 @@
 import { ChakraProvider } from "@chakra-ui/react";
+import codeExampleTheme from "highlight.js/styles/atom-one-dark.css";
 import {
   Links,
   LinksFunction,
@@ -18,6 +19,7 @@ export const meta: MetaFunction = () => {
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: stylesUrl },
+  { rel: "stylesheet", href: codeExampleTheme },
 ];
 
 export default function App() {
