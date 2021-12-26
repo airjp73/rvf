@@ -68,8 +68,8 @@ export const Layout: FC = ({ children }) => {
           </header>
         </div>
 
-        <main className="flex-1 relative overflow-y-auto focus:outline-none prose prose-invert p-8">
-          {children}
+        <main className="flex-1 relative overflow-y-auto focus:outline-none p-8">
+          <div className="prose prose-invert ">{children}</div>
         </main>
       </div>
     </div>

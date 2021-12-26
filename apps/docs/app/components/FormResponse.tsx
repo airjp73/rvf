@@ -4,14 +4,13 @@ import {
   AlertIcon,
   AlertTitle,
 } from "@chakra-ui/react";
-import { useActionData } from "remix";
 
-export function FormResponse() {
-  const data = useActionData();
-  if (!data) return null;
+export type InfoAlertProps = {
+  title?: string;
+  description?: string;
+};
 
-  const { title, description } = data;
-
+export function InfoAlert({ title, description }: InfoAlertProps) {
   return (
     <Alert status="info" variant="solid" alignItems="center">
       <AlertIcon boxSize="40px" />
