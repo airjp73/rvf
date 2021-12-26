@@ -1,0 +1,9 @@
+@import "tailwindcss/components";
+
+@layer components {
+  .code-example {
+    form {
+      @apply space-y-4;
+    }
+  }
+}
