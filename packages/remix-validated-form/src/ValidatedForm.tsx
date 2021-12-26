@@ -219,7 +219,9 @@ export function ValidatedForm<DataType>({
       }}
     >
       <FormContext.Provider value={contextValue}>
-        <input type="hidden" value={subaction} name="subaction" />
+        {subaction && (
+          <input type="hidden" value={subaction} name="subaction" />
+        )}
         {children}
       </FormContext.Provider>
     </Form>
