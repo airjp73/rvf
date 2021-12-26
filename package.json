@@ -60,7 +60,8 @@
       "dev": {
         "dependsOn": [
           "remix-validated-form#build",
-          "@remix-validated-form/with-yup#build"
+          "@remix-validated-form/with-yup#build",
+          "custom-remark-plugin#build"
         ],
         "cache": false
       }
