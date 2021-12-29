@@ -1,5 +1,6 @@
+import { withYup } from "@remix-validated-form/with-yup";
 import { ActionFunction, json, useActionData } from "remix";
-import { ValidatedForm, withYup } from "remix-validated-form";
+import { ValidatedForm } from "remix-validated-form";
 import * as yup from "yup";
 import { SubmitButton } from "~/components/SubmitButton";
 

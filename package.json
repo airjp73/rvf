@@ -55,7 +55,8 @@
       },
       "dev": {
         "dependsOn": [
-          "remix-validated-form#build"
+          "remix-validated-form#build",
+          "@remix-validated-form/with-yup#build"
         ],
         "cache": false
       }

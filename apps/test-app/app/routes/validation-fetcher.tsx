@@ -1,5 +1,6 @@
+import { withYup } from "@remix-validated-form/with-yup";
 import { ActionFunction, useFetcher } from "remix";
-import { validationError, ValidatedForm, withYup } from "remix-validated-form";
+import { validationError, ValidatedForm } from "remix-validated-form";
 import * as yup from "yup";
 import { Input } from "~/components/Input";
 import { SubmitButton } from "~/components/SubmitButton";
