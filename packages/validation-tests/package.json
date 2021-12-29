@@ -1,0 +1,15 @@
+{
+  "name": "validation-tests",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest tests",
+    "test:watch": "jest tests --watch"
+  },
+  "author": "",
+  "devDependencies": {
+    "@types/jest": "^27.0.3",
+    "ts-jest": "^27.1.1"
+  }
+}
