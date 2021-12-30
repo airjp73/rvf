@@ -3,7 +3,6 @@
   "name": "test-app",
   "description": "",
   "version": "0.0.1",
-  "license": "",
   "scripts": {
     "build": "remix build",
     "dev": "start-server-and-test dev:remix http-get://localhost:3000 cy:open",
