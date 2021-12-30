@@ -3,6 +3,8 @@ meta:
   title: Validation Library Support (Remix Validated Form)
 ---
 
+import { Footer } from "~/components/Footer";
+
 # Validation Library Support
 
 There are official adapters available for `zod` and `yup` ,
@@ -64,3 +66,16 @@ export const withYup = <Schema extends AnyObjectSchema>(
     },
   });
 ```
+
+---
+
+<Footer
+  prev={{
+    to: "/default-values",
+    label: "Default Values",
+  }}
+  next={{
+    to: "/reference/validated-form",
+    label: "API Reference",
+  }}
+/>

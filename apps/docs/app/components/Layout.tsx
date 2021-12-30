@@ -1,4 +1,5 @@
 import { MenuAlt2Icon } from "@heroicons/react/outline";
+import classNames from "classnames";
 import { FC, useState } from "react";
 import { Sidebar } from "../components/Sidebar";
 
@@ -7,7 +8,8 @@ export const Layout: FC = ({ children }) => {
 
   const navItems = (
     <>
-      <Sidebar.NavItem label="Home" to="/" end />
+      <Sidebar.Header>Guides</Sidebar.Header>
+      <Sidebar.NavItem label="Demo" to="/" end />
       <Sidebar.NavItem label="Installation" to="/installation" />
       <Sidebar.NavItem
         label="Integrate your components"
@@ -21,6 +23,12 @@ export const Layout: FC = ({ children }) => {
       <Sidebar.NavItem
         label="Validation libarary support"
         to="/validation-library-support"
+      />
+      <Sidebar.Header>Api Reference</Sidebar.Header>
+      <Sidebar.NavItem
+        label="ValidatedForm"
+        to="/reference/validated-form"
+        end
       />
     </>
   );

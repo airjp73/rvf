@@ -28,6 +28,7 @@ export type SidebarType = FC<
 > & {
   NavItem: FC<SidebarNavItemProps>;
   SlideOut: FC<SlideOutProps>;
+  Header: FC<JSX.IntrinsicElements["h4"]>;
 };
 
 export const Sidebar: SidebarType = ({
@@ -72,7 +73,7 @@ const NavItem: SidebarType["NavItem"] = ({
     end={end}
     className={({ isActive }) =>
       classNames(
-        "group flex items-center px-2 py-2 text-sm font-medium rounded-md",
+        "group flex items-center pr-2 pl-6 py-2 text-sm font-medium rounded-md",
         isActive
           ? "bg-zinc-800 text-white font-bold"
           : "text-zinc-300 hover:bg-zinc-700 hover:text-white",
@@ -95,7 +96,27 @@ const NavItem: SidebarType["NavItem"] = ({
 );
 Sidebar.NavItem = NavItem;
 
-const SlideOut: SidebarType["SlideOut"] = ({ children, open, onClose }) => {
+const Header: SidebarType["Header"] = ({ children }) => {
+  return (
+    <h4
+      className={classNames(
+        "group flex items-center px-2 py-2 text-sm font-medium rounded-md",
+        "text-white font-bold",
+        "focus-visible:text-white focus-visible:bg-zinc-700",
+        "text-lg"
+      )}
+    >
+      {children}
+    </h4>
+  );
+};
+Sidebar.Header = Header;
+
+const SlideOut: SidebarType["SlideOut"] = ({
+  children,
+  open,
+  onClose,
+}) => {
   const transition = useTransition();
 
   useEffect(() => {
@@ -143,7 +164,10 @@ const SlideOut: SidebarType["SlideOut"] = ({ children, open, onClose }) => {
                 onClick={onClose}
               >
                 <span className="sr-only">Close sidebar</span>
-                <XIcon className="h-6 w-6 text-white" aria-hidden="true" />
+                <XIcon
+                  className="h-6 w-6 text-white"
+                  aria-hidden="true"
+                />
               </button>
             </motion.div>
             {children}
