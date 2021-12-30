@@ -1,5 +1,6 @@
+import { withZod } from "@remix-validated-form/with-zod";
 import { ActionFunction, json, useActionData } from "remix";
-import { ValidatedForm, validationError, withZod } from "remix-validated-form";
+import { ValidatedForm, validationError } from "remix-validated-form";
 import { z } from "zod";
 import { FormInput } from "~/components/FormInput";
 import { InfoAlert } from "~/components/FormResponse";
