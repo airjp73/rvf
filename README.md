@@ -27,8 +27,23 @@ yarn sample-app
 
 ## Install
 
+### Base package
+
 ```bash
 npm install remix-validated-form
+```
+
+### Validation library adapter
+
+There are official adapters available for `zod` and `yup`.
+If you're using a different library,
+see the [Validation library support](#validation-library-support) section below.
+
+- @remix-validated-form/with-zod
+- @remix-validated-form/with-yup
+
+```bash
+npm install @remix-validated-form/with-zod
 ```
 
 ## Create an input component
@@ -164,10 +179,10 @@ export default function MyForm() {
 
 # Validation Library Support
 
-This library currently includes an out-of-the-box adapter for `yup` and `zod`,
+There are official adapters available for `zod` and `yup` ,
 but you can easily support whatever library you want by creating your own adapter.
 
-And if you create an adapter for a library, feel free to make a PR on this library to add official support 😊
+And if you create an adapter for a library, feel free to make a PR on this repository 😊
 
 ## Creating an adapter
 
