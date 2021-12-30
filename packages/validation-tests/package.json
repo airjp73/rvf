@@ -9,6 +9,10 @@
     "test:watch": "jest tests --watch"
   },
   "author": "",
+  "dependencies": {
+    "@remix-validated-form/with-yup": "*",
+    "@remix-validated-form/with-zod": "*"
+  },
   "devDependencies": {
     "@types/jest": "^27.0.3",
     "ts-jest": "^27.1.1"

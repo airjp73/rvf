@@ -51,6 +51,9 @@
         "outputs": []
       },
       "test": {
+        "dependsOn": [
+          "^build"
+        ],
         "outputs": []
       },
       "dev": {

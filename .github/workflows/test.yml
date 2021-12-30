@@ -21,11 +21,11 @@ jobs:
       - name: Lint
         run: yarn run lint
 
-      - name: Jest Tests
-        run: yarn run package-tests
-
       - name: Build
         run: yarn run build
+
+      - name: Jest Tests
+        run: yarn run package-tests
 
       - name: Cypress Tests
         uses: cypress-io/github-action@v2
