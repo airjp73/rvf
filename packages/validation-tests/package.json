@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "description": "",
   "main": "index.js",
+  "private": true,
   "scripts": {
     "test": "jest tests",
     "test:watch": "jest tests --watch"
