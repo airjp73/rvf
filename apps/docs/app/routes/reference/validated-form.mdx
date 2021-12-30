@@ -23,15 +23,18 @@ const validator = withZod(z.object({ name: z.string() }));
 ```
 
 <PropHeader
-  prop="onSubmit"
-  type="(data: DataType, event: React.FormEvent<HTMLFormElement>) => void"
+  prop="defaultValues"
+  type="Partial<DataType>"
   optional
 />
 
-A submit callback that gets called when the form is submitted.
-The `data` argument is the parsed and typed form data.
+An object to be used for the default values of the form fields.
 
-<PropHeader prop="resetAfterSubmit" type="boolean" optional />
+<PropHeader
+  prop="resetAfterSubmit"
+  type="boolean"
+  optional
+/>
 
 Reset the form to the default values after the form has been successfully submitted.
 This is useful if you want to submit the same form multiple times,
@@ -43,6 +46,75 @@ Allows you to specify a "subaction" for the form.
 This adds a hidden input to the form with the value of the subaction.
 The purpose of this is to allow you to handle multiple forms in the same action function.
 
+```tsx
+export const action: ActionFunction = async ({
+  request,
+}) => {
+  const data = await request.formData();
+
+  // This will be `form1` or `form2`
+  // depending on which form you submitted
+  const subaction = data.get("subaction");
+
+  // etc
+};
+
+export default function MyPage() {
+  return (
+    <>
+      <ValidatedForm
+        validator={validator}
+        subaction="form1"
+        method="post"
+      >
+        <MyInput name="name" />
+        <SubmitButton />
+      </ValidatedForm>
+
+      <ValidatedForm
+        validator={validator}
+        subaction="form2"
+        method="post"
+      >
+        <MyInput name="something" />
+        <SubmitButton />
+      </ValidatedForm>
+    </>
+  );
+}
+```
+
+<PropHeader
+  prop="onSubmit"
+  type="(data: DataType, event: React.FormEvent<HTMLFormElement>) => void"
+  optional
+/>
+
+A submit callback that gets called when the form is submitted.
+The `data` argument is the parsed and typed form data.
+
+```tsx
+const validator = withZod(z.object({ name: z.string() }));
+
+<ValidatedForm
+  validator={vaidator}
+  onSubmit={(data) => {
+    // Data is an object with a `name` property
+    // of type `string` because of the validator above.
+    console.log(data.name);
+  }}
+/>;
+```
+
+<PropHeader
+  prop="formRef"
+  type="React.RefObject<HTMLFormElement>"
+  optional
+/>
+
+A ref to the underlying form element. This is used instead of `forwardRef`
+because of the generic type of the component.
+
 <PropHeader
   prop="fetcher"
   type="(data: DataType, event: React.FormEvent<HTMLFormElement>) => void"
@@ -53,16 +125,3 @@ Allows you to provide a `fetcher` from remix's `useFetcher` hook.
 The form will use the fetcher for loading states, action data, etc
 instead of the default form action. This can be useful for when you need to
 submit the form programatically but still have validation errors show up.
-
-<PropHeader prop="defaultValues" type="Partial<DataType>" optional />
-
-An object to be used for the default values of the form fields.
-
-<PropHeader
-  prop="formRef"
-  type="React.RefObject<HTMLFormElement>"
-  optional
-/>
-
-A ref to the underlying form element. This is used instead of `forwardRef`
-because of the generic type of the component.
