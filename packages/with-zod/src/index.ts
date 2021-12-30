@@ -1,8 +1,7 @@
 import isEqual from "lodash/isEqual";
 import toPath from "lodash/toPath";
+import { createValidator, FieldErrors, Validator } from "remix-validated-form";
 import type { z } from "zod";
-import { FieldErrors, Validator } from "..";
-import { createValidator } from "./createValidator";
 
 const getIssuesForError = (err: z.ZodError<any>): z.ZodIssue[] => {
   return err.issues.flatMap((issue) => {

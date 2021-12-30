@@ -3,7 +3,6 @@
   "name": "test-app",
   "description": "",
   "version": "0.0.1",
-  "license": "",
   "scripts": {
     "build": "remix build",
     "dev": "start-server-and-test dev:remix http-get://localhost:3000 cy:open",
@@ -23,6 +22,7 @@
     "react-dom": "^17.0.2",
     "remix": "^1.1.1",
     "remix-validated-form": "*",
+    "@remix-validated-form/with-yup": "*",
     "yup": "^0.32.11"
   },
   "devDependencies": {

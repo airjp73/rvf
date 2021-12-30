@@ -1,0 +1,20 @@
+{
+  "name": "validation-tests",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "private": true,
+  "scripts": {
+    "test": "jest tests",
+    "test:watch": "jest tests --watch"
+  },
+  "author": "",
+  "dependencies": {
+    "@remix-validated-form/with-yup": "*",
+    "@remix-validated-form/with-zod": "*"
+  },
+  "devDependencies": {
+    "@types/jest": "^27.0.3",
+    "ts-jest": "^27.1.1"
+  }
+}

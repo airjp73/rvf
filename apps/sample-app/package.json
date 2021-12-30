@@ -3,7 +3,6 @@
   "name": "sample-app",
   "description": "",
   "version": "0.0.1",
-  "license": "",
   "scripts": {
     "build": "remix build",
     "dev": "dotenv remix dev",

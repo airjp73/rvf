@@ -1,0 +1,24 @@
+{
+  "name": "@remix-validated-form/with-yup",
+  "version": "1.0.0",
+  "browser": "./browser/index.js",
+  "main": "./build/index.js",
+  "scripts": {
+    "dev": "tsc --module ESNext --outDir ./browser --watch",
+    "build": "npm run build:browser && npm run build:main",
+    "build:browser": "tsc --module ESNext --outDir ./browser",
+    "build:main": "tsc --module CommonJS --outDir ./build",
+    "prepublishOnly": "cp ../../README.md ./README.md && npm run build",
+    "postpublish": "rm ./README.md"
+  },
+  "peerDependencies": {
+    "remix-validated-form": "^3.x",
+    "yup": "^0.32.0"
+  },
+  "devDependencies": {
+    "remix-validated-form": "*",
+    "tsconfig": "*",
+    "typescript": "^4.5.4",
+    "yup": "^0.32.0"
+  }
+}

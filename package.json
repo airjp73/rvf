@@ -11,7 +11,7 @@
     "test-app": "yarn dev --scope=test-app",
     "dev": "turbo run dev --parallel --include-dependencies --no-cache",
     "test": "turbo run test",
-    "package-tests": "turbo run test --scope=remix-validated-form --no-deps",
+    "package-tests": "turbo run test --scope=validation-tests",
     "lint": "eslint .",
     "prettier": "prettier . --write",
     "build": "turbo run build",
@@ -51,11 +51,15 @@
         "outputs": []
       },
       "test": {
+        "dependsOn": [
+          "^build"
+        ],
         "outputs": []
       },
       "dev": {
         "dependsOn": [
-          "remix-validated-form#build"
+          "remix-validated-form#build",
+          "@remix-validated-form/with-yup#build"
         ],
         "cache": false
       }
