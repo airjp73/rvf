@@ -3,4 +3,66 @@ meta:
   title: ValidatedForm
 ---
 
+import { PropHeader } from "~/components/PropHeader";
+
 # ValidatedForm
+
+## Props
+
+<PropHeader prop="validator" type="Validator<DataType>" />
+
+A `Validator` object that describes how to validate the form.
+The generic type `DataType` is the type of the data that the form is expecting.
+If you provide an `onSubmit` prop to the `ValidatedForm`,
+it will be called with the form data and be correctly typed as `DataType`.
+
+```tsx
+const validator = withZod(z.object({ name: z.string() }));
+
+<ValidatedForm validator={validator} />;
+```
+
+<PropHeader
+  prop="onSubmit"
+  type="(data: DataType, event: React.FormEvent<HTMLFormElement>) => void"
+  optional
+/>
+
+A submit callback that gets called when the form is submitted.
+The `data` argument is the parsed and typed form data.
+
+<PropHeader prop="resetAfterSubmit" type="boolean" optional />
+
+Reset the form to the default values after the form has been successfully submitted.
+This is useful if you want to submit the same form multiple times,
+and don't redirect in between submissions.
+
+<PropHeader prop="subaction" type="string" optional />
+
+Allows you to specify a "subaction" for the form.
+This adds a hidden input to the form with the value of the subaction.
+The purpose of this is to allow you to handle multiple forms in the same action function.
+
+<PropHeader
+  prop="fetcher"
+  type="(data: DataType, event: React.FormEvent<HTMLFormElement>) => void"
+  optional
+/>
+
+Allows you to provide a `fetcher` from remix's `useFetcher` hook.
+The form will use the fetcher for loading states, action data, etc
+instead of the default form action. This can be useful for when you need to
+submit the form programatically but still have validation errors show up.
+
+<PropHeader prop="defaultValues" type="Partial<DataType>" optional />
+
+An object to be used for the default values of the form fields.
+
+<PropHeader
+  prop="formRef"
+  type="React.RefObject<HTMLFormElement>"
+  optional
+/>
+
+A ref to the underlying form element. This is used instead of `forwardRef`
+because of the generic type of the component.
