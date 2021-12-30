@@ -35,7 +35,12 @@ export default function Demo() {
       <FormInput name="firstName" label="First Name" />
       <FormInput name="lastName" label="Last Name" />
       <FormInput name="email" label="Email" />
-      {data && <InfoAlert title={data.title} description={data.description} />}
+      {data && (
+        <InfoAlert
+          title={data.title}
+          description={data.description}
+        />
+      )}
       <SubmitButton />
     </ValidatedForm>
   );
