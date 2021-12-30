@@ -2,13 +2,7 @@ import { Dialog } from "@headlessui/react";
 import { XIcon } from "@heroicons/react/solid";
 import classNames from "classnames";
 import { AnimatePresence, motion } from "framer-motion";
-import {
-  cloneElement,
-  ComponentProps,
-  FC,
-  ReactElement,
-  useEffect,
-} from "react";
+import { ComponentProps, FC, ReactElement, useEffect } from "react";
 import { useTransition, NavLink } from "remix";
 
 export type SidebarProps = {
@@ -19,7 +13,6 @@ export type SidebarProps = {
 export type SidebarNavItemProps = {
   label: string;
   to: string;
-  icon: ReactElement;
   count?: number;
   end?: boolean;
   className?: string;
@@ -70,7 +63,6 @@ export const Sidebar: SidebarType = ({
 const NavItem: SidebarType["NavItem"] = ({
   label,
   to,
-  icon,
   count,
   end,
   className,
@@ -78,16 +70,17 @@ const NavItem: SidebarType["NavItem"] = ({
   <NavLink
     to={to}
     end={end}
-    className={classNames(
-      "navItem", // need to drop down to css to get children to be styled correctly when active
-      "group flex items-center px-2 py-2 text-sm font-medium rounded-md",
-      className
-    )}
+    className={({ isActive }) =>
+      classNames(
+        "group flex items-center px-2 py-2 text-sm font-medium rounded-md",
+        isActive
+          ? "bg-zinc-800 text-white font-bold"
+          : "text-zinc-300 hover:bg-zinc-700 hover:text-white",
+        "focus-visible:text-white focus-visible:bg-zinc-700",
+        className
+      )
+    }
   >
-    {cloneElement(icon, {
-      className: "navItemIcon mr-3 flex-shrink-0 h-6 w-6",
-      "aria-hidden": "true",
-    })}
     <span className="flex-1">{label}</span>
     {!!count && (
       <span

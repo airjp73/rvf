@@ -1,5 +1,4 @@
 @import "tailwindcss/base";
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
-@import "./components/Sidebar.css";
 @import "./components/CodeExample.css";

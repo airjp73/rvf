@@ -1,9 +1,4 @@
-import {
-  HomeIcon,
-  MenuAlt2Icon,
-  AcademicCapIcon,
-} from "@heroicons/react/outline";
-import { CalendarIcon, CurrencyDollarIcon } from "@heroicons/react/solid";
+import { MenuAlt2Icon } from "@heroicons/react/outline";
 import { FC, useEffect, useState } from "react";
 import { useMatches } from "remix";
 import { Sidebar } from "../components/Sidebar";
@@ -13,22 +8,8 @@ export const Layout: FC = ({ children }) => {
 
   const navItems = (
     <>
-      <Sidebar.NavItem label="Home" to="/teacher" icon={<HomeIcon />} end />
-      <Sidebar.NavItem
-        label="Schedule"
-        to="/teacher/schedule"
-        icon={<CalendarIcon />}
-      />
-      <Sidebar.NavItem
-        label="Students"
-        to="/teacher/students"
-        icon={<AcademicCapIcon />}
-      />
-      <Sidebar.NavItem
-        label="Accounts"
-        to="/teacher/accounts"
-        icon={<CurrencyDollarIcon />}
-      />
+      <Sidebar.NavItem label="Home" to="/" end />
+      <Sidebar.NavItem label="Get started" to="/get-started" />
     </>
   );
 
