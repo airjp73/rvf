@@ -8,12 +8,14 @@ import {
 import { ValidatedForm } from "remix-validated-form";
 import { z } from "zod";
 import { FormInput } from "~/components/FormInput";
-import { InfoAlert } from "~/components/FormResponse";
+import { InfoAlert } from "~/components/InfoAlert";
 import { SubmitButton } from "~/components/SubmitButton";
 
 export const validator = withZod(
   z.object({
-    firstName: z.string().nonempty("First name is required"),
+    firstName: z
+      .string()
+      .nonempty("First name is required"),
     lastName: z.string().nonempty("Last name is required"),
     email: z
       .string()
@@ -41,7 +43,7 @@ export const loader: LoaderFunction = () => {
 };
 
 export default function Demo() {
-  const { defaultValues } = useLoaderData();
+  const { defaultValues } = useLoaderData<LoaderData>();
   const data = useActionData();
   return (
     <ValidatedForm

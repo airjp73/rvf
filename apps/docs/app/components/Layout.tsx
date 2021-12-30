@@ -24,6 +24,10 @@ const navSections: Section[] = [
       },
       { label: "Default Values", to: "/default-values" },
       {
+        label: "Arrays and nested data",
+        to: "/arrays-and-nested",
+      },
+      {
         label: "Validation libarary support",
         to: "/validation-library-support",
       },

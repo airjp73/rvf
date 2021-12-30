@@ -1,4 +1,23 @@
 @import "tailwindcss/base";
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
-@import "./components/CodeExample.css";
+
+@layer components {
+  .code-example {
+    form {
+      @apply space-y-4;
+    }
+
+    code {
+      @apply text-sm;
+    }
+  }
+
+  .todo-item {
+    @apply border-2 p-4;
+
+    > :not([type="hidden"]) + :not([type="hidden"]) {
+      @apply mt-4;
+    }
+  }
+}

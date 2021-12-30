@@ -26,3 +26,9 @@ export type Validator<DataType> = {
     field: string
   ) => ValidateFieldResult;
 };
+
+export type ValidatorData<T extends Validator<any>> = T extends Validator<
+  infer U
+>
+  ? U
+  : never;
