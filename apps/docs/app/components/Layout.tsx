@@ -1,6 +1,5 @@
 import { MenuAlt2Icon } from "@heroicons/react/outline";
-import { FC, useEffect, useState } from "react";
-import { useMatches } from "remix";
+import { FC, useState } from "react";
 import { Sidebar } from "../components/Sidebar";
 
 export const Layout: FC = ({ children }) => {
@@ -9,12 +8,22 @@ export const Layout: FC = ({ children }) => {
   const navItems = (
     <>
       <Sidebar.NavItem label="Home" to="/" end />
-      <Sidebar.NavItem label="Get started" to="/get-started" />
+      <Sidebar.NavItem label="Installation" to="/installation" />
+      <Sidebar.NavItem
+        label="Integrate your components"
+        to="/integrate-your-components"
+      />
+      <Sidebar.NavItem
+        label="Validation libarary support"
+        to="/validation-library-support"
+      />
+      <Sidebar.NavItem
+        label="Server Validation"
+        to="/server-validation"
+      />
+      <Sidebar.NavItem label="Default Values" to="/default-values" />
     </>
   );
-
-  const matches = useMatches();
-  useEffect(() => console.log(matches), [matches]);
 
   return (
     <div className="h-screen flex overflow-hidden bg-zinc-100">

@@ -1,7 +1,7 @@
 {
   "overrides": [
     {
-      "files": "apps/docs/app/examples/*",
+      "files": "apps/docs/app/**/*{ts,tsx,mdx}",
       "options": {
         "printWidth": 70
       }
