@@ -9,7 +9,7 @@
   "scripts": {
     "sample-app": "yarn dev --scope=sample-app",
     "test-app": "yarn dev --scope=test-app",
-    "docs": "yarn dev --scope=docs",
+    "docs": "yarn dev --scope=docs --include-dependencies",
     "dev": "turbo run dev --parallel --include-dependencies --no-cache",
     "test": "turbo run test",
     "package-tests": "turbo run test --scope=validation-tests",
@@ -59,9 +59,7 @@
       },
       "dev": {
         "dependsOn": [
-          "remix-validated-form#build",
-          "@remix-validated-form/with-yup#build",
-          "custom-remark-plugin#build"
+          "^build"
         ],
         "cache": false
       }
