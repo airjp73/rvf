@@ -3,7 +3,6 @@ meta:
   title: Server validation (Remix Validated Form)
 ---
 
-import { Footer } from "~/components/Footer";
 import { CodeExample } from "~/components/CodeExample";
 import Demo, { action } from "~/examples/demo";
 
@@ -18,7 +17,9 @@ we created this validator to use in our form.
 ```tsx
 export const validator = withZod(
   z.object({
-    firstName: z.string().nonempty("First name is required"),
+    firstName: z
+      .string()
+      .nonempty("First name is required"),
     lastName: z.string().nonempty("Last name is required"),
     email: z
       .string()
@@ -31,7 +32,9 @@ export const validator = withZod(
 We can re-use this validator in our action like this.
 
 ```tsx
-export const action: ActionFunction = async ({ request }) => {
+export const action: ActionFunction = async ({
+  request,
+}) => {
   const data = validator.validate(await request.formData());
   if (data.error) return validationError(data.error);
   const { firstName, lastName, email } = data.data;
@@ -56,16 +59,3 @@ If we put everything together, we have a fully working example.
 ```
 
 </CodeExample>
-
----
-
-<Footer
-  prev={{
-    to: "/integrate-your-components",
-    label: "Integrate Your Components",
-  }}
-  next={{
-    to: "/default-values",
-    label: "Default Values",
-  }}
-/>

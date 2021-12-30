@@ -1,0 +1,37 @@
+---
+meta:
+  title: useField (Remix Validated Form)
+---
+
+import { PropHeader } from "~/components/PropHeader";
+
+<PropHeader
+  variant="h1"
+  prop="useField"
+  type="(name: string) => FieldProps"
+/>
+
+Accepts the `name` of the field and returns
+data about the field and helper functions for the field.
+This only works if used inside the context of a `ValidatedForm`.
+It is still safe to use this hook outside of a `ValidatedForm`,
+but there will be no `error` or `defaultValue`
+and the helpers will be no-ops.
+
+## FieldProps
+
+<PropHeader prop="error" type="string | undefined" />
+
+The validation error message if there is one.
+
+<PropHeader prop="defaultValue" type="any" />
+
+The default value of the field, if there is one.
+
+<PropHeader prop="clearError" type="() => void" />
+
+Clears the error message.
+
+<PropHeader prop="validate" type="() => void" />
+
+Validates the form field and populates the `error` prop if there is an error.

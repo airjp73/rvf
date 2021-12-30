@@ -1,0 +1,17 @@
+---
+meta:
+  title: useIsSubmitting (Remix Validated Form)
+---
+
+import { PropHeader } from "~/components/PropHeader";
+
+<PropHeader
+  variant="h1"
+  prop="useIsSubmitting"
+  type="() => boolean"
+/>
+
+A hook that returns whether or not the current form is being submitted.
+This only works if used inside the context of a `ValidatedForm`.
+It is still safe to use this hook outside of a `ValidatedForm` --
+it just will always return `false`.

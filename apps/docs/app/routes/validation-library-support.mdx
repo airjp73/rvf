@@ -3,8 +3,6 @@ meta:
   title: Validation Library Support (Remix Validated Form)
 ---
 
-import { Footer } from "~/components/Footer";
-
 # Validation Library Support
 
 There are official adapters available for `zod` and `yup` ,
@@ -26,7 +24,9 @@ type ValidationResult<DataType> =
 type ValidateFieldResult = { error?: string };
 
 type Validator<DataType> = {
-  validate: (unvalidatedData: unknown) => ValidationResult<DataType>;
+  validate: (
+    unvalidatedData: unknown
+  ) => ValidationResult<DataType>;
   validateField: (
     unvalidatedData: unknown,
     field: string
@@ -54,9 +54,15 @@ export const withYup = <Schema extends AnyObjectSchema>(
       // Validate with yup and return the validated & typed data or the error
 
       if (isValid)
-        return { data: { field1: "someValue" }, error: undefined };
+        return {
+          data: { field1: "someValue" },
+          error: undefined,
+        };
       else
-        return { error: { field1: "Some error!" }, data: undefined };
+        return {
+          error: { field1: "Some error!" },
+          data: undefined,
+        };
     },
     validateField: (unvalidatedData, field) => {
       // Validate the specific field with yup
@@ -66,16 +72,3 @@ export const withYup = <Schema extends AnyObjectSchema>(
     },
   });
 ```
-
----
-
-<Footer
-  prev={{
-    to: "/default-values",
-    label: "Default Values",
-  }}
-  next={{
-    to: "/reference/validated-form",
-    label: "API Reference",
-  }}
-/>

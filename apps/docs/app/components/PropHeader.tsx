@@ -1,4 +1,5 @@
 type PropHeaderProps = {
+  variant?: "h1" | "h3";
   prop: string;
   type: string;
   optional?: boolean;
@@ -8,9 +9,10 @@ export const PropHeader = ({
   prop,
   type,
   optional,
+  variant: Variant = "h3",
 }: PropHeaderProps) => {
   return (
-    <h3>
+    <Variant>
       <div className="text-zinc-300">{prop}</div>
       <div className="text-zinc-500 text-sm">{type}</div>
       {optional && (
@@ -18,6 +20,6 @@ export const PropHeader = ({
           Optional
         </div>
       )}
-    </h3>
+    </Variant>
   );
 };

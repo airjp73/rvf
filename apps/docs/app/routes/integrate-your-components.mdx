@@ -3,8 +3,6 @@ meta:
   title: Integrating your components (Remix Validated Form)
 ---
 
-import { Footer } from "~/components/Footer";
-
 # Integration your components
 
 The apis in this library are designed to be integrated into your form components
@@ -44,7 +42,9 @@ export const MyInput = ({ name, label }: InputProps) => {
         onChange={clearError}
         defaultValue={defaultValue}
       />
-      {error && <span className="my-error-class">{error}</span>}
+      {error && (
+        <span className="my-error-class">{error}</span>
+      )}
     </div>
   );
 };
@@ -75,7 +75,9 @@ Now, we can create a fully validated form with minimal boilerplate.
 ```tsx
 export const validator = withZod(
   z.object({
-    firstName: z.string().nonempty("First name is required"),
+    firstName: z
+      .string()
+      .nonempty("First name is required"),
     lastName: z.string().nonempty("Last name is required"),
     email: z
       .string()
@@ -95,16 +97,3 @@ export default function MyPage() {
   );
 }
 ```
-
----
-
-<Footer
-  prev={{
-    to: "/installation",
-    label: "Installation",
-  }}
-  next={{
-    to: "/server-validation",
-    label: "Server Validation",
-  }}
-/>

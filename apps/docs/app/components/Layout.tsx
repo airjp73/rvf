@@ -1,35 +1,83 @@
 import { MenuAlt2Icon } from "@heroicons/react/outline";
-import classNames from "classnames";
-import { FC, useState } from "react";
+import React, { FC, Fragment, useState } from "react";
+import { useMatches } from "remix";
 import { Sidebar } from "../components/Sidebar";
+import { Footer } from "./Footer";
+
+type Section = {
+  header: string;
+  navItems: React.ComponentProps<typeof Sidebar.NavItem>[];
+};
+const navSections: Section[] = [
+  {
+    header: "Guides",
+    navItems: [
+      { label: "Demo", to: "/", end: true },
+      { label: "Installation", to: "/installation" },
+      {
+        label: "Integrate your components",
+        to: "/integrate-your-components",
+      },
+      {
+        label: "Server Validation",
+        to: "/server-validation",
+      },
+      { label: "Default Values", to: "/default-values" },
+      {
+        label: "Validation libarary support",
+        to: "/validation-library-support",
+      },
+    ],
+  },
+  {
+    header: "Api Reference",
+    navItems: [
+      {
+        label: "ValidatedForm",
+        to: "/reference/validated-form",
+      },
+      {
+        label: "useField",
+        to: "/reference/use-field",
+      },
+      {
+        label: "useIsSubmitting",
+        to: "/reference/use-is-submitting",
+      },
+    ],
+  },
+];
 
 export const Layout: FC = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
+  const matches = useMatches();
+  const flatNavItems = navSections.flatMap(
+    (section) => section.navItems
+  );
+  const activeNavIndex = flatNavItems.findIndex(
+    (item) =>
+      matches[matches.length - 1].pathname === item.to
+  );
+  const prev =
+    activeNavIndex > 0
+      ? flatNavItems[activeNavIndex - 1]
+      : undefined;
+  const next =
+    activeNavIndex < flatNavItems.length - 1
+      ? flatNavItems[activeNavIndex + 1]
+      : undefined;
+
   const navItems = (
     <>
-      <Sidebar.Header>Guides</Sidebar.Header>
-      <Sidebar.NavItem label="Demo" to="/" end />
-      <Sidebar.NavItem label="Installation" to="/installation" />
-      <Sidebar.NavItem
-        label="Integrate your components"
-        to="/integrate-your-components"
-      />
-      <Sidebar.NavItem
-        label="Server Validation"
-        to="/server-validation"
-      />
-      <Sidebar.NavItem label="Default Values" to="/default-values" />
-      <Sidebar.NavItem
-        label="Validation libarary support"
-        to="/validation-library-support"
-      />
-      <Sidebar.Header>Api Reference</Sidebar.Header>
-      <Sidebar.NavItem
-        label="ValidatedForm"
-        to="/reference/validated-form"
-        end
-      />
+      {navSections.map(({ header, navItems }) => (
+        <Fragment key={header}>
+          <Sidebar.Header>{header}</Sidebar.Header>
+          {navItems.map((props) => (
+            <Sidebar.NavItem key={props.to} {...props} />
+          ))}
+        </Fragment>
+      ))}
     </>
   );
 
@@ -57,7 +105,10 @@ export const Layout: FC = ({ children }) => {
             onClick={() => setSidebarOpen(true)}
           >
             <span className="sr-only">Open sidebar</span>
-            <MenuAlt2Icon className="h-6 w-6" aria-hidden="true" />
+            <MenuAlt2Icon
+              className="h-6 w-6"
+              aria-hidden="true"
+            />
           </button>
           <header>
             <h1 className="text-xl text-zinc-300 font-bold px-8 py-4 whitespace-nowrap">
@@ -67,7 +118,11 @@ export const Layout: FC = ({ children }) => {
         </div>
 
         <main className="flex-1 relative overflow-y-auto focus:outline-none p-8">
-          <div className="prose prose-invert">{children}</div>
+          <div className="prose prose-invert">
+            {children}
+            <hr />
+            <Footer prev={prev} next={next} />
+          </div>
         </main>
       </div>
     </div>
