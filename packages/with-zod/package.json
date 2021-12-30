@@ -12,7 +12,7 @@
     "postpublish": "rm ./README.md"
   },
   "peerDependencies": {
-    "@remix-validated-form": "^3.x",
+    "remix-validated-form": "^3.x",
     "zod": "^3.11.x"
   },
   "devDependencies": {
