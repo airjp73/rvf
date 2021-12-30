@@ -14,14 +14,14 @@ export const Layout: FC = ({ children }) => {
         to="/integrate-your-components"
       />
       <Sidebar.NavItem
-        label="Validation libarary support"
-        to="/validation-library-support"
-      />
-      <Sidebar.NavItem
         label="Server Validation"
         to="/server-validation"
       />
       <Sidebar.NavItem label="Default Values" to="/default-values" />
+      <Sidebar.NavItem
+        label="Validation libarary support"
+        to="/validation-library-support"
+      />
     </>
   );
 

@@ -3,6 +3,8 @@ meta:
   title: Get Started (Remix Validated Form)
 ---
 
+import { Footer } from "~/components/Footer";
+
 # Installation
 
 ## Base package
@@ -26,3 +28,16 @@ If you're using a different library, you can create one
 ```bash
 npm install @remix-validated-form/with-zod
 ```
+
+---
+
+<Footer
+  prev={{
+    to: "/",
+    label: "Home",
+  }}
+  next={{
+    to: "/integrate-your-components",
+    label: "Integrate your components",
+  }}
+/>
