@@ -52,6 +52,10 @@ const navSections: Section[] = [
         label: "useFormContext",
         to: "/reference/use-form-context",
       },
+      {
+        label: "validationError",
+        to: "/reference/validation-error",
+      },
     ],
   },
 ];
