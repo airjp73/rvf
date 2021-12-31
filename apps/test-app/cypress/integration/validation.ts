@@ -102,6 +102,15 @@ describe("Validation", () => {
     cy.findByText("Submitted for John Doe!").should("exist");
   });
 
+  it("should not lose field values when showing custom validation if done properly", () => {
+    cy.visitWithoutJs("/custom-server-validation");
+
+    cy.findByText("Submit").click();
+
+    cy.findByText("Error").should("exist");
+    cy.findByLabelText("First Name").should("have.value", "Bob");
+  });
+
   it("should reset validation errors when resetting the form", () => {
     cy.visit("/validation");
 

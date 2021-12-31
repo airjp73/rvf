@@ -6,8 +6,21 @@ import { FieldErrors } from "./validation/types";
  * The `ValidatedForm` on the frontend will automatically display the errors
  * if this is returned from the action.
  */
-export const validationError = (errors: FieldErrors, submittedData?: unknown) =>
-  json(
-    { fieldErrors: { ...errors, _submittedData: submittedData } },
-    { status: 422 }
-  );
+export const validationError = (
+  errors: FieldErrors,
+  submittedData?: unknown
+) => {
+  if (submittedData) {
+    return json(
+      {
+        fieldErrors: {
+          ...errors,
+          _submittedData: submittedData,
+        },
+      },
+      { status: 422 }
+    );
+  }
+
+  return json({ fieldErrors: errors }, { status: 422 });
+};
