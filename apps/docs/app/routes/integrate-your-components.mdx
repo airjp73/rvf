@@ -1,0 +1,99 @@
+---
+meta:
+  title: Integrating your components (Remix Validated Form)
+---
+
+# Integration your components
+
+The apis in this library are designed to be integrated into your form components
+to minimize boilerplate you actual forms.
+You can take full advantage of the library with just an input and a submit button.
+
+## Create an input component
+
+`useField` lets you get integrate field-by-field validation
+and form-level default values into your inputs.
+In this example, we have an input that gets validated on blur,
+shows validation errors, and gets a default value from `ValidatedForm`'s `defaultValues` prop.
+
+`useField` consumes the context provided by `ValidatedForm`,
+so these features only work if you use it in a `ValidatedForm`.
+However, it is still safe to use your input outside of a `ValidatedForm`,
+it just won't be able to take advantage of the features.
+
+```tsx
+import { useField } from "remix-validated-form";
+
+type MyInputProps = {
+  name: string;
+  label: string;
+};
+
+export const MyInput = ({ name, label }: InputProps) => {
+  const { validate, clearError, defaultValue, error } =
+    useField(name);
+  return (
+    <div>
+      <label htmlFor={name}>{label}</label>
+      <input
+        id={name}
+        name={name}
+        onBlur={validate}
+        onChange={clearError}
+        defaultValue={defaultValue}
+      />
+      {error && (
+        <span className="my-error-class">{error}</span>
+      )}
+    </div>
+  );
+};
+```
+
+## Create a submit button component
+
+The `useIsSubmitting` hook enables you to detect if the current form is submitting,
+even if there are multiple forms on the page.
+
+```tsx
+import { useIsSubmitting } from "remix-validated-form";
+
+export const MySubmitButton = () => {
+  const isSubmitting = useIsSubmitting();
+  return (
+    <button type="submit" disabled={isSubmitting}>
+      {isSubmitting ? "Submitting..." : "Submit"}
+    </button>
+  );
+};
+```
+
+## Use in a form
+
+Now, we can create a fully validated form with minimal boilerplate.
+
+```tsx
+export const validator = withZod(
+  z.object({
+    firstName: z
+      .string()
+      .nonempty("First name is required"),
+    lastName: z.string().nonempty("Last name is required"),
+    email: z
+      .string()
+      .nonempty("Email is required")
+      .email("Must be a valid email"),
+  })
+);
+
+export default function MyPage() {
+  return (
+    <ValidatedForm validator={validator} method="post">
+      <FormInput name="firstName" label="First Name" />
+      <FormInput name="lastName" label="Last Name" />
+      <FormInput name="email" label="Email" />
+      <SubmitButton />
+    </ValidatedForm>
+  );
+}
+```

@@ -1,5 +1,7 @@
 .cache
 build
+_build
+dist
 browser
 test-app/build
 test-app/remix-validated-form

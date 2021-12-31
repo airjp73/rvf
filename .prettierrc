@@ -1,0 +1,10 @@
+{
+  "overrides": [
+    {
+      "files": "apps/docs/app/**/*{ts,tsx,mdx}",
+      "options": {
+        "printWidth": 60
+      }
+    }
+  ]
+}

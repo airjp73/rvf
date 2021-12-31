@@ -16,6 +16,7 @@
     "@prisma/client": "^3.6.0",
     "@remix-run/react": "^1.0.6",
     "@remix-run/serve": "^1.0.6",
+    "@remix-validated-form/with-zod": "*",
     "dotenv-cli": "^4.1.1",
     "framer-motion": "^4.1.17",
     "react": "^17.0.2",

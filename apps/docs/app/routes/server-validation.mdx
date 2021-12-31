@@ -1,0 +1,61 @@
+---
+meta:
+  title: Server validation (Remix Validated Form)
+---
+
+import { CodeExample } from "~/components/CodeExample";
+import Demo, { action } from "~/examples/demo";
+
+export { action };
+
+# Server validation
+
+One of the core features of this library is that you can re-use your validation on the server.
+In the [last example](/integrate-your-components#use-in-a-form),
+we created this validator to use in our form.
+
+```tsx
+export const validator = withZod(
+  z.object({
+    firstName: z
+      .string()
+      .nonempty("First name is required"),
+    lastName: z.string().nonempty("Last name is required"),
+    email: z
+      .string()
+      .nonempty("Email is required")
+      .email("Must be a valid email"),
+  })
+);
+```
+
+We can re-use this validator in our action like this.
+
+```tsx
+export const action: ActionFunction = async ({
+  request,
+}) => {
+  const data = validator.validate(await request.formData());
+  if (data.error) return validationError(data.error);
+  const { firstName, lastName, email } = data.data;
+
+  // Do something with the data
+};
+```
+
+If the `action` returns `validationError(data.error)`,
+the `ValidatedForm` will automatically pick up the error and display it.
+This is useful for cases where the user has javascript disabled.
+
+# Full implementation
+
+If we put everything together, we have a fully working example.
+
+<CodeExample>
+  <Demo />
+
+```tsx file=~/examples/demo.tsx
+
+```
+
+</CodeExample>

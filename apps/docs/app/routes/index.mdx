@@ -1,0 +1,34 @@
+---
+meta:
+  title: Remix Validated Form
+---
+
+import { CodeExample } from "~/components/CodeExample";
+import Demo, { action } from "~/examples/demo";
+
+export { action };
+
+# Remix Validated Form
+
+A form library purpose-built for [remix](https://remix.run) to make validation easy.
+
+- Client-side, field-by-field validation (e.g. validate on blur) and form-level validation
+- Set default values for the entire form in one place
+- Re-use validation on the server
+- Show validation errors from the server even without JS
+- Detect if the current form is submitting when there are multiple forms on the page
+- Supports nested objects and arrays
+- Validation library agnostic
+
+---
+
+# Demo
+
+<CodeExample>
+  <Demo />
+
+```tsx file=~/examples/demo.tsx
+
+```
+
+</CodeExample>
