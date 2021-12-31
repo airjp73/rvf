@@ -47,11 +47,14 @@ The out-of-the-box support for `yup` in this library works like this:
 ```ts
 export const withYup = <Schema extends AnyObjectSchema>(
   validationSchema: Schema
-  // For best result with Typescript, we should type the `Validator` we return based on the provided schema
+  // For best result with Typescript,
+  // we should type the `Validator`
+  // we return based on the provided schema
 ): Validator<InferType<Schema>> =>
   createValidator({
     validate: (unvalidatedData) => {
-      // Validate with yup and return the validated & typed data or the error
+      // Validate with yup and return the
+      // validated & typed data or the error
 
       if (isValid)
         return {

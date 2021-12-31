@@ -28,7 +28,7 @@ const navSections: Section[] = [
         to: "/arrays-and-nested",
       },
       {
-        label: "Validation libarary support",
+        label: "Validation library support",
         to: "/validation-library-support",
       },
     ],
