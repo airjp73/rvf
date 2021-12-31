@@ -24,7 +24,7 @@ export const validator = withZod(
     name: z.string().nonempty("First name is required"),
     todos: z.array(
       z.object({
-        id: z.number(),
+        id: z.string(),
         title: z.string().nonempty("Title is required"),
         notes: z.string().optional(),
       })
@@ -34,11 +34,7 @@ export const validator = withZod(
 
 type ActionData = {
   submittedName: string;
-  submittedTodos: {
-    id: number;
-    title: string;
-    notes?: string;
-  }[];
+  todoTitles: string[];
 };
 
 export const action: ActionFunction = async ({
@@ -50,9 +46,14 @@ export const action: ActionFunction = async ({
   if (result.error) return validationError(result.error);
   const { name, todos } = result.data;
 
+  // `todos` here is an array of todo objects
+  const todoTitles = todos.map((todo) => todo.title);
+
+  // For the sake of this example, we're just going to return
+  // some data and display an alert in the UI
   return json<ActionData>({
     submittedName: name,
-    submittedTodos: todos,
+    todoTitles,
   });
 };
 
@@ -63,11 +64,11 @@ type LoaderData = {
 export const loader: LoaderFunction = () => {
   return json<LoaderData>({
     defaultValues: {
-      name: "My Todos",
+      name: "Somebody",
       todos: [
         {
-          id: 0,
-          title: "Example todo",
+          id: "0",
+          title: "Take out the trash",
           notes: "This is an example todo",
         },
       ],
@@ -117,23 +118,20 @@ export default function Demo() {
       ))}
       <Button
         onClick={() =>
-          setTodoIds((prev) => [...prev, todoIds.length])
+          setTodoIds((prev) => [
+            ...prev,
+            String(todoIds.length),
+          ])
         }
       >
         <PlusIcon /> Add todo
       </Button>
       {data && (
         <InfoAlert
-          title={`Hello, ${data.submittedName}! You submitted these todos`}
-          description={
-            <ul>
-              {data.submittedTodos.map((todo) => (
-                <li key={todo.id}>
-                  {todo.title}: {todo.notes}
-                </li>
-              ))}
-            </ul>
-          }
+          title={`Hello, ${data.submittedName}!`}
+          description={`You need to ${data.todoTitles.join(
+            ", "
+          )}`}
         />
       )}
       <SubmitButton />
