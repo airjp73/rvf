@@ -1,18 +1,24 @@
-import { Button, Flex } from "@chakra-ui/react";
+import React, { FC } from "react";
 import { useIsSubmitting } from "remix-validated-form";
+import { Button } from "./Button";
+import { Spinner } from "./Spinner";
 
-export const SubmitButton = () => {
+export const SubmitButton: FC<
+  Omit<React.ComponentProps<typeof Button>, "label">
+> = ({ disabled, ...rest }) => {
   const isSubmitting = useIsSubmitting();
+
   return (
-    <Flex justifyContent="flex-end">
-      <Button
-        type="submit"
-        colorScheme="blue"
-        disabled={isSubmitting}
-        isLoading={isSubmitting}
-      >
-        {isSubmitting ? "Submitting..." : "Submit"}
-      </Button>
-    </Flex>
+    <Button
+      type="submit"
+      disabled={disabled || isSubmitting}
+      label={isSubmitting ? "Submitting..." : "Submit"}
+      icon={
+        isSubmitting ? (
+          <Spinner className="text-gray-700" />
+        ) : undefined
+      }
+      {...rest}
+    />
   );
 };

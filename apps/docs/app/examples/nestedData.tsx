@@ -15,8 +15,8 @@ import {
   ValidatorData,
 } from "remix-validated-form";
 import { z } from "zod";
+import { Alert } from "~/components/Alert";
 import { FormInput } from "~/components/FormInput";
-import { InfoAlert } from "~/components/InfoAlert";
 import { SubmitButton } from "~/components/SubmitButton";
 
 export const validator = withZod(
@@ -127,9 +127,10 @@ export default function Demo() {
         <PlusIcon /> Add todo
       </Button>
       {data && (
-        <InfoAlert
+        <Alert
+          variant="info"
           title={`Hello, ${data.submittedName}!`}
-          description={`You need to ${data.todoTitles.join(
+          details={`You need to ${data.todoTitles.join(
             ", "
           )}`}
         />

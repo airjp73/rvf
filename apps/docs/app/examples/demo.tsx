@@ -5,8 +5,8 @@ import {
   validationError,
 } from "remix-validated-form";
 import { z } from "zod";
+import { Alert } from "~/components/Alert";
 import { FormInput } from "~/components/FormInput";
-import { InfoAlert } from "~/components/InfoAlert";
 import { SubmitButton } from "~/components/SubmitButton";
 
 export const validator = withZod(
@@ -43,9 +43,10 @@ export default function Demo() {
       <FormInput name="lastName" label="Last Name" />
       <FormInput name="email" label="Email" />
       {data && (
-        <InfoAlert
+        <Alert
+          variant="info"
           title={data.title}
-          description={data.description}
+          details={data.description}
         />
       )}
       <SubmitButton />
