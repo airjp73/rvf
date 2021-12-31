@@ -2,7 +2,12 @@ import { Dialog } from "@headlessui/react";
 import { XIcon } from "@heroicons/react/solid";
 import classNames from "classnames";
 import { AnimatePresence, motion } from "framer-motion";
-import { ComponentProps, FC, ReactElement, useEffect } from "react";
+import {
+  ComponentProps,
+  FC,
+  ReactElement,
+  useEffect,
+} from "react";
 import { useTransition, NavLink } from "remix";
 
 export type SidebarProps = {
@@ -163,7 +168,9 @@ const SlideOut: SidebarType["SlideOut"] = ({
                 className="ml-1 flex items-center justify-center h-10 w-10 rounded-full focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
                 onClick={onClose}
               >
-                <span className="sr-only">Close sidebar</span>
+                <span className="sr-only">
+                  Close sidebar
+                </span>
                 <XIcon
                   className="h-6 w-6 text-white"
                   aria-hidden="true"
@@ -172,7 +179,10 @@ const SlideOut: SidebarType["SlideOut"] = ({
             </motion.div>
             {children}
           </Sidebar>
-          <div className="flex-shrink-0 w-14" aria-hidden="true">
+          <div
+            className="flex-shrink-0 w-14"
+            aria-hidden="true"
+          >
             {/* Dummy element to force sidebar to shrink to fit close icon */}
           </div>
         </Dialog>
