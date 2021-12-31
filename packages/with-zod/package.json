@@ -3,6 +3,10 @@
   "version": "1.0.0",
   "browser": "./browser/index.js",
   "main": "./build/index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/airjp73/remix-validated-form"
+  },
   "scripts": {
     "dev": "tsc --module ESNext --outDir ./browser --watch",
     "build": "npm run build:browser && npm run build:main",
