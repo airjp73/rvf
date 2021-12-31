@@ -5,7 +5,7 @@
   "license": "",
   "version": "0.0.1",
   "scripts": {
-    "build": "yarn build:remix && yarn build:css",
+    "build": "yarn build:css && yarn build:remix",
     "build:remix": "remix build",
     "build:css": "postcss ./styles/index.css --output app/styles/index.css --env production",
     "dev": "concurrently \"yarn dev:remix\" \"yarn dev:css\"",
