@@ -1,4 +1,3 @@
-import { Button } from "@chakra-ui/react";
 import { PlusIcon, XIcon } from "@heroicons/react/outline";
 import { withZod } from "@remix-validated-form/with-zod";
 import { useState } from "react";
@@ -16,6 +15,7 @@ import {
 } from "remix-validated-form";
 import { z } from "zod";
 import { Alert } from "~/components/Alert";
+import { Button } from "~/components/Button";
 import { FormInput } from "~/components/FormInput";
 import { SubmitButton } from "~/components/SubmitButton";
 
@@ -111,9 +111,9 @@ export default function Demo() {
                 prev.filter((todoId) => todoId !== id)
               );
             }}
-          >
-            <XIcon /> Delete todo
-          </Button>
+            icon={<XIcon />}
+            label="Delete todo"
+          />
         </div>
       ))}
       <Button
@@ -123,9 +123,9 @@ export default function Demo() {
             String(todoIds.length),
           ])
         }
-      >
-        <PlusIcon /> Add todo
-      </Button>
+        icon={<PlusIcon />}
+        label="Add todo"
+      />
       {data && (
         <Alert
           variant="info"

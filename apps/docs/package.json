@@ -14,7 +14,6 @@
     "postinstall": "remix setup node"
   },
   "dependencies": {
-    "@chakra-ui/react": "^1.7.3",
     "@headlessui/react": "^1.4.2",
     "@heroicons/react": "^1.0.5",
     "@remix-run/react": "^1.1.1",

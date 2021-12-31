@@ -1,4 +1,3 @@
-import { ChakraProvider } from "@chakra-ui/react";
 import codeExampleTheme from "highlight.js/styles/atom-one-dark.css";
 import {
   Links,
@@ -27,19 +26,22 @@ export default function App() {
     <html lang="en">
       <head>
         <meta charSet="utf-8" />
-        <meta name="viewport" content="width=device-width,initial-scale=1" />
+        <meta
+          name="viewport"
+          content="width=device-width,initial-scale=1"
+        />
         <Meta />
         <Links />
       </head>
       <body>
-        <ChakraProvider>
-          <Layout>
-            <Outlet />
-          </Layout>
-        </ChakraProvider>
+        <Layout>
+          <Outlet />
+        </Layout>
         <ScrollRestoration />
         <Scripts />
-        {process.env.NODE_ENV === "development" && <LiveReload />}
+        {process.env.NODE_ENV === "development" && (
+          <LiveReload />
+        )}
       </body>
     </html>
   );
