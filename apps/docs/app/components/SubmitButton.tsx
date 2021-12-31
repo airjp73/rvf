@@ -9,16 +9,18 @@ export const SubmitButton: FC<
   const isSubmitting = useIsSubmitting();
 
   return (
-    <Button
-      type="submit"
-      disabled={disabled || isSubmitting}
-      label={isSubmitting ? "Submitting..." : "Submit"}
-      icon={
-        isSubmitting ? (
-          <Spinner className="text-gray-700" />
-        ) : undefined
-      }
-      {...rest}
-    />
+    <div className="flex justify-end">
+      <Button
+        type="submit"
+        disabled={disabled || isSubmitting}
+        label={isSubmitting ? "Submitting..." : "Submit"}
+        icon={
+          isSubmitting ? (
+            <Spinner className="text-gray-700" />
+          ) : undefined
+        }
+        {...rest}
+      />
+    </div>
   );
 };

@@ -28,7 +28,7 @@ export const FormInput: FC<
       <div className="flex justify-between">
         <label
           htmlFor={name}
-          className="block text-sm font-medium text-gray-700"
+          className="block text-sm font-medium text-gray-300"
         >
           {label}
         </label>
@@ -44,10 +44,10 @@ export const FormInput: FC<
           name={name}
           id={name}
           className={classNames(
-            "focus:ring-teal-500 focus:border-teal-500 focus:z-10 block w-full sm:text-sm border-gray-300 pr-10",
-            "rounded-md",
+            "border focus:ring-teal-500 focus:border-teal-500 focus:z-10 block w-full sm:text-sm text-black pr-10",
+            "rounded-md p-2",
             error &&
-              "border-red-300 text-red-900 placeholder-red-300 focus:outline-none focus:ring-red-500 focus:border-red-500"
+              "border-red-800 bg-red-50 text-red-800 placeholder-red-300 focus:outline-none focus:ring-red-500 focus:border-red-500"
           )}
           onChange={(event) => {
             if (error) clearError();
