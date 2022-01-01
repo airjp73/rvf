@@ -7,7 +7,7 @@
     "packages/*"
   ],
   "scripts": {
-    "build-docs": "turbo run build --scope=docs --include-dependencies --no-deps",
+    "build-docs": "turbo run build --scope=docs --include-dependencies --no-deps --force",
     "sample-app": "yarn dev --scope=sample-app",
     "test-app": "yarn dev --scope=test-app",
     "docs": "yarn dev --scope=docs --include-dependencies",
