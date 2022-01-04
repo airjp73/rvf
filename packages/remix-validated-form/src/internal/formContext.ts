@@ -26,6 +26,11 @@ export type FormContextValue = {
    * The default values of the form.
    */
   defaultValues?: { [fieldName: string]: any };
+  /**
+   * Register a custom focus handler to be used when
+   * the field needs to receive focus due to a validation error.
+   */
+  registerReceiveFocus: (fieldName: string, handler: () => void) => () => void;
 };
 
 export const FormContext = createContext<FormContextValue>({
@@ -33,4 +38,5 @@ export const FormContext = createContext<FormContextValue>({
   clearError: () => {},
   validateField: () => {},
   isSubmitting: false,
+  registerReceiveFocus: () => () => {},
 });

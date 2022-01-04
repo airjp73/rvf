@@ -14,6 +14,10 @@ import React, {
 } from "react";
 import invariant from "tiny-invariant";
 import { FormContext, FormContextValue } from "./internal/formContext";
+import {
+  MultiValueMap,
+  useMultiValueMap,
+} from "./internal/SingleTypeMultiValueMap";
 import { useSubmitComplete } from "./internal/submissionCallbacks";
 import { omit, mergeRefs } from "./internal/util";
 import {
@@ -59,6 +63,11 @@ export type FormProps<DataType> = {
    * and don't redirect in-between submissions.
    */
   resetAfterSubmit?: boolean;
+  /**
+   * Normally, the first invalid input will be focused when the validation fails on form submit.
+   * Set this to `false` to disable this behavior.
+   */
+  disableFocusOnError?: boolean;
 } & Omit<ComponentProps<typeof RemixForm>, "onSubmit">;
 
 function useFieldErrorsFromBackend(
@@ -136,6 +145,36 @@ function useDefaultValues<DataType>(
   return defaultsFromValidationError ?? defaultValues;
 }
 
+const focusFirstInvalidInput = (
+  fieldErrors: FieldErrors,
+  customFocusHandlers: MultiValueMap<string, () => void>,
+  formElement: HTMLFormElement
+) => {
+  const invalidInputSelector = Object.keys(fieldErrors)
+    .map((fieldName) => `input[name="${fieldName}"]`)
+    .join(",");
+  const invalidInputs = formElement.querySelectorAll(invalidInputSelector);
+  for (const element of invalidInputs) {
+    const input = element as HTMLInputElement;
+
+    if (customFocusHandlers.has(input.name)) {
+      customFocusHandlers.getAll(input.name).forEach((handler) => {
+        handler();
+      });
+      break;
+    }
+
+    // We don't filter these out ahead of time because
+    // they could have a custom focus handler
+    if (input.type === "hidden") {
+      continue;
+    }
+
+    input.focus();
+    break;
+  }
+};
+
 /**
  * The primary form component of `remix-validated-form`.
  */
@@ -150,6 +189,7 @@ export function ValidatedForm<DataType>({
   onReset,
   subaction,
   resetAfterSubmit,
+  disableFocusOnError,
   ...rest
 }: FormProps<DataType>) {
   const fieldErrorsFromBackend = useFieldErrorsFromBackend(fetcher, subaction);
@@ -162,6 +202,7 @@ export function ValidatedForm<DataType>({
       formRef.current?.reset();
     }
   });
+  const customFocusHandlers = useMultiValueMap<string, () => void>();
 
   const contextValue = useMemo<FormContextValue>(
     () => ({
@@ -185,6 +226,12 @@ export function ValidatedForm<DataType>({
           }));
         }
       },
+      registerReceiveFocus: (fieldName, handler) => {
+        customFocusHandlers().add(fieldName, handler);
+        return () => {
+          customFocusHandlers().remove(fieldName, handler);
+        };
+      },
     }),
     [
       fieldErrors,
@@ -193,6 +240,7 @@ export function ValidatedForm<DataType>({
       isSubmitting,
       setFieldErrors,
       validator,
+      customFocusHandlers,
     ]
   );
 
@@ -208,6 +256,13 @@ export function ValidatedForm<DataType>({
         if (result.error) {
           event.preventDefault();
           setFieldErrors(result.error);
+          if (!disableFocusOnError) {
+            focusFirstInvalidInput(
+              result.error,
+              customFocusHandlers(),
+              formRef.current!
+            );
+          }
         } else {
           onSubmit?.(result.data, event);
         }

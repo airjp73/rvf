@@ -1,6 +1,6 @@
 import get from "lodash/get";
 import toPath from "lodash/toPath";
-import { useContext, useMemo } from "react";
+import { useContext, useEffect, useMemo } from "react";
 import { FormContext } from "./internal/formContext";
 
 export type FieldProps = {
@@ -25,9 +25,31 @@ export type FieldProps = {
 /**
  * Provides the data and helpers necessary to set up a field.
  */
-export const useField = (name: string): FieldProps => {
-  const { fieldErrors, clearError, validateField, defaultValues } =
-    useContext(FormContext);
+export const useField = (
+  name: string,
+  options?: {
+    /**
+     * Allows you to configure a custom function that will be called
+     * when the input needs to receive focus due to a validation error.
+     * This is useful for custom components that use a hidden input.
+     */
+    handleReceiveFocus?: () => void;
+  }
+): FieldProps => {
+  const {
+    fieldErrors,
+    clearError,
+    validateField,
+    defaultValues,
+    registerReceiveFocus,
+  } = useContext(FormContext);
+
+  const { handleReceiveFocus } = options ?? {};
+
+  useEffect(() => {
+    if (handleReceiveFocus)
+      return registerReceiveFocus(name, handleReceiveFocus);
+  }, [handleReceiveFocus, name, registerReceiveFocus]);
 
   const field = useMemo<FieldProps>(
     () => ({
