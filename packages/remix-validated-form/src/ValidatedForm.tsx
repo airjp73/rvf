@@ -210,6 +210,7 @@ export function ValidatedForm<DataType>({
       action,
       defaultValues: defaultsToUse,
       isSubmitting: isSubmitting ?? false,
+      isValid: Object.keys(fieldErrors).length === 0,
       clearError: (fieldName) => {
         setFieldErrors((prev) => omit(prev, fieldName));
       },

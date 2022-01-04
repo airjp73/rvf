@@ -23,6 +23,11 @@ export type FormContextValue = {
    */
   isSubmitting: boolean;
   /**
+   * Whether or not the form is valid.
+   * This is a shortcut for `Object.keys(fieldErrors).length === 0`.
+   */
+  isValid: boolean;
+  /**
    * The default values of the form.
    */
   defaultValues?: { [fieldName: string]: any };
@@ -38,5 +43,6 @@ export const FormContext = createContext<FormContextValue>({
   clearError: () => {},
   validateField: () => {},
   isSubmitting: false,
+  isValid: true,
   registerReceiveFocus: () => () => {},
 });
