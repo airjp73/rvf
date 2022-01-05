@@ -5,8 +5,9 @@
   "license": "",
   "version": "0.0.1",
   "scripts": {
-    "build": "yarn build:css && yarn build:remix",
+    "build": "yarn build:css && yarn build:remix && yarn build:rollup",
     "build:remix": "remix build",
+    "build:rollup": "rollup -c",
     "build:css": "postcss ./styles/index.css --output app/styles/index.css --env production",
     "dev": "concurrently \"yarn dev:remix\" \"yarn dev:css\"",
     "dev:remix": "remix dev",
@@ -20,6 +21,8 @@
     "@remix-run/serve": "^1.1.1",
     "@remix-run/vercel": "^1.1.1",
     "@remix-validated-form/with-zod": "*",
+    "@rollup/plugin-commonjs": "^21.0.1",
+    "@rollup/plugin-json": "^4.1.0",
     "classnames": "^2.3.1",
     "framer-motion": "^5.5.5",
     "highlight.js": "^11.3.1",
@@ -33,6 +36,7 @@
   },
   "devDependencies": {
     "@remix-run/dev": "^1.1.1",
+    "@rollup/plugin-node-resolve": "^13.1.3",
     "@tailwindcss/typography": "^0.5.0",
     "@types/react": "^17.0.24",
     "@types/react-dom": "^17.0.9",
@@ -43,6 +47,7 @@
     "postcss": "^8.4.5",
     "postcss-cli": "^9.1.0",
     "postcss-import": "^14.0.2",
+    "rollup": "^2.63.0",
     "tailwindcss": "3.0.7",
     "typescript": "^4.1.2"
   },
