@@ -82,17 +82,21 @@ export const MyInput = ({ name, label }: InputProps) => {
 To best take advantage of the per-form submission detection, we can create a submit button component.
 
 ```tsx
-import { useIsSubmitting } from "remix-validated-form";
+import { useFormContext, useIsSubmitting } from "remix-validated-form";
 
 export const MySubmitButton = () => {
   const isSubmitting = useIsSubmitting();
+  const { isValid } = useFormContext();
+  const disabled = isSubmitting || !isValid;
+
   return (
-    <button type="submit" disabled={isSubmitting}>
+    <button type="submit" disabled={disabled} className={disabled ? "disabled-btn" : "btn"}>
       {isSubmitting ? "Submitting..." : "Submit"}
     </button>
   );
 };
 ```
+
 
 ## Use the form!
 
@@ -245,3 +249,8 @@ This is happening because you or the library you are using is passing the `requi
 This library doesn't take care of eliminating them and it's up to the user how they want to manage the validation errors.
 If you wan't to disable all native HTML validations you can add `noValidate` to `<ValidatedForm>`.
 We recommend this approach since the validation will still work even if JS is disabled.
+
+## How do we trigger toast messages on success?
+
+Problem: how do we trigger a toast message on success if the action redirects away from the form route? The Remix solution is to flash a message in the session and pick this up in a loader function, probably in root.tsx
+See the [Remix](https://remix.run/docs/en/v1/api/remix#sessionflashkey-value) documentation for more information.
