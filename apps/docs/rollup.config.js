@@ -3,9 +3,9 @@ import jsonPlugin from "@rollup/plugin-json";
 import resolve from "@rollup/plugin-node-resolve";
 
 export default {
-  input: "api/_build/index.js",
+  input: "api/api.js",
   output: {
-    file: "api/_build/index.cjs",
+    file: "api/index.js",
     format: "cjs",
   },
   plugins: [

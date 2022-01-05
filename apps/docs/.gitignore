@@ -6,5 +6,6 @@ node_modules
 
 public/build
 api/_build
+api/index.js
 
 app/**/*.css
