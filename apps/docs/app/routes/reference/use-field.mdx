@@ -8,7 +8,7 @@ import { PropHeader } from "~/components/PropHeader";
 <PropHeader
   variant="h1"
   prop="useField"
-  type="(name: string) => FieldProps"
+  type="(name: string, options?: UseFieldOptions) => FieldProps"
 />
 
 Accepts the `name` of the field and returns
@@ -35,3 +35,16 @@ Clears the error message.
 <PropHeader prop="validate" type="() => void" />
 
 Validates the form field and populates the `error` prop if there is an error.
+
+## UseFieldOptions
+
+<PropHeader
+  prop="handleReceiveFocus"
+  type="() => void"
+  optional
+/>
+
+When the form gets submitted and the validation fails, the first invalid input will receive focus.
+If you have a custom input component that needs to receive focus,
+you can pass a callback to this option to control what happens when that component needs to receive focus.
+If this prop is not provided, the `input` will receive focus as normal (hidden inputs are skipped).

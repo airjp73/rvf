@@ -28,6 +28,10 @@ If the form contains nested data, the field errors are _not_ nested --
 the keys of the object will be the same as the name passed to the input itself.
 (e.g. `todos[1].title`)
 
+<PropHeader prop="isValid" type="boolean" />
+
+Whether or not the form valid.
+
 <PropHeader
   prop="clearError"
   type="(...fieldNames: string[]) => void"

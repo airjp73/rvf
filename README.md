@@ -10,6 +10,10 @@ A form library built for [remix](https://remix.run) to make validation easy.
 - Supports nested objects and arrays
 - Validation library agnostic
 
+# Docs
+
+The docs are located a [remix-validated-form.io](https://www.remix-validated-form.io).
+
 # Demo
 
 https://user-images.githubusercontent.com/2811287/145734901-700a5085-a10b-4d89-88e1-5de9142b1e85.mov
