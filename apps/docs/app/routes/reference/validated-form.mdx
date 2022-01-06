@@ -125,3 +125,12 @@ Allows you to provide a `fetcher` from remix's `useFetcher` hook.
 The form will use the fetcher for loading states, action data, etc
 instead of the default form action. This can be useful for when you need to
 submit the form programatically but still have validation errors show up.
+
+<PropHeader
+  prop="disableFocusOnError"
+  type="boolean"
+  optional
+/>
+
+Normally, the first invalid input will be focused when the validation fails on form submit.
+Set this to `false` to disable this behavior.
