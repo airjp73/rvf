@@ -257,4 +257,4 @@ See the [Remix](https://remix.run/docs/en/v1/api/remix#sessionflashkey-value) do
 
 ## Why is my cancel button triggering form submission?
 Problem: the cancel button has an onClick handler to navigate away from the form route but instead it is submitting the form.
-The cancel button defaults to `type="button"` which will submit the form by default. If you want to prevent this you can add `type="reset"` to the button.
+A button defaults to `type="submit"` in a form which will submit the form by default. If you want to prevent this you can add `type="reset"` or `type="button"` to the cancel button.
