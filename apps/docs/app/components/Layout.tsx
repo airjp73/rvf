@@ -109,35 +109,34 @@ export const Layout: FC = ({ children }) => {
         </div>
       </div>
 
-      <div className="flex flex-col w-0 flex-1 overflow-hidden bg-zinc-800">
-        <div className="relative z-10 flex-shrink-0 flex h-16 bg-zinc-700 md:hidden items-center">
-          <button
-            type="button"
-            className="px-4 border-r border-zinc-700 text-zinc-300 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500"
-            onClick={() => setSidebarOpen(true)}
-          >
-            <span className="sr-only">Open sidebar</span>
-            <MenuAlt2Icon
-              className="h-6 w-6"
-              aria-hidden="true"
-            />
-          </button>
-          <header>
-            <h1 className="text-xl text-zinc-300 font-bold px-8 py-4 whitespace-nowrap">
-              Remix Validated Form
-            </h1>
-          </header>
-        </div>
-
-        <main className="relative focus:outline-none p-8 prose prose-invert flex-1 md:flex-initial">
-          {children}
-        </main>
-        <Footer
-          className="prose prose-invert border-t border-zinc-700 py-8 px-4"
-          prev={prev}
-          next={next}
-        />
+      <div className="z-10 flex-shrink-0 flex h-16 bg-zinc-700 md:hidden items-center sticky top-0">
+        <button
+          type="button"
+          className="px-4 border-r border-zinc-700 text-zinc-300 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500"
+          onClick={() => setSidebarOpen(true)}
+        >
+          <span className="sr-only">Open sidebar</span>
+          <MenuAlt2Icon
+            className="h-6 w-6"
+            aria-hidden="true"
+          />
+        </button>
+        <header>
+          <h1 className="text-xl text-zinc-300 font-bold px-8 py-4 whitespace-nowrap">
+            Remix Validated Form
+          </h1>
+        </header>
       </div>
+
+      <main className="relative focus:outline-none p-8 prose prose-invert flex-1 md:flex-initial">
+        {children}
+      </main>
+
+      <Footer
+        className="prose prose-invert border-t border-zinc-700 py-8 px-4"
+        prev={prev}
+        next={next}
+      />
     </>
   );
 };
