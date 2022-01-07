@@ -258,3 +258,7 @@ We recommend this approach since the validation will still work even if JS is di
 
 Problem: how do we trigger a toast message on success if the action redirects away from the form route? The Remix solution is to flash a message in the session and pick this up in a loader function, probably in root.tsx
 See the [Remix](https://remix.run/docs/en/v1/api/remix#sessionflashkey-value) documentation for more information.
+
+## Why is my cancel button triggering form submission?
+Problem: the cancel button has an onClick handler to navigate away from the form route but instead it is submitting the form.
+A button defaults to `type="submit"` in a form which will submit the form by default. If you want to prevent this you can add `type="reset"` or `type="button"` to the cancel button.
