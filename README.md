@@ -256,5 +256,5 @@ Problem: how do we trigger a toast message on success if the action redirects aw
 See the [Remix](https://remix.run/docs/en/v1/api/remix#sessionflashkey-value) documentation for more information.
 
 ## Why is my cancel button triggering form submission?
-Problem: the cancel button has an onClick handler to navigate away from the form route but instead it is triggering form submission.
+Problem: the cancel button has an onClick handler to navigate away from the form route but instead it is submitting the form.
 The cancel button defaults to `type="button"` which will submit the form by default. If you want to prevent this you can add `type="reset"` to the button.
