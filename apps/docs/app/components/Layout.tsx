@@ -94,7 +94,7 @@ export const Layout: FC = ({ children }) => {
   );
 
   return (
-    <div className="h-screen flex overflow-hidden bg-zinc-100">
+    <>
       <Sidebar.SlideOut
         open={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
@@ -103,8 +103,8 @@ export const Layout: FC = ({ children }) => {
       </Sidebar.SlideOut>
 
       {/* Static sidebar for desktop */}
-      <div className="hidden md:flex md:flex-shrink-0">
-        <div className="flex flex-col w-64">
+      <div className="hidden md:flex md:flex-shrink-0 h-screen sticky top-0">
+        <div className="flex flex-col w-64 top-0">
           <Sidebar>{navItems}</Sidebar>
         </div>
       </div>
@@ -129,14 +129,15 @@ export const Layout: FC = ({ children }) => {
           </header>
         </div>
 
-        <main className="flex-1 relative overflow-y-auto focus:outline-none p-8">
-          <div className="prose prose-invert">
-            {children}
-            <hr />
-            <Footer prev={prev} next={next} />
-          </div>
+        <main className="relative focus:outline-none p-8 prose prose-invert flex-1 md:flex-initial">
+          {children}
         </main>
+        <Footer
+          className="prose prose-invert border-t border-zinc-700 py-8 px-4"
+          prev={prev}
+          next={next}
+        />
       </div>
-    </div>
+    </>
   );
 };

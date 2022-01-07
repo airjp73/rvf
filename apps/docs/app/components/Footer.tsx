@@ -2,6 +2,7 @@ import {
   ArrowLeftIcon,
   ArrowRightIcon,
 } from "@heroicons/react/outline";
+import classNames from "classnames";
 import { Link } from "remix";
 
 type FooterProps = {
@@ -13,11 +14,21 @@ type FooterProps = {
     to: string;
     label: string;
   };
+  className?: string;
 };
 
-export const Footer = ({ next, prev }: FooterProps) => {
+export const Footer = ({
+  next,
+  prev,
+  className,
+}: FooterProps) => {
   return (
-    <footer className="flex items-center justify-between">
+    <footer
+      className={classNames(
+        "flex items-center justify-between",
+        className
+      )}
+    >
       {prev ? (
         <Link
           to={prev.to}

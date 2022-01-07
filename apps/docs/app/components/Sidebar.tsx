@@ -50,7 +50,7 @@ export const Sidebar: SidebarType = ({
       )}
       {...rest}
     >
-      <div className="flex-1 flex flex-col pt-5 pb-4 overflow-y-auto">
+      <div className="flex-1 flex flex-col pt-5 pb-4">
         <div className="flex items-center flex-shrink-0 px-4 text-zinc-300 font-bold text-xl">
           Remix Validated Form
         </div>
