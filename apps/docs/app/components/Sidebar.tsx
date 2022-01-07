@@ -86,6 +86,7 @@ const NavItem: SidebarType["NavItem"] = ({
         className
       )
     }
+    prefetch="intent"
   >
     <span className="flex-1">{label}</span>
     {!!count && (
