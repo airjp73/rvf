@@ -128,15 +128,17 @@ export const Layout: FC = ({ children }) => {
         </header>
       </div>
 
-      <main className="relative focus:outline-none p-8 prose prose-invert flex-1 md:flex-initial">
-        {children}
-      </main>
+      <div>
+        <main className="relative focus:outline-none p-8 prose prose-invert flex-1 md:flex-initial">
+          {children}
+        </main>
 
-      <Footer
-        className="prose prose-invert border-t border-zinc-700 py-8 px-4"
-        prev={prev}
-        next={next}
-      />
+        <Footer
+          className="prose prose-invert border-t border-zinc-700 py-8 px-4"
+          prev={prev}
+          next={next}
+        />
+      </div>
     </>
   );
 };
