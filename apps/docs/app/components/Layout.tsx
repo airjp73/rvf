@@ -128,7 +128,7 @@ export const Layout: FC = ({ children }) => {
         </header>
       </div>
 
-      <div>
+      <div className="flex flex-col flex-1">
         <main className="relative focus:outline-none p-8 prose prose-invert flex-1 md:flex-initial">
           {children}
         </main>

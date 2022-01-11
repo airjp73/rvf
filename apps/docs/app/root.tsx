@@ -33,7 +33,7 @@ export default function App() {
         <Meta />
         <Links />
       </head>
-      <body className="min-h-screen md:flex bg-zinc-800">
+      <body className="min-h-screen flex flex-col md:flex-row bg-zinc-800">
         <Layout>
           <Outlet />
         </Layout>
