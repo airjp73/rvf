@@ -17,6 +17,67 @@ One thing this library makes easy for you is handling arrays and nested data in 
 If you have fields with paths for names,
 it will be transformed into a nested data structure before it gets validated.
 
+## Arrays
+
+```tsx
+const inputs = (
+  <>
+    <input name="todos[0]" />
+    <input name="todos[1]" />
+  </>
+);
+
+const result = {
+  todos: ["Take out the trash", "Buy some milk"];
+};
+```
+
+## Objects:
+
+```tsx
+const inputs = (
+  <>
+    <input name="todo.title" />
+    <input name="todo.description" />
+  </>
+);
+
+const result = {
+  todo: {
+    title: "Take out the trash",
+    description: "I should really do this",
+  },
+};
+```
+
+## Arrays of objects:
+
+```tsx
+const inputs = (
+  <>
+    <input name="todos[0].title" />
+    <input name="todos[0].description" />
+    <input name="todos[1].title" />
+    <input name="todos[1].description" />
+  </>
+);
+
+const result = {
+  todos: [
+    {
+      title: "Take out the trash",
+      description: "I should really do this",
+    },
+    {
+      title: "Buy some milk",
+      description: "We're all out",
+    },
+  ],
+};
+```
+
+## Full example
+
 <CodeExample>
   <Demo />
 
