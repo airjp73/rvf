@@ -24,6 +24,7 @@ import {
   FieldErrors,
   Validator,
   FieldErrorsWithData,
+  TouchedFields,
 } from "./validation/types";
 
 export type FormProps<DataType> = {
@@ -196,6 +197,7 @@ export function ValidatedForm<DataType>({
   const [fieldErrors, setFieldErrors] = useFieldErrors(fieldErrorsFromBackend);
   const isSubmitting = useIsSubmitting(action, subaction, fetcher);
   const defaultsToUse = useDefaultValues(fieldErrorsFromBackend, defaultValues);
+  const [touchedFields, setTouchedFields] = useState<TouchedFields>({});
   const formRef = useRef<HTMLFormElement>(null);
   useSubmitComplete(isSubmitting, () => {
     if (!fieldErrorsFromBackend && resetAfterSubmit) {
@@ -211,6 +213,12 @@ export function ValidatedForm<DataType>({
       defaultValues: defaultsToUse,
       isSubmitting: isSubmitting ?? false,
       isValid: Object.keys(fieldErrors).length === 0,
+      touchedFields,
+      setFieldTouched: (fieldName: string, touched: boolean) =>
+        setTouchedFields((prev) => ({
+          ...prev,
+          [fieldName]: touched,
+        })),
       clearError: (fieldName) => {
         setFieldErrors((prev) => omit(prev, fieldName));
       },
@@ -239,6 +247,7 @@ export function ValidatedForm<DataType>({
       action,
       defaultsToUse,
       isSubmitting,
+      touchedFields,
       setFieldErrors,
       validator,
       customFocusHandlers,
@@ -272,6 +281,7 @@ export function ValidatedForm<DataType>({
         onReset?.(event);
         if (event.defaultPrevented) return;
         setFieldErrors({});
+        setTouchedFields({});
       }}
     >
       <FormContext.Provider value={contextValue}>

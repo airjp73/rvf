@@ -20,6 +20,14 @@ export type FieldProps = {
    * The default value of the field, if there is one.
    */
   defaultValue?: any;
+  /**
+   * Whether or not the field has been touched.
+   */
+  touched: boolean;
+  /**
+   * Helper to set the touched state of the field.
+   */
+  setTouched: (touched: boolean) => void;
 };
 
 /**
@@ -42,8 +50,11 @@ export const useField = (
     validateField,
     defaultValues,
     registerReceiveFocus,
+    touchedFields,
+    setFieldTouched,
   } = useContext(FormContext);
 
+  const isTouched = touchedFields[name];
   const { handleReceiveFocus } = options ?? {};
 
   useEffect(() => {
@@ -61,8 +72,18 @@ export const useField = (
       defaultValue: defaultValues
         ? get(defaultValues, toPath(name), undefined)
         : undefined,
+      touched: isTouched,
+      setTouched: (touched: boolean) => setFieldTouched(name, touched),
     }),
-    [clearError, defaultValues, fieldErrors, name, validateField]
+    [
+      fieldErrors,
+      name,
+      defaultValues,
+      isTouched,
+      setFieldTouched,
+      clearError,
+      validateField,
+    ]
   );
 
   return field;

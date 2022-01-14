@@ -1,5 +1,5 @@
 import { createContext } from "react";
-import { FieldErrors } from "../validation/types";
+import { FieldErrors, TouchedFields } from "../validation/types";
 
 export type FormContextValue = {
   /**
@@ -36,6 +36,14 @@ export type FormContextValue = {
    * the field needs to receive focus due to a validation error.
    */
   registerReceiveFocus: (fieldName: string, handler: () => void) => () => void;
+  /**
+   * Any fields that have been touched by the user.
+   */
+  touchedFields: TouchedFields;
+  /**
+   * Change the touched state of the specified field.
+   */
+  setFieldTouched: (fieldName: string, touched: boolean) => void;
 };
 
 export const FormContext = createContext<FormContextValue>({
@@ -45,4 +53,6 @@ export const FormContext = createContext<FormContextValue>({
   isSubmitting: false,
   isValid: true,
   registerReceiveFocus: () => () => {},
+  touchedFields: {},
+  setFieldTouched: () => {},
 });
