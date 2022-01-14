@@ -23,6 +23,12 @@ export type FormContextValue = {
    */
   isSubmitting: boolean;
   /**
+   * Whether or not a submission has been attempted.
+   * This is true once the form has been submitted, even if there were validation errors.
+   * Resets to false when the form is reset.
+   */
+  hasBeenSubmitted: boolean;
+  /**
    * Whether or not the form is valid.
    * This is a shortcut for `Object.keys(fieldErrors).length === 0`.
    */
@@ -51,6 +57,7 @@ export const FormContext = createContext<FormContextValue>({
   clearError: () => {},
   validateField: () => {},
   isSubmitting: false,
+  hasBeenSubmitted: false,
   isValid: true,
   registerReceiveFocus: () => () => {},
   touchedFields: {},

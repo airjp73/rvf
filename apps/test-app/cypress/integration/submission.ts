@@ -74,4 +74,16 @@ describe("Validation", () => {
     cy.findByText("Submit").click();
     cy.findByLabelText("Test input").should("have.value", "noreset");
   });
+
+  it("should track whether or not submission has been attempted", () => {
+    cy.visit("/submission/hasbeensubmitted");
+    cy.findByText("Submitted!").should("not.exist");
+
+    cy.findByText("Submit").click();
+    cy.findByText("Submitted!").should("exist");
+    cy.findByText("First Name is a required field").should("exist");
+
+    cy.findByText("Reset").click();
+    cy.findByText("Submitted!").should("not.exist");
+  });
 });
