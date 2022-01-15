@@ -15,7 +15,6 @@ describe("Validation", () => {
     cy.findByLabelText("Email").focus().blur();
     cy.findByText("Email is a required field").should("exist");
     cy.findByLabelText("Email").type("not an email");
-    cy.findByLabelText("Email").blur();
     cy.findByText("Email must be a valid email").should("exist");
 
     cy.findByLabelText("Name of a contact").focus().blur();
@@ -23,7 +22,7 @@ describe("Validation", () => {
     cy.findByLabelText("Name of a contact").type("Someone else");
     cy.findByText("Name of a contact is a required field").should("not.exist");
 
-    cy.findByLabelText("Email").clear().type("an.email@example.com").blur();
+    cy.findByLabelText("Email").clear().type("an.email@example.com");
     cy.findByText("Email must be a valid email").should("not.exist");
 
     cy.findByText("Email is a required field").should("not.exist");
@@ -58,7 +57,7 @@ describe("Validation", () => {
     cy.findByText("Submit").click();
     cy.findByLabelText("Email").should("be.focused");
 
-    cy.findByLabelText("Email").type("an.email@example.com").blur();
+    cy.findByLabelText("Email").type("an.email@example.com");
     cy.findByText("Email is a required field").should("not.exist");
 
     cy.findByText("Submit").click();
@@ -104,7 +103,7 @@ describe("Validation", () => {
 
     cy.findByLabelText("First Name").type("John");
     cy.findByLabelText("Last Name").type("Doe");
-    cy.findByLabelText("Email").type("an.email@example.com").blur();
+    cy.findByLabelText("Email").type("an.email@example.com");
     cy.findByLabelText("Name of a contact").type("Someone else");
 
     cy.findByText("Submit").click();
@@ -126,7 +125,7 @@ describe("Validation", () => {
     cy.findByLabelText("First Name").should("have.value", "John");
     cy.findByLabelText("Last Name").should("have.value", "Doe");
 
-    cy.findByLabelText("Email").type("an.email@example.com").blur();
+    cy.findByLabelText("Email").type("an.email@example.com");
     cy.findByLabelText("Name of a contact").type("Someone else");
 
     cy.findByText("Submit").click();
