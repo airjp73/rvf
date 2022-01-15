@@ -1,6 +1,11 @@
 import { MenuAlt2Icon } from "@heroicons/react/outline";
-import React, { FC, Fragment, useState } from "react";
-import { useMatches } from "remix";
+import React, {
+  FC,
+  Fragment,
+  useEffect,
+  useState,
+} from "react";
+import { useLocation, useMatches } from "remix";
 import { Sidebar } from "../components/Sidebar";
 import { Footer } from "./Footer";
 
@@ -61,6 +66,13 @@ const navSections: Section[] = [
 ];
 
 export const Layout: FC = ({ children }) => {
+  const location = useLocation();
+  const focusedProp = location.hash.replace("#", "");
+  useEffect(() => {
+    const el = document.getElementById(focusedProp);
+    if (el) el.scrollIntoView();
+  }, [focusedProp]);
+
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const matches = useMatches();
