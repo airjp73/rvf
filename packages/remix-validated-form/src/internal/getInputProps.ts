@@ -18,7 +18,7 @@ export type CreateGetInputPropsOptions = {
 };
 
 export type GetInputProps = (
-  props: JSX.IntrinsicElements["input"]
+  props?: JSX.IntrinsicElements["input"]
 ) => JSX.IntrinsicElements["input"];
 
 const defaultValidationBehavior: ValidationBehaviorOptions = {
@@ -42,7 +42,7 @@ export const createGetInputProps = ({
     ...validationBehavior,
   };
 
-  return ({ onChange, onBlur, onFocus, ...rest }) => {
+  return ({ onChange, onBlur, onFocus, ...rest } = {}) => {
     const behavior = hasBeenSubmitted
       ? validationBehaviors.whenSubmitted
       : touched
