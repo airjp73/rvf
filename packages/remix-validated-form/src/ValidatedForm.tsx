@@ -234,6 +234,8 @@ export function ValidatedForm<DataType>({
             ...prev,
             [fieldName]: error,
           }));
+        } else {
+          setFieldErrors((prev) => omit(prev, fieldName));
         }
       },
       registerReceiveFocus: (fieldName, handler) => {
