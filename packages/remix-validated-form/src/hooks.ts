@@ -2,6 +2,11 @@ import get from "lodash/get";
 import toPath from "lodash/toPath";
 import { useContext, useEffect, useMemo } from "react";
 import { FormContext } from "./internal/formContext";
+import {
+  createGetInputProps,
+  GetInputProps,
+  ValidationBehaviorOptions,
+} from "./internal/getInputProps";
 
 export type FieldProps = {
   /**
@@ -28,6 +33,10 @@ export type FieldProps = {
    * Helper to set the touched state of the field.
    */
   setTouched: (touched: boolean) => void;
+  /**
+   * Helper to get all the props necessary for a regular input.
+   */
+  getInputProps: GetInputProps;
 };
 
 /**
@@ -42,6 +51,10 @@ export const useField = (
      * This is useful for custom components that use a hidden input.
      */
     handleReceiveFocus?: () => void;
+    /**
+     * Allows you to specify when a field gets validated (when using getInputProps)
+     */
+    validationBehavior?: Partial<ValidationBehaviorOptions>;
   }
 ): FieldProps => {
   const {
@@ -52,6 +65,7 @@ export const useField = (
     registerReceiveFocus,
     touchedFields,
     setFieldTouched,
+    hasBeenSubmitted,
   } = useContext(FormContext);
 
   const isTouched = touchedFields[name];
@@ -62,8 +76,8 @@ export const useField = (
       return registerReceiveFocus(name, handleReceiveFocus);
   }, [handleReceiveFocus, name, registerReceiveFocus]);
 
-  const field = useMemo<FieldProps>(
-    () => ({
+  const field = useMemo<FieldProps>(() => {
+    const helpers = {
       error: fieldErrors[name],
       clearError: () => {
         clearError(name);
@@ -74,17 +88,28 @@ export const useField = (
         : undefined,
       touched: isTouched,
       setTouched: (touched: boolean) => setFieldTouched(name, touched),
-    }),
-    [
-      fieldErrors,
+    };
+    const getInputProps = createGetInputProps({
+      ...helpers,
       name,
-      defaultValues,
-      isTouched,
-      setFieldTouched,
-      clearError,
-      validateField,
-    ]
-  );
+      hasBeenSubmitted,
+      validationBehavior: options?.validationBehavior,
+    });
+    return {
+      ...helpers,
+      getInputProps,
+    };
+  }, [
+    fieldErrors,
+    name,
+    defaultValues,
+    isTouched,
+    hasBeenSubmitted,
+    options?.validationBehavior,
+    clearError,
+    validateField,
+    setFieldTouched,
+  ]);
 
   return field;
 };
