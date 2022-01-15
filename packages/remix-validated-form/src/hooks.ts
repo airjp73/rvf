@@ -68,7 +68,7 @@ export const useField = (
     hasBeenSubmitted,
   } = useContext(FormContext);
 
-  const isTouched = touchedFields[name];
+  const isTouched = !!touchedFields[name];
   const { handleReceiveFocus } = options ?? {};
 
   useEffect(() => {
