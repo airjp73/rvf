@@ -53,7 +53,13 @@ If no `action` prop is passed, this will be `undefined`.
 
 <PropHeader prop="isSubmitting" type="boolean" />
 
-Whether or not the form is submitting.
+Whether or not the form is currently submitting.
+
+<PropHeader prop="hasBeenSubmitted" type="boolean" />
+
+Whether or not a submit has been attempted.
+This will be `true` after the first submit attempt, even if the form is invalid.
+This resets when the form resets.
 
 <PropHeader
   prop="defaultValues"
