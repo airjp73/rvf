@@ -9,6 +9,7 @@ describe("getInputProps", () => {
   describe("initial", () => {
     it("should validate on blur by default", () => {
       const options: CreateGetInputPropsOptions = {
+        name: "some-field",
         defaultValue: "test default value",
         touched: false,
         hasBeenSubmitted: false,
@@ -40,6 +41,7 @@ describe("getInputProps", () => {
 
     it("should respect provided validation behavior", () => {
       const options: CreateGetInputPropsOptions = {
+        name: "some-field",
         defaultValue: "test default value",
         touched: false,
         hasBeenSubmitted: false,
@@ -74,6 +76,7 @@ describe("getInputProps", () => {
 
     it("should not validate when behavior is onSubmit", () => {
       const options: CreateGetInputPropsOptions = {
+        name: "some-field",
         defaultValue: "test default value",
         touched: false,
         hasBeenSubmitted: false,
@@ -110,6 +113,7 @@ describe("getInputProps", () => {
   describe("whenTouched", () => {
     it("should validate on change by default", () => {
       const options: CreateGetInputPropsOptions = {
+        name: "some-field",
         defaultValue: "test default value",
         touched: true,
         hasBeenSubmitted: false,
@@ -141,6 +145,7 @@ describe("getInputProps", () => {
 
     it("should respect provided validation behavior", () => {
       const options: CreateGetInputPropsOptions = {
+        name: "some-field",
         defaultValue: "test default value",
         touched: true,
         hasBeenSubmitted: false,
@@ -177,6 +182,7 @@ describe("getInputProps", () => {
   describe("whenSubmitted", () => {
     it("should validate on change by default", () => {
       const options: CreateGetInputPropsOptions = {
+        name: "some-field",
         defaultValue: "test default value",
         touched: true,
         hasBeenSubmitted: true,
@@ -208,6 +214,7 @@ describe("getInputProps", () => {
 
     it("should respect provided validation behavior", () => {
       const options: CreateGetInputPropsOptions = {
+        name: "some-field",
         defaultValue: "test default value",
         touched: true,
         hasBeenSubmitted: true,
