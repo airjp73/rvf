@@ -19,17 +19,15 @@ export const FormSelect = ({
   isRequired,
   ...rest
 }: FormSelectProps & SelectProps) => {
-  const { validate, clearError, defaultValue, error } = useField(name);
+  const { getInputProps, error } = useField(name);
   return (
     <FormControl isInvalid={!!error} isRequired={isRequired}>
       <FormLabel htmlFor={name}>{label}</FormLabel>
       <Select
-        id={name}
-        name={name}
-        onBlur={validate}
-        onChange={clearError}
-        defaultValue={defaultValue}
-        {...rest}
+        {...getInputProps({
+          id: name,
+          ...rest,
+        })}
       />
       {error && <FormErrorMessage>{error}</FormErrorMessage>}
     </FormControl>
