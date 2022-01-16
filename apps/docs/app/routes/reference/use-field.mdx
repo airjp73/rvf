@@ -3,6 +3,7 @@ meta:
   title: useField (Remix Validated Form)
 ---
 
+import outdent from "outdent";
 import { PropHeader } from "~/components/PropHeader";
 
 <PropHeader
@@ -24,6 +25,14 @@ and the helpers will be no-ops.
 
 The validation error message if there is one.
 
+<PropHeader
+  prop="getInputProps"
+  type={`<T extends {}>(props?: T) => T`}
+/>
+
+A prop-getter used to get the props for the input.
+This will automatically set up the validation behavior based on the [`validationBehavior`](#validationBehavior) option.
+
 <PropHeader prop="defaultValue" type="any" />
 
 The default value of the field, if there is one.
@@ -36,7 +45,71 @@ Clears the error message.
 
 Validates the form field and populates the `error` prop if there is an error.
 
+<PropHeader prop="touched" type="boolean" />
+
+Whether or not the field has been touched.
+If you're using `getInputProps`, a field will become touched on blur.
+
+<PropHeader
+  prop="setTouched"
+  type="(touched: boolean) => void"
+/>
+
+Sets the `touched` state of the field to whatever you pass in.
+
 ## UseFieldOptions
+
+<PropHeader
+  prop="validationBehavior"
+  type={outdent`
+  {
+    initial?: "onChange" | "onBlur" | "onSubmit";
+    whenTouched?: "onChange" | "onBlur" | "onSubmit";
+    whenSubmitted?: "onChange" | "onBlur" | "onSubmit";
+  }`}
+/>
+
+Allows you to configure when the field should validate.
+The keys (`initial`, `whenTouched`, `whenSubmitted`) are states the field/form could be in,
+and the values (`onChange`, `onBlur`, `onSubmit`) are when you want to validate while in that state.
+
+**Note:** This behavior only applies when you are using `getInputProps`.
+If you're managing the validation manually (using `validate`, `clearError`, `setTouched`, etc),
+this will have no effect.
+
+#### Field/form states
+
+- `initial`
+  - The field has not been touched and the form has not been submitted.
+- `whenTouched`
+  - The user touched the field. A field becomes touched on blur, or when you call `setTouched(true)`.
+- `whenSubmitted`
+  - The user attempted to submit the form.
+
+#### When to validate
+
+- `onChange`
+  - Validates every time the `onChange` event of the input fires.
+- `onBlur`
+  - Validates every time the `onBlur` event of the input fires.
+  - Clears the error message when the user starts typing in that field again.
+- `onSubmit`
+  - The field does not validate itself at all and only validates when the form is submitted.
+
+No matter which option you choose, the form will always be validated again on submit.
+
+#### Default configuration
+
+By default the field will validate on blur,
+then validate on every change after the field has been touched our submitted.
+
+```
+{
+  initial: "onBlur",
+  whenTouched: "onChange",
+  whenSubmitted: "onChange",
+}
+```
 
 <PropHeader
   prop="handleReceiveFocus"

@@ -1,4 +1,6 @@
+import { LinkIcon } from "@heroicons/react/outline";
 import classNames from "classnames";
+import { useLocation } from "remix";
 
 type PropHeaderProps = {
   variant?: "h1" | "h3";
@@ -23,14 +25,27 @@ export const PropHeader = ({
   optional,
   variant: Variant = "h3",
 }: PropHeaderProps) => {
+  const location = useLocation();
+  const focusedProp = location.hash.replace("#", "");
   return (
     <Variant>
       <div className={variantHeaderColors[Variant]}>
-        {prop}
+        <a
+          id={prop}
+          href={`#${prop}`}
+          className={classNames(
+            "-ml-6 flex items-center group",
+            focusedProp !== prop && "no-underline"
+          )}
+        >
+          <LinkIcon className="h-4 w-4 mr-2 invisible group-hover:visible" />
+          {prop}
+        </a>
       </div>
       <div
         className={classNames(
           "text-zinc-500",
+          "whitespace-pre-wrap",
           variantTypeSizes[Variant]
         )}
       >

@@ -20,8 +20,7 @@ export const FormInput: FC<
   onChange,
   ...rest
 }) => {
-  const { error, clearError, validate, defaultValue } =
-    useField(name);
+  const { error, getInputProps } = useField(name);
 
   return (
     <div className={className}>
@@ -40,22 +39,18 @@ export const FormInput: FC<
       </div>
       <div className="mt-1 relative flex rounded-md shadow-sm">
         <input
-          type="text"
-          name={name}
-          id={name}
-          className={classNames(
-            "border focus:ring-teal-500 focus:border-teal-500 focus:z-10 block w-full sm:text-sm text-black pr-10",
-            "rounded-md p-2",
-            error &&
-              "border-red-800 bg-red-50 text-red-800 placeholder-red-300 focus:outline-none focus:ring-red-500 focus:border-red-500"
-          )}
-          onChange={(event) => {
-            if (error) clearError();
-            onChange?.(event);
-          }}
-          onBlur={validate}
-          defaultValue={defaultValue}
-          {...rest}
+          {...getInputProps({
+            onChange,
+            id: name,
+            type: "text",
+            className: classNames(
+              "border focus:ring-teal-500 focus:border-teal-500 focus:z-10 block w-full sm:text-sm text-black pr-10",
+              "rounded-md p-2",
+              error &&
+                "border-red-800 bg-red-50 text-red-800 placeholder-red-300 focus:outline-none focus:ring-red-500 focus:border-red-500"
+            ),
+            ...rest,
+          })}
         />
         {error && (
           <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">

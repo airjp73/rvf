@@ -1,5 +1,5 @@
 import { createContext } from "react";
-import { FieldErrors } from "../validation/types";
+import { FieldErrors, TouchedFields } from "../validation/types";
 
 export type FormContextValue = {
   /**
@@ -23,6 +23,12 @@ export type FormContextValue = {
    */
   isSubmitting: boolean;
   /**
+   * Whether or not a submission has been attempted.
+   * This is true once the form has been submitted, even if there were validation errors.
+   * Resets to false when the form is reset.
+   */
+  hasBeenSubmitted: boolean;
+  /**
    * Whether or not the form is valid.
    * This is a shortcut for `Object.keys(fieldErrors).length === 0`.
    */
@@ -36,6 +42,14 @@ export type FormContextValue = {
    * the field needs to receive focus due to a validation error.
    */
   registerReceiveFocus: (fieldName: string, handler: () => void) => () => void;
+  /**
+   * Any fields that have been touched by the user.
+   */
+  touchedFields: TouchedFields;
+  /**
+   * Change the touched state of the specified field.
+   */
+  setFieldTouched: (fieldName: string, touched: boolean) => void;
 };
 
 export const FormContext = createContext<FormContextValue>({
@@ -43,6 +57,9 @@ export const FormContext = createContext<FormContextValue>({
   clearError: () => {},
   validateField: () => {},
   isSubmitting: false,
+  hasBeenSubmitted: false,
   isValid: true,
   registerReceiveFocus: () => () => {},
+  touchedFields: {},
+  setFieldTouched: () => {},
 });

@@ -2,6 +2,11 @@ import get from "lodash/get";
 import toPath from "lodash/toPath";
 import { useContext, useEffect, useMemo } from "react";
 import { FormContext } from "./internal/formContext";
+import {
+  createGetInputProps,
+  GetInputProps,
+  ValidationBehaviorOptions,
+} from "./internal/getInputProps";
 
 export type FieldProps = {
   /**
@@ -20,6 +25,18 @@ export type FieldProps = {
    * The default value of the field, if there is one.
    */
   defaultValue?: any;
+  /**
+   * Whether or not the field has been touched.
+   */
+  touched: boolean;
+  /**
+   * Helper to set the touched state of the field.
+   */
+  setTouched: (touched: boolean) => void;
+  /**
+   * Helper to get all the props necessary for a regular input.
+   */
+  getInputProps: GetInputProps;
 };
 
 /**
@@ -34,6 +51,10 @@ export const useField = (
      * This is useful for custom components that use a hidden input.
      */
     handleReceiveFocus?: () => void;
+    /**
+     * Allows you to specify when a field gets validated (when using getInputProps)
+     */
+    validationBehavior?: Partial<ValidationBehaviorOptions>;
   }
 ): FieldProps => {
   const {
@@ -42,8 +63,12 @@ export const useField = (
     validateField,
     defaultValues,
     registerReceiveFocus,
+    touchedFields,
+    setFieldTouched,
+    hasBeenSubmitted,
   } = useContext(FormContext);
 
+  const isTouched = !!touchedFields[name];
   const { handleReceiveFocus } = options ?? {};
 
   useEffect(() => {
@@ -51,8 +76,8 @@ export const useField = (
       return registerReceiveFocus(name, handleReceiveFocus);
   }, [handleReceiveFocus, name, registerReceiveFocus]);
 
-  const field = useMemo<FieldProps>(
-    () => ({
+  const field = useMemo<FieldProps>(() => {
+    const helpers = {
       error: fieldErrors[name],
       clearError: () => {
         clearError(name);
@@ -61,9 +86,30 @@ export const useField = (
       defaultValue: defaultValues
         ? get(defaultValues, toPath(name), undefined)
         : undefined,
-    }),
-    [clearError, defaultValues, fieldErrors, name, validateField]
-  );
+      touched: isTouched,
+      setTouched: (touched: boolean) => setFieldTouched(name, touched),
+    };
+    const getInputProps = createGetInputProps({
+      ...helpers,
+      name,
+      hasBeenSubmitted,
+      validationBehavior: options?.validationBehavior,
+    });
+    return {
+      ...helpers,
+      getInputProps,
+    };
+  }, [
+    fieldErrors,
+    name,
+    defaultValues,
+    isTouched,
+    hasBeenSubmitted,
+    options?.validationBehavior,
+    clearError,
+    validateField,
+    setFieldTouched,
+  ]);
 
   return field;
 };

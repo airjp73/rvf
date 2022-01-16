@@ -15,10 +15,9 @@ describe("Validation with fetchers", () => {
     cy.findByLabelText("Email").focus().blur();
     cy.findByText("Email is a required field").should("exist");
     cy.findByLabelText("Email").type("not an email");
-    cy.findByLabelText("Email").blur();
     cy.findByText("Email must be a valid email").should("exist");
 
-    cy.findByLabelText("Email").clear().type("an.email@example.com").blur();
+    cy.findByLabelText("Email").clear().type("an.email@example.com");
     cy.findByText("Email must be a valid email").should("not.exist");
 
     cy.findByText("Email is a required field").should("not.exist");
@@ -44,7 +43,7 @@ describe("Validation with fetchers", () => {
     cy.findByLabelText("Last Name").type("Doe");
     cy.findByText("Last Name is a required field").should("not.exist");
 
-    cy.findByLabelText("Email").type("an.email@example.com").blur();
+    cy.findByLabelText("Email").type("an.email@example.com");
     cy.findByText("Email is a required field").should("not.exist");
 
     cy.findByText("Submit").click();

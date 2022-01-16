@@ -53,7 +53,13 @@ If no `action` prop is passed, this will be `undefined`.
 
 <PropHeader prop="isSubmitting" type="boolean" />
 
-Whether or not the form is submitting.
+Whether or not the form is currently submitting.
+
+<PropHeader prop="hasBeenSubmitted" type="boolean" />
+
+Whether or not a submit has been attempted.
+This will be `true` after the first submit attempt, even if the form is invalid.
+This resets when the form resets.
 
 <PropHeader
   prop="defaultValues"
@@ -63,3 +69,20 @@ Whether or not the form is submitting.
 The default values of the `ValidatedForm` component.
 In cases where the user has javascript disabled,
 this can sometimes be something other than what is passed into the `ValidatedForm` directly.
+
+<PropHeader
+  prop="touchedFields"
+  type="Record<string, boolean>"
+/>
+
+Contains all the touched fields.
+The keys of the object are the field names and values are whether or not the field has been touched.
+If a field has not been touched at all, the value will be `undefined`.
+If you set touched to `false` manually, then the value will be `false`.
+
+<PropHeader
+  prop="setFieldTouched"
+  type="(fieldName: string, touched: boolean) => void"
+/>
+
+Manually set the `touched` state of the specified field.

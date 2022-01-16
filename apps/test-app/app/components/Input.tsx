@@ -4,26 +4,15 @@ import { useField } from "remix-validated-form";
 type InputProps = {
   name: string;
   label: string;
-  validateOnBlur?: boolean;
 };
 
 export const Input = forwardRef(
-  (
-    { name, label, validateOnBlur }: InputProps,
-    ref: React.ForwardedRef<HTMLInputElement>
-  ) => {
-    const { validate, clearError, defaultValue, error } = useField(name);
+  ({ name, label }: InputProps, ref: React.ForwardedRef<HTMLInputElement>) => {
+    const { getInputProps, error } = useField(name);
     return (
       <div>
         <label htmlFor={name}>{label}</label>
-        <input
-          id={name}
-          name={name}
-          onBlur={validateOnBlur ? validate : undefined}
-          onChange={clearError}
-          defaultValue={defaultValue}
-          ref={ref}
-        />
+        <input {...getInputProps({ ref, id: name })} />
         {error && <span style={{ color: "red" }}>{error}</span>}
       </div>
     );

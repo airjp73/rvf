@@ -64,18 +64,14 @@ type MyInputProps = {
 };
 
 export const MyInput = ({ name, label }: InputProps) => {
-  const { validate, clearError, defaultValue, error } = useField(name);
+  const { error, getInputProps } = useField(name);
   return (
     <div>
       <label htmlFor={name}>{label}</label>
-      <input
-        id={name}
-        name={name}
-        onBlur={validate}
-        onChange={clearError}
-        defaultValue={defaultValue}
-      />
-      {error && <span className="my-error-class">{error}</span>}
+      <input {...getInputProps({ id: name })} />
+      {error && (
+        <span className="my-error-class">{error}</span>
+      )}
     </div>
   );
 };

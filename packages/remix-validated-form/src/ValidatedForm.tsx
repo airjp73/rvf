@@ -24,6 +24,7 @@ import {
   FieldErrors,
   Validator,
   FieldErrorsWithData,
+  TouchedFields,
 } from "./validation/types";
 
 export type FormProps<DataType> = {
@@ -196,6 +197,8 @@ export function ValidatedForm<DataType>({
   const [fieldErrors, setFieldErrors] = useFieldErrors(fieldErrorsFromBackend);
   const isSubmitting = useIsSubmitting(action, subaction, fetcher);
   const defaultsToUse = useDefaultValues(fieldErrorsFromBackend, defaultValues);
+  const [touchedFields, setTouchedFields] = useState<TouchedFields>({});
+  const [hasBeenSubmitted, setHasBeenSubmitted] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
   useSubmitComplete(isSubmitting, () => {
     if (!fieldErrorsFromBackend && resetAfterSubmit) {
@@ -211,6 +214,12 @@ export function ValidatedForm<DataType>({
       defaultValues: defaultsToUse,
       isSubmitting: isSubmitting ?? false,
       isValid: Object.keys(fieldErrors).length === 0,
+      touchedFields,
+      setFieldTouched: (fieldName: string, touched: boolean) =>
+        setTouchedFields((prev) => ({
+          ...prev,
+          [fieldName]: touched,
+        })),
       clearError: (fieldName) => {
         setFieldErrors((prev) => omit(prev, fieldName));
       },
@@ -225,6 +234,8 @@ export function ValidatedForm<DataType>({
             ...prev,
             [fieldName]: error,
           }));
+        } else {
+          setFieldErrors((prev) => omit(prev, fieldName));
         }
       },
       registerReceiveFocus: (fieldName, handler) => {
@@ -233,12 +244,15 @@ export function ValidatedForm<DataType>({
           customFocusHandlers().remove(fieldName, handler);
         };
       },
+      hasBeenSubmitted,
     }),
     [
       fieldErrors,
       action,
       defaultsToUse,
       isSubmitting,
+      touchedFields,
+      hasBeenSubmitted,
       setFieldErrors,
       validator,
       customFocusHandlers,
@@ -253,6 +267,7 @@ export function ValidatedForm<DataType>({
       {...rest}
       action={action}
       onSubmit={(event) => {
+        setHasBeenSubmitted(true);
         const result = validator.validate(getDataFromForm(event.currentTarget));
         if (result.error) {
           event.preventDefault();
@@ -272,6 +287,8 @@ export function ValidatedForm<DataType>({
         onReset?.(event);
         if (event.defaultPrevented) return;
         setFieldErrors({});
+        setTouchedFields({});
+        setHasBeenSubmitted(false);
       }}
     >
       <FormContext.Provider value={contextValue}>
