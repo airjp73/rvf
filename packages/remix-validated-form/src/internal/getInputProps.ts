@@ -17,21 +17,12 @@ export type CreateGetInputPropsOptions = {
   name: string;
 };
 
-export type MinimalInputProps = {
-  onChange?: (...args: any[]) => void;
-  onBlur?: (...args: any[]) => void;
-};
+type HandledProps = "name" | "defaultValue";
+type Callbacks = "onChange" | "onBlur";
 
-export type MinimalResult = {
-  name: string;
-  onChange: (...args: any[]) => void;
-  onBlur: (...args: any[]) => void;
-  defaultValue?: any;
-};
-
-export type GetInputProps = <T extends {}>(
-  props?: T & MinimalInputProps
-) => T & MinimalResult;
+export type GetInputProps = <T extends Record<string, any>>(
+  props?: Omit<T, HandledProps | Callbacks> & Partial<Pick<T, Callbacks>>
+) => T;
 
 const defaultValidationBehavior: ValidationBehaviorOptions = {
   initial: "onBlur",
@@ -54,20 +45,21 @@ export const createGetInputProps = ({
     ...validationBehavior,
   };
 
-  return (props = {} as any) => {
+  return <T extends Record<string, any>>(props = {} as any) => {
     const behavior = hasBeenSubmitted
       ? validationBehaviors.whenSubmitted
       : touched
       ? validationBehaviors.whenTouched
       : validationBehaviors.initial;
-    return {
+
+    const result: T = {
       ...props,
-      onChange: (...args) => {
+      onChange: (...args: unknown[]) => {
         if (behavior === "onChange") validate();
         else clearError();
         return props?.onChange?.(...args);
       },
-      onBlur: (...args) => {
+      onBlur: (...args: unknown[]) => {
         if (behavior === "onBlur") validate();
         setTouched(true);
         return props?.onBlur?.(...args);
@@ -75,5 +67,7 @@ export const createGetInputProps = ({
       defaultValue,
       name,
     };
+
+    return result;
   };
 };
