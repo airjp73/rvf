@@ -27,9 +27,7 @@ The validation error message if there is one.
 
 <PropHeader
   prop="getInputProps"
-  type={
-    '(props?: JSX.IntrinsicElements["input"]) => JSX.IntrinsicElements["input"]'
-  }
+  type={`<T extends {}>(props?: T) => T`}
 />
 
 A prop-getter used to get the props for the input.
