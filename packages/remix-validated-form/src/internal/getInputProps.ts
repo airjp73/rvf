@@ -17,9 +17,21 @@ export type CreateGetInputPropsOptions = {
   name: string;
 };
 
-export type GetInputProps = (
-  props?: JSX.IntrinsicElements["input"]
-) => JSX.IntrinsicElements["input"];
+export type MinimalInputProps = {
+  onChange?: (...args: any[]) => void;
+  onBlur?: (...args: any[]) => void;
+};
+
+export type MinimalResult = {
+  name: string;
+  onChange: (...args: any[]) => void;
+  onBlur: (...args: any[]) => void;
+  defaultValue?: any;
+};
+
+export type GetInputProps = <T extends {}>(
+  props?: T & MinimalInputProps
+) => T & MinimalResult;
 
 const defaultValidationBehavior: ValidationBehaviorOptions = {
   initial: "onBlur",
@@ -42,23 +54,23 @@ export const createGetInputProps = ({
     ...validationBehavior,
   };
 
-  return ({ onChange, onBlur, onFocus, ...rest } = {}) => {
+  return (props = {} as any) => {
     const behavior = hasBeenSubmitted
       ? validationBehaviors.whenSubmitted
       : touched
       ? validationBehaviors.whenTouched
       : validationBehaviors.initial;
     return {
-      ...rest,
+      ...props,
       onChange: (...args) => {
         if (behavior === "onChange") validate();
         else clearError();
-        onChange?.(...args);
+        return props?.onChange?.(...args);
       },
       onBlur: (...args) => {
         if (behavior === "onBlur") validate();
         setTouched(true);
-        onBlur?.(...args);
+        return props?.onBlur?.(...args);
       },
       defaultValue,
       name,
