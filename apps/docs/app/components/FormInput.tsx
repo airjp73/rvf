@@ -62,12 +62,7 @@ export const FormInput: FC<
         )}
       </div>
       {error && (
-        <p
-          className="mt-2 text-sm text-red-600"
-          id="email-error"
-        >
-          {error}
-        </p>
+        <p className="mt-2 text-sm text-red-600">{error}</p>
       )}
     </div>
   );
