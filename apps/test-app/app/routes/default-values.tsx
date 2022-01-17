@@ -26,9 +26,9 @@ export default function DefaultValues() {
       method="post"
       defaultValues={defaultValues}
     >
-      <Input name="firstName" label="First Name" validateOnBlur />
-      <Input name="lastName" label="Last Name" validateOnBlur />
-      <Input name="email" label="Email" validateOnBlur />
+      <Input name="firstName" label="First Name" />
+      <Input name="lastName" label="Last Name" />
+      <Input name="email" label="Email" />
       <SubmitButton />
     </ValidatedForm>
   );

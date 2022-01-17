@@ -16,7 +16,7 @@ export const action: ActionFunction = async ({ request }) => {
 export default function CustomServerValidation() {
   return (
     <ValidatedForm validator={validator} method="post">
-      <Input name="firstName" label="First Name" validateOnBlur />
+      <Input name="firstName" label="First Name" />
       <SubmitButton />
     </ValidatedForm>
   );

@@ -40,7 +40,7 @@ export default function FrontendValidation() {
     <ValidatedForm validator={validator} method="post">
       {actionData && <h1>{actionData.message}</h1>}
       <CustomInput name="contactSelect" label="Choose a contact" />
-      <Input name="something" label="Something" validateOnBlur />
+      <Input name="something" label="Something" />
       <SubmitButton />
     </ValidatedForm>
   );
