@@ -229,13 +229,22 @@ export function ValidatedForm<DataType>({
           getDataFromForm(formRef.current),
           fieldName as any
         );
+
+        // By checking and returning `prev` here, we can avoid a re-render
+        // if the validation state is the same.
         if (error) {
-          setFieldErrors((prev) => ({
-            ...prev,
-            [fieldName]: error,
-          }));
+          setFieldErrors((prev) => {
+            if (prev[fieldName] === error) return prev;
+            return {
+              ...prev,
+              [fieldName]: error,
+            };
+          });
         } else {
-          setFieldErrors((prev) => omit(prev, fieldName));
+          setFieldErrors((prev) => {
+            if (!(fieldName in prev)) return prev;
+            return omit(prev, fieldName);
+          });
         }
       },
       registerReceiveFocus: (fieldName, handler) => {
