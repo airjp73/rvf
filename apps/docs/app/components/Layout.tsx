@@ -29,6 +29,10 @@ const navSections: Section[] = [
       },
       { label: "Default Values", to: "/default-values" },
       {
+        label: "Repeated field names",
+        to: "/repeated-field-names",
+      },
+      {
         label: "Arrays and nested data",
         to: "/arrays-and-nested",
       },
