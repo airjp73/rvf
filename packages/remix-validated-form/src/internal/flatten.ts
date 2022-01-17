@@ -7,9 +7,16 @@ import mapKeys from "lodash/mapKeys";
 import set from "lodash/set";
 import transform from "lodash/transform";
 import { GenericObject } from "..";
+import { MultiValueMap } from "./MultiValueMap";
 
-export const objectFromPathEntries = (entries: [string, any][]) =>
-  entries.reduce((acc, [key, value]) => set(acc, key, value), {});
+export const objectFromPathEntries = (entries: [string, any][]) => {
+  const map = new MultiValueMap<string, any>();
+  entries.forEach(([key, value]) => map.add(key, value));
+  return [...map.entries()].reduce(
+    (acc, [key, value]) => set(acc, key, value.length === 1 ? value[0] : value),
+    {}
+  );
+};
 
 /** Flatten an object so there are no nested objects or arrays */
 export function flatten(obj: GenericObject, preserveEmpty = false) {

@@ -14,10 +14,7 @@ import React, {
 } from "react";
 import invariant from "tiny-invariant";
 import { FormContext, FormContextValue } from "./internal/formContext";
-import {
-  MultiValueMap,
-  useMultiValueMap,
-} from "./internal/SingleTypeMultiValueMap";
+import { MultiValueMap, useMultiValueMap } from "./internal/MultiValueMap";
 import { useSubmitComplete } from "./internal/submissionCallbacks";
 import { omit, mergeRefs } from "./internal/util";
 import {

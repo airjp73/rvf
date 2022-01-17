@@ -4,7 +4,6 @@ export class MultiValueMap<Key, Value> {
   private dict: Map<Key, Value[]> = new Map();
 
   add = (key: Key, value: Value) => {
-    this.dict.set(key, [...(this.dict.get(key) ?? []), value]);
     if (this.dict.has(key)) {
       this.dict.get(key)!.push(value);
     } else {
@@ -23,6 +22,8 @@ export class MultiValueMap<Key, Value> {
   getAll = (key: Key): Value[] => {
     return this.dict.get(key) ?? [];
   };
+
+  entries = (): IterableIterator<[Key, Value[]]> => this.dict.entries();
 
   has = (key: Key): boolean => this.dict.has(key);
 }
