@@ -63,7 +63,7 @@ type MyInputProps = {
   label: string;
 };
 
-export const MyInput = ({ name, label }: InputProps) => {
+export const MyInput = ({ name, label }: MyInputProps) => {
   const { error, getInputProps } = useField(name);
   return (
     <div>
