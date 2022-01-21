@@ -53,3 +53,5 @@ export class TestFormData implements FormData {
     yield* this._params;
   }
 }
+
+export const anyString = expect.any(String);

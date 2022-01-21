@@ -1,0 +1,25 @@
+{
+  "name": "zod-form-data",
+  "version": "1.0.0",
+  "browser": "./browser/index.js",
+  "main": "./build/index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/airjp73/remix-validated-form"
+  },
+  "scripts": {
+    "dev": "tsc --module ESNext --outDir ./browser --watch",
+    "build": "npm run build:browser && npm run build:main",
+    "build:browser": "tsc --module ESNext --outDir ./browser",
+    "build:main": "tsc --module CommonJS --outDir ./build",
+    "prepublishOnly": "npm run build"
+  },
+  "peerDependencies": {
+    "zod": "^3.11.x"
+  },
+  "devDependencies": {
+    "tsconfig": "*",
+    "typescript": "^4.5.4",
+    "zod": "^3.11.6"
+  }
+}

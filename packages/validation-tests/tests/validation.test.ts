@@ -1,10 +1,10 @@
 import { withYup } from "@remix-validated-form/with-yup/src";
-import { withZod } from "@remix-validated-form/with-zod/src";
+import { withZod } from "@remix-validated-form/with-zod";
 import { Validator } from "remix-validated-form/src";
 import { objectFromPathEntries } from "remix-validated-form/src/internal/flatten";
 import * as yup from "yup";
 import { z } from "zod";
-import { TestFormData } from "./testFormData";
+import { anyString, TestFormData } from "./util";
 
 // If adding an adapter, write a validator that validates this shape
 type Person = {
@@ -77,9 +77,6 @@ const validationTestCases: ValidationTestCase[] = [
     ),
   },
 ];
-
-// Not going to enforce exact error strings here
-const anyString = expect.any(String);
 
 describe("Validation", () => {
   describe.each(validationTestCases)("Adapter for $name", ({ validator }) => {
@@ -261,63 +258,6 @@ describe("Validation", () => {
           error: anyString,
         });
       });
-    });
-  });
-});
-
-describe("withZod", () => {
-  it("returns coherent errors for complex schemas", () => {
-    const schema = z.union([
-      z.object({
-        type: z.literal("foo"),
-        foo: z.string(),
-      }),
-      z.object({
-        type: z.literal("bar"),
-        bar: z.string(),
-      }),
-    ]);
-    const obj = {
-      type: "foo",
-      bar: 123,
-      foo: 123,
-    };
-
-    expect(withZod(schema).validate(obj)).toEqual({
-      data: undefined,
-      error: {
-        type: anyString,
-        bar: anyString,
-        foo: anyString,
-        _submittedData: obj,
-      },
-    });
-  });
-
-  it("returns errors for fields that are unions", () => {
-    const schema = z.object({
-      field1: z.union([z.literal("foo"), z.literal("bar")]),
-      field2: z.union([z.literal("foo"), z.literal("bar")]),
-    });
-    const obj = {
-      field1: "a value",
-      // field2 missing
-    };
-
-    const validator = withZod(schema);
-    expect(validator.validate(obj)).toEqual({
-      data: undefined,
-      error: {
-        field1: anyString,
-        field2: anyString,
-        _submittedData: obj,
-      },
-    });
-    expect(validator.validateField(obj, "field1")).toEqual({
-      error: anyString,
-    });
-    expect(validator.validateField(obj, "field2")).toEqual({
-      error: anyString,
     });
   });
 });
