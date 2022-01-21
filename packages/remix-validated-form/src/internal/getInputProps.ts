@@ -17,11 +17,12 @@ export type CreateGetInputPropsOptions = {
   name: string;
 };
 
-type HandledProps = "name" | "defaultValue";
-type Callbacks = "onChange" | "onBlur";
+// Using Omit<T, HandledProps> breaks type inference sometimes for some reason.
+// Doing T & OmitHandledProps gives us the same behavior without breaking type inference.
+type OmitHandledProps = { name?: never; defaultValue?: never };
 
 export type GetInputProps = <T extends Record<string, any>>(
-  props?: Omit<T, HandledProps | Callbacks> & Partial<Pick<T, Callbacks>>
+  props?: T & OmitHandledProps
 ) => T;
 
 const defaultValidationBehavior: ValidationBehaviorOptions = {

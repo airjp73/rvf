@@ -7,7 +7,7 @@ import {
 } from "@chakra-ui/react";
 import { useField } from "remix-validated-form";
 
-type FormInputProps = {
+type FormInputProps = Omit<InputProps, "defaultValue" | "name"> & {
   name: string;
   label: string;
   isRequired?: boolean;
@@ -18,7 +18,7 @@ export const FormInput = ({
   label,
   isRequired,
   ...rest
-}: FormInputProps & InputProps) => {
+}: FormInputProps) => {
   const { getInputProps, error } = useField(name);
 
   return (
