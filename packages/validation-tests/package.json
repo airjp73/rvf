@@ -11,7 +11,8 @@
   "author": "",
   "dependencies": {
     "@remix-validated-form/with-yup": "*",
-    "@remix-validated-form/with-zod": "*"
+    "@remix-validated-form/with-zod": "*",
+    "zod-form-data": "*"
   },
   "devDependencies": {
     "@types/jest": "^27.0.3",
