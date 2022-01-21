@@ -1,0 +1,60 @@
+---
+meta:
+  title: Zod Form Data (Remix Validated Form)
+---
+
+# zod-form-data
+
+Validation helpers for [zod](https://github.com/colinhacks/zod)
+specifically for parsing `FormData` or `URLSearchParams`.
+This is particularly useful when using [remix](https://github.com/remix-run/remix)
+and combos well with [remix-validated-form](/).
+
+The main goal of this library is deal with the pain point that everything in `FormData` is a string.
+Sometimes, properly validating this kind of data requires a lot of extra hoop jumping and preprocessing.
+With the helpers in `zod-form-data`, you can write your types closer to how you want to.
+
+## Example
+
+```tsx
+import { zfd } from "zod-form-data";
+
+const schema = zfd.formData({
+  name: zfd.text(),
+  age: zfd.numeric(z.number().min(25).max(50)),
+  likesPizza: zfd.checkbox(),
+});
+
+// This example is using remix, but it will work
+// with any FormData or URLSearchParams
+export const action = async ({ request }) => {
+  const { name, age, likesPizza } = schema.parse(
+    await request.formData()
+  );
+  // do something with parsed data
+};
+```
+
+If you're also using `remix-validated-form`, you don't need to use `zfd.formData`,
+but it will still work correctly if you do.
+
+```tsx
+const validator = withZod(
+  zfd.object({
+    name: zfd.text(),
+    age: zfd.numeric(z.number().min(25).max(50)),
+    likesPizza: zfd.checkbox(),
+  })
+);
+```
+
+## Installation
+
+```bash
+npm install zod-form-data
+```
+
+## Contributing
+
+The eventual goal is to have a helper to preprocess and/or validate most types of native inputs.
+If you have a helper for an input type that isn't in this library, feel free to open a PR to add it!

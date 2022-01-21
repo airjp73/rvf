@@ -50,6 +50,8 @@ see the [Validation library support](#validation-library-support) section below.
 npm install @remix-validated-form/with-zod
 ```
 
+If you're using zod, you might also find `zod-form-data` helpful.
+
 ## Create an input component
 
 In order to display field errors or do field-by-field validation,

@@ -67,6 +67,20 @@ const navSections: Section[] = [
       },
     ],
   },
+  {
+    header: "zod-form-data",
+    navItems: [
+      {
+        label: "Overview",
+        to: "/zod-form-data",
+        end: true,
+      },
+      {
+        label: "API Reference",
+        to: "/zod-form-data/api-reference",
+      },
+    ],
+  },
 ];
 
 export const Layout: FC = ({ children }) => {
