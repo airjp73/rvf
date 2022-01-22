@@ -70,6 +70,18 @@ describe("Validation", () => {
     cy.findByText("Submitted for John Doe!").should("exist");
   });
 
+  it("should focus the first invalid field", () => {
+    cy.visit("/validation");
+
+    cy.findByText("Submit").click();
+
+    cy.findByText("Email is a required field").should("exist");
+    cy.findByText("Last Name is a required field").should("exist");
+    cy.findByText("First Name is a required field").should("exist");
+    cy.findByText("Name of a contact is a required field").should("exist");
+    cy.findByLabelText("First Name").should("be.focused");
+  });
+
   it("should not focus the first invalid field if disableFocusOnError is true", () => {
     cy.visit("/validation-nofocus");
 
