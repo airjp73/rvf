@@ -3,7 +3,7 @@ describe("Checkboxes", () => {
     cy.visit("/checkboxes");
 
     cy.findByText("Submit").click();
-    cy.findByText("likes is a required field");
+    cy.findByText("Please choose at least one");
 
     cy.findByLabelText("Pizza").click();
 
