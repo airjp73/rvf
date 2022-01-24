@@ -58,7 +58,7 @@ export const repeatableOfType = <T extends ZodTypeAny>(
 
 const entries = z.array(z.tuple([z.string(), z.any()]));
 
-export const formData = (shape: z.ZodRawShape) =>
+export const formData = <T extends z.ZodRawShape>(shape: T) =>
   z.preprocess(
     preprocessIfValid(
       // We're avoiding using `instanceof` here because different environments
