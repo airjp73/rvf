@@ -8,6 +8,7 @@ import React, {
 import { useLocation, useMatches } from "remix";
 import { Sidebar } from "../components/Sidebar";
 import { Footer } from "./Footer";
+import { GithubIcon } from "./GithubIcon";
 
 type Section = {
   header: string;
@@ -123,11 +124,23 @@ export const Layout: FC = ({ children }) => {
     </>
   );
 
+  const githubIcon = (
+    <Sidebar.ExternalLink href="https://www.github.com/airjp73/remix-validated-form">
+      <span className="sr-only">Go to Github</span>
+      <GithubIcon className="h-7 w-7 fill-white" />
+    </Sidebar.ExternalLink>
+  );
+
   return (
     <>
       <Sidebar.SlideOut
         open={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
+        bottomContent={
+          <div className="flex justify-center w-full">
+            {githubIcon}
+          </div>
+        }
       >
         {navItems}
       </Sidebar.SlideOut>
@@ -135,7 +148,15 @@ export const Layout: FC = ({ children }) => {
       {/* Static sidebar for desktop */}
       <div className="hidden md:flex md:flex-shrink-0 h-screen sticky top-0">
         <div className="flex flex-col w-64 top-0">
-          <Sidebar>{navItems}</Sidebar>
+          <Sidebar
+            bottomContent={
+              <div className="flex justify-center w-full">
+                {githubIcon}
+              </div>
+            }
+          >
+            {navItems}
+          </Sidebar>
         </div>
       </div>
 
@@ -151,10 +172,13 @@ export const Layout: FC = ({ children }) => {
             aria-hidden="true"
           />
         </button>
-        <header>
+        <header className="flex items-center flex-1 pr-4">
           <h1 className="text-xl text-zinc-300 font-bold px-8 py-4 whitespace-nowrap">
             Remix Validated Form
           </h1>
+          <div className="ml-auto place-content-between">
+            {githubIcon}
+          </div>
         </header>
       </div>
 

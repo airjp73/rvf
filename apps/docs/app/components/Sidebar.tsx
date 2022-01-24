@@ -9,6 +9,7 @@ import {
   useEffect,
 } from "react";
 import { useTransition, NavLink } from "remix";
+import { GithubIcon } from "./GithubIcon";
 
 export type SidebarProps = {
   className?: string;
@@ -26,12 +27,14 @@ export type SidebarNavItemProps = {
 export type SlideOutProps = {
   onClose: () => void;
   open: boolean;
+  bottomContent?: ReactElement;
 };
 
 export type SidebarType = FC<
   SidebarProps & ComponentProps<typeof motion.div>
 > & {
   NavItem: FC<SidebarNavItemProps>;
+  ExternalLink: FC<JSX.IntrinsicElements["a"]>;
   SlideOut: FC<SlideOutProps>;
   Header: FC<JSX.IntrinsicElements["h4"]>;
 };
@@ -50,18 +53,26 @@ export const Sidebar: SidebarType = ({
       )}
       {...rest}
     >
-      <div className="flex-1 flex flex-col pt-5 pb-4">
+      <div className="flex-1 flex flex-col pt-5 pb-4 h-full">
         <div className="flex items-center flex-shrink-0 px-4 text-zinc-300 font-bold text-xl">
           Remix Validated Form
         </div>
+
+        {/* <div className="ml-2 mt-2">
+          <Sidebar.ExternalLink href="https://www.github.com/airjp73/remix-validated-form">
+            <GithubIcon className="h-6 w-6 fill-white" />
+            <span className="ml-2">Github</span>
+          </Sidebar.ExternalLink>
+        </div>
+ */}
         <nav
-          className="mt-5 flex-1 px-2 bg-zinc-900 space-y-1"
+          className="mt-5 flex-1 px-2 bg-zinc-900 space-y-1 overflow-y-auto"
           aria-label="Sidebar"
         >
           {children}
         </nav>
+        {bottomContent}
       </div>
-      {bottomContent}
     </motion.div>
   );
 };
@@ -102,6 +113,25 @@ const NavItem: SidebarType["NavItem"] = ({
 );
 Sidebar.NavItem = NavItem;
 
+const ExternalLink: SidebarType["ExternalLink"] = ({
+  className,
+  children,
+  ...rest
+}) => (
+  <a
+    className={classNames(
+      "group flex items-center p-2 text-sm font-medium rounded-md w-min",
+      "focus-visible:text-white focus-visible:bg-zinc-700",
+      "text-zinc-300 hover:bg-zinc-700 hover:text-white",
+      className
+    )}
+    {...rest}
+  >
+    {children}
+  </a>
+);
+Sidebar.ExternalLink = ExternalLink;
+
 const Header: SidebarType["Header"] = ({ children }) => {
   return (
     <h4
@@ -122,6 +152,7 @@ const SlideOut: SidebarType["SlideOut"] = ({
   children,
   open,
   onClose,
+  bottomContent,
 }) => {
   const transition = useTransition();
 
@@ -156,6 +187,7 @@ const SlideOut: SidebarType["SlideOut"] = ({
             animate={{ translateX: "0%" }}
             exit={{ translateX: "-100%" }}
             transition={{ type: "linear", duration: 0.3 }}
+            bottomContent={bottomContent}
           >
             <motion.div
               className="absolute top-0 right-0 -mr-12 pt-2"
