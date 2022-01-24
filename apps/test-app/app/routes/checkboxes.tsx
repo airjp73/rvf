@@ -1,9 +1,9 @@
 import { withZod } from "@remix-validated-form/with-zod";
-import { FC } from "react";
 import { ActionFunction, useActionData } from "remix";
-import { validationError, ValidatedForm, useField } from "remix-validated-form";
+import { validationError, ValidatedForm } from "remix-validated-form";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
+import { Fieldset } from "~/components/Fieldset";
 import { SubmitButton } from "~/components/SubmitButton";
 
 const validator = withZod(
@@ -23,23 +23,12 @@ export const action: ActionFunction = async ({ request }) => {
   return { message: `You like ${likesArray.join(", ")}` };
 };
 
-const Checkboxes: FC = ({ children }) => {
-  const { error, validate } = useField("likes");
-  return (
-    <fieldset onChange={validate}>
-      <legend>Likes</legend>
-      {children}
-      {error ? <p style={{ color: "red" }}>{error}</p> : null}
-    </fieldset>
-  );
-};
-
 export default function FrontendValidation() {
   const actionData = useActionData();
   return (
     <ValidatedForm validator={validator} method="post">
       {actionData && <h1>{actionData.message}</h1>}
-      <Checkboxes>
+      <Fieldset label="Likes">
         <label>
           Pizza
           <input type="checkbox" name="likes" value="pizza" />
@@ -56,7 +45,7 @@ export default function FrontendValidation() {
           Pepperoni
           <input type="checkbox" name="likes" value="pepperoni" />
         </label>
-      </Checkboxes>
+      </Fieldset>
       <SubmitButton />
     </ValidatedForm>
   );

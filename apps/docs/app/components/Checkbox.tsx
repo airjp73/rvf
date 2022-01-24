@@ -12,16 +12,13 @@ export const Checkbox: FC<CheckboxProps> = ({
   name,
   value,
 }) => {
-  const { defaultValue } = useField(name);
+  const { getInputProps } = useField(name);
   return (
     <div>
       <label>
         {label}
         <input
-          type="checkbox"
-          name={name}
-          value={value}
-          defaultChecked={defaultValue.includes(value)}
+          {...getInputProps({ type: "checkbox", value })}
         />
       </label>
     </div>
