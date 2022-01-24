@@ -49,28 +49,27 @@ const result = {
 
 When constructing your validation schema, you need to keep in mind that
 the value could be an array _or_ a single value.
-This example validator uses `z.preprocess` to turn the value into an array before validating.
+The easiest way to handle this is with `repeatable` from [zod-form-data](/zod-form-data).
 
 ```ts
+import { zfd } from "zod-form-data";
+
 export const validator = withZod(
-  z.object({
-    myCheckboxGroup: z.preprocess((val) => {
-      if (Array.isArray(val)) return val;
-      if (val) return [val];
-      return [];
-    }, z.array(z.string())),
-  })
+  z.object({ likes: zfd.repeatable() })
 );
 ```
 
-## Writing a Checkbox component
+## Considerations for your components
 
-Normally, we would spread `getInputProps` into the `input` to automatically validate.
-This is probably not going to result in good UX for checkboxes though.
-With checkboxes, it's often enough to only integrate `defaultValues`.
-The way we do this is going to depend a lot on what you're using your checkbox for.
-If you're using a validator like the one above in order to use repeated fields,
-the type of the `defaultValue` will be an array.
+One thing to keep in mind when using repeated field names,
+is that all of the inputs will receive the same `error` prop.
+For the most common use-cases (checkbox groups and radio groups),
+you probably only need to display the error once for the whole group.
+If you do need to display an error for each input,
+you're probably better off naming your inputs with the [array syntax](/arrays-and-nested)
+(e.g. `myField[0]`).
+
+Here's one possible implementation of this:
 
 ```tsx
 export type CheckboxProps = {
@@ -84,17 +83,36 @@ export const Checkbox: FC<CheckboxProps> = ({
   name,
   value,
 }) => {
-  const { defaultValue } = useField(name);
+  const { getInputProps } = useField(name);
   return (
-    <label>
-      {label}
-      <input
-        type="checkbox"
-        name={name}
-        value={value}
-        defaultChecked={defaultValue.includes(value)}
-      />
-    </label>
+    <div>
+      <label>
+        {label}
+        <input
+          {...getInputProps({ type: "checkbox", value })}
+        />
+      </label>
+    </div>
+  );
+};
+
+export type CheckboxGroupProps = {
+  label: string;
+  name: string;
+};
+
+export const CheckboxGroup: FC<CheckboxGroupProps> = ({
+  label,
+  name,
+  children,
+}) => {
+  const { error } = useField(name);
+  return (
+    <fieldset>
+      <legend>{label}</legend>
+      {children}
+      {error && <p className="myErrorClass">{error}</p>}
+    </fieldset>
   );
 };
 ```

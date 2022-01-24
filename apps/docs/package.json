@@ -33,7 +33,8 @@
     "rehype-highlight": "^5.0.1",
     "remix": "^1.1.1",
     "remix-validated-form": "*",
-    "zod": "^3.11.6"
+    "zod": "^3.11.6",
+    "zod-form-data": "*"
   },
   "devDependencies": {
     "@remix-run/dev": "^1.1.1",

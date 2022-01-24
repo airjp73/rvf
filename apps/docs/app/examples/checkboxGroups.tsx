@@ -3,25 +3,18 @@ import { json, useActionData, ActionFunction } from "remix";
 import {
   ValidatedForm,
   validationError,
+  ValidatorData,
 } from "remix-validated-form";
 import { z } from "zod";
+import { zfd } from "zod-form-data";
 import { Alert } from "~/components/Alert";
 import { Checkbox } from "~/components/Checkbox";
+import { CheckboxGroup } from "~/components/CheckboxGroup";
 import { SubmitButton } from "~/components/SubmitButton";
 
 export const validator = withZod(
-  z.object({
-    likes: z.preprocess((val) => {
-      if (Array.isArray(val)) return val;
-      if (val) return [val];
-      return [];
-    }, z.array(z.string())),
-  })
+  z.object({ likes: zfd.repeatable() })
 );
-
-type ActionData = {
-  likes: string[];
-};
 
 export const action: ActionFunction = async ({
   request,
@@ -34,11 +27,12 @@ export const action: ActionFunction = async ({
 
   // For the sake of this example, we're just going to return
   // some data and display an alert in the UI
-  return json<ActionData>({ likes });
+  return json<ValidatorData<typeof validator>>({ likes });
 };
 
 export default function Demo() {
-  const data = useActionData<ActionData>();
+  const data =
+    useActionData<ValidatorData<typeof validator>>();
 
   return (
     <ValidatedForm
@@ -48,8 +42,10 @@ export default function Demo() {
         likes: ["pizza", "cake"],
       }}
     >
-      <fieldset>
-        <legend>Which of these do you like?</legend>
+      <CheckboxGroup
+        name="likes"
+        label="Which of these do you like?"
+      >
         <Checkbox
           name="likes"
           value="pizza"
@@ -61,7 +57,7 @@ export default function Demo() {
           value="spaghetti"
           label="Spaghetti"
         />
-      </fieldset>
+      </CheckboxGroup>
 
       {data && (
         <Alert
