@@ -1,0 +1,51 @@
+name: 🐛 Bug Report
+description: Something is broken in one of the packages.
+title: "[Bug]: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for contributing!
+
+        To help describe the issue, please provide the following information.
+
+        ### Reproduction starter:
+        https://codesandbox.io/s/github/airjp73/remix-validated-form/tree/issue-templates/apps/bug-repro
+  - type: checkboxes
+    id: packages
+    attributes:
+      label: Which packages are impacted?
+      options:
+        - label: "`remix-validated-form`"
+        - label: "`@remix-validated-form/with-zod`"
+        - label: "`@remix-validated-form/with-yup`"
+        - label: "`zod-form-data`"
+  - type: textarea
+    attributes:
+      label: What version of these packages are you using?
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: Please provide a link to a minimal reproduction of the issue.
+      description: You can click the Reproduction starter link above and edit the sandbox.
+  - type: textarea
+    attributes:
+      label: Steps to Reproduce
+      description: Steps to reproduce the behavior.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Expected Behavior
+      description: A concise description of what you expected to happen.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Actual Behavior
+      description: A concise description of what you're experiencing.
+    validations:
+      required: true
