@@ -163,6 +163,33 @@ the `FormData` will not include an entry for `myCheckbox` at all.
 
 ([Further reading](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/checkbox#value))
 
+### file
+
+Transforms any empty File objects to `undefined` before validating.
+This makes it so empty files will fail required checks,
+allowing you to use `optional` for optional fields.
+If you call `zfd.file` with no arguments, it will assume the field is a required file by default.
+
+#### Usage
+
+```ts
+const const schema = zfd.formData({
+  requiredFile: zfd.file(),
+  optional: zfd.file().optional(),
+})
+```
+
+There is a unique case in Remix when using a CustomUploadHandler, 
+the field will be a `File` on the client side, but an ID string (or URL) after uploading on the server.
+
+In this case you will need the schema to switch to string on the server:
+
+```ts
+const const schema = (clientSide = true) => zfd.formData({
+  file: clientSide ? zfd.file() : zfd.file(z.string()),
+})
+```
+
 ### repeatable
 
 Preprocesses a field where you expect multiple values could be present for the same field name
