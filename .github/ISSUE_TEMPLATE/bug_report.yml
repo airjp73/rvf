@@ -12,7 +12,7 @@ body:
         To help describe the issue, please provide the following information.
 
         ### Reproduction starter:
-        https://codesandbox.io/s/github/airjp73/remix-validated-form/tree/issue-templates/apps/bug-repro
+        https://codesandbox.io/s/github/airjp73/remix-validated-form/tree/main/apps/bug-repro
   - type: checkboxes
     id: packages
     attributes:
