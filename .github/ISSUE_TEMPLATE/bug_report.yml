@@ -25,12 +25,20 @@ body:
   - type: textarea
     attributes:
       label: What version of these packages are you using?
+      description: Feel free to remove any packages your aren't using
+      placeholder: |
+        - `remix-validated-form`: ^0.0.0
+        - `@remix-validated-form/with-zod`: ^0.0.0
+        - `@remix-validated-form/with-yup`: ^0.0.0
+        - `zod-form-data`: ^0.0.0
     validations:
       required: true
   - type: input
     attributes:
       label: Please provide a link to a minimal reproduction of the issue.
       description: You can click the Reproduction starter link above and edit the sandbox.
+    validations:
+      required: true
   - type: textarea
     attributes:
       label: Steps to Reproduce
