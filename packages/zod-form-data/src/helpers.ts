@@ -46,7 +46,7 @@ export const file: InputType<ZodTypeAny> = (schema = z.instanceof(File)) =>
   z.preprocess(val => {
     //Empty File object on no user input, so convert to undefined
     return val instanceof File && val.size === 0 ? undefined : val;
-  }, schema));
+  }, schema);
 
 export const repeatable: InputType<ZodArray<any>> = (
   schema = z.array(text())
