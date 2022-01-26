@@ -96,6 +96,7 @@ describe("Validation", () => {
         expect(validator.validate(person)).toEqual({
           data: person,
           error: undefined,
+          submittedData: person,
         });
       });
 
@@ -104,15 +105,18 @@ describe("Validation", () => {
         expect(validator.validate(obj)).toEqual({
           data: undefined,
           error: {
-            firstName: anyString,
-            lastName: anyString,
-            age: anyString,
-            "address.city": anyString,
-            "address.country": anyString,
-            "address.streetAddress": anyString,
-            "pets[0].name": anyString,
-            _submittedData: obj,
+            fieldErrors: {
+              firstName: anyString,
+              lastName: anyString,
+              age: anyString,
+              "address.city": anyString,
+              "address.country": anyString,
+              "address.streetAddress": anyString,
+              "pets[0].name": anyString,
+            },
+            subaction: undefined,
           },
+          submittedData: obj,
         });
       });
 
@@ -140,6 +144,7 @@ describe("Validation", () => {
             pets: [{ animal: "dog", name: "Fido" }],
           },
           error: undefined,
+          submittedData: objectFromPathEntries(Object.entries(data)),
         });
       });
 
@@ -154,10 +159,13 @@ describe("Validation", () => {
         expect(validator.validate(formData)).toEqual({
           data: undefined,
           error: {
-            "address.city": anyString,
-            "pets[0].name": anyString,
-            _submittedData: objectFromPathEntries([...formData.entries()]),
+            fieldErrors: {
+              "address.city": anyString,
+              "pets[0].name": anyString,
+            },
+            subaction: undefined,
           },
+          submittedData: objectFromPathEntries([...formData.entries()]),
         });
       });
 
@@ -183,6 +191,32 @@ describe("Validation", () => {
             pets: [{ animal: "dog", name: "Fido" }],
           },
           error: undefined,
+          subaction: undefined,
+          submittedData: objectFromPathEntries([...formData.entries()]),
+        });
+      });
+
+      it("should return the subactino in the ValidatorError if there is one", () => {
+        const person = {
+          lastName: "Doe",
+          age: 20,
+          address: {
+            streetAddress: "123 Main St",
+            city: "Anytown",
+            country: "USA",
+          },
+          pets: [{ animal: "dog", name: "Fido" }],
+          subaction: "updatePerson",
+        };
+        expect(validator.validate(person)).toEqual({
+          error: {
+            fieldErrors: {
+              firstName: anyString,
+            },
+            subaction: "updatePerson",
+          },
+          data: undefined,
+          submittedData: person,
         });
       });
     });
