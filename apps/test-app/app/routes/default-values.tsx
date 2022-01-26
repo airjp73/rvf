@@ -15,6 +15,7 @@ const validator = withZod(
     age: zfd.numeric(),
     likesPizza: zfd.checkbox(),
     favoriteDessert: z.union([z.literal("iceCream"), z.literal("cake")]),
+    likesColors: zfd.repeatable(),
   })
 );
 
@@ -31,6 +32,7 @@ export const loader: LoaderFunction = () => {
       age: 26,
       likesPizza: true,
       favoriteDessert: "cake",
+      likesColors: ["red", "green"],
     },
   });
 };
@@ -53,6 +55,33 @@ export default function DefaultValues() {
         label="Likes Pizza"
         value="yes"
       />
+      <Fieldset label="Which colors do you like">
+        <Input
+          data-testid="red"
+          name="likesColors"
+          type="checkbox"
+          label="Red"
+          value="red"
+          hideErrors
+        />
+        <Input
+          data-testid="blue"
+          name="likesColors"
+          type="checkbox"
+          label="Blue"
+          value="blue"
+          hideErrors
+        />
+        <Input
+          data-testid="green"
+          name="likesColors"
+          type="checkbox"
+          label="Green"
+          value="green"
+          hideErrors
+        />
+        <input name="likesColors" type="checkbox" value="yellow" />
+      </Fieldset>
       <Fieldset label="Favorite dessert">
         <Input
           data-testid="iceCream"
