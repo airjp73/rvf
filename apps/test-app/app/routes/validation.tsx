@@ -1,24 +1,44 @@
-import { withYup } from "@remix-validated-form/with-yup";
+import { withZod } from "@remix-validated-form/with-zod";
 import { ActionFunction, useActionData } from "remix";
 import { validationError, ValidatedForm } from "remix-validated-form";
-import * as yup from "yup";
+import { z } from "zod";
+import { zfd } from "zod-form-data";
 import { Input } from "~/components/Input";
 import { SubmitButton } from "~/components/SubmitButton";
 
-const schema = yup.object({
-  firstName: yup.string().label("First Name").required(),
-  lastName: yup.string().label("Last Name").required(),
-  email: yup.string().label("Email").email().required(),
-  contacts: yup
-    .array(
-      yup.object({
-        name: yup.string().label("Name of a contact").required(),
+const validator = withZod(
+  zfd.formData({
+    firstName: zfd.text(
+      z.string({
+        required_error: "First Name is a required field",
       })
-    )
-    .required(),
-});
-
-const validator = withYup(schema);
+    ),
+    lastName: zfd.text(
+      z.string({
+        required_error: "Last Name is a required field",
+      })
+    ),
+    email: zfd.text(
+      z
+        .string({
+          required_error: "Email is a required field",
+        })
+        .email({
+          message: "Email must be a valid email",
+        })
+    ),
+    contacts: z.array(
+      z.object({
+        name: zfd.text(
+          z.string({
+            required_error: "Name of a contact is a required field",
+          })
+        ),
+      })
+    ),
+    likesPizza: zfd.checkbox(),
+  })
+);
 
 export const action: ActionFunction = async ({ request }) => {
   const result = validator.validate(await request.formData());
@@ -37,6 +57,7 @@ export default function FrontendValidation() {
       <Input name="lastName" label="Last Name" />
       <Input name="email" label="Email" />
       <Input name="contacts[0].name" label="Name of a contact" />
+      <Input name="likesPizza" type="checkbox" label="Likes pizza" />
       <SubmitButton />
       <button type="reset">Reset</button>
     </ValidatedForm>

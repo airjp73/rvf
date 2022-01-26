@@ -127,6 +127,7 @@ describe("Validation", () => {
 
     cy.findByLabelText("First Name").type("John");
     cy.findByLabelText("Last Name").type("Doe");
+    cy.findByLabelText("Likes pizza").click();
     cy.findByText("Submit").click();
 
     cy.findByText("First Name is a required field").should("not.exist");
@@ -136,6 +137,7 @@ describe("Validation", () => {
 
     cy.findByLabelText("First Name").should("have.value", "John");
     cy.findByLabelText("Last Name").should("have.value", "Doe");
+    cy.findByLabelText("Likes pizza").should("be.checked");
 
     cy.findByLabelText("Email").type("an.email@example.com");
     cy.findByLabelText("Name of a contact").type("Someone else");
