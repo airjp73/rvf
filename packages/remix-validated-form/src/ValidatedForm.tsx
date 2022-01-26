@@ -20,8 +20,8 @@ import { omit, mergeRefs } from "./internal/util";
 import {
   FieldErrors,
   Validator,
-  FieldErrorsWithData,
   TouchedFields,
+  ValidationErrorResponseData,
 } from "./validation/types";
 
 export type FormProps<DataType> = {
@@ -68,25 +68,27 @@ export type FormProps<DataType> = {
   disableFocusOnError?: boolean;
 } & Omit<ComponentProps<typeof RemixForm>, "onSubmit">;
 
-function useFieldErrorsFromBackend(
+function useErrorResponseForThisForm(
   fetcher?: ReturnType<typeof useFetcher>,
   subaction?: string
-): FieldErrorsWithData | null {
+): ValidationErrorResponseData | null {
   const actionData = useActionData<any>();
-  if (fetcher) return (fetcher.data as any)?.fieldErrors;
-  if (!actionData) return null;
-  if (actionData.fieldErrors) {
-    const submittedData = actionData.fieldErrors?._submittedData;
-    const subactionsMatch = subaction
-      ? subaction === submittedData?.subaction
-      : !submittedData?.subaction;
-    return subactionsMatch ? actionData.fieldErrors : null;
+  if (fetcher) {
+    if ((fetcher.data as any)?.fieldErrors) return fetcher.data as any;
+    return null;
   }
+
+  if (!actionData?.fieldErrors) return null;
+  if (
+    (!subaction && !actionData.subaction) ||
+    actionData.subaction === subaction
+  )
+    return actionData;
   return null;
 }
 
 function useFieldErrors(
-  fieldErrorsFromBackend?: any
+  fieldErrorsFromBackend?: FieldErrors
 ): [FieldErrors, React.Dispatch<React.SetStateAction<FieldErrors>>] {
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>(
     fieldErrorsFromBackend ?? {}
@@ -136,11 +138,10 @@ const getDataFromForm = (el: HTMLFormElement) => new FormData(el);
  * and only if JS is disabled.
  */
 function useDefaultValues<DataType>(
-  fieldErrors?: FieldErrorsWithData | null,
+  repopulateFieldsFromBackend?: any,
   defaultValues?: Partial<DataType>
 ) {
-  const defaultsFromValidationError = fieldErrors?._submittedData;
-  return defaultsFromValidationError ?? defaultValues;
+  return repopulateFieldsFromBackend ?? defaultValues;
 }
 
 const focusFirstInvalidInput = (
@@ -190,15 +191,20 @@ export function ValidatedForm<DataType>({
   disableFocusOnError,
   ...rest
 }: FormProps<DataType>) {
-  const fieldErrorsFromBackend = useFieldErrorsFromBackend(fetcher, subaction);
-  const [fieldErrors, setFieldErrors] = useFieldErrors(fieldErrorsFromBackend);
+  const backendError = useErrorResponseForThisForm(fetcher, subaction);
+  const [fieldErrors, setFieldErrors] = useFieldErrors(
+    backendError?.fieldErrors
+  );
   const isSubmitting = useIsSubmitting(action, subaction, fetcher);
-  const defaultsToUse = useDefaultValues(fieldErrorsFromBackend, defaultValues);
+  const defaultsToUse = useDefaultValues(
+    backendError?.repopulateFields,
+    defaultValues
+  );
   const [touchedFields, setTouchedFields] = useState<TouchedFields>({});
   const [hasBeenSubmitted, setHasBeenSubmitted] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
   useSubmitComplete(isSubmitting, () => {
-    if (!fieldErrorsFromBackend && resetAfterSubmit) {
+    if (!backendError && resetAfterSubmit) {
       formRef.current?.reset();
     }
   });
@@ -277,10 +283,10 @@ export function ValidatedForm<DataType>({
         const result = validator.validate(getDataFromForm(event.currentTarget));
         if (result.error) {
           event.preventDefault();
-          setFieldErrors(result.error);
+          setFieldErrors(result.error.fieldErrors);
           if (!disableFocusOnError) {
             focusFirstInvalidInput(
-              result.error,
+              result.error.fieldErrors,
               customFocusHandlers(),
               formRef.current!
             );
