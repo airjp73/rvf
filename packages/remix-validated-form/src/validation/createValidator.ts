@@ -27,11 +27,9 @@ export function createValidator<T>(
           data: undefined,
           error: {
             fieldErrors: result.error,
-            repopulateFields: data,
             subaction: data.subaction,
           },
           submittedData: data,
-          subaction: data.subaction,
         };
       }
 
@@ -39,7 +37,6 @@ export function createValidator<T>(
         data: result.data,
         error: undefined,
         submittedData: data,
-        subaction: data?.subaction,
       };
     },
     validateField: (data: GenericObject | FormData, field: string) =>
