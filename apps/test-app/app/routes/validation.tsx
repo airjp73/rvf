@@ -22,7 +22,7 @@ const validator = withYup(schema);
 
 export const action: ActionFunction = async ({ request }) => {
   const result = validator.validate(await request.formData());
-  if (result.error) return validationError(result.error);
+  if (result.error) return validationError(result.error, result.submittedData);
   const { firstName, lastName } = result.data;
 
   return { message: `Submitted for ${firstName} ${lastName}!` };

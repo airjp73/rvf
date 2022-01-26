@@ -122,7 +122,7 @@ describe("Validation", () => {
     cy.findByText("Submitted for John Doe!").should("exist");
   });
 
-  it("should not lose field values when showing validation errors without JS", () => {
+  it("should support repopulating field values when showing validation errors without JS", () => {
     cy.visitWithoutJs("/validation");
 
     cy.findByLabelText("First Name").type("John");
@@ -144,7 +144,7 @@ describe("Validation", () => {
     cy.findByText("Submitted for John Doe!").should("exist");
   });
 
-  it("should not lose field values when showing custom validation if done properly", () => {
+  it("should support repopulating field values when showing custom validation", () => {
     cy.visitWithoutJs("/custom-server-validation");
 
     cy.findByText("Submit").click();
