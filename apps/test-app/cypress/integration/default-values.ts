@@ -7,6 +7,9 @@ describe("Validation", () => {
     cy.findByLabelText("Age").should("have.value", "26");
     cy.findByLabelText("Likes Pizza").should("be.checked");
     // Label text seems to grab the wrong input for some reason
+    cy.findByTestId("red").should("be.checked");
+    cy.findByTestId("green").should("be.checked");
+    cy.findByTestId("blue").should("not.be.checked");
     cy.findByTestId("cake").should("be.checked");
     cy.findByTestId("iceCream").should("not.be.checked");
   });
@@ -18,6 +21,9 @@ describe("Validation", () => {
     cy.findByLabelText("Email").should("have.value", "jane.doe@example.com");
     cy.findByLabelText("Age").should("have.value", "26");
     cy.findByLabelText("Likes Pizza").should("be.checked");
+    cy.findByTestId("red").should("be.checked");
+    cy.findByTestId("green").should("be.checked");
+    cy.findByTestId("blue").should("not.be.checked");
     cy.findByTestId("cake").should("be.checked");
     cy.findByTestId("iceCream").should("not.be.checked");
   });

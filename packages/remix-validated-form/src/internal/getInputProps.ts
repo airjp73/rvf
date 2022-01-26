@@ -40,7 +40,7 @@ const defaultValidationBehavior: ValidationBehaviorOptions = {
 };
 
 const getCheckboxDefaultChecked = (value: string, defaultValue: any) => {
-  if (Array.isArray(defaultValue)) defaultValue.includes(value);
+  if (Array.isArray(defaultValue)) return defaultValue.includes(value);
   if (typeof defaultValue === "boolean") return defaultValue;
   if (typeof defaultValue === "string") return defaultValue === value;
   return undefined;
