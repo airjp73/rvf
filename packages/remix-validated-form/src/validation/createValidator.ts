@@ -1,4 +1,4 @@
-import { GenericObject, Validator } from "..";
+import { CreateValidatorArg, GenericObject, Validator } from "..";
 import { objectFromPathEntries } from "../internal/flatten";
 
 const preprocessFormData = (data: GenericObject | FormData): GenericObject => {
@@ -14,19 +14,33 @@ const preprocessFormData = (data: GenericObject | FormData): GenericObject => {
  * It provides built-in handling for unflattening nested objects and
  * extracting the values from FormData.
  */
-export function createValidator<T>(validator: Validator<T>): Validator<T> {
+export function createValidator<T>(
+  validator: CreateValidatorArg<T>
+): Validator<T> {
   return {
-    validate: (value: GenericObject | FormData) => {
+    validate: (value) => {
       const data = preprocessFormData(value);
       const result = validator.validate(data);
+
       if (result.error) {
-        // Ideally, we should probably be returning a nested object like
-        // { fieldErrors: {}, submittedData: {} }
-        // We should do this in the next major version of the library
-        // but for now, we can sneak it in with the fieldErrors.
-        result.error._submittedData = data as any;
+        return {
+          data: undefined,
+          error: {
+            fieldErrors: result.error,
+            repopulateFields: data,
+            subaction: data.subaction,
+          },
+          submittedData: data,
+          subaction: data.subaction,
+        };
       }
-      return result;
+
+      return {
+        data: result.data,
+        error: undefined,
+        submittedData: data,
+        subaction: data?.subaction,
+      };
     },
     validateField: (data: GenericObject | FormData, field: string) =>
       validator.validateField(preprocessFormData(data), field),
