@@ -210,6 +210,25 @@ describe("zod helpers", () => {
       });
     });
 
+    it("should work with object schemas", () => {
+      const s = zfd.formData(
+        z.object({
+          name: z.any(),
+          checkboxGroup: z.any(),
+        })
+      );
+
+      const formData = new TestFormData();
+      formData.append("name", "Someone");
+      formData.append("checkboxGroup", "value1");
+      formData.append("checkboxGroup", "value2");
+
+      expect(s.parse(formData)).toEqual({
+        name: "Someone",
+        checkboxGroup: ["value1", "value2"],
+      });
+    });
+
     it("should combo well with other helpers", () => {
       const s = zfd.formData({
         name: zfd.text(z.string().optional()),
