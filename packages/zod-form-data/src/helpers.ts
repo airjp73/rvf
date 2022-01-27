@@ -63,7 +63,7 @@ interface FileObject {
   }>;
   <Key extends string, ProvidedType extends z.ZodTypeAny>(
     key: Key,
-    serverType?: ProvidedType
+    serverType: ProvidedType
   ): z.ZodObject<{
     [key in Key]: z.ZodEffects<ProvidedType>;
   }>;
