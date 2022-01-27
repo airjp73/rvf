@@ -173,7 +173,7 @@ If you call `zfd.file` with no arguments, it will assume the field is a required
 #### Usage
 
 ```ts
-const const schema = zfd.formData({
+const schema = zfd.formData({
   requiredFile: zfd.file(),
   optional: zfd.file().optional(),
 })
@@ -185,10 +185,12 @@ the field will be a `File` on the client side, but an ID string (or URL) after u
 In this case you will need the schema to switch to string on the server:
 
 ```ts
-const const schema = (clientSide = true) => zfd.formData({
+const schema = (clientSide = true) => zfd.formData({
   file: clientSide ? zfd.file() : zfd.file(z.string()),
 })
 ```
+
+*Note: This will return `File | string` for the type. TODO: Example of type safety for this* 
 
 ### repeatable
 

@@ -42,8 +42,8 @@ export const checkbox = ({ trueValue = "on" }: CheckboxOpts = {}) =>
     z.literal(undefined).transform(() => false),
   ]);
 
-export const file: InputType<ZodTypeAny> = (schema = z.instanceof(File)) =>
-  z.preprocess(val => {
+export const file: InputType<z.ZodType<File>> = (schema = z.instanceof(File)) =>
+  z.preprocess((val) => {
     //Empty File object on no user input, so convert to undefined
     return val instanceof File && val.size === 0 ? undefined : val;
   }, schema);
