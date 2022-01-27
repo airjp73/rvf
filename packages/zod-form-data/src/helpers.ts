@@ -57,6 +57,25 @@ export const file: InputType<z.ZodType<File>> = (schema = z.instanceof(File)) =>
     return val instanceof File && val.size === 0 ? undefined : val;
   }, schema);
 
+interface FileObject {
+  <Key extends string>(key: Key): z.ZodObject<{
+    [key in Key]: z.ZodEffects<z.ZodType<File>>;
+  }>;
+  <Key extends string, ProvidedType extends z.ZodTypeAny>(
+    key: Key,
+    serverType?: ProvidedType
+  ): z.ZodObject<{
+    [key in Key]: z.ZodEffects<ProvidedType>;
+  }>;
+}
+
+//This is the correct typing but I can't figure out the TS error
+export const fileObject: FileObject = (key, serverType) => {
+  return z.object({
+    [key]: serverType ? file(serverType) : file(),
+  });
+};
+
 export const repeatable: InputType<ZodArray<any>> = (
   schema = z.array(text())
 ) => {

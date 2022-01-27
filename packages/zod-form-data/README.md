@@ -190,25 +190,19 @@ const schema = zfd.formData({
 ```
 
 There is a unique case in Remix when using a CustomUploadHandler, 
-the field will be a `File` on the client side, but an ID string (or URL) after uploading on the server.
+the field will be a `File` on the client side, but an ID string / number / url after uploading on the server.
 
-In this case you will need the schema to switch to string on the server:
+In this case you will need the schema to switch types on the server, and that's where `zfd.fileObject()` comes in.
 
 ```ts
+//Create the base schema without your files
 const baseSchema = z.object({
-  someOtherField: zfd.text(),
+  description: zfd.text(),
 });
 
-const clientSchema = z.formData(baseSchema.and({
-  file: zfd.file()
-}))
-
-const serverSchema = z.formData(baseSchema.and({
-  file: z.string()
-}))
+const clientValidator = withZod(baseSchema.and(zfd.fileObject('myFileKey'))) //Defaults to File
+const serverValidator = withZod(baseSchema.and(zfd.fileObject('myFileKey', z.string())))
 ```
-
-*Note: This will return `File | string` for the type. TODO: Example of type safety for this* 
 
 ### repeatable
 
