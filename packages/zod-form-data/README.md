@@ -175,23 +175,22 @@ If you call `zfd.file` with no arguments, it will assume the field is a required
 ```ts
 const schema = zfd.formData({
   requiredFile: zfd.file(),
+  optional: zfd.file().optional(),
 })
 ```
 
 There is a unique case in Remix when using a CustomUploadHandler, 
-the field will be a `File` on the client side, but an ID string / number / url after uploading on the server.
+the field will be a `File` on the client side, but an ID string (or URL) after uploading on the server.
 
-In this case you will need the schema to switch types on the server, and that's where `zfd.fileObject()` comes in.
+In this case you will need the schema to switch to string on the server:
 
 ```ts
-//Create the base schema without your files
-const baseSchema = z.object({
-  description: zfd.text(),
-});
-
-const clientValidator = withZod(baseSchema.and(zfd.fileObject('myFileKey'))) //Defaults to File
-const serverValidator = withZod(baseSchema.and(zfd.fileObject('myFileKey', z.string())))
+const schema = (clientSide = true) => zfd.formData({
+  file: clientSide ? zfd.file() : zfd.file(z.string()),
+})
 ```
+
+*Note: This will return `File | string` for the type. TODO: Example of type safety for this* 
 
 ### repeatable
 
