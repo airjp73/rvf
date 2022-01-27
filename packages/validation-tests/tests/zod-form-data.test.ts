@@ -156,6 +156,42 @@ describe("zod helpers", () => {
     });
   });
 
+  describe("file", () => {
+    class MockFile {
+      size: number;
+
+      constructor(size: number) {
+        this.size = size;
+      }
+    }
+
+    beforeEach(() => {
+      (global as any).File = MockFile;
+    });
+
+    afterEach(() => {
+      delete (global as any).File;
+    });
+
+    it("should convert empty files to undefined", () => {
+      const file = new MockFile(0);
+      const s = zfd.file();
+      expectError(s, file);
+    });
+
+    it("should handle optional", () => {
+      const file = new MockFile(0);
+      const s = zfd.file(z.instanceof(File).optional());
+      expect(s.parse(file)).toEqual(undefined);
+    });
+
+    it("should return data as-is for files that are not empty", () => {
+      const file = new MockFile(50);
+      const s = zfd.file();
+      expectValid(s, file);
+    });
+  });
+
   describe("formData", () => {
     it("should gather up repeated fields into arrays and leave single fields alone", () => {
       const s = zfd.formData({
