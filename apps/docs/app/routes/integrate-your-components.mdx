@@ -33,7 +33,7 @@ type MyInputProps = {
   label: string;
 };
 
-export const MyInput = ({ name, label }: InputProps) => {
+export const MyInput = ({ name, label }: MyInputProps) => {
   const { error, getInputProps } = useField(name);
   return (
     <div>
@@ -70,6 +70,10 @@ export const MySubmitButton = () => {
 Now, we can create a fully validated form with minimal boilerplate.
 
 ```tsx
+import { ValidatedForm } from 'remix-validated-form';
+import { withZod } from "@remix-validated-form/with-zod";
+import { z } from "zod";
+
 export const validator = withZod(
   z.object({
     firstName: z
