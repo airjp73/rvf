@@ -1,4 +1,13 @@
-import { z, ZodArray, ZodEffects, ZodNumber, ZodString, ZodTypeAny } from "zod";
+import {
+  z,
+  ZodArray,
+  ZodEffects,
+  ZodNumber,
+  ZodObject,
+  ZodString,
+  ZodType,
+  ZodTypeAny,
+} from "zod";
 
 type InputType<DefaultType extends ZodTypeAny> = {
   (): ZodEffects<DefaultType>;
@@ -64,7 +73,14 @@ export const repeatableOfType = <T extends ZodTypeAny>(
 
 const entries = z.array(z.tuple([z.string(), z.any()]));
 
-export const formData = <T extends z.ZodRawShape>(shape: T) =>
+type FormDataType = {
+  <T extends z.ZodRawShape>(shape: T): ZodEffects<ZodObject<T>>;
+  <T extends z.ZodTypeAny>(schema: T): ZodEffects<T>;
+};
+
+export const formData: FormDataType = <T extends z.ZodRawShape | z.ZodTypeAny>(
+  shapeOrSchema: T
+) =>
   z.preprocess(
     preprocessIfValid(
       // We're avoiding using `instanceof` here because different environments
@@ -93,5 +109,5 @@ export const formData = <T extends z.ZodRawShape>(shape: T) =>
           }, {} as Record<string, unknown | unknown[]>);
         })
     ),
-    z.object(shape)
+    shapeOrSchema instanceof ZodType ? shapeOrSchema : z.object(shapeOrSchema)
   );

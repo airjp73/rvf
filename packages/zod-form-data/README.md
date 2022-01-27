@@ -48,6 +48,7 @@ Contents
 * [text](#text)
 * [numeric](#numeric)
 * [checkbox](#checkbox)
+* [file](#file)
 * [repeatable](#repeatable)
 * [repeatableOfType](#repeatableOfType)
 
@@ -76,6 +77,15 @@ const schema = zfd.formData({
 
 const someFormData = new FormData();
 const dataObject = schema.parse(someFormData);
+```
+
+It's also possible to pass a zod schema to `formData`.
+
+```ts
+const schema = zfd.formData(z.object({
+  field1: zfd.text(),
+  field2: zfd.text(),
+}))
 ```
 
 ### text
@@ -175,7 +185,7 @@ If you call `zfd.file` with no arguments, it will assume the field is a required
 ```ts
 const schema = zfd.formData({
   requiredFile: zfd.file(),
-  optional: zfd.file().optional(),
+  optional: zfd.file(z.instanceof(File).optional()),
 })
 ```
 
@@ -185,9 +195,17 @@ the field will be a `File` on the client side, but an ID string (or URL) after u
 In this case you will need the schema to switch to string on the server:
 
 ```ts
-const schema = (clientSide = true) => zfd.formData({
-  file: clientSide ? zfd.file() : zfd.file(z.string()),
-})
+const baseSchema = z.object({
+  someOtherField: zfd.text(),
+});
+
+const clientSchema = z.formData(baseSchema.and({
+  file: zfd.file()
+}))
+
+const serverSchema = z.formData(baseSchema.and({
+  file: z.string()
+}))
 ```
 
 *Note: This will return `File | string` for the type. TODO: Example of type safety for this* 

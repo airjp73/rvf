@@ -2,7 +2,12 @@
   "extends": "../tsconfig.json",
   "compilerOptions": {
     "noEmit": true,
-    "types": ["cypress", "@testing-library/cypress", "node"],
+    "types": [
+      "cypress",
+      "@testing-library/cypress",
+      "node",
+      "cypress-file-upload"
+    ],
     "baseUrl": "..",
     "paths": { "~/*": ["app/*"] }
   },

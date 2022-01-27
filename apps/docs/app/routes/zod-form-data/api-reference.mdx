@@ -10,6 +10,7 @@ import { PropHeader } from "~/components/PropHeader";
 - [formData](#formData)
 - [text](#text)
 - [numeric](#numeric)
+- [file](#file)
 - [checkbox](#checkbox)
 - [repeatable](#repeatable)
 - [repeatableOfType](#repeatableOfType)
@@ -44,6 +45,17 @@ const schema = zfd.formData({
 
 const someFormData = new FormData();
 const dataObject = schema.parse(someFormData);
+```
+
+It's also possible to pass a zod schema to `formData`.
+
+```ts
+const schema = zfd.formData(
+  z.object({
+    field1: zfd.text(),
+    field2: zfd.text(),
+  })
+);
 ```
 
 <PropHeader
@@ -88,6 +100,48 @@ const schema = zfd.formData({
   numberWithMin: zfd.numeric(z.number().min(13)),
   optional: zfd.numeric(z.number().optional()),
 });
+```
+
+<PropHeader
+  prop="file"
+  type="(schema?: ZodTypeAny) => ZodEffects"
+/>
+
+Transforms any empty File objects to `undefined` before validating.
+This makes it so empty files will fail required checks,
+allowing you to use `optional` for optional fields.
+If you call `zfd.file` with no arguments, it will assume the field is a required file by default.
+
+#### Usage
+
+```ts
+const schema = zfd.formData({
+  requiredFile: zfd.file(),
+  optional: zfd.file(z.instanceof(File).optional()),
+});
+```
+
+There is a unique case in Remix when using a CustomUploadHandler,
+the field will be a `File` on the client side, but an ID string (or URL) after uploading on the server.
+
+In this case you will need the schema to switch to string on the server:
+
+```ts
+const baseSchema = z.object({
+  someOtherField: zfd.text(),
+});
+
+const clientSchema = z.formData(
+  baseSchema.and({
+    file: zfd.file(),
+  })
+);
+
+const serverSchema = z.formData(
+  baseSchema.and({
+    file: z.string(),
+  })
+);
 ```
 
 <PropHeader

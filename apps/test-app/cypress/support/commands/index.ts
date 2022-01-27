@@ -1,4 +1,5 @@
 import "@testing-library/cypress/add-commands";
+import "cypress-file-upload";
 
 beforeEach(() => {
   const parentDocument = (cy as any).state("window").parent.document;
