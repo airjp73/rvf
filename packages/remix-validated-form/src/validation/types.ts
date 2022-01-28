@@ -15,7 +15,7 @@ export type ValidationErrorResponseData = {
   repopulateFields?: unknown;
 };
 
-export type BaseResult = { submittedData: unknown };
+export type BaseResult = { submittedData: GenericObject };
 export type ErrorResult = BaseResult & {
   error: ValidatorError;
   data: undefined;
