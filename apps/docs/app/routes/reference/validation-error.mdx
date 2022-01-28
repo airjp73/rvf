@@ -32,6 +32,21 @@ const action: ActionFunction = async ({ request }) => {
 };
 ```
 
+## Omitting data from the second argument
+
+In some cases, you might not want to return all the data the user submitted as part of your response.
+In those cases, you can omit some fields or not pass a second argument at all.
+
+```ts
+// Omitting some fields
+const { password, confirmPassword, ...rest } =
+  result.submittedData;
+return validationError(result.error, rest);
+
+// Omitting the second argument
+return validationError(result.error);
+```
+
 ## Supporting additional validations
 
 Sometimes you might want to run some additional checks on the data beyond what the validator can do.
@@ -59,8 +74,9 @@ const action: ActionFunction = async ({ request }) => {
           username: "This username is already taken",
         },
         // 🚨 Important!
-        // If you're using the `subaction` prop on the ValidatedForm,
-        // we need to specify this or else the form won't be repopulated.
+        // If you're using the `subaction` prop,
+        // you need to specify a subaction here
+        // or else the errors won't be displayed.
         subaction: result.data.subaction,
       },
       result.data
