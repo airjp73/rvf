@@ -149,14 +149,12 @@ const serverSchema = z.formData(
   type="(params?: { trueValue?: string }) => ZodUnion"
 />
 
-Validates a checkbox field as a boolean.
-Unlike other helpers, this is not a preprocesser,
-but a complete schema that should do everything you need.
-By default, it will treat `"on"` as true and `undefined` as false,
-but you can customize the true value.
+Turns the value from a checkbox field into a boolean.
+By default, this does not require the checkbox to be checked.
+For checkboxes with a `value` attribute, you can pass that as the `trueValue` option.
 
 If you have a checkbox group and you want to leave the values as strings,
-[repeatableField](#repeatableField) might be what you want.
+[repeatable](#repeatable) might be what you want.
 
 #### Usage
 
@@ -210,7 +208,8 @@ and transforms the value of that field to always be an array.
 This is specifically meant to work with data transformed by `zfd.formData`
 (or by `remix-validated-form`).
 
-If you don't provide a schema, it will assume the field is an array of [zfd.text](#text) fields.
+If you don't provide a schema, it will assume the field is an array of [zfd.text](#text) fields
+and will not require any values to be present.
 If you want to customize the type of the item, but don't care about validations on the array itself,
 you can use [repeatableOfType](#repeatableOfType).
 
