@@ -82,6 +82,18 @@ describe("Validation", () => {
     cy.findByLabelText("First Name").should("be.focused");
   });
 
+  it("should focus the selected radio if that is the first invalid field", () => {
+    cy.visit("/validation-radio");
+    cy.findByText("Submit").click();
+    cy.findByTestId("expected").should("be.focused");
+  });
+
+  it("should focus the first invalid field even if it's outside the form", () => {
+    cy.visit("/validation-external");
+    cy.findByText("Submit").click();
+    cy.findByLabelText("Text 1").should("be.focused");
+  });
+
   it("should not focus the first invalid field if disableFocusOnError is true", () => {
     cy.visit("/validation-nofocus");
 

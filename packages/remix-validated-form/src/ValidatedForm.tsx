@@ -5,6 +5,7 @@ import {
   useFormAction,
   useTransition,
 } from "@remix-run/react";
+import uniq from "lodash/uniq";
 import React, {
   ComponentProps,
   useEffect,
@@ -144,33 +145,57 @@ function useDefaultValues<DataType>(
   return repopulateFieldsFromBackend ?? defaultValues;
 }
 
+function nonNull<T>(value: T | null | undefined): value is T {
+  return value !== null;
+}
+
 const focusFirstInvalidInput = (
   fieldErrors: FieldErrors,
   customFocusHandlers: MultiValueMap<string, () => void>,
   formElement: HTMLFormElement
 ) => {
-  const invalidInputSelector = Object.keys(fieldErrors)
-    .map((fieldName) => `input[name="${fieldName}"]`)
-    .join(",");
-  const invalidInputs = formElement.querySelectorAll(invalidInputSelector);
-  for (const element of invalidInputs) {
-    const input = element as HTMLInputElement;
+  const namesInOrder = [...formElement.elements]
+    .map((el) => {
+      const input = el instanceof RadioNodeList ? el[0] : el;
+      if (input instanceof HTMLInputElement) return input.name;
+      return null;
+    })
+    .filter(nonNull)
+    .filter((name) => name in fieldErrors);
+  const uniqueNamesInOrder = uniq(namesInOrder);
 
-    if (customFocusHandlers.has(input.name)) {
-      customFocusHandlers.getAll(input.name).forEach((handler) => {
+  for (const fieldName of uniqueNamesInOrder) {
+    if (customFocusHandlers.has(fieldName)) {
+      customFocusHandlers.getAll(fieldName).forEach((handler) => {
         handler();
       });
       break;
     }
 
-    // We don't filter these out ahead of time because
-    // they could have a custom focus handler
-    if (input.type === "hidden") {
-      continue;
+    const elem = formElement.elements.namedItem(fieldName);
+    if (!elem) continue;
+
+    if (elem instanceof RadioNodeList) {
+      const selectedRadio =
+        [...elem]
+          .filter(
+            (item): item is HTMLInputElement => item instanceof HTMLInputElement
+          )
+          .find((item) => item.value === elem.value) ?? elem[0];
+      if (selectedRadio && selectedRadio instanceof HTMLInputElement) {
+        selectedRadio.focus();
+        break;
+      }
     }
 
-    input.focus();
-    break;
+    if (elem instanceof HTMLInputElement) {
+      if (elem.type === "hidden") {
+        continue;
+      }
+
+      elem.focus();
+      break;
+    }
   }
 };
 
