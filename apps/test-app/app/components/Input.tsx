@@ -8,6 +8,7 @@ type InputProps = {
   value?: string;
   hideErrors?: boolean;
   "data-testid"?: string;
+  form?: string;
 };
 
 export const Input = forwardRef(
@@ -19,6 +20,7 @@ export const Input = forwardRef(
       value,
       hideErrors: noErrors,
       "data-testid": dataTestId,
+      form,
     }: InputProps,
     ref: React.ForwardedRef<HTMLInputElement>
   ) => {
@@ -29,6 +31,7 @@ export const Input = forwardRef(
         <input
           data-testid={dataTestId}
           {...getInputProps({
+            form,
             type,
             ref,
             id: name,
