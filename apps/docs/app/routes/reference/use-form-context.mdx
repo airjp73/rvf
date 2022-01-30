@@ -11,42 +11,45 @@ import { PropHeader } from "~/components/PropHeader";
   type="() => FormContext"
 />
 
-useFormContext use the context api that's returns the value of the form context.
-This is usually not necessary,
-but can be useful in some situations.
+Uses the context api to return the value of the current form context.
+This should be used within the context of a `ValidatedForm`.
 
-Usage examples:
+#### Usage
 
-It will not work:
-
-```tsx
-const FormComponent = () => {
-  const { isValid } = useFormContext();
-
-  return (
-    <ValidatedForm>
-      <input name="name" />
-      <Button disabled={!isValid}>Submit</Button>
-    </ValidatedForm>
-  );
-};
-```
-
-As ValidatedForm is a context provider, the useFormContext hook need to be inside a children component of ValidatedForm.
-
-It will work:
+_Correct_: This will work because it's used within the context of a `ValidatedForm`.
 
 ```tsx
 const Button = () => {
-  const { isValid } = useFormContext();
-  return <button disabled={!isValid}>{children}</button>
-}
+  const { isSubmitting } = useFormContext();
+  return (
+    <Button disabled={isSubmitting}>
+      {isSubmitting ? "Submitting..." : "Submit"}
+    </Button>
+  );
+};
 
 const FormComponent = () => {
   return (
     <ValidatedForm>
       <input name="name" />
       <Button>Submit</Button>
+    </ValidatedForm>
+  );
+};
+```
+
+_Incorrect_: This will not work because it's used outside the `ValidatedForm`.
+
+```tsx
+const FormComponent = () => {
+  const { isSubmitting } = useFormContext();
+
+  return (
+    <ValidatedForm>
+      <input name="name" />
+      <Button disabled={isSubmitting}>
+        {isSubmitting ? "Submitting..." : "Submit"}
+      </Button>
     </ValidatedForm>
   );
 };
