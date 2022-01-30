@@ -8,6 +8,11 @@ body:
     attributes:
       value: |
         Thank you for contributing!
+
+        Do you need some help?
+        ======================
+        The issue tracker is meant for feature requests and bug reports only.
+        If you need help or have a question, feel free to ask in [Discussions](https://github.com/airjp73/remix-validated-form/discussions).
   - type: textarea
     attributes:
       label: What is the new or updated feature that you are suggesting?

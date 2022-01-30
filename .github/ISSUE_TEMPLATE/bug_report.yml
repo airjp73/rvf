@@ -9,10 +9,14 @@ body:
       value: |
         Thank you for contributing!
 
-        To help describe the issue, please provide the following information.
+        Do you need some help?
+        ======================
+        The issue tracker is meant for feature requests and bug reports only.
+        If you need help or have a question, feel free to ask in [Discussions](https://github.com/airjp73/remix-validated-form/discussions).
 
         ### Reproduction starter:
         https://codesandbox.io/s/github/airjp73/remix-validated-form/tree/main/apps/bug-repro
+
   - type: checkboxes
     id: packages
     attributes:
@@ -35,7 +39,7 @@ body:
   - type: input
     attributes:
       label: Please provide a link to a minimal reproduction of the issue.
-      description: You can click the Reproduction starter link above and edit the sandbox.
+      description: You can click the reproduction starter link above and edit the sandbox.
     validations:
       required: true
   - type: textarea
