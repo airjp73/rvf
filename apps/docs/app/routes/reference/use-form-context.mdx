@@ -11,9 +11,46 @@ import { PropHeader } from "~/components/PropHeader";
   type="() => FormContext"
 />
 
-Returns the value of the form context.
+useFormContext use the context api that's returns the value of the form context.
 This is usually not necessary,
 but can be useful in some situations.
+
+Usage examples:
+
+It will not work:
+
+```tsx
+const FormComponent = () => {
+  const { isValid } = useFormContext();
+
+  return (
+    <ValidatedForm>
+      <input name="name" />
+      <Button disabled={!isValid}>Submit</Button>
+    </ValidatedForm>
+  );
+};
+```
+
+As ValidatedForm is a context provider, the useFormContext hook need to be inside a children component of ValidatedForm.
+
+It will work:
+
+```tsx
+const Button = () => {
+  const { isValid } = useFormContext();
+  return <button disabled={!isValid}>{children}</button>
+}
+
+const FormComponent = () => {
+  return (
+    <ValidatedForm>
+      <input name="name" />
+      <Button>Submit</Button>
+    </ValidatedForm>
+  );
+};
+```
 
 ## FormContext
 
