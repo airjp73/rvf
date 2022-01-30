@@ -8,6 +8,15 @@ import {
   ValidationBehaviorOptions,
 } from "./internal/getInputProps";
 
+const useInternalFormContext = (hookName: string) => {
+  const context = useContext(FormContext);
+  if (!context)
+    throw new Error(
+      `${hookName} must be used within a ValidatedForm or ValidatedForm.Provider component`
+    );
+  return context;
+};
+
 export type FieldProps = {
   /**
    * The validation error message if there is one.
@@ -66,7 +75,7 @@ export const useField = (
     touchedFields,
     setFieldTouched,
     hasBeenSubmitted,
-  } = useContext(FormContext);
+  } = useInternalFormContext("useField");
 
   const isTouched = !!touchedFields[name];
   const { handleReceiveFocus } = options ?? {};
@@ -116,13 +125,14 @@ export const useField = (
 
 /**
  * Provides access to the entire form context.
- * This is not usually necessary, but can be useful for advanced use cases.
+ * Must be used within a ValidatedForm or ValidatedForm.Provider component.
  */
-export const useFormContext = () => useContext(FormContext);
+export const useFormContext = () => useInternalFormContext("useFormContext");
 
 /**
  * Returns whether or not the parent form is currently being submitted.
  * This is different from remix's `useTransition().submission` in that it
  * is aware of what form it's in and when _that_ form is being submitted.
  */
-export const useIsSubmitting = () => useFormContext().isSubmitting;
+export const useIsSubmitting = () =>
+  useInternalFormContext("useIsSubmitting").isSubmitting;
