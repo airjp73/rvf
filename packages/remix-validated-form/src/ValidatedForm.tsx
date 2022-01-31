@@ -33,7 +33,10 @@ export type FormProps<DataType> = {
    * A submit callback that gets called when the form is submitted
    * after all validations have been run.
    */
-  onSubmit?: (data: DataType, event: React.FormEvent<HTMLFormElement>) => void;
+  onSubmit?: (
+    data: DataType,
+    event: React.FormEvent<HTMLFormElement>
+  ) => Promise<void>;
   /**
    * Allows you to provide a `fetcher` from remix's `useFetcher` hook.
    * The form will use the fetcher for loading states, action data, etc
@@ -220,9 +223,9 @@ export function ValidatedForm<DataType>({
       clearError: (fieldName) => {
         setFieldErrors((prev) => omit(prev, fieldName));
       },
-      validateField: (fieldName) => {
+      validateField: async (fieldName) => {
         invariant(formRef.current, "Cannot find reference to form");
-        const { error } = validator.validateField(
+        const { error } = await validator.validateField(
           getDataFromForm(formRef.current),
           fieldName as any
         );
@@ -272,9 +275,11 @@ export function ValidatedForm<DataType>({
       ref={mergeRefs([formRef, formRefProp])}
       {...rest}
       action={action}
-      onSubmit={(event) => {
+      onSubmit={async (event) => {
         setHasBeenSubmitted(true);
-        const result = validator.validate(getDataFromForm(event.currentTarget));
+        const result = await validator.validate(
+          getDataFromForm(event.currentTarget)
+        );
         if (result.error) {
           event.preventDefault();
           setFieldErrors(result.error);

@@ -13,7 +13,7 @@ export type FormContextValue = {
   /**
    * Validate the specified field.
    */
-  validateField: (fieldName: string) => void;
+  validateField: (fieldName: string) => Promise<void>;
   /**
    * The `action` prop of the form.
    */
@@ -55,7 +55,7 @@ export type FormContextValue = {
 export const FormContext = createContext<FormContextValue>({
   fieldErrors: {},
   clearError: () => {},
-  validateField: () => {},
+  validateField: async () => await new Promise((res) => res()),
   isSubmitting: false,
   hasBeenSubmitted: false,
   isValid: true,

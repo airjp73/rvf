@@ -17,9 +17,9 @@ export const withYup = <Schema extends AnyObjectSchema>(
   validationSchema: Schema
 ): Validator<InferType<Schema>> => {
   return createValidator({
-    validate: (data) => {
+    validate: async (data) => {
       try {
-        const validated = validationSchema.validateSync(data, {
+        const validated = await validationSchema.validate(data, {
           abortEarly: false,
         });
         return { data: validated, error: undefined };
@@ -30,9 +30,9 @@ export const withYup = <Schema extends AnyObjectSchema>(
         };
       }
     },
-    validateField: (data, field) => {
+    validateField: async (data, field) => {
       try {
-        validationSchema.validateSyncAt(field, data);
+        await validationSchema.validateAt(field, data);
         return {};
       } catch (err) {
         return { error: (err as ValidationError).message };

@@ -81,7 +81,7 @@ const validationTestCases: ValidationTestCase[] = [
 describe("Validation", () => {
   describe.each(validationTestCases)("Adapter for $name", ({ validator }) => {
     describe("validate", () => {
-      it("should return the data when valid", () => {
+      it("should return the data when valid", async () => {
         const person: Person = {
           firstName: "John",
           lastName: "Doe",
@@ -93,15 +93,15 @@ describe("Validation", () => {
           },
           pets: [{ animal: "dog", name: "Fido" }],
         };
-        expect(validator.validate(person)).toEqual({
+        expect(await validator.validate(person)).toEqual({
           data: person,
           error: undefined,
         });
       });
 
-      it("should return field errors when invalid", () => {
+      it("should return field errors when invalid", async () => {
         const obj = { age: "hi!", pets: [{ animal: "dog" }] };
-        expect(validator.validate(obj)).toEqual({
+        expect(await validator.validate(obj)).toEqual({
           data: undefined,
           error: {
             firstName: anyString,
@@ -116,7 +116,7 @@ describe("Validation", () => {
         });
       });
 
-      it("should unflatten data when validating", () => {
+      it("should unflatten data when validating", async () => {
         const data = {
           firstName: "John",
           lastName: "Doe",
@@ -127,7 +127,7 @@ describe("Validation", () => {
           "pets[0].animal": "dog",
           "pets[0].name": "Fido",
         };
-        expect(validator.validate(data)).toEqual({
+        expect(await validator.validate(data)).toEqual({
           data: {
             firstName: "John",
             lastName: "Doe",
@@ -143,7 +143,7 @@ describe("Validation", () => {
         });
       });
 
-      it("should accept FormData directly and return errors", () => {
+      it("should accept FormData directly and return errors", async () => {
         const formData = new TestFormData();
         formData.set("firstName", "John");
         formData.set("lastName", "Doe");
@@ -151,7 +151,7 @@ describe("Validation", () => {
         formData.set("address.country", "USA");
         formData.set("pets[0].animal", "dog");
 
-        expect(validator.validate(formData)).toEqual({
+        expect(await validator.validate(formData)).toEqual({
           data: undefined,
           error: {
             "address.city": anyString,
@@ -161,7 +161,7 @@ describe("Validation", () => {
         });
       });
 
-      it("should accept FormData directly and return valid data", () => {
+      it("should accept FormData directly and return valid data", async () => {
         const formData = new TestFormData();
         formData.set("firstName", "John");
         formData.set("lastName", "Doe");
@@ -171,7 +171,7 @@ describe("Validation", () => {
         formData.set("pets[0].animal", "dog");
         formData.set("pets[0].name", "Fido");
 
-        expect(validator.validate(formData)).toEqual({
+        expect(await validator.validate(formData)).toEqual({
           data: {
             firstName: "John",
             lastName: "Doe",
@@ -188,16 +188,16 @@ describe("Validation", () => {
     });
 
     describe("validateField", () => {
-      it("should not return an error if field is valid", () => {
+      it("should not return an error if field is valid", async () => {
         const person = {
           firstName: "John",
           lastName: {}, // invalid, but we should only be validating firstName
         };
-        expect(validator.validateField(person, "firstName")).toEqual({
+        expect(await validator.validateField(person, "firstName")).toEqual({
           error: undefined,
         });
       });
-      it("should not return an error if a nested field is valid", () => {
+      it("should not return an error if a nested field is valid", async () => {
         const person = {
           firstName: "John",
           lastName: {}, // invalid, but we should only be validating firstName
@@ -209,25 +209,29 @@ describe("Validation", () => {
           pets: [{ animal: "dog", name: "Fido" }],
         };
         expect(
-          validator.validateField(person, "address.streetAddress")
+          await validator.validateField(person, "address.streetAddress")
         ).toEqual({
           error: undefined,
         });
-        expect(validator.validateField(person, "address.city")).toEqual({
+        expect(await validator.validateField(person, "address.city")).toEqual({
           error: undefined,
         });
-        expect(validator.validateField(person, "address.country")).toEqual({
+        expect(
+          await validator.validateField(person, "address.country")
+        ).toEqual({
           error: undefined,
         });
-        expect(validator.validateField(person, "pets[0].animal")).toEqual({
-          error: undefined,
-        });
-        expect(validator.validateField(person, "pets[0].name")).toEqual({
+        expect(await validator.validateField(person, "pets[0].animal")).toEqual(
+          {
+            error: undefined,
+          }
+        );
+        expect(await validator.validateField(person, "pets[0].name")).toEqual({
           error: undefined,
         });
       });
 
-      it("should return an error if field is invalid", () => {
+      it("should return an error if field is invalid", async () => {
         const person = {
           firstName: "John",
           lastName: {},
@@ -236,12 +240,12 @@ describe("Validation", () => {
             city: 1234,
           },
         };
-        expect(validator.validateField(person, "lastName")).toEqual({
+        expect(await validator.validateField(person, "lastName")).toEqual({
           error: anyString,
         });
       });
 
-      it("should return an error if a nested field is invalid", () => {
+      it("should return an error if a nested field is invalid", async () => {
         const person = {
           firstName: "John",
           lastName: {},
@@ -251,10 +255,12 @@ describe("Validation", () => {
           },
           pets: [{ animal: "dog" }],
         };
-        expect(validator.validateField(person, "address.country")).toEqual({
+        expect(
+          await validator.validateField(person, "address.country")
+        ).toEqual({
           error: anyString,
         });
-        expect(validator.validateField(person, "pets[0].name")).toEqual({
+        expect(await validator.validateField(person, "pets[0].name")).toEqual({
           error: anyString,
         });
       });

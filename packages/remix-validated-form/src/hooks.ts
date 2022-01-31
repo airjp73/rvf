@@ -20,7 +20,7 @@ export type FieldProps = {
   /**
    * Validates the field.
    */
-  validate: () => void;
+  validate: () => Promise<void>;
   /**
    * The default value of the field, if there is one.
    */
@@ -82,7 +82,7 @@ export const useField = (
       clearError: () => {
         clearError(name);
       },
-      validate: () => validateField(name),
+      validate: async () => await validateField(name),
       defaultValue: defaultValues
         ? get(defaultValues, toPath(name), undefined)
         : undefined,
