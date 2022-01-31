@@ -63,8 +63,8 @@ export function withZod<T, U>(
       const result = zodSchema.safeParse(data);
       return getValidateFieldResult(result, field);
     },
-    validateFieldAsync: (data, field) => {
-      const result = zodSchema.safeParse(data);
+    validateFieldAsync: async (data, field) => {
+      const result = await zodSchema.safeParseAsync(data);
       return getValidateFieldResult(result, field);
     },
   });
