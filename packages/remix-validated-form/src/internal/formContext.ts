@@ -51,14 +51,4 @@ export type FormContextValue = {
   setFieldTouched: (fieldName: string, touched: boolean) => void;
 };
 
-export const FormContext = createContext<FormContextValue>({
-  fieldErrors: {},
-  clearError: () => {},
-  validateField: async () => await new Promise((res) => res()),
-  isSubmitting: false,
-  hasBeenSubmitted: false,
-  validationState: "idle",
-  registerReceiveFocus: () => () => {},
-  touchedFields: {},
-  setFieldTouched: () => {},
-});
+export const FormContext = createContext<FormContextValue | null>(null);

@@ -28,7 +28,8 @@ export const action: ActionFunction = async ({
   const data = await validator.validate(
     await request.formData()
   );
-  if (data.error) return validationError(data.error);
+  if (data.error)
+    return validationError(data.error, data.submittedData);
   const { firstName, lastName, email } = data.data;
 
   return json({

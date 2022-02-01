@@ -23,11 +23,14 @@ describe("withZod", () => {
     expect(await withZod(schema).validate(obj)).toEqual({
       data: undefined,
       error: {
-        type: anyString,
-        bar: anyString,
-        foo: anyString,
-        _submittedData: obj,
+        fieldErrors: {
+          type: anyString,
+          bar: anyString,
+          foo: anyString,
+        },
+        subaction: undefined,
       },
+      submittedData: obj,
     });
   });
 
@@ -45,10 +48,13 @@ describe("withZod", () => {
     expect(await validator.validate(obj)).toEqual({
       data: undefined,
       error: {
-        field1: anyString,
-        field2: anyString,
-        _submittedData: obj,
+        fieldErrors: {
+          field1: anyString,
+          field2: anyString,
+        },
+        subaction: undefined,
       },
+      submittedData: obj,
     });
     expect(await validator.validateField(obj, "field1")).toEqual({
       error: anyString,
