@@ -3,6 +3,7 @@ import {
   useActionData,
   useFetcher,
   useFormAction,
+  useSubmit,
   useTransition,
 } from "@remix-run/react";
 import React, {
@@ -199,6 +200,7 @@ export function ValidatedForm<DataType>({
   const defaultsToUse = useDefaultValues(fieldErrorsFromBackend, defaultValues);
   const [touchedFields, setTouchedFields] = useState<TouchedFields>({});
   const [hasBeenSubmitted, setHasBeenSubmitted] = useState(false);
+  const submit = useSubmit();
   const formRef = useRef<HTMLFormElement>(null);
   useSubmitComplete(isSubmitting, () => {
     if (!fieldErrorsFromBackend && resetAfterSubmit) {
@@ -213,7 +215,8 @@ export function ValidatedForm<DataType>({
       action,
       defaultValues: defaultsToUse,
       isSubmitting: isSubmitting ?? false,
-      isValid: Object.keys(fieldErrors).length === 0,
+      validationState:
+        Object.keys(fieldErrors).length === 0 ? "valid" : "invalid",
       touchedFields,
       setFieldTouched: (fieldName: string, touched: boolean) =>
         setTouchedFields((prev) => ({
@@ -270,18 +273,40 @@ export function ValidatedForm<DataType>({
 
   const Form = fetcher?.Form ?? RemixForm;
 
+  let clickedButtonRef = React.useRef<any>();
+  useEffect(() => {
+    let form = formRef.current;
+    if (!form) return;
+
+    function handleClick(event: MouseEvent) {
+      if (!(event.target instanceof HTMLElement)) return;
+      let submitButton = event.target.closest<
+        HTMLButtonElement | HTMLInputElement
+      >("button,input[type=submit]");
+
+      if (submitButton && submitButton.type === "submit") {
+        clickedButtonRef.current = submitButton;
+      }
+    }
+
+    form.addEventListener("click", handleClick);
+    return () => {
+      form && form.removeEventListener("click", handleClick);
+    };
+  }, []);
+
   return (
     <Form
       ref={mergeRefs([formRef, formRefProp])}
       {...rest}
       action={action}
-      onSubmit={async (event) => {
+      onSubmit={async (e) => {
+        e.preventDefault();
         setHasBeenSubmitted(true);
         const result = await validator.validate(
-          getDataFromForm(event.currentTarget)
+          getDataFromForm(e.currentTarget)
         );
         if (result.error) {
-          event.preventDefault();
           setFieldErrors(result.error);
           if (!disableFocusOnError) {
             focusFirstInvalidInput(
@@ -291,7 +316,11 @@ export function ValidatedForm<DataType>({
             );
           }
         } else {
-          onSubmit?.(result.data, event);
+          onSubmit && onSubmit(result.data, e);
+          if (fetcher)
+            fetcher.submit(clickedButtonRef.current || e.currentTarget);
+          else submit(clickedButtonRef.current || e.currentTarget);
+          clickedButtonRef.current = null;
         }
       }}
       onReset={(event) => {

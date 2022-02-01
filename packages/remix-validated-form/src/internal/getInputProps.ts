@@ -8,7 +8,7 @@ export type ValidationBehaviorOptions = {
 
 export type CreateGetInputPropsOptions = {
   clearError: () => void;
-  validate: () => Promise<void>;
+  validate: () => void;
   defaultValue?: any;
   touched: boolean;
   setTouched: (touched: boolean) => void;
@@ -21,8 +21,8 @@ type HandledProps = "name" | "defaultValue" | "defaultChecked";
 type Callbacks = "onChange" | "onBlur";
 
 type MinimalInputProps = {
-  onChange?: (...args: any[]) => Promise<void>;
-  onBlur?: (...args: any[]) => Promise<void>;
+  onChange?: (...args: any[]) => void;
+  onBlur?: (...args: any[]) => void;
   defaultValue?: any;
   defaultChecked?: boolean;
   name?: string;
@@ -70,13 +70,13 @@ export const createGetInputProps = ({
 
     const inputProps: T = {
       ...props,
-      onChange: async (...args: unknown[]) => {
-        if (behavior === "onChange") await validate();
+      onChange: (...args: unknown[]) => {
+        if (behavior === "onChange") validate();
         else clearError();
         return props?.onChange?.(...args);
       },
-      onBlur: async (...args: unknown[]) => {
-        if (behavior === "onBlur") await validate();
+      onBlur: (...args: unknown[]) => {
+        if (behavior === "onBlur") validate();
         setTouched(true);
         return props?.onBlur?.(...args);
       },

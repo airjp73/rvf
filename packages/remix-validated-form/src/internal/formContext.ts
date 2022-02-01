@@ -29,10 +29,9 @@ export type FormContextValue = {
    */
   hasBeenSubmitted: boolean;
   /**
-   * Whether or not the form is valid.
-   * This is a shortcut for `Object.keys(fieldErrors).length === 0`.
+   * The current validation state of the form
    */
-  isValid: boolean;
+  validationState: "idle" | "validating" | "valid" | "invalid";
   /**
    * The default values of the form.
    */
@@ -58,7 +57,7 @@ export const FormContext = createContext<FormContextValue>({
   validateField: async () => await new Promise((res) => res()),
   isSubmitting: false,
   hasBeenSubmitted: false,
-  isValid: true,
+  validationState: "idle",
   registerReceiveFocus: () => () => {},
   touchedFields: {},
   setFieldTouched: () => {},

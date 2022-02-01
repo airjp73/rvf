@@ -20,7 +20,7 @@ export type FieldProps = {
   /**
    * Validates the field.
    */
-  validate: () => Promise<void>;
+  validate: () => void;
   /**
    * The default value of the field, if there is one.
    */
@@ -82,7 +82,7 @@ export const useField = (
       clearError: () => {
         clearError(name);
       },
-      validate: async () => await validateField(name),
+      validate: () => validateField(name),
       defaultValue: defaultValues
         ? get(defaultValues, toPath(name), undefined)
         : undefined,
@@ -126,3 +126,8 @@ export const useFormContext = () => useContext(FormContext);
  * is aware of what form it's in and when _that_ form is being submitted.
  */
 export const useIsSubmitting = () => useFormContext().isSubmitting;
+
+/**
+ * Returns the current validation state of the form.
+ */
+export const useValidationState = () => useFormContext().validationState;
