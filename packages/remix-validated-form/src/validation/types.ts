@@ -22,11 +22,13 @@ export type ValidateFieldResult = { error?: string };
  * A `Validator` can be passed to the `validator` prop of a `ValidatedForm`.
  */
 export type Validator<DataType> = {
-  validate: (unvalidatedData: GenericObject) => ValidationResult<DataType>;
+  validate: (
+    unvalidatedData: GenericObject
+  ) => Promise<ValidationResult<DataType>>;
   validateField: (
     unvalidatedData: GenericObject,
     field: string
-  ) => ValidateFieldResult;
+  ) => Promise<ValidateFieldResult>;
 };
 
 export type ValidatorData<T extends Validator<any>> = T extends Validator<

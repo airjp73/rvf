@@ -15,7 +15,7 @@ const validator = withZod(
 );
 
 export const action: ActionFunction = async ({ request }) => {
-  const result = validator.validate(await request.formData());
+  const result = await validator.validate(await request.formData());
   if (result.error) return validationError(result.error);
   const { likes } = result.data;
   const likesArray = Array.isArray(likes) ? likes : [likes];

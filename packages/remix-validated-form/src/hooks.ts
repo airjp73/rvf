@@ -126,3 +126,8 @@ export const useFormContext = () => useContext(FormContext);
  * is aware of what form it's in and when _that_ form is being submitted.
  */
 export const useIsSubmitting = () => useFormContext().isSubmitting;
+
+/**
+ * Returns the current validation state of the form.
+ */
+export const useValidationState = () => useFormContext().validationState;

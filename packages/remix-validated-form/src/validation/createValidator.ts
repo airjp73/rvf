@@ -16,9 +16,9 @@ const preprocessFormData = (data: GenericObject | FormData): GenericObject => {
  */
 export function createValidator<T>(validator: Validator<T>): Validator<T> {
   return {
-    validate: (value: GenericObject | FormData) => {
+    validate: async (value: GenericObject | FormData) => {
       const data = preprocessFormData(value);
-      const result = validator.validate(data);
+      const result = await validator.validate(data);
       if (result.error) {
         // Ideally, we should probably be returning a nested object like
         // { fieldErrors: {}, submittedData: {} }
@@ -28,7 +28,7 @@ export function createValidator<T>(validator: Validator<T>): Validator<T> {
       }
       return result;
     },
-    validateField: (data: GenericObject | FormData, field: string) =>
-      validator.validateField(preprocessFormData(data), field),
+    validateField: async (data: GenericObject | FormData, field: string) =>
+      await validator.validateField(preprocessFormData(data), field),
   };
 }

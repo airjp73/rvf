@@ -27,8 +27,8 @@ export function withZod<T, U>(
   zodSchema: z.Schema<T, U, unknown>
 ): Validator<T> {
   return createValidator({
-    validate: (value) => {
-      const result = zodSchema.safeParse(value);
+    validate: async (value) => {
+      const result = await zodSchema.safeParseAsync(value);
       if (result.success) return { data: result.data, error: undefined };
 
       const fieldErrors: FieldErrors = {};
@@ -38,8 +38,8 @@ export function withZod<T, U>(
       });
       return { error: fieldErrors, data: undefined };
     },
-    validateField: (data, field) => {
-      const result = zodSchema.safeParse(data);
+    validateField: async (data, field) => {
+      const result = await zodSchema.safeParseAsync(data);
       if (result.success) return { error: undefined };
       return {
         error: getIssuesForError(result.error).find((issue) => {

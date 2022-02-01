@@ -81,7 +81,7 @@ Clear the errors from all the specified fields.
 
 <PropHeader
   prop="validatedField"
-  type="(fieldName: string) => void"
+  type="(fieldName: string) => Promise<void>"
 />
 
 Performs validation on the specified field and populates `fieldErrors` if there is an error.
