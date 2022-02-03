@@ -88,8 +88,7 @@ export const useField = (
 
   const isTouched = !!touchedFields[name];
   const { handleReceiveFocus } = options ?? {};
-  const [validationState, setValidationState] =
-    useState<ValidationState>("idle");
+  const [isValidating, setValidating] = useState(false);
 
   useEffect(() => {
     if (handleReceiveFocus)
@@ -97,23 +96,28 @@ export const useField = (
   }, [handleReceiveFocus, name, registerReceiveFocus]);
 
   const field = useMemo<FieldProps>(() => {
+    const error = fieldErrors[name];
+    const getValidationState = (): ValidationState => {
+      if (isValidating) return "validating";
+      if (error) return "invalid";
+      if (!isTouched && !hasBeenSubmitted) return "idle";
+      return "valid";
+    };
     const helpers = {
-      error: fieldErrors[name],
+      error,
       clearError: () => {
         clearError(name);
       },
       validate: () => {
-        setValidationState("validating");
-        validateField(name).then((error) =>
-          setValidationState(error ? "invalid" : "valid")
-        );
+        setValidating(true);
+        validateField(name).then((error) => setValidating(false));
       },
       defaultValue: defaultValues
         ? get(defaultValues, toPath(name), undefined)
         : undefined,
       touched: isTouched,
       setTouched: (touched: boolean) => setFieldTouched(name, touched),
-      validationState,
+      validationState: getValidationState(),
     };
     const getInputProps = createGetInputProps({
       ...helpers,
@@ -130,9 +134,9 @@ export const useField = (
     name,
     defaultValues,
     isTouched,
-    validationState,
     hasBeenSubmitted,
     options?.validationBehavior,
+    isValidating,
     clearError,
     validateField,
     setFieldTouched,
