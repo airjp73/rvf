@@ -16,6 +16,9 @@ import { FormInput } from "~/components/FormInput";
 import { SubmitButton } from "~/components/SubmitButton";
 import { db } from "~/examples/usernameExists/db";
 
+/**
+ * The base schema for our form.
+ */
 const schema = z
   .object({
     username: zfd.text(),
@@ -30,13 +33,16 @@ const schema = z
       message: "Passwords must match",
     }
   );
+
+/**
+ * The client version of our validator
+ */
 const clientValidator = withZod(schema);
 
-type UsernameCheckReturnType = {
-  usernameTaken: boolean;
-  suggestions: string[];
-};
-
+/**
+ * In our action we create a second, server-side validation that checks if the
+ * username exists in the database already.
+ */
 export const action: ActionFunction = async ({
   request,
 }) => {
@@ -54,6 +60,7 @@ export const action: ActionFunction = async ({
     )
   );
 
+  // Since the db check is already in the schema, we can continue on as normal
   const result = await serverValidator.validate(
     await request.formData()
   );
@@ -66,8 +73,10 @@ export const action: ActionFunction = async ({
  * An input component that checks if a username is taken.
  */
 const UsernameInput = () => {
-  const usernameCheckFetcher =
-    useFetcher<UsernameCheckReturnType>();
+  const usernameCheckFetcher = useFetcher<{
+    usernameTaken: boolean;
+    suggestions: string[];
+  }>();
 
   const getUsernameMessage = () => {
     if (usernameCheckFetcher.state === "loading")
@@ -129,6 +138,9 @@ const UsernameInput = () => {
   );
 };
 
+/**
+ * Our actual route component
+ */
 export default function AsyncValidation() {
   const data = useActionData();
   return (

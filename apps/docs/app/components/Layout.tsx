@@ -38,6 +38,10 @@ const navSections: Section[] = [
         to: "/arrays-and-nested",
       },
       {
+        label: "Async Validation",
+        to: "/async-validation",
+      },
+      {
         label: "Validation library support",
         to: "/validation-library-support",
       },
