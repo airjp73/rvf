@@ -44,7 +44,7 @@ const testUploadHandler = async ({ name, stream }: any) => {
 };
 
 export const action: ActionFunction = async ({ request }) => {
-  const result = serverValidator.validate(
+  const result = await serverValidator.validate(
     await unstable_parseMultipartFormData(request, testUploadHandler)
   );
   if (result.error) return validationError(result.error);

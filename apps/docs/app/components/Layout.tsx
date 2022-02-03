@@ -38,8 +38,16 @@ const navSections: Section[] = [
         to: "/arrays-and-nested",
       },
       {
+        label: "Async Validation",
+        to: "/async-validation",
+      },
+      {
         label: "Validation library support",
         to: "/validation-library-support",
+      },
+      {
+        label: "Supporting users without JS",
+        to: "/supporting-no-js",
       },
     ],
   },
@@ -57,6 +65,10 @@ const navSections: Section[] = [
       {
         label: "useIsSubmitting",
         to: "/reference/use-is-submitting",
+      },
+      {
+        label: "useIsValid",
+        to: "/reference/use-is-valid",
       },
       {
         label: "useFormContext",

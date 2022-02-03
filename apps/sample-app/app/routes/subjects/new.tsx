@@ -5,7 +5,9 @@ import { SubjectForm, subjectFormValidator } from "~/components/SubjectForm";
 import { db } from "~/services/db.server";
 
 export const action: ActionFunction = async ({ request }) => {
-  const fieldValues = subjectFormValidator.validate(await request.formData());
+  const fieldValues = await subjectFormValidator.validate(
+    await request.formData()
+  );
   if (fieldValues.error) return validationError(fieldValues.error);
 
   const { teacher, subjectDays, ...newSubject } = fieldValues.data;

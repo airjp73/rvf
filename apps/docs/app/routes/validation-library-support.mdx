@@ -26,11 +26,11 @@ type ValidateFieldResult = { error?: string };
 type Validator<DataType> = {
   validate: (
     unvalidatedData: unknown
-  ) => ValidationResult<DataType>;
+  ) => Promise<ValidationResult<DataType>>;
   validateField: (
     unvalidatedData: unknown,
     field: string
-  ) => ValidateFieldResult;
+  ) => Promise<ValidateFieldResult>;
 };
 ```
 
@@ -52,7 +52,7 @@ export const withYup = <Schema extends AnyObjectSchema>(
   // we return based on the provided schema
 ): Validator<InferType<Schema>> =>
   createValidator({
-    validate: (unvalidatedData) => {
+    validate: async (unvalidatedData) => {
       // Validate with yup and return the
       // validated & typed data or the error
 
@@ -67,7 +67,7 @@ export const withYup = <Schema extends AnyObjectSchema>(
           data: undefined,
         };
     },
-    validateField: (unvalidatedData, field) => {
+    validateField: async (unvalidatedData, field) => {
       // Validate the specific field with yup
 
       if (isValid) return { error: undefined };

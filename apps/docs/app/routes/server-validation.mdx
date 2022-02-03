@@ -35,17 +35,25 @@ We can re-use this validator in our action like this.
 export const action: ActionFunction = async ({
   request,
 }) => {
-  const data = validator.validate(await request.formData());
-  if (data.error) return validationError(data.error);
-  const { firstName, lastName, email } = data.data;
+  const result = await validator.validate(
+    await request.formData()
+  );
 
+  if (result.error) {
+    // validationError comes from `remix-validated-form`
+    return validationError(result.error);
+  }
+
+  const { firstName, lastName, email } = result.data;
   // Do something with the data
 };
 ```
 
-If the `action` returns `validationError(data.error)`,
-the `ValidatedForm` will automatically pick up the error and display it.
-This is useful for cases where the user has javascript disabled.
+When we use the `validationError` to return our error,
+the `ValidatedForm` in our route component will automatically display the errors on the form fields.
+We pass the original data the user submitted as a second argument to `validationError`
+to specify how to repopulate the form if the user has JavaScript disabled.
+You can read more about this in the [API reference for `validationError`](/reference/validation-error).
 
 # Full implementation
 

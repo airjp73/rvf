@@ -19,7 +19,7 @@ export const validator = withZod(
 export const action: ActionFunction = async ({
   request,
 }) => {
-  const result = validator.validate(
+  const result = await validator.validate(
     await request.formData()
   );
   if (result.error) return validationError(result.error);

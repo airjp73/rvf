@@ -70,6 +70,17 @@ describe("Validation", () => {
     cy.findByText("Submitted for John Doe!").should("exist");
   });
 
+  it("should reset isValid to true when errors resolved", () => {
+    cy.visit("/validation-isvalid");
+
+    cy.findByText("Submit").click();
+
+    cy.findByText("First Name is a required field").should("exist");
+    cy.findByText("Submit").should("be.disabled");
+    cy.findByLabelText("First Name").should("be.focused").type("John");
+    cy.findByText("Submit").should("be.enabled");
+  });
+
   it("should focus the first invalid field", () => {
     cy.visit("/validation");
 
@@ -80,6 +91,18 @@ describe("Validation", () => {
     cy.findByText("First Name is a required field").should("exist");
     cy.findByText("Name of a contact is a required field").should("exist");
     cy.findByLabelText("First Name").should("be.focused");
+  });
+
+  it("should focus the selected radio if that is the first invalid field", () => {
+    cy.visit("/validation-radio");
+    cy.findByText("Submit").click();
+    cy.findByTestId("expected").should("be.focused");
+  });
+
+  it("should focus the first invalid field even if it's outside the form", () => {
+    cy.visit("/validation-external");
+    cy.findByText("Submit").click();
+    cy.findByLabelText("Text 1").should("be.focused");
   });
 
   it("should not focus the first invalid field if disableFocusOnError is true", () => {
@@ -122,11 +145,12 @@ describe("Validation", () => {
     cy.findByText("Submitted for John Doe!").should("exist");
   });
 
-  it("should not lose field values when showing validation errors without JS", () => {
+  it("should support repopulating field values when showing validation errors without JS", () => {
     cy.visitWithoutJs("/validation");
 
     cy.findByLabelText("First Name").type("John");
     cy.findByLabelText("Last Name").type("Doe");
+    cy.findByLabelText("Likes pizza").click();
     cy.findByText("Submit").click();
 
     cy.findByText("First Name is a required field").should("not.exist");
@@ -136,6 +160,7 @@ describe("Validation", () => {
 
     cy.findByLabelText("First Name").should("have.value", "John");
     cy.findByLabelText("Last Name").should("have.value", "Doe");
+    cy.findByLabelText("Likes pizza").should("be.checked");
 
     cy.findByLabelText("Email").type("an.email@example.com");
     cy.findByLabelText("Name of a contact").type("Someone else");
@@ -144,7 +169,7 @@ describe("Validation", () => {
     cy.findByText("Submitted for John Doe!").should("exist");
   });
 
-  it("should not lose field values when showing custom validation if done properly", () => {
+  it("should support repopulating field values when showing custom validation", () => {
     cy.visitWithoutJs("/custom-server-validation");
 
     cy.findByText("Submit").click();

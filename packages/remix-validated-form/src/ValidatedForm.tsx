@@ -3,8 +3,10 @@ import {
   useActionData,
   useFetcher,
   useFormAction,
+  useSubmit,
   useTransition,
 } from "@remix-run/react";
+import uniq from "lodash/uniq";
 import React, {
   ComponentProps,
   useEffect,
@@ -20,8 +22,8 @@ import { omit, mergeRefs } from "./internal/util";
 import {
   FieldErrors,
   Validator,
-  FieldErrorsWithData,
   TouchedFields,
+  ValidationErrorResponseData,
 } from "./validation/types";
 
 export type FormProps<DataType> = {
@@ -33,7 +35,10 @@ export type FormProps<DataType> = {
    * A submit callback that gets called when the form is submitted
    * after all validations have been run.
    */
-  onSubmit?: (data: DataType, event: React.FormEvent<HTMLFormElement>) => void;
+  onSubmit?: (
+    data: DataType,
+    event: React.FormEvent<HTMLFormElement>
+  ) => Promise<void>;
   /**
    * Allows you to provide a `fetcher` from remix's `useFetcher` hook.
    * The form will use the fetcher for loading states, action data, etc
@@ -68,25 +73,27 @@ export type FormProps<DataType> = {
   disableFocusOnError?: boolean;
 } & Omit<ComponentProps<typeof RemixForm>, "onSubmit">;
 
-function useFieldErrorsFromBackend(
+function useErrorResponseForThisForm(
   fetcher?: ReturnType<typeof useFetcher>,
   subaction?: string
-): FieldErrorsWithData | null {
+): ValidationErrorResponseData | null {
   const actionData = useActionData<any>();
-  if (fetcher) return (fetcher.data as any)?.fieldErrors;
-  if (!actionData) return null;
-  if (actionData.fieldErrors) {
-    const submittedData = actionData.fieldErrors?._submittedData;
-    const subactionsMatch = subaction
-      ? subaction === submittedData?.subaction
-      : !submittedData?.subaction;
-    return subactionsMatch ? actionData.fieldErrors : null;
+  if (fetcher) {
+    if ((fetcher.data as any)?.fieldErrors) return fetcher.data as any;
+    return null;
   }
+
+  if (!actionData?.fieldErrors) return null;
+  if (
+    (!subaction && !actionData.subaction) ||
+    actionData.subaction === subaction
+  )
+    return actionData;
   return null;
 }
 
 function useFieldErrors(
-  fieldErrorsFromBackend?: any
+  fieldErrorsFromBackend?: FieldErrors
 ): [FieldErrors, React.Dispatch<React.SetStateAction<FieldErrors>>] {
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>(
     fieldErrorsFromBackend ?? {}
@@ -136,11 +143,14 @@ const getDataFromForm = (el: HTMLFormElement) => new FormData(el);
  * and only if JS is disabled.
  */
 function useDefaultValues<DataType>(
-  fieldErrors?: FieldErrorsWithData | null,
+  repopulateFieldsFromBackend?: any,
   defaultValues?: Partial<DataType>
 ) {
-  const defaultsFromValidationError = fieldErrors?._submittedData;
-  return defaultsFromValidationError ?? defaultValues;
+  return repopulateFieldsFromBackend ?? defaultValues;
+}
+
+function nonNull<T>(value: T | null | undefined): value is T {
+  return value !== null;
 }
 
 const focusFirstInvalidInput = (
@@ -148,28 +158,48 @@ const focusFirstInvalidInput = (
   customFocusHandlers: MultiValueMap<string, () => void>,
   formElement: HTMLFormElement
 ) => {
-  const invalidInputSelector = Object.keys(fieldErrors)
-    .map((fieldName) => `input[name="${fieldName}"]`)
-    .join(",");
-  const invalidInputs = formElement.querySelectorAll(invalidInputSelector);
-  for (const element of invalidInputs) {
-    const input = element as HTMLInputElement;
+  const namesInOrder = [...formElement.elements]
+    .map((el) => {
+      const input = el instanceof RadioNodeList ? el[0] : el;
+      if (input instanceof HTMLInputElement) return input.name;
+      return null;
+    })
+    .filter(nonNull)
+    .filter((name) => name in fieldErrors);
+  const uniqueNamesInOrder = uniq(namesInOrder);
 
-    if (customFocusHandlers.has(input.name)) {
-      customFocusHandlers.getAll(input.name).forEach((handler) => {
+  for (const fieldName of uniqueNamesInOrder) {
+    if (customFocusHandlers.has(fieldName)) {
+      customFocusHandlers.getAll(fieldName).forEach((handler) => {
         handler();
       });
       break;
     }
 
-    // We don't filter these out ahead of time because
-    // they could have a custom focus handler
-    if (input.type === "hidden") {
-      continue;
+    const elem = formElement.elements.namedItem(fieldName);
+    if (!elem) continue;
+
+    if (elem instanceof RadioNodeList) {
+      const selectedRadio =
+        [...elem]
+          .filter(
+            (item): item is HTMLInputElement => item instanceof HTMLInputElement
+          )
+          .find((item) => item.value === elem.value) ?? elem[0];
+      if (selectedRadio && selectedRadio instanceof HTMLInputElement) {
+        selectedRadio.focus();
+        break;
+      }
     }
 
-    input.focus();
-    break;
+    if (elem instanceof HTMLInputElement) {
+      if (elem.type === "hidden") {
+        continue;
+      }
+
+      elem.focus();
+      break;
+    }
   }
 };
 
@@ -190,15 +220,23 @@ export function ValidatedForm<DataType>({
   disableFocusOnError,
   ...rest
 }: FormProps<DataType>) {
-  const fieldErrorsFromBackend = useFieldErrorsFromBackend(fetcher, subaction);
-  const [fieldErrors, setFieldErrors] = useFieldErrors(fieldErrorsFromBackend);
+  const backendError = useErrorResponseForThisForm(fetcher, subaction);
+  const [fieldErrors, setFieldErrors] = useFieldErrors(
+    backendError?.fieldErrors
+  );
   const isSubmitting = useIsSubmitting(action, subaction, fetcher);
-  const defaultsToUse = useDefaultValues(fieldErrorsFromBackend, defaultValues);
+  const [isValidating, setIsValidating] = useState(false);
+  const defaultsToUse = useDefaultValues(
+    backendError?.repopulateFields,
+    defaultValues
+  );
   const [touchedFields, setTouchedFields] = useState<TouchedFields>({});
   const [hasBeenSubmitted, setHasBeenSubmitted] = useState(false);
+  const submit = useSubmit();
   const formRef = useRef<HTMLFormElement>(null);
   useSubmitComplete(isSubmitting, () => {
-    if (!fieldErrorsFromBackend && resetAfterSubmit) {
+    setIsValidating(false);
+    if (!backendError && resetAfterSubmit) {
       formRef.current?.reset();
     }
   });
@@ -209,7 +247,7 @@ export function ValidatedForm<DataType>({
       fieldErrors,
       action,
       defaultValues: defaultsToUse,
-      isSubmitting: isSubmitting ?? false,
+      isSubmitting: isValidating || isSubmitting,
       isValid: Object.keys(fieldErrors).length === 0,
       touchedFields,
       setFieldTouched: (fieldName: string, touched: boolean) =>
@@ -220,9 +258,9 @@ export function ValidatedForm<DataType>({
       clearError: (fieldName) => {
         setFieldErrors((prev) => omit(prev, fieldName));
       },
-      validateField: (fieldName) => {
+      validateField: async (fieldName) => {
         invariant(formRef.current, "Cannot find reference to form");
-        const { error } = validator.validateField(
+        const { error } = await validator.validateField(
           getDataFromForm(formRef.current),
           fieldName as any
         );
@@ -237,11 +275,13 @@ export function ValidatedForm<DataType>({
               [fieldName]: error,
             };
           });
+          return error;
         } else {
           setFieldErrors((prev) => {
             if (!(fieldName in prev)) return prev;
             return omit(prev, fieldName);
           });
+          return null;
         }
       },
       registerReceiveFocus: (fieldName, handler) => {
@@ -256,6 +296,7 @@ export function ValidatedForm<DataType>({
       fieldErrors,
       action,
       defaultsToUse,
+      isValidating,
       isSubmitting,
       touchedFields,
       hasBeenSubmitted,
@@ -267,26 +308,60 @@ export function ValidatedForm<DataType>({
 
   const Form = fetcher?.Form ?? RemixForm;
 
+  let clickedButtonRef = React.useRef<any>();
+  useEffect(() => {
+    let form = formRef.current;
+    if (!form) return;
+
+    function handleClick(event: MouseEvent) {
+      if (!(event.target instanceof HTMLElement)) return;
+      let submitButton = event.target.closest<
+        HTMLButtonElement | HTMLInputElement
+      >("button,input[type=submit]");
+
+      if (
+        submitButton &&
+        submitButton.form === form &&
+        submitButton.type === "submit"
+      ) {
+        clickedButtonRef.current = submitButton;
+      }
+    }
+
+    window.addEventListener("click", handleClick);
+    return () => {
+      window.removeEventListener("click", handleClick);
+    };
+  }, []);
+
   return (
     <Form
       ref={mergeRefs([formRef, formRefProp])}
       {...rest}
       action={action}
-      onSubmit={(event) => {
+      onSubmit={async (e) => {
+        e.preventDefault();
         setHasBeenSubmitted(true);
-        const result = validator.validate(getDataFromForm(event.currentTarget));
+        setIsValidating(true);
+        const result = await validator.validate(
+          getDataFromForm(e.currentTarget)
+        );
         if (result.error) {
-          event.preventDefault();
-          setFieldErrors(result.error);
+          setIsValidating(false);
+          setFieldErrors(result.error.fieldErrors);
           if (!disableFocusOnError) {
             focusFirstInvalidInput(
-              result.error,
+              result.error.fieldErrors,
               customFocusHandlers(),
               formRef.current!
             );
           }
         } else {
-          onSubmit?.(result.data, event);
+          onSubmit && onSubmit(result.data, e);
+          if (fetcher)
+            fetcher.submit(clickedButtonRef.current || e.currentTarget);
+          else submit(clickedButtonRef.current || e.currentTarget);
+          clickedButtonRef.current = null;
         }
       }}
       onReset={(event) => {

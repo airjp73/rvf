@@ -13,7 +13,7 @@ export type FormContextValue = {
   /**
    * Validate the specified field.
    */
-  validateField: (fieldName: string) => void;
+  validateField: (fieldName: string) => Promise<string | null>;
   /**
    * The `action` prop of the form.
    */
@@ -30,7 +30,6 @@ export type FormContextValue = {
   hasBeenSubmitted: boolean;
   /**
    * Whether or not the form is valid.
-   * This is a shortcut for `Object.keys(fieldErrors).length === 0`.
    */
   isValid: boolean;
   /**
@@ -52,14 +51,4 @@ export type FormContextValue = {
   setFieldTouched: (fieldName: string, touched: boolean) => void;
 };
 
-export const FormContext = createContext<FormContextValue>({
-  fieldErrors: {},
-  clearError: () => {},
-  validateField: () => {},
-  isSubmitting: false,
-  hasBeenSubmitted: false,
-  isValid: true,
-  registerReceiveFocus: () => () => {},
-  touchedFields: {},
-  setFieldTouched: () => {},
-});
+export const FormContext = createContext<FormContextValue | null>(null);

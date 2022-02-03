@@ -20,8 +20,9 @@ export const action: ActionFunction = async ({ request }) => {
   const testinput = formData.get("testinput");
   if (testinput === "fail")
     return validationError({
-      testinput: "Don't say that",
-      _submittedData: {} as any,
+      fieldErrors: {
+        testinput: "Don't say that",
+      },
     });
 
   return json({ message: "Submitted!" });

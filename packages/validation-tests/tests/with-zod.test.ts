@@ -3,7 +3,7 @@ import { z } from "zod";
 import { anyString } from "./util";
 
 describe("withZod", () => {
-  it("returns coherent errors for complex schemas", () => {
+  it("returns coherent errors for complex schemas", async () => {
     const schema = z.union([
       z.object({
         type: z.literal("foo"),
@@ -20,18 +20,21 @@ describe("withZod", () => {
       foo: 123,
     };
 
-    expect(withZod(schema).validate(obj)).toEqual({
+    expect(await withZod(schema).validate(obj)).toEqual({
       data: undefined,
       error: {
-        type: anyString,
-        bar: anyString,
-        foo: anyString,
-        _submittedData: obj,
+        fieldErrors: {
+          type: anyString,
+          bar: anyString,
+          foo: anyString,
+        },
+        subaction: undefined,
       },
+      submittedData: obj,
     });
   });
 
-  it("returns errors for fields that are unions", () => {
+  it("returns errors for fields that are unions", async () => {
     const schema = z.object({
       field1: z.union([z.literal("foo"), z.literal("bar")]),
       field2: z.union([z.literal("foo"), z.literal("bar")]),
@@ -42,18 +45,21 @@ describe("withZod", () => {
     };
 
     const validator = withZod(schema);
-    expect(validator.validate(obj)).toEqual({
+    expect(await validator.validate(obj)).toEqual({
       data: undefined,
       error: {
-        field1: anyString,
-        field2: anyString,
-        _submittedData: obj,
+        fieldErrors: {
+          field1: anyString,
+          field2: anyString,
+        },
+        subaction: undefined,
       },
+      submittedData: obj,
     });
-    expect(validator.validateField(obj, "field1")).toEqual({
+    expect(await validator.validateField(obj, "field1")).toEqual({
       error: anyString,
     });
-    expect(validator.validateField(obj, "field2")).toEqual({
+    expect(await validator.validateField(obj, "field2")).toEqual({
       error: anyString,
     });
   });

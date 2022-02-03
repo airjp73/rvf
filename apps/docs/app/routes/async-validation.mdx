@@ -1,0 +1,58 @@
+---
+meta:
+  title: Async validation (Remix Validated Form)
+---
+
+import { CodeExample } from "~/components/CodeExample";
+import Demo, { action } from "~/examples/asyncValidation";
+
+export { action };
+
+# Async validation
+
+If you're using a validation library that supports async validation,
+you can take full advantage of that on both the client and the server.
+
+## Client side
+
+On the client side, your validation schema is not the best place to make calls to an api.
+There are a couple reasons for this:
+
+- The user shouldn't have to wait for unnecessary API calls before the actual form submit.
+  You need to validate in your action anyway, so it's better to do those validations there.
+- For some validation libraries (like `zod`),
+  it's not possible to run only the validations for one field.
+  This means that all your async validations get run any time you change a single field.
+
+Async validation on the client is primarily for those cases where something _needs_ to be async,
+but it still doesn't take longer than a few milliseconds for the most part.
+In some cases you might want to hit your api to perform some checks,
+but in those cases it's probably best to do so using `useFetcher`.
+
+## Server side
+
+On the server, you can put absolutely anything you want in your validation schema.
+In fact, this can be a good way to add extra checks like checking if a username is already taken.
+This does mean keeping separate client & server validators based on the same schema,
+but with libraries like `yup` and `zod`, it's possible to have one base schema and augment it
+as needed.
+
+## Example
+
+In this example, we have a basic sign-up form.
+
+Often, it's a good idea in this sort of form to provide some information to the user about
+whether or not their username is takne before they actually submit.
+We're providing that information here by using the `useFetcher` hook.
+
+Then, on the server side, we're using the `refine` method on the base zod schema,
+to add an async database query to the validation schema.
+
+<CodeExample>
+  <Demo />
+
+```tsx file=~/examples/asyncValidation.tsx
+
+```
+
+</CodeExample>

@@ -9,8 +9,11 @@ const schema = yup.object({});
 
 const validator = withYup(schema);
 
-export const action: ActionFunction = async ({ request }) => {
-  return validationError({ firstName: "Error" }, { firstName: "Bob" });
+export const action: ActionFunction = async () => {
+  return validationError(
+    { fieldErrors: { firstName: "Error" } },
+    { firstName: "Bob" }
+  );
 };
 
 export default function CustomServerValidation() {

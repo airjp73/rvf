@@ -1,11 +1,12 @@
 import {
+  CheckCircleIcon,
   InformationCircleIcon,
   XCircleIcon,
 } from "@heroicons/react/solid";
 import classNames from "classnames";
 import { FC, ReactNode } from "react";
 
-export type AlertVariants = "error" | "info";
+export type AlertVariants = "error" | "info" | "success";
 
 export type AlertProps = {
   title?: string;
@@ -18,6 +19,7 @@ export type AlertProps = {
 const variantIcons = {
   error: XCircleIcon,
   info: InformationCircleIcon,
+  success: CheckCircleIcon,
 };
 
 export const Alert: FC<AlertProps> = ({
@@ -35,6 +37,8 @@ export const Alert: FC<AlertProps> = ({
         "rounded-md p-4 border border-red-400",
         variant === "error" && "border-red-400 bg-red-50",
         variant === "info" && "border-blue-400 bg-blue-50",
+        variant === "success" &&
+          "border-green-400 bg-green-50",
         className
       )}
     >
@@ -44,7 +48,8 @@ export const Alert: FC<AlertProps> = ({
             className={classNames(
               "h-5 w-5",
               variant === "error" && "text-red-500",
-              variant === "info" && "text-blue-500"
+              variant === "info" && "text-blue-500",
+              variant === "success" && "text-green-500"
             )}
           />
         </div>
@@ -54,7 +59,8 @@ export const Alert: FC<AlertProps> = ({
               className={classNames(
                 "text-sm font-medium",
                 variant === "error" && "text-red-800",
-                variant === "info" && "text-blue-800"
+                variant === "info" && "text-blue-800",
+                variant === "success" && "text-green-800"
               )}
             >
               {title}
@@ -66,7 +72,8 @@ export const Alert: FC<AlertProps> = ({
                 "text-sm",
                 !!title && "mt-2",
                 variant === "error" && "text-red-700",
-                variant === "info" && "text-blue-700"
+                variant === "info" && "text-blue-700",
+                variant === "success" && "text-green-700"
               )}
             >
               {details}

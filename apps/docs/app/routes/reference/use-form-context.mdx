@@ -14,6 +14,9 @@ import { PropHeader } from "~/components/PropHeader";
 Uses the context api to return the value of the current form context.
 This should be used within the context of a `ValidatedForm`.
 
+_Note:_ It is generally recommended to use more specific hooks rather than accessing the form context directly.
+It is provided for use in more complex or advanced cases.
+
 #### Usage
 
 _Correct_: This will work because it's used within the context of a `ValidatedForm`.
@@ -80,11 +83,12 @@ Whether or not the form valid.
 Clear the errors from all the specified fields.
 
 <PropHeader
-  prop="validatedField"
-  type="(fieldName: string) => void"
+  prop="validateField"
+  type="(fieldName: string) => Promise<string | null>"
 />
 
 Performs validation on the specified field and populates `fieldErrors` if there is an error.
+Also returns the error message if there is an error.
 
 <PropHeader prop="action" type="string | undefined" />
 

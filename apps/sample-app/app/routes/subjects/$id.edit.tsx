@@ -38,7 +38,9 @@ export const loader: LoaderFunction = async ({ params }) => {
 export const action: ActionFunction = async ({ request, params }) => {
   const { id } = z.object({ id: z.string() }).parse(params);
 
-  const fieldValues = subjectFormValidator.validate(await request.formData());
+  const fieldValues = await subjectFormValidator.validate(
+    await request.formData()
+  );
   if (fieldValues.error) return validationError(fieldValues.error);
 
   const { teacher, subjectDays, ...updatedSubject } = fieldValues.data;
