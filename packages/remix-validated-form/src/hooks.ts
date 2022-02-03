@@ -1,18 +1,19 @@
 import get from "lodash/get";
 import toPath from "lodash/toPath";
-import { useContext, useEffect, useMemo } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { FormContext } from "./internal/formContext";
 import {
   createGetInputProps,
   GetInputProps,
   ValidationBehaviorOptions,
 } from "./internal/getInputProps";
+import { ValidationState } from "./types";
 
 const useInternalFormContext = (hookName: string) => {
   const context = useContext(FormContext);
   if (!context)
     throw new Error(
-      `${hookName} must be used within a ValidatedForm or ValidatedForm.Provider component`
+      `${hookName} must be used within a ValidatedForm component`
     );
   return context;
 };
@@ -30,6 +31,14 @@ export type FieldProps = {
    * Validates the field.
    */
   validate: () => void;
+  /**
+   * The validation state of the field.
+   * - idle: the field has not been validated yet.
+   * - validating: the field is currently being validated.
+   * - valid: the field is valid.
+   * - invalid: the field is invalid.
+   */
+  validationState: ValidationState;
   /**
    * The default value of the field, if there is one.
    */
@@ -79,6 +88,8 @@ export const useField = (
 
   const isTouched = !!touchedFields[name];
   const { handleReceiveFocus } = options ?? {};
+  const [validationState, setValidationState] =
+    useState<ValidationState>("idle");
 
   useEffect(() => {
     if (handleReceiveFocus)
@@ -91,12 +102,18 @@ export const useField = (
       clearError: () => {
         clearError(name);
       },
-      validate: () => validateField(name),
+      validate: () => {
+        setValidationState("validating");
+        validateField(name).then((error) =>
+          setValidationState(error ? "invalid" : "valid")
+        );
+      },
       defaultValue: defaultValues
         ? get(defaultValues, toPath(name), undefined)
         : undefined,
       touched: isTouched,
       setTouched: (touched: boolean) => setFieldTouched(name, touched),
+      validationState,
     };
     const getInputProps = createGetInputProps({
       ...helpers,
@@ -113,6 +130,7 @@ export const useField = (
     name,
     defaultValues,
     isTouched,
+    validationState,
     hasBeenSubmitted,
     options?.validationBehavior,
     clearError,
@@ -125,7 +143,6 @@ export const useField = (
 
 /**
  * Provides access to the entire form context.
- * Must be used within a ValidatedForm or ValidatedForm.Provider component.
  */
 export const useFormContext = () => useInternalFormContext("useFormContext");
 
@@ -138,7 +155,6 @@ export const useIsSubmitting = () =>
   useInternalFormContext("useIsSubmitting").isSubmitting;
 
 /**
- * Returns the current validation state of the form.
+ * Returns whether or not the current form is valid.
  */
-export const useValidationState = () =>
-  useInternalFormContext("useValidationState").validationState;
+export const useIsValid = () => useInternalFormContext("useIsValid").isValid;

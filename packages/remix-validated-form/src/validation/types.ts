@@ -51,11 +51,13 @@ export type Validator<DataType> = {
 export type Valid<DataType> = { data: DataType; error: undefined };
 export type Invalid = { error: FieldErrors; data: undefined };
 export type CreateValidatorArg<DataType> = {
-  validate: (unvalidatedData: GenericObject) => Valid<DataType> | Invalid;
+  validate: (
+    unvalidatedData: GenericObject
+  ) => Promise<Valid<DataType> | Invalid>;
   validateField: (
     unvalidatedData: GenericObject,
     field: string
-  ) => ValidateFieldResult;
+  ) => Promise<ValidateFieldResult>;
 };
 
 export type ValidatorData<T extends Validator<any>> = T extends Validator<

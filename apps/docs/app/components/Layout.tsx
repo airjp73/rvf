@@ -59,6 +59,10 @@ const navSections: Section[] = [
         to: "/reference/use-is-submitting",
       },
       {
+        label: "useIsValid",
+        to: "/reference/use-is-valid",
+      },
+      {
         label: "useFormContext",
         to: "/reference/use-form-context",
       },

@@ -39,7 +39,7 @@ export function createValidator<T>(
         submittedData: data,
       };
     },
-    validateField: async (data: GenericObject | FormData, field: string) =>
-      await validator.validateField(preprocessFormData(data), field),
+    validateField: (data: GenericObject | FormData, field: string) =>
+      validator.validateField(preprocessFormData(data), field),
   };
 }

@@ -13,7 +13,7 @@ export type FormContextValue = {
   /**
    * Validate the specified field.
    */
-  validateField: (fieldName: string) => Promise<void>;
+  validateField: (fieldName: string) => Promise<string | null>;
   /**
    * The `action` prop of the form.
    */
@@ -29,9 +29,9 @@ export type FormContextValue = {
    */
   hasBeenSubmitted: boolean;
   /**
-   * The current validation state of the form
+   * Whether or not the form is valid.
    */
-  validationState: "idle" | "validating" | "valid" | "invalid";
+  isValid: boolean;
   /**
    * The default values of the form.
    */

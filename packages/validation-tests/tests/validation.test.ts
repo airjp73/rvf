@@ -196,7 +196,7 @@ describe("Validation", () => {
         });
       });
 
-      it("should return the subactino in the ValidatorError if there is one", () => {
+      it("should return the subaction in the ValidatorError if there is one", async () => {
         const person = {
           lastName: "Doe",
           age: 20,
@@ -208,7 +208,7 @@ describe("Validation", () => {
           pets: [{ animal: "dog", name: "Fido" }],
           subaction: "updatePerson",
         };
-        expect(validator.validate(person)).toEqual({
+        expect(await validator.validate(person)).toEqual({
           error: {
             fieldErrors: {
               firstName: anyString,

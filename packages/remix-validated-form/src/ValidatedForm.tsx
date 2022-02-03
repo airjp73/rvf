@@ -246,8 +246,7 @@ export function ValidatedForm<DataType>({
       action,
       defaultValues: defaultsToUse,
       isSubmitting: isSubmitting ?? false,
-      validationState:
-        Object.keys(fieldErrors).length === 0 ? "valid" : "invalid",
+      isValid: Object.keys(fieldErrors).length === 0,
       touchedFields,
       setFieldTouched: (fieldName: string, touched: boolean) =>
         setTouchedFields((prev) => ({
@@ -274,11 +273,13 @@ export function ValidatedForm<DataType>({
               [fieldName]: error,
             };
           });
+          return error;
         } else {
           setFieldErrors((prev) => {
             if (!(fieldName in prev)) return prev;
             return omit(prev, fieldName);
           });
+          return null;
         }
       },
       registerReceiveFocus: (fieldName, handler) => {
