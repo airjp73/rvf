@@ -70,6 +70,17 @@ describe("Validation", () => {
     cy.findByText("Submitted for John Doe!").should("exist");
   });
 
+  it("should reset isValid to true when errors resolved", () => {
+    cy.visit("/validation-isvalid");
+
+    cy.findByText("Submit").click();
+
+    cy.findByText("First Name is a required field").should("exist");
+    cy.findByText("Submit").should("be.disabled");
+    cy.findByLabelText("First Name").should("be.focused").type("John");
+    cy.findByText("Submit").should("be.enabled");
+  });
+
   it("should focus the first invalid field", () => {
     cy.visit("/validation");
 
