@@ -12,6 +12,10 @@ describe("Async Validation", () => {
 
     cy.findByLabelText("Last Name").type("John");
     cy.findByText("First Name and Last Name must be different").should("exist");
+
+    cy.findByText("Submit").click();
+    cy.findByText("Submitting...").should("exist");
+    cy.findByText("Submit").should("be.enabled");
     cy.findByLabelText("Last Name").clear().type("Doe");
 
     cy.findByText("Submit").click();

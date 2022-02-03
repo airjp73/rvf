@@ -225,6 +225,7 @@ export function ValidatedForm<DataType>({
     backendError?.fieldErrors
   );
   const isSubmitting = useIsSubmitting(action, subaction, fetcher);
+  const [isValidating, setIsValidating] = useState(false);
   const defaultsToUse = useDefaultValues(
     backendError?.repopulateFields,
     defaultValues
@@ -234,6 +235,7 @@ export function ValidatedForm<DataType>({
   const submit = useSubmit();
   const formRef = useRef<HTMLFormElement>(null);
   useSubmitComplete(isSubmitting, () => {
+    setIsValidating(false);
     if (!backendError && resetAfterSubmit) {
       formRef.current?.reset();
     }
@@ -245,7 +247,7 @@ export function ValidatedForm<DataType>({
       fieldErrors,
       action,
       defaultValues: defaultsToUse,
-      isSubmitting: isSubmitting ?? false,
+      isSubmitting: isValidating || isSubmitting,
       isValid: Object.keys(fieldErrors).length === 0,
       touchedFields,
       setFieldTouched: (fieldName: string, touched: boolean) =>
@@ -294,6 +296,7 @@ export function ValidatedForm<DataType>({
       fieldErrors,
       action,
       defaultsToUse,
+      isValidating,
       isSubmitting,
       touchedFields,
       hasBeenSubmitted,
@@ -339,10 +342,12 @@ export function ValidatedForm<DataType>({
       onSubmit={async (e) => {
         e.preventDefault();
         setHasBeenSubmitted(true);
+        setIsValidating(true);
         const result = await validator.validate(
           getDataFromForm(e.currentTarget)
         );
         if (result.error) {
+          setIsValidating(false);
           setFieldErrors(result.error.fieldErrors);
           if (!disableFocusOnError) {
             focusFirstInvalidInput(
