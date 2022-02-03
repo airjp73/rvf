@@ -14,7 +14,10 @@ const validator = withZod(
 export default function FrontendValidation() {
   return (
     <>
-      <Input name="text1" type="text" label="Text 1" form="test-form" />
+      <label>
+        Text 1
+        <input name="text1" type="text" form="test-form" />
+      </label>
       <ValidatedForm validator={validator} method="post" id="test-form">
         <Input name="text2" type="text" label="Text 2" />
         <SubmitButton />
