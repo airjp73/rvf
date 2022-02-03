@@ -9,7 +9,7 @@ import {
  * When you return this from your action, `ValidatedForm` on the frontend will automatically
  * display the errors on the correct fields on the correct form.
  *
- * _Recommended_: You can also provide a second argument to `validationError`
+ * You can also provide a second argument to `validationError`
  * to specify how to repopulate the form when JS is disabled.
  *
  * @example

@@ -31,7 +31,7 @@ const validator = withZod(
 
 export const action: ActionFunction = async ({ request }) => {
   const result = await validator.validate(await request.formData());
-  if (result.error) return validationError(result.error, result.submittedData);
+  if (result.error) return validationError(result.error);
   const { firstName, lastName } = result.data;
 
   return { message: `Submitted for ${firstName} ${lastName}!` };

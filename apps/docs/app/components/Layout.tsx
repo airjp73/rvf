@@ -45,6 +45,10 @@ const navSections: Section[] = [
         label: "Validation library support",
         to: "/validation-library-support",
       },
+      {
+        label: "Supporting users without JS",
+        to: "/supporting-no-js",
+      },
     ],
   },
   {

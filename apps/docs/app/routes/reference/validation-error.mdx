@@ -13,8 +13,6 @@ import { PropHeader } from "~/components/PropHeader";
 
 Accepts the errors returned from `validator.validate` and returns a response.
 The `ValidatedForm` on the page will automatically receive these errors and display them.
-You can also pass a second argument to repopulate the form with the data that was submitted
-in cases where the user has javascript disabled.
 
 Most of the time, your code will look like this:
 
@@ -23,16 +21,28 @@ const action: ActionFunction = async ({ request }) => {
   const result = await validator.validate(
     await request.formData()
   );
-  if (result.error)
-    return validationError(
-      result.error,
-      result.submittedData
-    );
+  if (result.error) return validationError(result.error);
   // do something with result.data
 };
 ```
 
-## Omitting data from the second argument
+## Repopulating form data
+
+You can also pass a second argument to `validationError` to repopulate the form
+with the data that was submitted in cases where the user has javascript disabled.
+
+_Caveat_: Repopulating the form sets new default values.
+If the form has a reset button, clicking it will reset the form to the repopulated data,
+_not_ the original default values.
+If supporting the no-javascript case is not important to you,
+you might be better off omitting the second argument.
+
+_Caveat 2_: If your schema is doing transformations on the data after its validated,
+you may be opting into extra work for supporting `defaultValues`.
+Normally, when you pass `defaultValues` to a `ValidatedForm`, the type of that data
+is the final, validated, and transformed version of your data.
+But when you return `result.submittedData`, you're returning the original data
+(with the [nested object and array transformations](/arrays-and-nested) applied).
 
 In some cases, you might not want to return all the data the user submitted as part of your response.
 In those cases, you can omit some fields or not pass a second argument at all.
@@ -49,12 +59,12 @@ return validationError(result.error);
 
 ## Supporting additional validations
 
+_Note:_ Most use-cases for this can be better solved using [async validation](/async-validation).
+
 Sometimes you might want to run some additional checks on the data beyond what the validator can do.
 For example, if you have a signup form, you might want to check if a username already exists
 in the database before allowing the user to be created.
 In those cases, you can manually construct a `ValidatorError` object.
-
-_Note:_ You can also cover a lot of these cases using [async validation](/async-validation).
 
 ```tsx
 const action: ActionFunction = async ({ request }) => {

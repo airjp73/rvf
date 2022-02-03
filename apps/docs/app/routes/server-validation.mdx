@@ -41,10 +41,7 @@ export const action: ActionFunction = async ({
 
   if (result.error) {
     // validationError comes from `remix-validated-form`
-    return validationError(
-      result.error,
-      result.submittedData
-    );
+    return validationError(result.error);
   }
 
   const { firstName, lastName, email } = result.data;
