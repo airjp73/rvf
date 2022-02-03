@@ -315,14 +315,18 @@ export function ValidatedForm<DataType>({
         HTMLButtonElement | HTMLInputElement
       >("button,input[type=submit]");
 
-      if (submitButton && submitButton.type === "submit") {
+      if (
+        submitButton &&
+        submitButton.form === form &&
+        submitButton.type === "submit"
+      ) {
         clickedButtonRef.current = submitButton;
       }
     }
 
-    form.addEventListener("click", handleClick);
+    window.addEventListener("click", handleClick);
     return () => {
-      form && form.removeEventListener("click", handleClick);
+      window.removeEventListener("click", handleClick);
     };
   }, []);
 
