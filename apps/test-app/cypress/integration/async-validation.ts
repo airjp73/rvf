@@ -8,11 +8,9 @@ describe("Async Validation", () => {
     cy.findByText("First Name is a required field").should("not.exist");
 
     cy.findByLabelText("Last Name").focus().blur();
-    cy.findByText("Validating...").should("not.exist");
     cy.findByText("Last Name is a required field").should("exist");
 
     cy.findByLabelText("Last Name").type("John");
-    cy.findByText("Validating...").should("exist");
     cy.findByText("First Name and Last Name must be different").should("exist");
     cy.findByLabelText("Last Name").clear().type("Doe");
 

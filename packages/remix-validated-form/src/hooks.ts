@@ -1,13 +1,12 @@
 import get from "lodash/get";
 import toPath from "lodash/toPath";
-import { useContext, useEffect, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo } from "react";
 import { FormContext } from "./internal/formContext";
 import {
   createGetInputProps,
   GetInputProps,
   ValidationBehaviorOptions,
 } from "./internal/getInputProps";
-import { ValidationState } from "./types";
 
 const useInternalFormContext = (hookName: string) => {
   const context = useContext(FormContext);
@@ -31,14 +30,6 @@ export type FieldProps = {
    * Validates the field.
    */
   validate: () => void;
-  /**
-   * The validation state of the field.
-   * - idle: the field has not been validated yet.
-   * - validating: the field is currently being validated.
-   * - valid: the field is valid.
-   * - invalid: the field is invalid.
-   */
-  validationState: ValidationState;
   /**
    * The default value of the field, if there is one.
    */
@@ -88,7 +79,6 @@ export const useField = (
 
   const isTouched = !!touchedFields[name];
   const { handleReceiveFocus } = options ?? {};
-  const [isValidating, setValidating] = useState(false);
 
   useEffect(() => {
     if (handleReceiveFocus)
@@ -96,28 +86,19 @@ export const useField = (
   }, [handleReceiveFocus, name, registerReceiveFocus]);
 
   const field = useMemo<FieldProps>(() => {
-    const error = fieldErrors[name];
-    const getValidationState = (): ValidationState => {
-      if (isValidating) return "validating";
-      if (error) return "invalid";
-      if (!isTouched && !hasBeenSubmitted) return "idle";
-      return "valid";
-    };
     const helpers = {
-      error,
+      error: fieldErrors[name],
       clearError: () => {
         clearError(name);
       },
       validate: () => {
-        setValidating(true);
-        validateField(name).then((error) => setValidating(false));
+        validateField(name);
       },
       defaultValue: defaultValues
         ? get(defaultValues, toPath(name), undefined)
         : undefined,
       touched: isTouched,
       setTouched: (touched: boolean) => setFieldTouched(name, touched),
-      validationState: getValidationState(),
     };
     const getInputProps = createGetInputProps({
       ...helpers,
@@ -136,7 +117,6 @@ export const useField = (
     isTouched,
     hasBeenSubmitted,
     options?.validationBehavior,
-    isValidating,
     clearError,
     validateField,
     setFieldTouched,

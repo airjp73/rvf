@@ -24,7 +24,7 @@ export const Input = forwardRef(
     }: InputProps,
     ref: React.ForwardedRef<HTMLInputElement>
   ) => {
-    const { getInputProps, error, validationState } = useField(name);
+    const { getInputProps, error } = useField(name);
     return (
       <div>
         <label htmlFor={name}>{label}</label>
@@ -38,10 +38,7 @@ export const Input = forwardRef(
             value,
           })}
         />
-        {validationState === "validating" && <div>Validating...</div>}
-        {validationState === "invalid" && error && !noErrors && (
-          <span style={{ color: "red" }}>{error}</span>
-        )}
+        {error && !noErrors && <span style={{ color: "red" }}>{error}</span>}
       </div>
     );
   }
