@@ -54,6 +54,8 @@ For example, if you have a signup form, you might want to check if a username al
 in the database before allowing the user to be created.
 In those cases, you can manually construct a `ValidatorError` object.
 
+_Note:_ You can also cover a lot of these cases using [async validation](/async-validation).
+
 ```tsx
 const action: ActionFunction = async ({ request }) => {
   // We should check the correctness of the data first,
