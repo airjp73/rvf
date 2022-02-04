@@ -218,6 +218,8 @@ export function ValidatedForm<DataType>({
   subaction,
   resetAfterSubmit,
   disableFocusOnError,
+  method,
+  replace,
   ...rest
 }: FormProps<DataType>) {
   const backendError = useErrorResponseForThisForm(fetcher, subaction);
@@ -339,6 +341,8 @@ export function ValidatedForm<DataType>({
       ref={mergeRefs([formRef, formRefProp])}
       {...rest}
       action={action}
+      method={method}
+      replace={replace}
       onSubmit={async (e) => {
         e.preventDefault();
         setHasBeenSubmitted(true);
@@ -360,7 +364,11 @@ export function ValidatedForm<DataType>({
           onSubmit && onSubmit(result.data, e);
           if (fetcher)
             fetcher.submit(clickedButtonRef.current || e.currentTarget);
-          else submit(clickedButtonRef.current || e.currentTarget);
+          else
+            submit(clickedButtonRef.current || e.currentTarget, {
+              method,
+              replace,
+            });
           clickedButtonRef.current = null;
         }
       }}
