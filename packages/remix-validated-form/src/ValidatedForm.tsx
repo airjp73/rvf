@@ -6,6 +6,7 @@ import {
   useSubmit,
   useTransition,
 } from "@remix-run/react";
+import { Fetcher } from "@remix-run/react/transition";
 import uniq from "lodash/uniq";
 import React, {
   ComponentProps,
@@ -106,22 +107,19 @@ function useFieldErrors(
 }
 
 const useIsSubmitting = (
-  action?: string,
-  subaction?: string,
-  fetcher?: ReturnType<typeof useFetcher>
-) => {
-  const actionForCurrentPage = useFormAction();
-  const pendingFormSubmit = useTransition().submission;
+  fetcher?: Fetcher
+): [boolean, () => void, () => void] => {
+  const [isSubmitStarted, setSubmitStarted] = useState(false);
+  const transition = useTransition();
+  const hasActiveSubmission = fetcher
+    ? fetcher.state === "submitting"
+    : !!transition.submission;
+  const isSubmitting = hasActiveSubmission && isSubmitStarted;
 
-  if (fetcher) return fetcher.state === "submitting";
-  if (!pendingFormSubmit) return false;
+  const startSubmit = () => setSubmitStarted(true);
+  const endSubmit = () => setSubmitStarted(false);
 
-  const { formData, action: pendingAction } = pendingFormSubmit;
-  const pendingSubAction = formData.get("subaction");
-  const expectedAction = action ?? actionForCurrentPage;
-  if (subaction)
-    return expectedAction === pendingAction && subaction === pendingSubAction;
-  return expectedAction === pendingAction && !pendingSubAction;
+  return [isSubmitting, startSubmit, endSubmit];
 };
 
 const getDataFromForm = (el: HTMLFormElement) => new FormData(el);
@@ -226,8 +224,8 @@ export function ValidatedForm<DataType>({
   const [fieldErrors, setFieldErrors] = useFieldErrors(
     backendError?.fieldErrors
   );
-  const isSubmitting = useIsSubmitting(action, subaction, fetcher);
-  const [isValidating, setIsValidating] = useState(false);
+  const [isSubmitting, startSubmit, endSubmit] = useIsSubmitting(fetcher);
+
   const defaultsToUse = useDefaultValues(
     backendError?.repopulateFields,
     defaultValues
@@ -237,7 +235,7 @@ export function ValidatedForm<DataType>({
   const submit = useSubmit();
   const formRef = useRef<HTMLFormElement>(null);
   useSubmitComplete(isSubmitting, () => {
-    setIsValidating(false);
+    endSubmit();
     if (!backendError && resetAfterSubmit) {
       formRef.current?.reset();
     }
@@ -249,7 +247,7 @@ export function ValidatedForm<DataType>({
       fieldErrors,
       action,
       defaultValues: defaultsToUse,
-      isSubmitting: isValidating || isSubmitting,
+      isSubmitting,
       isValid: Object.keys(fieldErrors).length === 0,
       touchedFields,
       setFieldTouched: (fieldName: string, touched: boolean) =>
@@ -298,7 +296,6 @@ export function ValidatedForm<DataType>({
       fieldErrors,
       action,
       defaultsToUse,
-      isValidating,
       isSubmitting,
       touchedFields,
       hasBeenSubmitted,
@@ -346,12 +343,12 @@ export function ValidatedForm<DataType>({
       onSubmit={async (e) => {
         e.preventDefault();
         setHasBeenSubmitted(true);
-        setIsValidating(true);
+        startSubmit();
         const result = await validator.validate(
           getDataFromForm(e.currentTarget)
         );
         if (result.error) {
-          setIsValidating(false);
+          endSubmit();
           setFieldErrors(result.error.fieldErrors);
           if (!disableFocusOnError) {
             focusFirstInvalidInput(
