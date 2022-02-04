@@ -25,6 +25,7 @@ export const Input = forwardRef(
     ref: React.ForwardedRef<HTMLInputElement>
   ) => {
     const { getInputProps, error } = useField(name);
+    const actualValue = value ?? (type === "checkbox" ? "on" : undefined);
     return (
       <div>
         <label htmlFor={name}>{label}</label>
@@ -35,7 +36,7 @@ export const Input = forwardRef(
             type,
             ref,
             id: name,
-            value,
+            value: actualValue,
           })}
         />
         {error && !noErrors && <span style={{ color: "red" }}>{error}</span>}

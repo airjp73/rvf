@@ -3,6 +3,7 @@
   "version": "2.0.0",
   "browser": "./browser/index.js",
   "main": "./build/index.js",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/airjp73/remix-validated-form"
