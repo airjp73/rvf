@@ -1,20 +1,115 @@
+import { useAtomValue, useUpdateAtom } from "jotai/utils";
 import get from "lodash/get";
-import toPath from "lodash/toPath";
-import { useContext, useEffect, useMemo } from "react";
-import { FormContext } from "./internal/formContext";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   createGetInputProps,
   GetInputProps,
   ValidationBehaviorOptions,
 } from "./internal/getInputProps";
+import {
+  useUnknownFormContextSelectAtom,
+  useDefaultValuesForForm,
+  useInternalFormContext,
+  useErrorResponseForForm,
+  useContextSelectAtom,
+} from "./internal/hooks";
+import {
+  actionAtom,
+  clearErrorAtom,
+  fieldAtom,
+  fieldErrorsAtom,
+  formRegistry,
+  hasBeenSubmittedAtom,
+  isHydratedAtom,
+  isSubmittingAtom,
+  isValidAtom,
+  registerReceiveFocusAtom,
+  setTouchedAtom,
+  touchedFieldsAtom,
+  validateFieldAtom,
+} from "./internal/state";
 
-const useInternalFormContext = (hookName: string) => {
-  const context = useContext(FormContext);
-  if (!context)
-    throw new Error(
-      `${hookName} must be used within a ValidatedForm component`
-    );
-  return context;
+/**
+ * Returns whether or not the parent form is currently being submitted.
+ * This is different from remix's `useTransition().submission` in that it
+ * is aware of what form it's in and when _that_ form is being submitted.
+ */
+export const useIsSubmitting = (formId?: string) =>
+  useUnknownFormContextSelectAtom(formId, isSubmittingAtom, "useIsSubmitting");
+
+export const useHasBeenSubmitted = (formId?: string) =>
+  useUnknownFormContextSelectAtom(
+    formId,
+    hasBeenSubmittedAtom,
+    "useHasBeenSubmitted"
+  );
+
+export const useValidatedFormAction = (formId?: string) =>
+  useUnknownFormContextSelectAtom(formId, actionAtom, "useValidatedFormAction");
+
+export const useTouchedFields = (formId?: string) =>
+  useUnknownFormContextSelectAtom(
+    formId,
+    touchedFieldsAtom,
+    "useTouchedFields"
+  );
+
+export const useRegisterReceiveFocus = (formId?: string) =>
+  useUnknownFormContextSelectAtom(
+    formId,
+    registerReceiveFocusAtom,
+    "useRegisterReceiveFocus"
+  );
+
+export const useValidateField = (formId?: string) =>
+  useUnknownFormContextSelectAtom(
+    formId,
+    validateFieldAtom,
+    "useRegisterReceiveFocus"
+  );
+
+export const useClearError = (formId?: string) => {
+  const formContext = useInternalFormContext(formId, "useClearError");
+  const clearError = useUpdateAtom(clearErrorAtom);
+  return useCallback(
+    (...names: string[]) => {
+      names.forEach((name) => {
+        clearError({ name, formAtom: formRegistry(formContext.formId) });
+      });
+    },
+    [clearError, formContext.formId]
+  );
+};
+
+export const useSetFieldTouched = (formId?: string) => {
+  const formContext = useInternalFormContext(formId, "useSetFieldTouched");
+  const clearError = useUpdateAtom(setTouchedAtom);
+  return useCallback(
+    (name: string, touched: boolean) => {
+      clearError({ name, formAtom: formRegistry(formContext.formId), touched });
+    },
+    [clearError, formContext.formId]
+  );
+};
+
+export const useFieldErrors = (formId?: string) => {
+  const context = useInternalFormContext(formId, "useField");
+  const fieldErrors = useContextSelectAtom(context.formId, fieldErrorsAtom);
+  const hydrated = useContextSelectAtom(context.formId, isHydratedAtom);
+  const errorResponse = useErrorResponseForForm(context);
+  const error = hydrated ? fieldErrors : errorResponse?.fieldErrors;
+  return error ?? {};
+};
+
+/**
+ * Returns whether or not the current form is valid.
+ */
+export const useIsValid = (formId?: string) =>
+  useUnknownFormContextSelectAtom(formId, isValidAtom, "useIsValid");
+
+export const useDefaultValues = (formId?: string) => {
+  const formContext = useInternalFormContext();
+  return useDefaultValuesForForm(formId ? { formId } : formContext);
 };
 
 export type FieldProps = {
@@ -64,21 +159,38 @@ export const useField = (
      * Allows you to specify when a field gets validated (when using getInputProps)
      */
     validationBehavior?: Partial<ValidationBehaviorOptions>;
+    formId?: string;
   }
 ): FieldProps => {
-  const {
-    fieldErrors,
-    clearError,
-    validateField,
-    defaultValues,
-    registerReceiveFocus,
-    touchedFields,
-    setFieldTouched,
-    hasBeenSubmitted,
-  } = useInternalFormContext("useField");
+  const { handleReceiveFocus, formId: providedFormId } = options ?? {};
+  const formContext = useInternalFormContext(providedFormId, "useField");
+  const { formId } = formContext;
+  const formAtom = formRegistry(formId);
+  const hydrated = useContextSelectAtom(formId, isHydratedAtom);
 
-  const isTouched = !!touchedFields[name];
-  const { handleReceiveFocus } = options ?? {};
+  const defaultValues = useDefaultValuesForForm(formContext);
+  const defaultValue = get(defaultValues, name);
+
+  const fieldInfoAtom = useMemo(
+    () => fieldAtom({ name, formAtom }),
+    [formAtom, name]
+  );
+  const { touched, error: errorFromState } = useAtomValue(fieldInfoAtom);
+
+  const errorResponse = useErrorResponseForForm(formContext);
+  const error = hydrated
+    ? errorFromState
+    : errorResponse?.fieldErrors && get(errorResponse?.fieldErrors, name);
+
+  const clearError = useUpdateAtom(clearErrorAtom);
+  const setTouched = useUpdateAtom(setTouchedAtom);
+  const hasBeenSubmitted = useHasBeenSubmitted(providedFormId);
+  const validateField = useAtomValue(
+    useMemo(() => validateFieldAtom(formAtom), [formAtom])
+  );
+  const registerReceiveFocus = useAtomValue(
+    useMemo(() => registerReceiveFocusAtom(formAtom), [formAtom])
+  );
 
   useEffect(() => {
     if (handleReceiveFocus)
@@ -87,18 +199,14 @@ export const useField = (
 
   const field = useMemo<FieldProps>(() => {
     const helpers = {
-      error: fieldErrors[name],
-      clearError: () => {
-        clearError(name);
-      },
+      error,
+      clearError: () => clearError({ name, formAtom }),
       validate: () => {
         validateField(name);
       },
-      defaultValue: defaultValues
-        ? get(defaultValues, toPath(name), undefined)
-        : undefined,
-      touched: isTouched,
-      setTouched: (touched: boolean) => setFieldTouched(name, touched),
+      defaultValue,
+      touched,
+      setTouched: (touched: boolean) => setTouched({ name, formAtom, touched }),
     };
     const getInputProps = createGetInputProps({
       ...helpers,
@@ -111,34 +219,17 @@ export const useField = (
       getInputProps,
     };
   }, [
-    fieldErrors,
+    error,
+    defaultValue,
+    touched,
     name,
-    defaultValues,
-    isTouched,
     hasBeenSubmitted,
     options?.validationBehavior,
     clearError,
+    formAtom,
     validateField,
-    setFieldTouched,
+    setTouched,
   ]);
 
   return field;
 };
-
-/**
- * Provides access to the entire form context.
- */
-export const useFormContext = () => useInternalFormContext("useFormContext");
-
-/**
- * Returns whether or not the parent form is currently being submitted.
- * This is different from remix's `useTransition().submission` in that it
- * is aware of what form it's in and when _that_ form is being submitted.
- */
-export const useIsSubmitting = () =>
-  useInternalFormContext("useIsSubmitting").isSubmitting;
-
-/**
- * Returns whether or not the current form is valid.
- */
-export const useIsValid = () => useInternalFormContext("useIsValid").isValid;
