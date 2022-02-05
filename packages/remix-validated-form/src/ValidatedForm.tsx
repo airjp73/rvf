@@ -114,12 +114,15 @@ const useIsSubmitting = (
   const hasActiveSubmission = fetcher
     ? fetcher.state === "submitting"
     : !!transition.submission;
-  const isSubmitting = hasActiveSubmission && isSubmitStarted;
 
   const startSubmit = () => setSubmitStarted(true);
   const endSubmit = () => setSubmitStarted(false);
 
-  return [isSubmitting, startSubmit, endSubmit];
+  useSubmitComplete(hasActiveSubmission, () => {
+    endSubmit();
+  });
+
+  return [isSubmitStarted, startSubmit, endSubmit];
 };
 
 const getDataFromForm = (el: HTMLFormElement) => new FormData(el);
