@@ -48,6 +48,7 @@
     "typescript": "^4.5.3"
   },
   "dependencies": {
+    "immer": "^9.0.12",
     "jotai": "^1.5.3",
     "lodash": "^4.17.21",
     "tiny-invariant": "^1.2.0"
