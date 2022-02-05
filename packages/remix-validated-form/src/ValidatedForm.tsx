@@ -3,6 +3,7 @@ import { useUpdateAtom } from "jotai/utils";
 import uniq from "lodash/uniq";
 import React, {
   ComponentProps,
+  RefObject,
   useCallback,
   useEffect,
   useMemo,
@@ -33,6 +34,7 @@ import {
 import { useSubmitComplete } from "./internal/submissionCallbacks";
 import { mergeRefs } from "./internal/util";
 import { FieldErrors, Validator } from "./validation/types";
+import { useFieldErrors, useIsSubmitting, useIsValid } from ".";
 
 export type FormProps<DataType> = {
   /**
@@ -138,8 +140,30 @@ const focusFirstInvalidInput = (
 };
 
 const useFormId = (providedId?: string): string | symbol => {
-  const [symbolId] = useState(() => "remix-validated-form-id");
+  // We can use a `Symbol` here because we only use it after hydration
+  const [symbolId] = useState(() => Symbol("remix-validated-form-id"));
   return providedId ?? symbolId;
+};
+
+/**
+ * Use a component to access the state so we don't cause
+ * any extra rerenders of the whole form.
+ */
+const FormResetter = ({
+  resetAfterSubmit,
+  formRef,
+}: {
+  resetAfterSubmit: boolean;
+  formRef: RefObject<HTMLFormElement>;
+}) => {
+  const isSubmitting = useIsSubmitting();
+  const isValid = useIsValid();
+  useSubmitComplete(isSubmitting, () => {
+    if (isValid && resetAfterSubmit) {
+      formRef.current?.reset();
+    }
+  });
+  return null;
 };
 
 /**
@@ -155,7 +179,7 @@ export function ValidatedForm<DataType>({
   formRef: formRefProp,
   onReset,
   subaction,
-  resetAfterSubmit,
+  resetAfterSubmit = false,
   disableFocusOnError,
   method,
   replace,
@@ -171,8 +195,9 @@ export function ValidatedForm<DataType>({
       action,
       subaction,
       defaultValuesProp: providedDefaultValues,
+      fetcher,
     }),
-    [action, formId, providedDefaultValues, subaction]
+    [action, fetcher, formId, providedDefaultValues, subaction]
   );
   const backendError = useErrorResponseForForm(contextValue);
   const hasActiveSubmission = useHasActiveFormSubmit(contextValue);
@@ -237,11 +262,15 @@ export function ValidatedForm<DataType>({
     validateField,
   ]);
 
+  useEffect(() => {
+    setFieldErrors({
+      fieldErrors: backendError?.fieldErrors ?? {},
+      formAtom,
+    });
+  }, [backendError?.fieldErrors, formAtom, setFieldErrors]);
+
   useSubmitComplete(hasActiveSubmission, () => {
     endSubmit({ formAtom });
-    if (!backendError && resetAfterSubmit) {
-      formRef.current?.reset();
-    }
   });
 
   let clickedButtonRef = React.useRef<any>();
@@ -313,6 +342,7 @@ export function ValidatedForm<DataType>({
       }}
     >
       <InternalFormContext.Provider value={contextValue}>
+        <FormResetter formRef={formRef} resetAfterSubmit={resetAfterSubmit} />
         {subaction && (
           <input type="hidden" value={subaction} name="subaction" />
         )}

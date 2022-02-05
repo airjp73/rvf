@@ -1,13 +1,13 @@
 import { useActionData, useTransition } from "@remix-run/react";
-import { Atom, PrimitiveAtom } from "jotai";
+import { Atom } from "jotai";
 import { useAtomValue } from "jotai/utils";
 import { useContext, useMemo } from "react";
 import { ValidationErrorResponseData } from "..";
 import { InternalFormContext, InternalFormContextValue } from "./formContext";
 import {
   defaultValuesAtom,
+  FormAtom,
   formRegistry,
-  FormState,
   isHydratedAtom,
 } from "./state";
 
@@ -27,7 +27,7 @@ export const useInternalFormContext = (
 
 export const useContextSelectAtom = <T>(
   formId: string | symbol,
-  selectorAtomCreator: (formState: PrimitiveAtom<FormState>) => Atom<T>
+  selectorAtomCreator: (formState: FormAtom) => Atom<T>
 ) => {
   const formAtom = formRegistry(formId);
   const selectorAtom = useMemo(
@@ -39,7 +39,7 @@ export const useContextSelectAtom = <T>(
 
 export const useUnknownFormContextSelectAtom = <T>(
   formId: string | symbol | undefined,
-  selectorAtomCreator: (formState: PrimitiveAtom<FormState>) => Atom<T>,
+  selectorAtomCreator: (formState: FormAtom) => Atom<T>,
   hookName: string
 ) => {
   const formContext = useInternalFormContext(formId, hookName);
@@ -52,6 +52,12 @@ export function useErrorResponseForForm({
   formId,
 }: InternalFormContextValue): ValidationErrorResponseData | null {
   const actionData = useActionData<any>();
+  console.log({
+    actionData,
+    formId,
+    subaction,
+    fetcher,
+  });
   if (fetcher) {
     if ((fetcher.data as any)?.fieldErrors) return fetcher.data as any;
     return null;
@@ -60,7 +66,7 @@ export function useErrorResponseForForm({
   if (!actionData?.fieldErrors) return null;
 
   // If there's an explicit id, we should ignore data that doesn't include it.
-  if (typeof formId !== "string")
+  if (typeof formId === "string")
     return actionData.__rvfInternalFormId === formId ? actionData : null;
 
   if (

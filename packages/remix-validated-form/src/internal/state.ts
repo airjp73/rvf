@@ -1,6 +1,8 @@
-import { atom } from "jotai";
+import { Atom, atom, WritableAtom } from "jotai";
 import { atomWithImmer } from "jotai/immer";
 import { atomFamily, selectAtom } from "jotai/utils";
+import lodashGet from "lodash/get";
+import isEqual from "lodash/isEqual";
 import { FieldErrors, TouchedFields } from "../validation/types";
 
 export type FormState = {
@@ -48,6 +50,21 @@ export const formRegistry = atomFamily((formId: string | symbol) =>
     registerReceiveFocus: () => () => {},
   })
 );
+
+export const fieldAtom = ({ name, formAtom }: FieldAtomArgs) =>
+  selectAtom(
+    formAtom,
+    (formState) => {
+      const fieldState: FieldState = {
+        error: formState.fieldErrors?.[name],
+        touched: formState.touchedFields[name],
+        defaultValue:
+          formState.defaultValues && lodashGet(formState.defaultValues, name),
+      };
+      return fieldState;
+    },
+    isEqual
+  );
 
 // Selector atoms
 
