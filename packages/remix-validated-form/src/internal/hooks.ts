@@ -52,12 +52,6 @@ export function useErrorResponseForForm({
   formId,
 }: InternalFormContextValue): ValidationErrorResponseData | null {
   const actionData = useActionData<any>();
-  console.log({
-    actionData,
-    formId,
-    subaction,
-    fetcher,
-  });
   if (fetcher) {
     if ((fetcher.data as any)?.fieldErrors) return fetcher.data as any;
     return null;

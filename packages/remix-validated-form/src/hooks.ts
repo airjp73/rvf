@@ -108,7 +108,7 @@ export const useIsValid = (formId?: string) =>
   useUnknownFormContextSelectAtom(formId, isValidAtom, "useIsValid");
 
 export const useDefaultValues = (formId?: string) => {
-  const formContext = useInternalFormContext();
+  const formContext = useInternalFormContext(formId, "useDefaultValues");
   return useDefaultValuesForForm(formId ? { formId } : formContext);
 };
 
@@ -159,6 +159,10 @@ export const useField = (
      * Allows you to specify when a field gets validated (when using getInputProps)
      */
     validationBehavior?: Partial<ValidationBehaviorOptions>;
+    /**
+     * The formId of the form you want to use.
+     * This is not necesary if the input is used inside a form.
+     */
     formId?: string;
   }
 ): FieldProps => {

@@ -34,7 +34,7 @@ import {
 import { useSubmitComplete } from "./internal/submissionCallbacks";
 import { mergeRefs } from "./internal/util";
 import { FieldErrors, Validator } from "./validation/types";
-import { useFieldErrors, useIsSubmitting, useIsValid } from ".";
+import { useIsSubmitting, useIsValid } from ".";
 
 export type FormProps<DataType> = {
   /**

@@ -24,7 +24,9 @@ export const Input = forwardRef(
     }: InputProps,
     ref: React.ForwardedRef<HTMLInputElement>
   ) => {
-    const { getInputProps, error } = useField(name);
+    const { getInputProps, error } = useField(name, {
+      formId: form,
+    });
     const actualValue = value ?? (type === "checkbox" ? "on" : undefined);
     return (
       <div>

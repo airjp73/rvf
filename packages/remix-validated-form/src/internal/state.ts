@@ -1,4 +1,4 @@
-import { Atom, atom, WritableAtom } from "jotai";
+import { atom } from "jotai";
 import { atomWithImmer } from "jotai/immer";
 import { atomFamily, selectAtom } from "jotai/utils";
 import lodashGet from "lodash/get";
