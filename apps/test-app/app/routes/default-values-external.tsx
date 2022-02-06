@@ -12,6 +12,7 @@ const validator = withZod(
     text2: zfd.text(),
     check1: zfd.checkbox(),
     radio: z.string(),
+    likesColors: zfd.repeatable(),
   })
 );
 
@@ -28,6 +29,7 @@ export default function FrontendValidation() {
           label="Value 1"
           value="value1"
           data-testid="value1"
+          hideErrors
         />
         <Input
           name="radio"
@@ -36,6 +38,7 @@ export default function FrontendValidation() {
           label="Value 2"
           value="value2"
           data-testid="value2"
+          hideErrors
         />
         <Input
           name="radio"
@@ -44,6 +47,40 @@ export default function FrontendValidation() {
           label="Value 3"
           value="value3"
           data-testid="value3"
+          hideErrors
+        />
+      </Fieldset>
+      <Fieldset
+        label="Which colors do you like"
+        name="likesColors"
+        form="test-form"
+      >
+        <Input
+          data-testid="red"
+          name="likesColors"
+          type="checkbox"
+          label="Red"
+          value="red"
+          hideErrors
+          form="test-form"
+        />
+        <Input
+          data-testid="blue"
+          name="likesColors"
+          type="checkbox"
+          label="Blue"
+          value="blue"
+          hideErrors
+          form="test-form"
+        />
+        <Input
+          data-testid="green"
+          name="likesColors"
+          type="checkbox"
+          label="Green"
+          value="green"
+          hideErrors
+          form="test-form"
         />
       </Fieldset>
       <hr />
@@ -56,6 +93,7 @@ export default function FrontendValidation() {
           text2: "Bob",
           check1: true,
           radio: "value3",
+          likesColors: ["red", "green"],
         }}
       >
         <Input name="text2" type="text" label="Text 2" />

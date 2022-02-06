@@ -14,6 +14,9 @@ describe("External fields", () => {
     cy.findByTestId("value1").should("not.be.checked");
     cy.findByTestId("value2").should("not.be.checked");
     cy.findByTestId("value3").should("be.checked");
+    cy.findByTestId("red").should("be.checked");
+    cy.findByTestId("blue").should("not.be.checked");
+    cy.findByTestId("green").should("be.checked");
   });
 
   it("should not populate default values on external fields without JS", () => {
@@ -24,5 +27,8 @@ describe("External fields", () => {
     cy.findByTestId("value1").should("not.be.checked");
     cy.findByTestId("value2").should("not.be.checked");
     cy.findByTestId("value3").should("not.be.checked");
+    cy.findByTestId("red").should("not.be.checked");
+    cy.findByTestId("blue").should("not.be.checked");
+    cy.findByTestId("green").should("not.be.checked");
   });
 });
