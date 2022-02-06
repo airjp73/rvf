@@ -2,7 +2,6 @@ import { atom } from "jotai";
 import { atomWithImmer } from "jotai/immer";
 import { atomFamily, selectAtom } from "jotai/utils";
 import lodashGet from "lodash/get";
-import isEqual from "lodash/isEqual";
 import { FieldErrors, TouchedFields } from "../validation/types";
 
 export const ATOM_SCOPE = Symbol("remix-validated-form-scope");
@@ -53,24 +52,22 @@ export const formRegistry = atomFamily((formId: string | symbol) =>
   })
 );
 
-export const fieldAtom = ({ name, formAtom }: FieldAtomArgs) =>
+export const fieldErrorAtom = (name: string) => (formAtom: FormAtom) =>
+  selectAtom(formAtom, (formState) => formState.fieldErrors?.[name]);
+
+export const fieldTouchedAtom = (name: string) => (formAtom: FormAtom) =>
+  selectAtom(formAtom, (formState) => formState.touchedFields[name]);
+
+export const fieldDefaultValueAtom = (name: string) => (formAtom: FormAtom) =>
   selectAtom(
     formAtom,
-    (formState) => {
-      const fieldState: FieldState = {
-        error: formState.fieldErrors?.[name],
-        touched: formState.touchedFields[name],
-        defaultValue:
-          formState.defaultValues && lodashGet(formState.defaultValues, name),
-      };
-      return fieldState;
-    },
-    isEqual
+    (formState) =>
+      formState.defaultValues && lodashGet(formState.defaultValues, name)
   );
 
 // Selector atoms
 
-const formSelectorAtom =
+export const formSelectorAtom =
   <T>(selector: (state: FormState) => T) =>
   (formAtom: FormAtom) =>
     selectAtom(formAtom, selector);

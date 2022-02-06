@@ -1,4 +1,3 @@
-import get from "lodash/get";
 import { useCallback, useEffect, useMemo } from "react";
 import {
   createGetInputProps,
@@ -9,18 +8,20 @@ import {
   useUnknownFormContextSelectAtom,
   useDefaultValuesForForm,
   useInternalFormContext,
-  useErrorResponseForForm,
-  useContextSelectAtom,
-  useFieldInfo,
   useFormUpdateAtom,
+  useFieldTouched,
+  useFieldError,
+  useFieldDefaultValue,
+  useFieldErrorsForForm,
+  useHydratableSelector,
 } from "./internal/hooks";
 import {
   actionAtom,
   clearErrorAtom,
+  defaultValuesAtom,
   fieldErrorsAtom,
   formRegistry,
   hasBeenSubmittedAtom,
-  isHydratedAtom,
   isSubmittingAtom,
   isValidAtom,
   registerReceiveFocusAtom,
@@ -68,6 +69,12 @@ export const useValidateField = (formId?: string) =>
     "useValidateField"
   );
 
+/**
+ * Returns whether or not the current form is valid.
+ */
+export const useIsValid = (formId?: string) =>
+  useUnknownFormContextSelectAtom(formId, isValidAtom, "useIsValid");
+
 export const useClearError = (formId?: string) => {
   const formContext = useInternalFormContext(formId, "useClearError");
   const clearError = useFormUpdateAtom(clearErrorAtom);
@@ -83,33 +90,33 @@ export const useClearError = (formId?: string) => {
 
 export const useSetFieldTouched = (formId?: string) => {
   const formContext = useInternalFormContext(formId, "useSetFieldTouched");
-  const clearError = useFormUpdateAtom(setTouchedAtom);
+  const setTouched = useFormUpdateAtom(setTouchedAtom);
   return useCallback(
     (name: string, touched: boolean) => {
-      clearError({ name, formAtom: formRegistry(formContext.formId), touched });
+      setTouched({ name, formAtom: formRegistry(formContext.formId), touched });
     },
-    [clearError, formContext.formId]
+    [setTouched, formContext.formId]
   );
 };
 
 export const useFieldErrors = (formId?: string) => {
-  const context = useInternalFormContext(formId, "useField");
-  const fieldErrors = useContextSelectAtom(context.formId, fieldErrorsAtom);
-  const hydrated = useContextSelectAtom(context.formId, isHydratedAtom);
-  const errorResponse = useErrorResponseForForm(context);
-  const error = hydrated ? fieldErrors : errorResponse?.fieldErrors;
-  return error ?? {};
+  const context = useInternalFormContext(formId, "useFieldErrors");
+  return (
+    useHydratableSelector(
+      context,
+      fieldErrorsAtom,
+      useFieldErrorsForForm(context)
+    ) ?? {}
+  );
 };
 
-/**
- * Returns whether or not the current form is valid.
- */
-export const useIsValid = (formId?: string) =>
-  useUnknownFormContextSelectAtom(formId, isValidAtom, "useIsValid");
-
 export const useDefaultValues = (formId?: string) => {
-  const formContext = useInternalFormContext(formId, "useDefaultValues");
-  return useDefaultValuesForForm(formContext);
+  const context = useInternalFormContext(formId, "useDefaultValues");
+  return useHydratableSelector(
+    context,
+    defaultValuesAtom,
+    useDefaultValuesForForm(context)
+  );
 };
 
 export type FieldProps = {
@@ -168,28 +175,16 @@ export const useField = (
 ): FieldProps => {
   const { handleReceiveFocus, formId: providedFormId } = options ?? {};
   const formContext = useInternalFormContext(providedFormId, "useField");
-  const { formId } = formContext;
-  const formAtom = formRegistry(formId);
-  const hydrated = useContextSelectAtom(formId, isHydratedAtom);
 
-  const defaultValues = useDefaultValuesForForm(formContext);
-  const defaultValue = get(defaultValues, name);
+  const defaultValue = useFieldDefaultValue(name, formContext);
+  const touched = useFieldTouched(name, formContext);
+  const error = useFieldError(name, formContext);
 
-  const { touched, error: errorFromState } = useFieldInfo(name, formAtom);
-
-  const errorResponse = useErrorResponseForForm(formContext);
-  const error = hydrated
-    ? errorFromState
-    : errorResponse?.fieldErrors && get(errorResponse?.fieldErrors, name);
-
-  const clearError = useFormUpdateAtom(clearErrorAtom);
-  const setTouched = useFormUpdateAtom(setTouchedAtom);
+  const clearError = useClearError(providedFormId);
+  const setTouched = useSetFieldTouched(providedFormId);
   const hasBeenSubmitted = useHasBeenSubmitted(providedFormId);
-  const validateField = useContextSelectAtom(formId, validateFieldAtom);
-  const registerReceiveFocus = useContextSelectAtom(
-    formId,
-    registerReceiveFocusAtom
-  );
+  const validateField = useValidateField(providedFormId);
+  const registerReceiveFocus = useRegisterReceiveFocus(providedFormId);
 
   useEffect(() => {
     if (handleReceiveFocus)
@@ -199,13 +194,13 @@ export const useField = (
   const field = useMemo<FieldProps>(() => {
     const helpers = {
       error,
-      clearError: () => clearError({ name, formAtom }),
+      clearError: () => clearError(name),
       validate: () => {
         validateField(name);
       },
       defaultValue,
       touched,
-      setTouched: (touched: boolean) => setTouched({ name, formAtom, touched }),
+      setTouched: (touched: boolean) => setTouched(name, touched),
     };
     const getInputProps = createGetInputProps({
       ...helpers,
@@ -225,7 +220,6 @@ export const useField = (
     hasBeenSubmitted,
     options?.validationBehavior,
     clearError,
-    formAtom,
     validateField,
     setTouched,
   ]);
