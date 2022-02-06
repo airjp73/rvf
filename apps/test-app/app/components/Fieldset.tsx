@@ -3,10 +3,19 @@ import { useField } from "remix-validated-form";
 
 type FieldsetProps = {
   label: string;
+  name: string;
+  form?: string;
 };
 
-export const Fieldset: FC<FieldsetProps> = ({ children, label }) => {
-  const { error, validate } = useField("likes");
+export const Fieldset: FC<FieldsetProps> = ({
+  children,
+  label,
+  name,
+  form,
+}) => {
+  const { error, validate } = useField(name, {
+    formId: form,
+  });
   return (
     <fieldset onChange={validate}>
       <legend>{label}</legend>
