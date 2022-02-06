@@ -1,3 +1,5 @@
+import omitBy from "lodash/omitBy";
+
 export type ValidationBehavior = "onBlur" | "onChange" | "onSubmit";
 
 export type ValidationBehaviorOptions = {
@@ -68,7 +70,7 @@ export const createGetInputProps = ({
       ? validationBehaviors.whenTouched
       : validationBehaviors.initial;
 
-    const inputProps: T = {
+    const inputProps: MinimalInputProps = {
       ...props,
       onChange: (...args: unknown[]) => {
         if (behavior === "onChange") validate();
@@ -83,19 +85,19 @@ export const createGetInputProps = ({
       name,
     };
 
-    if (inputProps.type === "checkbox") {
+    if (props.type === "checkbox") {
       const value = props.value ?? "on";
       inputProps.defaultChecked = getCheckboxDefaultChecked(
         value,
         defaultValue
       );
-    } else if (inputProps.type === "radio") {
+    } else if (props.type === "radio") {
       const value = props.value ?? "on";
       inputProps.defaultChecked = defaultValue === value;
     } else {
       inputProps.defaultValue = defaultValue;
     }
 
-    return inputProps;
+    return omitBy(inputProps, (value) => value === undefined) as T;
   };
 };

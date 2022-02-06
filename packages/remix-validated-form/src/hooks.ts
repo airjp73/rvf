@@ -109,7 +109,7 @@ export const useIsValid = (formId?: string) =>
 
 export const useDefaultValues = (formId?: string) => {
   const formContext = useInternalFormContext(formId, "useDefaultValues");
-  return useDefaultValuesForForm(formId ? { formId } : formContext);
+  return useDefaultValuesForForm(formContext);
 };
 
 export type FieldProps = {

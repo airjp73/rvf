@@ -32,7 +32,7 @@ import {
   syncFormContextAtom,
 } from "./internal/state";
 import { useSubmitComplete } from "./internal/submissionCallbacks";
-import { mergeRefs } from "./internal/util";
+import { mergeRefs, useIsomorphicLayoutEffect } from "./internal/util";
 import { FieldErrors, Validator } from "./validation/types";
 import { useIsSubmitting, useIsValid } from ".";
 
@@ -243,7 +243,7 @@ export function ValidatedForm<DataType>({
     [customFocusHandlers]
   );
 
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     syncFormContext({
       formAtom,
       action,

@@ -10,11 +10,13 @@ describe("External fields", () => {
     cy.visit("/default-values-external");
     cy.findByLabelText("Text 1").should("have.value", "John");
     cy.findByLabelText("Text 2").should("have.value", "Bob");
+    cy.findByLabelText("Check 1").should("be.checked");
   });
 
   it("should not populate default values on external fields without JS", () => {
     cy.visitWithoutJs("/default-values-external");
     cy.findByLabelText("Text 1").should("have.value", "");
     cy.findByLabelText("Text 2").should("have.value", "Bob");
+    cy.findByLabelText("Check 1").should("not.be.checked");
   });
 });

@@ -1,4 +1,5 @@
 import type React from "react";
+import { useEffect, useLayoutEffect } from "react";
 
 export const omit = (obj: any, ...keys: string[]) => {
   const result = { ...obj };
@@ -21,3 +22,6 @@ export const mergeRefs = <T = any>(
     });
   };
 };
+
+export const useIsomorphicLayoutEffect =
+  typeof window !== "undefined" ? useLayoutEffect : useEffect;
