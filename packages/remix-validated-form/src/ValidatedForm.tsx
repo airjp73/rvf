@@ -10,6 +10,7 @@ import React, {
   useState,
 } from "react";
 import invariant from "tiny-invariant";
+import { FORM_ID_FIELD } from "./internal/constants";
 import {
   InternalFormContext,
   InternalFormContextValue,
@@ -346,7 +347,7 @@ export function ValidatedForm<DataType>({
         {subaction && (
           <input type="hidden" value={subaction} name="subaction" />
         )}
-        {id && <input type="hidden" value={id} name="__rvfInternalFormId" />}
+        {id && <input type="hidden" value={id} name={FORM_ID_FIELD} />}
         {children}
       </InternalFormContext.Provider>
     </Form>

@@ -1,4 +1,5 @@
 import { CreateValidatorArg, GenericObject, Validator } from "..";
+import { FORM_ID_FIELD } from "../internal/constants";
 import { objectFromPathEntries } from "../internal/flatten";
 
 const preprocessFormData = (data: GenericObject | FormData): GenericObject => {
@@ -28,6 +29,7 @@ export function createValidator<T>(
           error: {
             fieldErrors: result.error,
             subaction: data.subaction,
+            formId: data[FORM_ID_FIELD],
           },
           submittedData: data,
         };

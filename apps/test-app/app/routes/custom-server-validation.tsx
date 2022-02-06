@@ -11,16 +11,22 @@ const validator = withYup(schema);
 
 export const action: ActionFunction = async () => {
   return validationError(
-    { fieldErrors: { firstName: "Error" } },
-    { firstName: "Bob" }
+    {
+      fieldErrors: { firstName: "Error", lastName: "Error 2" },
+      formId: "test-form",
+    },
+    { firstName: "Bob", lastName: "Ross" }
   );
 };
 
 export default function CustomServerValidation() {
   return (
-    <ValidatedForm validator={validator} method="post">
-      <Input name="firstName" label="First Name" />
-      <SubmitButton />
-    </ValidatedForm>
+    <>
+      <Input name="firstName" label="First Name" form="test-form" />
+      <ValidatedForm validator={validator} method="post" id="test-form">
+        <Input name="lastName" label="Last Name" />
+        <SubmitButton />
+      </ValidatedForm>
+    </>
   );
 }

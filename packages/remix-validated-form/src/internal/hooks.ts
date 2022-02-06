@@ -63,7 +63,7 @@ export function useErrorResponseForForm({
 
   // If there's an explicit id, we should ignore data that doesn't include it.
   if (typeof formId === "string")
-    return actionData.__rvfInternalFormId === formId ? actionData : null;
+    return actionData.formId === formId ? actionData : null;
 
   if (
     (!subaction && !actionData.subaction) ||

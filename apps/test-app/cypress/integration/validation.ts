@@ -169,7 +169,9 @@ describe("Validation", () => {
     cy.findByText("Submit").click();
 
     cy.findByText("Error").should("exist");
+    cy.findByText("Error 2").should("exist");
     cy.findByLabelText("First Name").should("have.value", "Bob");
+    cy.findByLabelText("Last Name").should("have.value", "Ross");
   });
 
   it("should reset validation errors when resetting the form", () => {
