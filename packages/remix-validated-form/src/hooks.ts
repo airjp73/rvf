@@ -65,7 +65,7 @@ export const useValidateField = (formId?: string) =>
   useUnknownFormContextSelectAtom(
     formId,
     validateFieldAtom,
-    "useRegisterReceiveFocus"
+    "useValidateField"
   );
 
 export const useClearError = (formId?: string) => {
