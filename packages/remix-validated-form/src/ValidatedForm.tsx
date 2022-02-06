@@ -1,5 +1,4 @@
 import { Form as RemixForm, useFetcher, useSubmit } from "@remix-run/react";
-import { useUpdateAtom } from "jotai/utils";
 import uniq from "lodash/uniq";
 import React, {
   ComponentProps,
@@ -17,6 +16,7 @@ import {
 } from "./internal/formContext";
 import {
   useErrorResponseForForm,
+  useFormUpdateAtom,
   useHasActiveFormSubmit,
 } from "./internal/hooks";
 import { MultiValueMap, useMultiValueMap } from "./internal/MultiValueMap";
@@ -205,13 +205,13 @@ export function ValidatedForm<DataType>({
   const Form = fetcher?.Form ?? RemixForm;
 
   const submit = useSubmit();
-  const clearError = useUpdateAtom(clearErrorAtom);
-  const addError = useUpdateAtom(addErrorAtom);
-  const setFieldErrors = useUpdateAtom(setFieldErrorsAtom);
-  const reset = useUpdateAtom(resetAtom);
-  const startSubmit = useUpdateAtom(startSubmitAtom);
-  const endSubmit = useUpdateAtom(endSubmitAtom);
-  const syncFormContext = useUpdateAtom(syncFormContextAtom);
+  const clearError = useFormUpdateAtom(clearErrorAtom);
+  const addError = useFormUpdateAtom(addErrorAtom);
+  const setFieldErrors = useFormUpdateAtom(setFieldErrorsAtom);
+  const reset = useFormUpdateAtom(resetAtom);
+  const startSubmit = useFormUpdateAtom(startSubmitAtom);
+  const endSubmit = useFormUpdateAtom(endSubmitAtom);
+  const syncFormContext = useFormUpdateAtom(syncFormContextAtom);
 
   const validateField: FormState["validateField"] = useCallback(
     async (fieldName) => {

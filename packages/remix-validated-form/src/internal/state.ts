@@ -5,6 +5,8 @@ import lodashGet from "lodash/get";
 import isEqual from "lodash/isEqual";
 import { FieldErrors, TouchedFields } from "../validation/types";
 
+export const ATOM_SCOPE = Symbol("remix-validated-form-scope");
+
 export type FormState = {
   // Actual state
   hydrated: boolean;

@@ -1,11 +1,13 @@
 import { useActionData, useTransition } from "@remix-run/react";
 import { Atom } from "jotai";
-import { useAtomValue } from "jotai/utils";
+import { useAtomValue, useUpdateAtom } from "jotai/utils";
 import { useContext, useMemo } from "react";
 import { ValidationErrorResponseData } from "..";
 import { InternalFormContext, InternalFormContextValue } from "./formContext";
 import {
+  ATOM_SCOPE,
   defaultValuesAtom,
+  fieldAtom,
   FormAtom,
   formRegistry,
   isHydratedAtom,
@@ -34,7 +36,7 @@ export const useContextSelectAtom = <T>(
     () => selectorAtomCreator(formAtom),
     [formAtom, selectorAtomCreator]
   );
-  return useAtomValue(selectorAtom);
+  return useAtomValue(selectorAtom, ATOM_SCOPE);
 };
 
 export const useUnknownFormContextSelectAtom = <T>(
@@ -98,3 +100,14 @@ export const useHasActiveFormSubmit = ({
     : !!transition.submission;
   return hasActiveSubmission;
 };
+
+export const useFieldInfo = (name: string, formAtom: FormAtom) => {
+  const fieldInfoAtom = useMemo(
+    () => fieldAtom({ name, formAtom }),
+    [formAtom, name]
+  );
+  return useAtomValue(fieldInfoAtom, ATOM_SCOPE);
+};
+
+export const useFormUpdateAtom: typeof useUpdateAtom = (atom) =>
+  useUpdateAtom(atom, ATOM_SCOPE);

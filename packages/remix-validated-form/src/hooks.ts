@@ -1,4 +1,3 @@
-import { useAtomValue, useUpdateAtom } from "jotai/utils";
 import get from "lodash/get";
 import { useCallback, useEffect, useMemo } from "react";
 import {
@@ -12,11 +11,12 @@ import {
   useInternalFormContext,
   useErrorResponseForForm,
   useContextSelectAtom,
+  useFieldInfo,
+  useFormUpdateAtom,
 } from "./internal/hooks";
 import {
   actionAtom,
   clearErrorAtom,
-  fieldAtom,
   fieldErrorsAtom,
   formRegistry,
   hasBeenSubmittedAtom,
@@ -70,7 +70,7 @@ export const useValidateField = (formId?: string) =>
 
 export const useClearError = (formId?: string) => {
   const formContext = useInternalFormContext(formId, "useClearError");
-  const clearError = useUpdateAtom(clearErrorAtom);
+  const clearError = useFormUpdateAtom(clearErrorAtom);
   return useCallback(
     (...names: string[]) => {
       names.forEach((name) => {
@@ -83,7 +83,7 @@ export const useClearError = (formId?: string) => {
 
 export const useSetFieldTouched = (formId?: string) => {
   const formContext = useInternalFormContext(formId, "useSetFieldTouched");
-  const clearError = useUpdateAtom(setTouchedAtom);
+  const clearError = useFormUpdateAtom(setTouchedAtom);
   return useCallback(
     (name: string, touched: boolean) => {
       clearError({ name, formAtom: formRegistry(formContext.formId), touched });
@@ -175,25 +175,20 @@ export const useField = (
   const defaultValues = useDefaultValuesForForm(formContext);
   const defaultValue = get(defaultValues, name);
 
-  const fieldInfoAtom = useMemo(
-    () => fieldAtom({ name, formAtom }),
-    [formAtom, name]
-  );
-  const { touched, error: errorFromState } = useAtomValue(fieldInfoAtom);
+  const { touched, error: errorFromState } = useFieldInfo(name, formAtom);
 
   const errorResponse = useErrorResponseForForm(formContext);
   const error = hydrated
     ? errorFromState
     : errorResponse?.fieldErrors && get(errorResponse?.fieldErrors, name);
 
-  const clearError = useUpdateAtom(clearErrorAtom);
-  const setTouched = useUpdateAtom(setTouchedAtom);
+  const clearError = useFormUpdateAtom(clearErrorAtom);
+  const setTouched = useFormUpdateAtom(setTouchedAtom);
   const hasBeenSubmitted = useHasBeenSubmitted(providedFormId);
-  const validateField = useAtomValue(
-    useMemo(() => validateFieldAtom(formAtom), [formAtom])
-  );
-  const registerReceiveFocus = useAtomValue(
-    useMemo(() => registerReceiveFocusAtom(formAtom), [formAtom])
+  const validateField = useContextSelectAtom(formId, validateFieldAtom);
+  const registerReceiveFocus = useContextSelectAtom(
+    formId,
+    registerReceiveFocusAtom
   );
 
   useEffect(() => {
