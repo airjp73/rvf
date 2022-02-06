@@ -9,7 +9,7 @@ import {
   useIsSubmitting,
   useIsValid,
   useRegisterReceiveFocus,
-  useSetFieldTouched,
+  useSetTouched,
   useTouchedFields,
   useValidatedFormAction,
   useValidateField,
@@ -85,7 +85,7 @@ export const useFormContext = (formId?: string): UserFacingFormContextValue => {
   };
   const clearError = useClearError(formId);
   const fieldErrors = useFieldErrors(formId);
-  const setFieldTouched = useSetFieldTouched(formId);
+  const setFieldTouched = useSetTouched(formId);
   const touchedFields = useTouchedFields(formId);
   const validateField = useValidateField(formId);
   const registerReceiveFocus = useRegisterReceiveFocus(formId);

@@ -88,7 +88,7 @@ export const useClearError = (formId?: string) => {
   );
 };
 
-export const useSetFieldTouched = (formId?: string) => {
+export const useSetTouched = (formId?: string) => {
   const formContext = useInternalFormContext(formId, "useSetFieldTouched");
   const setTouched = useFormUpdateAtom(setTouchedAtom);
   return useCallback(
@@ -181,7 +181,7 @@ export const useField = (
   const error = useFieldError(name, formContext);
 
   const clearError = useClearError(providedFormId);
-  const setTouched = useSetFieldTouched(providedFormId);
+  const setTouched = useSetTouched(providedFormId);
   const hasBeenSubmitted = useHasBeenSubmitted(providedFormId);
   const validateField = useValidateField(providedFormId);
   const registerReceiveFocus = useRegisterReceiveFocus(providedFormId);
