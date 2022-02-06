@@ -7,7 +7,7 @@ import { SubmitButton } from "~/components/SubmitButton";
 
 const validator = withYup(
   yup.object({
-    firstName: yup.string().required(),
+    firstName: yup.string().label("First Name").required(),
   })
 );
 
@@ -25,7 +25,14 @@ const DisplayContext = ({
   form?: string;
 }) => {
   // Deprecated but convenient for this test
-  const { action, hasBeenSubmitted, isValid } = useFormContext(form);
+  const {
+    action,
+    hasBeenSubmitted,
+    isValid,
+    fieldErrors,
+    defaultValues,
+    touchedFields,
+  } = useFormContext(form);
 
   return (
     <div data-testid={testid}>
@@ -38,6 +45,21 @@ const DisplayContext = ({
 
         <dt>action</dt>
         <dd>{action}</dd>
+
+        <dt>fieldErrors</dt>
+        <dd>
+          <pre>{JSON.stringify(fieldErrors)}</pre>
+        </dd>
+
+        <dt>defaultValues</dt>
+        <dd>
+          <pre>{JSON.stringify(defaultValues)}</pre>
+        </dd>
+
+        <dt>touchedFields</dt>
+        <dd>
+          <pre>{JSON.stringify(touchedFields)}</pre>
+        </dd>
       </dl>
     </div>
   );
@@ -54,6 +76,7 @@ export default function FrontendValidation() {
         method="post"
         id="test-form"
         action="/context-hooks"
+        defaultValues={{ firstName: "defaultFirstName" }}
       >
         <Input name="firstName" label="First Name" />
         <DisplayContext testid="internal-values" />
