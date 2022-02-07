@@ -9,7 +9,6 @@ import {
   useEffect,
 } from "react";
 import { useTransition, NavLink } from "remix";
-import { GithubIcon } from "./GithubIcon";
 
 export type SidebarProps = {
   className?: string;
