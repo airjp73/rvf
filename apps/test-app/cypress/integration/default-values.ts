@@ -79,4 +79,10 @@ describe("Validation", () => {
     cy.findByTestId("blue").should("not.be.checked");
     cy.findByTestId("green").should("be.checked");
   });
+
+  it("should distinguish between default values for different forms", () => {
+    cy.visitWithoutJs("/default-values-from-server-multiform");
+    cy.findByTestId("form1input").should("have.value", "John");
+    cy.findByTestId("form2input").should("have.value", "Bob");
+  });
 });
