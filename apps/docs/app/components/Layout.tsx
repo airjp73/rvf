@@ -56,7 +56,7 @@ const navSections: Section[] = [
     ],
   },
   {
-    header: "Api Reference",
+    header: "Core API",
     navItems: [
       {
         label: "ValidatedForm",
@@ -66,6 +66,24 @@ const navSections: Section[] = [
         label: "useField",
         to: "/reference/use-field",
       },
+    ],
+  },
+  {
+    header: "Server-side helpers",
+    navItems: [
+      {
+        label: "validationError",
+        to: "/reference/validation-error",
+      },
+      {
+        label: "setFormDefaults",
+        to: "/reference/set-form-defaults",
+      },
+    ],
+  },
+  {
+    header: "Form context hooks",
+    navItems: [
       {
         label: "useIsSubmitting",
         to: "/reference/use-is-submitting",
@@ -75,12 +93,8 @@ const navSections: Section[] = [
         to: "/reference/use-is-valid",
       },
       {
-        label: "useFormContext",
+        label: "useFormContext (deprecated)",
         to: "/reference/use-form-context",
-      },
-      {
-        label: "validationError",
-        to: "/reference/validation-error",
       },
     ],
   },
