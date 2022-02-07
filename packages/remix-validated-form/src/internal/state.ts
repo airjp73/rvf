@@ -31,11 +31,6 @@ export type FieldState = {
   error?: string;
 };
 
-export type CreateFormAtomArgs = {
-  formId: string | symbol;
-  defaultValues?: { [fieldName: string]: any };
-};
-
 export const formRegistry = atomFamily((formId: string | symbol) =>
   atomWithImmer<FormState>({
     hydrated: false,
