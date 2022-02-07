@@ -46,6 +46,10 @@ const navSections: Section[] = [
         to: "/validation-library-support",
       },
       {
+        label: "Using hooks outside forms",
+        to: "/use-outside-forms",
+      },
+      {
         label: "Supporting users without JS",
         to: "/supporting-no-js",
       },

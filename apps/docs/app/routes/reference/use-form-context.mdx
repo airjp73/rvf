@@ -15,7 +15,7 @@ import { Alert } from "~/components/Alert";
 <div className="not-prose">
   <Alert
     title="Deprecated"
-    variant="error"
+    variant="warning"
     details={
       <p>
         `useFormContext` is deprecated in favor of
@@ -27,48 +27,7 @@ import { Alert } from "~/components/Alert";
   />
 </div>
 
-Returns context about the form.
-
-#### Usage
-
-Normally, this hook is used inside of a `ValidatedForm`.
-
-```tsx
-const Button = () => {
-  const { isSubmitting } = useFormContext();
-  return (
-    <Button disabled={isSubmitting}>
-      {isSubmitting ? "Submitting..." : "Submit"}
-    </Button>
-  );
-};
-
-const FormComponent = () => {
-  return (
-    <ValidatedForm>
-      <input name="name" />
-      <Button>Submit</Button>
-    </ValidatedForm>
-  );
-};
-```
-
-To use outside a `ValidatedForm`, pass a `formId` that matches the `id` prop of the form.
-
-```tsx
-const FormComponent = () => {
-  const { isSubmitting } = useFormContext("myForm");
-
-  return (
-    <ValidatedForm id="myForm">
-      <input name="name" />
-      <Button disabled={isSubmitting}>
-        {isSubmitting ? "Submitting..." : "Submit"}
-      </Button>
-    </ValidatedForm>
-  );
-};
-```
+Returns information about the specified form.
 
 ## FormContext
 
