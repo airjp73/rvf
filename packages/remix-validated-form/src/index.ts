@@ -4,6 +4,7 @@ export * from "./ValidatedForm";
 export * from "./validation/types";
 export * from "./validation/createValidator";
 export {
-  UserFacingFormContextValue as FormContextValue,
+  DeprecatedFormContextValue as FormContextValue,
   useFormContext,
 } from "./userFacingFormContext";
+export { DeprecatedFormContextValue } from "./userFacingFormContext";

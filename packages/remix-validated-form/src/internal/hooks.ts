@@ -17,8 +17,8 @@ import {
   isHydratedAtom,
 } from "./state";
 
-export type FormSelectorAtomCreator<T> = (formState: FormAtom) => Atom<T>;
-export const USE_HYDRATED_STATE = Symbol("USE_HYDRATED_STATE");
+type FormSelectorAtomCreator<T> = (formState: FormAtom) => Atom<T>;
+const USE_HYDRATED_STATE = Symbol("USE_HYDRATED_STATE");
 
 export const useInternalFormContext = (
   formId?: string | symbol,

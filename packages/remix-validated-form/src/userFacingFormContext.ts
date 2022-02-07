@@ -14,7 +14,7 @@ import {
 import { useInternalFormContext } from "./internal/hooks";
 import { FieldErrors, TouchedFields } from "./validation/types";
 
-export type UserFacingFormContextValue = {
+export type DeprecatedFormContextValue = {
   /**
    * All the errors in all the fields in the form.
    */
@@ -71,7 +71,7 @@ export type UserFacingFormContextValue = {
  * Exists for backwards compatibility from when React context
  * was the primary method of passing state around.
  */
-export const useFormContext = (formId?: string): UserFacingFormContextValue => {
+export const useFormContext = (formId?: string): DeprecatedFormContextValue => {
   // Try to access context so we get our error specific to this hook if it's not there
   useInternalFormContext(formId, "useFormContext");
 
