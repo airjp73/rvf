@@ -1,7 +1,4 @@
-import { useInternalFormContext } from "./internal/hooks";
 import {
-  FieldErrors,
-  TouchedFields,
   useClearError,
   useDefaultValues,
   useFieldErrors,
@@ -13,7 +10,9 @@ import {
   useTouchedFields,
   useValidatedFormAction,
   useValidateField,
-} from ".";
+} from "./hooks";
+import { useInternalFormContext } from "./internal/hooks";
+import { FieldErrors, TouchedFields } from "./validation/types";
 
 export type UserFacingFormContextValue = {
   /**

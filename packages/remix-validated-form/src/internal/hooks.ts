@@ -1,10 +1,11 @@
-import { useActionData, useTransition } from "@remix-run/react";
+import { useActionData, useMatches, useTransition } from "@remix-run/react";
 import { Atom } from "jotai";
 import { useAtomValue, useUpdateAtom } from "jotai/utils";
 import lodashGet from "lodash/get";
 import identity from "lodash/identity";
 import { useContext, useMemo } from "react";
 import { ValidationErrorResponseData } from "..";
+import { formDefaultValuesKey, FORM_DEFAULTS_FIELD } from "./constants";
 import { InternalFormContext, InternalFormContextValue } from "./formContext";
 import {
   ATOM_SCOPE,
@@ -96,20 +97,39 @@ export const useFieldErrorsForForm = (context: InternalFormContextValue) => {
   return hydrated ? USE_HYDRATED_STATE : response?.fieldErrors;
 };
 
+export const useDefaultValuesFromLoader = ({
+  formId,
+}: InternalFormContextValue) => {
+  const matches = useMatches();
+  if (typeof formId === "string") {
+    const dataKey = formDefaultValuesKey(formId);
+    // If multiple loaders declare the same default values,
+    // we should use the data from the deepest route.
+    const match = matches
+      .reverse()
+      .find((match) => match.data && dataKey in match.data);
+    return match?.data[dataKey];
+  }
+
+  return null;
+};
+
 export const useDefaultValuesForForm = (context: InternalFormContextValue) => {
   const { formId, defaultValuesProp } = context;
   const hydrated = useContextSelectAtom(formId, isHydratedAtom);
   const errorResponse = useErrorResponseForForm(context);
+  const defaultValuesFromLoader = useDefaultValuesFromLoader(context);
 
   // Typical flow is:
-  // - Default values only available from props
+  // - Default values only available from props or server
+  //   - Props have a higher priority than server
   // - State gets hydrated with default values
   // - After submit, we may need to use values from the error
 
   if (errorResponse?.repopulateFields) return errorResponse.repopulateFields;
   if (hydrated) return USE_HYDRATED_STATE;
-  return defaultValuesProp;
-  // TODO: add response helper and pull default values from that
+  if (defaultValuesProp) return defaultValuesProp;
+  return defaultValuesFromLoader;
 };
 
 export const useHasActiveFormSubmit = ({

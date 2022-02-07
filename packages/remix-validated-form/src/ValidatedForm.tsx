@@ -10,12 +10,14 @@ import React, {
   useState,
 } from "react";
 import invariant from "tiny-invariant";
+import { useIsSubmitting, useIsValid } from "./hooks";
 import { FORM_ID_FIELD } from "./internal/constants";
 import {
   InternalFormContext,
   InternalFormContextValue,
 } from "./internal/formContext";
 import {
+  useDefaultValuesFromLoader,
   useErrorResponseForForm,
   useFormUpdateAtom,
   useHasActiveFormSubmit,
@@ -33,9 +35,11 @@ import {
   syncFormContextAtom,
 } from "./internal/state";
 import { useSubmitComplete } from "./internal/submissionCallbacks";
-import { mergeRefs, useIsomorphicLayoutEffect } from "./internal/util";
+import {
+  mergeRefs,
+  useIsomorphicLayoutEffect as useLayoutEffect,
+} from "./internal/util";
 import { FieldErrors, Validator } from "./validation/types";
-import { useIsSubmitting, useIsValid } from ".";
 
 export type FormProps<DataType> = {
   /**
@@ -187,7 +191,6 @@ export function ValidatedForm<DataType>({
   id,
   ...rest
 }: FormProps<DataType>) {
-  // TODO: consider what happens if the user changes the formid
   const formId = useFormId(id);
   const formAtom = formRegistry(formId);
   const contextValue = useMemo<InternalFormContextValue>(
@@ -201,6 +204,7 @@ export function ValidatedForm<DataType>({
     [action, fetcher, formId, providedDefaultValues, subaction]
   );
   const backendError = useErrorResponseForForm(contextValue);
+  const backendDefaultValues = useDefaultValuesFromLoader(contextValue);
   const hasActiveSubmission = useHasActiveFormSubmit(contextValue);
   const formRef = useRef<HTMLFormElement>(null);
   const Form = fetcher?.Form ?? RemixForm;
@@ -244,11 +248,11 @@ export function ValidatedForm<DataType>({
     [customFocusHandlers]
   );
 
-  useIsomorphicLayoutEffect(() => {
+  useLayoutEffect(() => {
     syncFormContext({
       formAtom,
       action,
-      defaultValues: providedDefaultValues,
+      defaultValues: providedDefaultValues ?? backendDefaultValues,
       subaction,
       validateField,
       registerReceiveFocus,
@@ -261,6 +265,7 @@ export function ValidatedForm<DataType>({
     subaction,
     syncFormContext,
     validateField,
+    backendDefaultValues,
   ]);
 
   useEffect(() => {

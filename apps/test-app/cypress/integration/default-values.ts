@@ -27,4 +27,56 @@ describe("Validation", () => {
     cy.findByTestId("cake").should("be.checked");
     cy.findByTestId("iceCream").should("not.be.checked");
   });
+
+  it("should populate default values on external fields", () => {
+    cy.visit("/default-values-external");
+    cy.findByLabelText("Text 1").should("have.value", "John");
+    cy.findByLabelText("Text 2").should("have.value", "Bob");
+    cy.findByLabelText("Check 1").should("be.checked");
+    cy.findByTestId("value1").should("not.be.checked");
+    cy.findByTestId("value2").should("not.be.checked");
+    cy.findByTestId("value3").should("be.checked");
+    cy.findByTestId("red").should("be.checked");
+    cy.findByTestId("blue").should("not.be.checked");
+    cy.findByTestId("green").should("be.checked");
+  });
+
+  it("should not populate default values on external fields without JS", () => {
+    cy.visitWithoutJs("/default-values-external");
+    cy.findByLabelText("Text 1").should("have.value", "");
+    cy.findByLabelText("Text 2").should("have.value", "Bob");
+    cy.findByLabelText("Check 1").should("not.be.checked");
+    cy.findByTestId("value1").should("not.be.checked");
+    cy.findByTestId("value2").should("not.be.checked");
+    cy.findByTestId("value3").should("not.be.checked");
+    cy.findByTestId("red").should("not.be.checked");
+    cy.findByTestId("blue").should("not.be.checked");
+    cy.findByTestId("green").should("not.be.checked");
+  });
+
+  it("should populate internal and external fields with defaults response", () => {
+    cy.visit("/default-values-from-server");
+    cy.findByLabelText("Text 1").should("have.value", "John");
+    cy.findByLabelText("Text 2").should("have.value", "Bob");
+    cy.findByLabelText("Check 1").should("be.checked");
+    cy.findByTestId("value1").should("not.be.checked");
+    cy.findByTestId("value2").should("not.be.checked");
+    cy.findByTestId("value3").should("be.checked");
+    cy.findByTestId("red").should("be.checked");
+    cy.findByTestId("blue").should("not.be.checked");
+    cy.findByTestId("green").should("be.checked");
+  });
+
+  it("should populate internal and external fields with defaults response without JS", () => {
+    cy.visitWithoutJs("/default-values-from-server");
+    cy.findByLabelText("Text 1").should("have.value", "John");
+    cy.findByLabelText("Text 2").should("have.value", "Bob");
+    cy.findByLabelText("Check 1").should("be.checked");
+    cy.findByTestId("value1").should("not.be.checked");
+    cy.findByTestId("value2").should("not.be.checked");
+    cy.findByTestId("value3").should("be.checked");
+    cy.findByTestId("red").should("be.checked");
+    cy.findByTestId("blue").should("not.be.checked");
+    cy.findByTestId("green").should("be.checked");
+  });
 });
