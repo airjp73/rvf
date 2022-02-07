@@ -126,8 +126,8 @@ export const useDefaultValuesForForm = (context: InternalFormContextValue) => {
   // - State gets hydrated with default values
   // - After submit, we may need to use values from the error
 
-  if (errorResponse?.repopulateFields) return errorResponse.repopulateFields;
   if (hydrated) return USE_HYDRATED_STATE;
+  if (errorResponse?.repopulateFields) return errorResponse.repopulateFields;
   if (defaultValuesProp) return defaultValuesProp;
   return defaultValuesFromLoader;
 };
