@@ -56,15 +56,6 @@ export const useHasBeenSubmitted = (formId?: string) =>
   );
 
 /**
- * Returns the value of the `action` prop passed to the `ValidatedForm` component.
- * If no `action` prop is passed, this will be `undefined`.
- *
- * @param formId the id of the form. Only necessary if being used outside a ValidatedForm.
- */
-export const useValidatedFormAction = (formId?: string) =>
-  useUnknownFormContextSelectAtom(formId, actionAtom, "useValidatedFormAction");
-
-/**
  * Returns an object containing all the touched fields.
  * The keys of the object are the field names and values are whether or not the field has been touched.
  * If a field has not been touched at all, the value will be `undefined`.
