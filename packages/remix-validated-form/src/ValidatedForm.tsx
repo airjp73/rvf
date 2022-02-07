@@ -330,7 +330,7 @@ export function ValidatedForm<DataType>({
             );
           }
         } else {
-          onSubmit && onSubmit(result.data, e);
+          onSubmit?.(result.data, e);
           if (fetcher)
             fetcher.submit(clickedButtonRef.current || e.currentTarget);
           else

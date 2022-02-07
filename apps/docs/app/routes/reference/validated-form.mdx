@@ -5,9 +5,22 @@ meta:
 
 import { PropHeader } from "~/components/PropHeader";
 
-# ValidatedForm
+<PropHeader
+  variant="h1"
+  prop="<ValidatedForm />"
+  type="(props: FormProps<DataType>) => ReactNode"
+  noAnchor
+/>
 
-## Props
+## Native form props
+
+`ValidatedForm` can accept all the same props as a regular HTML form element
+with the following exceptions.
+
+- [onSubmit](#onSubmit) has a different signature for `ValidatedForm`
+- `ref` is not directly support, but you can use [formRef](#formRef)
+
+## FormProps
 
 <PropHeader prop="validator" type="Validator<DataType>" />
 
@@ -86,7 +99,7 @@ export default function MyPage() {
 
 <PropHeader
   prop="onSubmit"
-  type="(data: DataType, event: React.FormEvent<HTMLFormElement>) => void"
+  type="(data: DataType, event: React.FormEvent<HTMLFormElement>) => void | Promise<void>"
   optional
 />
 
@@ -98,7 +111,7 @@ const validator = withZod(z.object({ name: z.string() }));
 
 <ValidatedForm
   validator={vaidator}
-  onSubmit={(data) => {
+  onSubmit={async (data) => {
     // Data is an object with a `name` property
     // of type `string` because of the validator above.
     console.log(data.name);
@@ -112,14 +125,9 @@ const validator = withZod(z.object({ name: z.string() }));
   optional
 />
 
-A ref to the underlying form element. This is used instead of `forwardRef`
-because of the generic type of the component.
+A ref to the underlying form element.
 
-<PropHeader
-  prop="fetcher"
-  type="(data: DataType, event: React.FormEvent<HTMLFormElement>) => void"
-  optional
-/>
+<PropHeader prop="fetcher" type="Fetcher" optional />
 
 Allows you to provide a `fetcher` from remix's `useFetcher` hook.
 The form will use the fetcher for loading states, action data, etc

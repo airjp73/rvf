@@ -13,7 +13,7 @@ You can take full advantage of the library with just an input and a submit butto
 
 `useField` lets you get integrate field-by-field validation
 and form-level default values into your inputs.
-In this example, we have an input that gets validated on blur,
+In the example below, we have an input that gets validated automatically,
 shows validation errors, and gets a default value from `ValidatedForm`'s `defaultValues` prop.
 
 `useField` consumes the context provided by `ValidatedForm`,
@@ -70,7 +70,7 @@ export const MySubmitButton = () => {
 Now, we can create a fully validated form with minimal boilerplate.
 
 ```tsx
-import { ValidatedForm } from 'remix-validated-form';
+import { ValidatedForm } from "remix-validated-form";
 import { withZod } from "@remix-validated-form/with-zod";
 import { z } from "zod";
 

@@ -9,27 +9,12 @@ import { Alert } from "~/components/Alert";
 <PropHeader
   variant="h1"
   prop="useFormContext"
-  type="(formId?: string) => FormContext"
+  type="(formId?: string) => FormContextValue"
 />
-
-<div className="not-prose">
-  <Alert
-    title="Deprecated"
-    variant="warning"
-    details={
-      <p>
-        `useFormContext` is deprecated in favor of
-        individual context selector hooks. Replacement hooks
-        are noted in the documentation below for each
-        individual property.
-      </p>
-    }
-  />
-</div>
 
 Returns information about the specified form.
 
-## FormContext
+## FormContextValue
 
 <PropHeader
   prop="fieldErrors"

@@ -8,8 +8,9 @@ import { PropHeader } from "~/components/PropHeader";
 <PropHeader
   variant="h1"
   prop="useIsValid"
-  type="() => boolean"
+  type="(formId?: string) => boolean"
 />
 
 A hook that returns whether or not the current form valid.
-This only works if used inside the context of a `ValidatedForm`.
+
+The `formId` parameter allows you to [use the hook outside a form](/use-outside-forms).

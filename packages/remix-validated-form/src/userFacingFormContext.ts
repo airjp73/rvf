@@ -1,20 +1,26 @@
+import { useCallback } from "react";
+import { useIsSubmitting, useIsValid } from "./hooks";
 import {
   useClearError,
-  useDefaultValues,
-  useFieldErrors,
-  useHasBeenSubmitted,
-  useIsSubmitting,
-  useIsValid,
+  useContextSelectAtom,
+  useDefaultValuesForForm,
+  useFieldErrorsForForm,
+  useHydratableSelector,
+  useInternalFormContext,
   useSetTouched,
-  useTouchedFields,
-  useValidatedFormAction,
-  useValidateField,
-} from "./hooks";
-import { useContextSelectAtom, useInternalFormContext } from "./internal/hooks";
-import { actionAtom, registerReceiveFocusAtom } from "./internal/state";
+} from "./internal/hooks";
+import {
+  actionAtom,
+  defaultValuesAtom,
+  fieldErrorsAtom,
+  hasBeenSubmittedAtom,
+  registerReceiveFocusAtom,
+  touchedFieldsAtom,
+  validateFieldAtom,
+} from "./internal/state";
 import { FieldErrors, TouchedFields } from "./validation/types";
 
-export type DeprecatedFormContextValue = {
+export type FormContextValue = {
   /**
    * All the errors in all the fields in the form.
    */
@@ -65,39 +71,55 @@ export type DeprecatedFormContextValue = {
 };
 
 /**
- * @deprecated in favor of individual context selector hooks
- * This will be removed in a future major version.
- *
- * Exists for backwards compatibility from when React context
- * was the primary method of passing state around.
+ * Provides access to some of the internal state of the form.
  */
-export const useFormContext = (formId?: string): DeprecatedFormContextValue => {
+export const useFormContext = (formId?: string): FormContextValue => {
   // Try to access context so we get our error specific to this hook if it's not there
   const context = useInternalFormContext(formId, "useFormContext");
 
   const action = useContextSelectAtom(context.formId, actionAtom);
   const isSubmitting = useIsSubmitting(formId);
-  const hasBeenSubmitted = useHasBeenSubmitted(formId);
+  const hasBeenSubmitted = useContextSelectAtom(
+    context.formId,
+    hasBeenSubmittedAtom
+  );
   const isValid = useIsValid(formId);
-  const defaultValues = useDefaultValues(formId) as {
-    [fieldName: string]: any;
-  };
-  const clearError = useClearError(formId);
-  const fieldErrors = useFieldErrors(formId);
-  const setFieldTouched = useSetTouched(formId);
-  const touchedFields = useTouchedFields(formId);
-  const validateField = useValidateField(formId);
+  const defaultValues = useHydratableSelector(
+    context,
+    defaultValuesAtom,
+    useDefaultValuesForForm(context)
+  );
+  const fieldErrors = useHydratableSelector(
+    context,
+    fieldErrorsAtom,
+    useFieldErrorsForForm(context)
+  );
+
+  const setFieldTouched = useSetTouched(context);
+  const touchedFields = useContextSelectAtom(context.formId, touchedFieldsAtom);
+  const validateField = useContextSelectAtom(context.formId, validateFieldAtom);
   const registerReceiveFocus = useContextSelectAtom(
     context.formId,
     registerReceiveFocusAtom
   );
+
+  const internalClearError = useClearError(context);
+  const clearError = useCallback(
+    (...names: string[]) => {
+      names.forEach((name) => {
+        internalClearError(name);
+      });
+    },
+    [internalClearError]
+  );
+
   return {
     isSubmitting,
     hasBeenSubmitted,
     isValid,
     defaultValues,
     clearError,
-    fieldErrors,
+    fieldErrors: fieldErrors ?? {},
     action,
     setFieldTouched,
     touchedFields,

@@ -24,7 +24,6 @@ const DisplayContext = ({
   testid: string;
   form?: string;
 }) => {
-  // Deprecated but convenient for this test
   const {
     action,
     hasBeenSubmitted,

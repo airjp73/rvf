@@ -3,18 +3,20 @@ import { Atom } from "jotai";
 import { useAtomValue, useUpdateAtom } from "jotai/utils";
 import lodashGet from "lodash/get";
 import identity from "lodash/identity";
-import { useContext, useMemo } from "react";
+import { useCallback, useContext, useMemo } from "react";
 import { ValidationErrorResponseData } from "..";
 import { formDefaultValuesKey } from "./constants";
 import { InternalFormContext, InternalFormContextValue } from "./formContext";
 import {
   ATOM_SCOPE,
+  clearErrorAtom,
   fieldDefaultValueAtom,
   fieldErrorAtom,
   fieldTouchedAtom,
   FormAtom,
   formRegistry,
   isHydratedAtom,
+  setTouchedAtom,
 } from "./state";
 
 type FormSelectorAtomCreator<T> = (formState: FormAtom) => Atom<T>;
@@ -78,8 +80,8 @@ export function useErrorResponseForForm({
 
   if (!actionData?.fieldErrors) return null;
 
-  // If there's an explicit id, we should ignore data that doesn't include it.
-  if (typeof formId === "string")
+  // If there's an explicit id, we should ignore data that has the wrong id
+  if (typeof formId === "string" && actionData.formId)
     return actionData.formId === formId ? actionData : null;
 
   if (
@@ -176,3 +178,23 @@ export const useFieldDefaultValue = (
 
 export const useFormUpdateAtom: typeof useUpdateAtom = (atom) =>
   useUpdateAtom(atom, ATOM_SCOPE);
+
+export const useClearError = (context: InternalFormContextValue) => {
+  const clearError = useFormUpdateAtom(clearErrorAtom);
+  return useCallback(
+    (name: string) => {
+      clearError({ name, formAtom: formRegistry(context.formId) });
+    },
+    [clearError, context.formId]
+  );
+};
+
+export const useSetTouched = (context: InternalFormContextValue) => {
+  const setTouched = useFormUpdateAtom(setTouchedAtom);
+  return useCallback(
+    (name: string, touched: boolean) => {
+      setTouched({ name, formAtom: formRegistry(context.formId), touched });
+    },
+    [setTouched, context.formId]
+  );
+};
