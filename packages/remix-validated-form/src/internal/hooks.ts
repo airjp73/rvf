@@ -5,7 +5,7 @@ import lodashGet from "lodash/get";
 import identity from "lodash/identity";
 import { useContext, useMemo } from "react";
 import { ValidationErrorResponseData } from "..";
-import { formDefaultValuesKey, FORM_DEFAULTS_FIELD } from "./constants";
+import { formDefaultValuesKey } from "./constants";
 import { InternalFormContext, InternalFormContextValue } from "./formContext";
 import {
   ATOM_SCOPE,
@@ -30,7 +30,7 @@ export const useInternalFormContext = (
   if (formContext) return formContext;
 
   throw new Error(
-    `Cannot determine form for ${hookName}. Please use the hook inside a form or pass a 'formId'.`
+    `Unable to determine form for ${hookName}. Please use it inside a form or pass a 'formId'.`
   );
 };
 
