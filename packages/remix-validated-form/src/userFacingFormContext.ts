@@ -5,13 +5,13 @@ import {
   useHasBeenSubmitted,
   useIsSubmitting,
   useIsValid,
-  useRegisterReceiveFocus,
   useSetTouched,
   useTouchedFields,
   useValidatedFormAction,
   useValidateField,
 } from "./hooks";
-import { useInternalFormContext } from "./internal/hooks";
+import { useContextSelectAtom, useInternalFormContext } from "./internal/hooks";
+import { registerReceiveFocusAtom } from "./internal/state";
 import { FieldErrors, TouchedFields } from "./validation/types";
 
 export type DeprecatedFormContextValue = {
@@ -73,7 +73,7 @@ export type DeprecatedFormContextValue = {
  */
 export const useFormContext = (formId?: string): DeprecatedFormContextValue => {
   // Try to access context so we get our error specific to this hook if it's not there
-  useInternalFormContext(formId, "useFormContext");
+  const context = useInternalFormContext(formId, "useFormContext");
 
   const action = useValidatedFormAction(formId);
   const isSubmitting = useIsSubmitting(formId);
@@ -87,8 +87,10 @@ export const useFormContext = (formId?: string): DeprecatedFormContextValue => {
   const setFieldTouched = useSetTouched(formId);
   const touchedFields = useTouchedFields(formId);
   const validateField = useValidateField(formId);
-  const registerReceiveFocus = useRegisterReceiveFocus(formId);
-
+  const registerReceiveFocus = useContextSelectAtom(
+    context.formId,
+    registerReceiveFocusAtom
+  );
   return {
     isSubmitting,
     hasBeenSubmitted,

@@ -4,22 +4,34 @@ meta:
 ---
 
 import { PropHeader } from "~/components/PropHeader";
+import { Alert } from "~/components/Alert";
 
 <PropHeader
   variant="h1"
   prop="useFormContext"
-  type="() => FormContext"
+  type="(formId?: string) => FormContext"
 />
 
-Uses the context api to return the value of the current form context.
-This should be used within the context of a `ValidatedForm`.
+<div className="not-prose">
+  <Alert
+    title="Deprecated"
+    variant="error"
+    details={
+      <p>
+        `useFormContext` is deprecated in favor of
+        individual context selector hooks. Replacement hooks
+        are noted in the documentation below for each
+        individual property.
+      </p>
+    }
+  />
+</div>
 
-_Note:_ It is generally recommended to use more specific hooks rather than accessing the form context directly.
-It is provided for use in more complex or advanced cases.
+Returns context about the form.
 
 #### Usage
 
-_Correct_: This will work because it's used within the context of a `ValidatedForm`.
+Normally, this hook is used inside of a `ValidatedForm`.
 
 ```tsx
 const Button = () => {
@@ -41,14 +53,14 @@ const FormComponent = () => {
 };
 ```
 
-_Incorrect_: This will not work because it's used outside the `ValidatedForm`.
+To use outside a `ValidatedForm`, pass a `formId` that matches the `id` prop of the form.
 
 ```tsx
 const FormComponent = () => {
-  const { isSubmitting } = useFormContext();
+  const { isSubmitting } = useFormContext("myForm");
 
   return (
-    <ValidatedForm>
+    <ValidatedForm id="myForm">
       <input name="name" />
       <Button disabled={isSubmitting}>
         {isSubmitting ? "Submitting..." : "Submit"}
