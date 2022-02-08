@@ -106,4 +106,23 @@ describe("Validation", () => {
     cy.findByText("Submit 2").should("exist");
     cy.findByText("Submitted internalVal").should("exist");
   });
+
+  describe("onSubmit", () => {
+    it("should abort submit if preventDefault called on event", () => {
+      cy.visit("submission/onsubmit");
+      cy.findByText("shouldPreventDefault").click();
+      cy.findByText("Submit").click();
+      cy.findByText("Submitting...").should("exist");
+      cy.findByText("Submit").should("exist");
+      cy.findByText("Submitted!").should("not.exist");
+    });
+
+    it("should continue with submit as normal if default not prevented", () => {
+      cy.visit("submission/onsubmit");
+      cy.findByText("Submit").click();
+      cy.findByText("Submitting...").should("exist");
+      cy.findByText("Submit").should("exist");
+      cy.findByText("Submitted!").should("exist");
+    });
+  });
 });

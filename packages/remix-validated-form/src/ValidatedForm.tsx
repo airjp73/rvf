@@ -53,7 +53,7 @@ export type FormProps<DataType> = {
   onSubmit?: (
     data: DataType,
     event: React.FormEvent<HTMLFormElement>
-  ) => Promise<void>;
+  ) => void | Promise<void>;
   /**
    * Allows you to provide a `fetcher` from remix's `useFetcher` hook.
    * The form will use the fetcher for loading states, action data, etc
@@ -170,6 +170,25 @@ const FormResetter = ({
   });
   return null;
 };
+
+function formEventProxy<T extends object>(event: T): T {
+  let defaultPrevented = false;
+  return new Proxy(event, {
+    get: (target, prop) => {
+      if (prop === "preventDefault") {
+        return () => {
+          defaultPrevented = true;
+        };
+      }
+
+      if (prop === "defaultPrevented") {
+        return defaultPrevented;
+      }
+
+      return target[prop as keyof T];
+    },
+  }) as T;
+}
 
 /**
  * The primary form component of `remix-validated-form`.
@@ -330,7 +349,13 @@ export function ValidatedForm<DataType>({
             );
           }
         } else {
-          onSubmit?.(result.data, e);
+          const eventProxy = formEventProxy(e);
+          await onSubmit?.(result.data, eventProxy);
+          if (eventProxy.defaultPrevented) {
+            endSubmit({ formAtom });
+            return;
+          }
+
           if (fetcher)
             fetcher.submit(clickedButtonRef.current || e.currentTarget);
           else
