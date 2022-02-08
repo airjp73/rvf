@@ -2,6 +2,7 @@ import { Form as RemixForm, useFetcher, useSubmit } from "@remix-run/react";
 import uniq from "lodash/uniq";
 import React, {
   ComponentProps,
+  FormEvent,
   RefObject,
   useCallback,
   useEffect,
@@ -324,6 +325,37 @@ export function ValidatedForm<DataType>({
     };
   }, []);
 
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    startSubmit({ formAtom });
+    const result = await validator.validate(getDataFromForm(e.currentTarget));
+    if (result.error) {
+      endSubmit({ formAtom });
+      setFieldErrors({ fieldErrors: result.error.fieldErrors, formAtom });
+      if (!disableFocusOnError) {
+        focusFirstInvalidInput(
+          result.error.fieldErrors,
+          customFocusHandlers(),
+          formRef.current!
+        );
+      }
+    } else {
+      const eventProxy = formEventProxy(e);
+      await onSubmit?.(result.data, eventProxy);
+      if (eventProxy.defaultPrevented) {
+        endSubmit({ formAtom });
+        return;
+      }
+
+      if (fetcher) fetcher.submit(clickedButtonRef.current || e.currentTarget);
+      else
+        submit(clickedButtonRef.current || e.currentTarget, {
+          method,
+          replace,
+        });
+      clickedButtonRef.current = null;
+    }
+  };
+
   return (
     <Form
       ref={mergeRefs([formRef, formRefProp])}
@@ -332,39 +364,9 @@ export function ValidatedForm<DataType>({
       action={action}
       method={method}
       replace={replace}
-      onSubmit={async (e) => {
+      onSubmit={(e) => {
         e.preventDefault();
-        startSubmit({ formAtom });
-        const result = await validator.validate(
-          getDataFromForm(e.currentTarget)
-        );
-        if (result.error) {
-          endSubmit({ formAtom });
-          setFieldErrors({ fieldErrors: result.error.fieldErrors, formAtom });
-          if (!disableFocusOnError) {
-            focusFirstInvalidInput(
-              result.error.fieldErrors,
-              customFocusHandlers(),
-              formRef.current!
-            );
-          }
-        } else {
-          const eventProxy = formEventProxy(e);
-          await onSubmit?.(result.data, eventProxy);
-          if (eventProxy.defaultPrevented) {
-            endSubmit({ formAtom });
-            return;
-          }
-
-          if (fetcher)
-            fetcher.submit(clickedButtonRef.current || e.currentTarget);
-          else
-            submit(clickedButtonRef.current || e.currentTarget, {
-              method,
-              replace,
-            });
-          clickedButtonRef.current = null;
-        }
+        handleSubmit(e);
       }}
       onReset={(event) => {
         onReset?.(event);
