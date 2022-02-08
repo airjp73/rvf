@@ -55,5 +55,6 @@ const FormComponent = () => {
 
 ## Considerations for no-JS users
 
-If a user has JavaScript disabled, the default values may not correctly populate.
+If a user has JavaScript disabled, any `useField` you use outside the context
+of a `ValidatedForm` will not receive a default value from the `defaultValues` prop on the `ValidatedForm`.
 To set default values in a way that works without JS, use [setFormDefaults](/reference/set-form-defaults).
