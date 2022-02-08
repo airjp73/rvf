@@ -104,7 +104,11 @@ export default function MyPage() {
 />
 
 A submit callback that gets called when the form is submitted.
-The `data` argument is the parsed and typed form data.
+The first argument is the parsed/validated form data,
+and the second argument is the native submit event.
+
+Even though this callback can return a promise, `event.preventDefault`
+can still be used to abort the submission.
 
 ```tsx
 const validator = withZod(z.object({ name: z.string() }));
