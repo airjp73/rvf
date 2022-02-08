@@ -1,31 +1,46 @@
-import {
-  Form as RemixForm,
-  useActionData,
-  useFetcher,
-  useFormAction,
-  useSubmit,
-  useTransition,
-} from "@remix-run/react";
-import { Fetcher } from "@remix-run/react/transition";
+import { Form as RemixForm, useFetcher, useSubmit } from "@remix-run/react";
 import uniq from "lodash/uniq";
 import React, {
   ComponentProps,
+  FormEvent,
+  RefObject,
+  useCallback,
   useEffect,
   useMemo,
   useRef,
   useState,
 } from "react";
 import invariant from "tiny-invariant";
-import { FormContext, FormContextValue } from "./internal/formContext";
-import { MultiValueMap, useMultiValueMap } from "./internal/MultiValueMap";
-import { useSubmitComplete } from "./internal/submissionCallbacks";
-import { omit, mergeRefs } from "./internal/util";
+import { useIsSubmitting, useIsValid } from "./hooks";
+import { FORM_ID_FIELD } from "./internal/constants";
 import {
-  FieldErrors,
-  Validator,
-  TouchedFields,
-  ValidationErrorResponseData,
-} from "./validation/types";
+  InternalFormContext,
+  InternalFormContextValue,
+} from "./internal/formContext";
+import {
+  useDefaultValuesFromLoader,
+  useErrorResponseForForm,
+  useFormUpdateAtom,
+  useHasActiveFormSubmit,
+} from "./internal/hooks";
+import { MultiValueMap, useMultiValueMap } from "./internal/MultiValueMap";
+import {
+  addErrorAtom,
+  clearErrorAtom,
+  endSubmitAtom,
+  formRegistry,
+  FormState,
+  resetAtom,
+  setFieldErrorsAtom,
+  startSubmitAtom,
+  syncFormContextAtom,
+} from "./internal/state";
+import { useSubmitComplete } from "./internal/submissionCallbacks";
+import {
+  mergeRefs,
+  useIsomorphicLayoutEffect as useLayoutEffect,
+} from "./internal/util";
+import { FieldErrors, Validator } from "./validation/types";
 
 export type FormProps<DataType> = {
   /**
@@ -39,7 +54,7 @@ export type FormProps<DataType> = {
   onSubmit?: (
     data: DataType,
     event: React.FormEvent<HTMLFormElement>
-  ) => Promise<void>;
+  ) => void | Promise<void>;
   /**
    * Allows you to provide a `fetcher` from remix's `useFetcher` hook.
    * The form will use the fetcher for loading states, action data, etc
@@ -74,81 +89,7 @@ export type FormProps<DataType> = {
   disableFocusOnError?: boolean;
 } & Omit<ComponentProps<typeof RemixForm>, "onSubmit">;
 
-function useErrorResponseForThisForm(
-  fetcher?: ReturnType<typeof useFetcher>,
-  subaction?: string
-): ValidationErrorResponseData | null {
-  const actionData = useActionData<any>();
-  if (fetcher) {
-    if ((fetcher.data as any)?.fieldErrors) return fetcher.data as any;
-    return null;
-  }
-
-  if (!actionData?.fieldErrors) return null;
-  if (
-    (!subaction && !actionData.subaction) ||
-    actionData.subaction === subaction
-  )
-    return actionData;
-  return null;
-}
-
-function useFieldErrors(
-  fieldErrorsFromBackend?: FieldErrors
-): [FieldErrors, React.Dispatch<React.SetStateAction<FieldErrors>>] {
-  const [fieldErrors, setFieldErrors] = useState<FieldErrors>(
-    fieldErrorsFromBackend ?? {}
-  );
-  useEffect(() => {
-    if (fieldErrorsFromBackend) setFieldErrors(fieldErrorsFromBackend);
-  }, [fieldErrorsFromBackend]);
-
-  return [fieldErrors, setFieldErrors];
-}
-
-const useIsSubmitting = (
-  fetcher?: Fetcher
-): [boolean, () => void, () => void] => {
-  const [isSubmitStarted, setSubmitStarted] = useState(false);
-  const transition = useTransition();
-  const hasActiveSubmission = fetcher
-    ? fetcher.state === "submitting"
-    : !!transition.submission;
-
-  const startSubmit = () => setSubmitStarted(true);
-  const endSubmit = () => setSubmitStarted(false);
-
-  useSubmitComplete(hasActiveSubmission, () => {
-    endSubmit();
-  });
-
-  return [isSubmitStarted, startSubmit, endSubmit];
-};
-
 const getDataFromForm = (el: HTMLFormElement) => new FormData(el);
-
-/**
- * The purpose for this logic is to handle validation errors when javascript is disabled.
- * Normally (without js), when a form is submitted and the action returns the validation errors,
- * the form will be reset. The errors will be displayed on the correct fields,
- * but all the values in the form will be gone. This is not good UX.
- *
- * To get around this, we return the submitted form data from the server,
- * and use those to populate the form via `defaultValues`.
- * This results in a more seamless UX akin to what you would see when js is enabled.
- *
- * One potential downside is that resetting the form will reset the form
- * to the _new_ default values that were returned from the server with the validation errors.
- * However, this case is less of a problem than the janky UX caused by losing the form values.
- * It will only ever be a problem if the form includes a `<button type="reset" />`
- * and only if JS is disabled.
- */
-function useDefaultValues<DataType>(
-  repopulateFieldsFromBackend?: any,
-  defaultValues?: Partial<DataType>
-) {
-  return repopulateFieldsFromBackend ?? defaultValues;
-}
 
 function nonNull<T>(value: T | null | undefined): value is T {
   return value !== null;
@@ -204,6 +145,58 @@ const focusFirstInvalidInput = (
   }
 };
 
+const useFormId = (providedId?: string): string | symbol => {
+  // We can use a `Symbol` here because we only use it after hydration
+  const [symbolId] = useState(() => Symbol("remix-validated-form-id"));
+  return providedId ?? symbolId;
+};
+
+/**
+ * Use a component to access the state so we don't cause
+ * any extra rerenders of the whole form.
+ */
+const FormResetter = ({
+  resetAfterSubmit,
+  formRef,
+}: {
+  resetAfterSubmit: boolean;
+  formRef: RefObject<HTMLFormElement>;
+}) => {
+  const isSubmitting = useIsSubmitting();
+  const isValid = useIsValid();
+  useSubmitComplete(isSubmitting, () => {
+    if (isValid && resetAfterSubmit) {
+      formRef.current?.reset();
+    }
+  });
+  return null;
+};
+
+function formEventProxy<T extends object>(event: T): T {
+  let defaultPrevented = false;
+  return new Proxy(event, {
+    get: (target, prop) => {
+      if (prop === "preventDefault") {
+        return () => {
+          defaultPrevented = true;
+        };
+      }
+
+      if (prop === "defaultPrevented") {
+        return defaultPrevented;
+      }
+
+      return target[prop as keyof T];
+    },
+  }) as T;
+}
+
+const useFormAtom = (formId: string | symbol) => {
+  const formAtom = formRegistry(formId);
+  useEffect(() => () => formRegistry.remove(formId), [formId]);
+  return formAtom;
+};
+
 /**
  * The primary form component of `remix-validated-form`.
  */
@@ -213,102 +206,104 @@ export function ValidatedForm<DataType>({
   children,
   fetcher,
   action,
-  defaultValues,
+  defaultValues: providedDefaultValues,
   formRef: formRefProp,
   onReset,
   subaction,
-  resetAfterSubmit,
+  resetAfterSubmit = false,
   disableFocusOnError,
   method,
   replace,
+  id,
   ...rest
 }: FormProps<DataType>) {
-  const backendError = useErrorResponseForThisForm(fetcher, subaction);
-  const [fieldErrors, setFieldErrors] = useFieldErrors(
-    backendError?.fieldErrors
-  );
-  const [isSubmitting, startSubmit, endSubmit] = useIsSubmitting(fetcher);
-
-  const defaultsToUse = useDefaultValues(
-    backendError?.repopulateFields,
-    defaultValues
-  );
-  const [touchedFields, setTouchedFields] = useState<TouchedFields>({});
-  const [hasBeenSubmitted, setHasBeenSubmitted] = useState(false);
-  const submit = useSubmit();
-  const formRef = useRef<HTMLFormElement>(null);
-  useSubmitComplete(isSubmitting, () => {
-    endSubmit();
-    if (!backendError && resetAfterSubmit) {
-      formRef.current?.reset();
-    }
-  });
-  const customFocusHandlers = useMultiValueMap<string, () => void>();
-
-  const contextValue = useMemo<FormContextValue>(
+  const formId = useFormId(id);
+  const formAtom = useFormAtom(formId);
+  const contextValue = useMemo<InternalFormContextValue>(
     () => ({
-      fieldErrors,
+      formId,
       action,
-      defaultValues: defaultsToUse,
-      isSubmitting,
-      isValid: Object.keys(fieldErrors).length === 0,
-      touchedFields,
-      setFieldTouched: (fieldName: string, touched: boolean) =>
-        setTouchedFields((prev) => ({
-          ...prev,
-          [fieldName]: touched,
-        })),
-      clearError: (fieldName) => {
-        setFieldErrors((prev) => omit(prev, fieldName));
-      },
-      validateField: async (fieldName) => {
-        invariant(formRef.current, "Cannot find reference to form");
-        const { error } = await validator.validateField(
-          getDataFromForm(formRef.current),
-          fieldName as any
-        );
-
-        // By checking and returning `prev` here, we can avoid a re-render
-        // if the validation state is the same.
-        if (error) {
-          setFieldErrors((prev) => {
-            if (prev[fieldName] === error) return prev;
-            return {
-              ...prev,
-              [fieldName]: error,
-            };
-          });
-          return error;
-        } else {
-          setFieldErrors((prev) => {
-            if (!(fieldName in prev)) return prev;
-            return omit(prev, fieldName);
-          });
-          return null;
-        }
-      },
-      registerReceiveFocus: (fieldName, handler) => {
-        customFocusHandlers().add(fieldName, handler);
-        return () => {
-          customFocusHandlers().remove(fieldName, handler);
-        };
-      },
-      hasBeenSubmitted,
+      subaction,
+      defaultValuesProp: providedDefaultValues,
+      fetcher,
     }),
-    [
-      fieldErrors,
-      action,
-      defaultsToUse,
-      isSubmitting,
-      touchedFields,
-      hasBeenSubmitted,
-      setFieldErrors,
-      validator,
-      customFocusHandlers,
-    ]
+    [action, fetcher, formId, providedDefaultValues, subaction]
+  );
+  const backendError = useErrorResponseForForm(contextValue);
+  const backendDefaultValues = useDefaultValuesFromLoader(contextValue);
+  const hasActiveSubmission = useHasActiveFormSubmit(contextValue);
+  const formRef = useRef<HTMLFormElement>(null);
+  const Form = fetcher?.Form ?? RemixForm;
+
+  const submit = useSubmit();
+  const clearError = useFormUpdateAtom(clearErrorAtom);
+  const addError = useFormUpdateAtom(addErrorAtom);
+  const setFieldErrors = useFormUpdateAtom(setFieldErrorsAtom);
+  const reset = useFormUpdateAtom(resetAtom);
+  const startSubmit = useFormUpdateAtom(startSubmitAtom);
+  const endSubmit = useFormUpdateAtom(endSubmitAtom);
+  const syncFormContext = useFormUpdateAtom(syncFormContextAtom);
+
+  const validateField: FormState["validateField"] = useCallback(
+    async (fieldName) => {
+      invariant(formRef.current, "Cannot find reference to form");
+      const { error } = await validator.validateField(
+        getDataFromForm(formRef.current),
+        fieldName as any
+      );
+
+      if (error) {
+        addError({ formAtom, name: fieldName, error });
+        return error;
+      } else {
+        clearError({ name: fieldName, formAtom });
+        return null;
+      }
+    },
+    [addError, clearError, formAtom, validator]
   );
 
-  const Form = fetcher?.Form ?? RemixForm;
+  const customFocusHandlers = useMultiValueMap<string, () => void>();
+  const registerReceiveFocus: FormState["registerReceiveFocus"] = useCallback(
+    (fieldName, handler) => {
+      customFocusHandlers().add(fieldName, handler);
+      return () => {
+        customFocusHandlers().remove(fieldName, handler);
+      };
+    },
+    [customFocusHandlers]
+  );
+
+  useLayoutEffect(() => {
+    syncFormContext({
+      formAtom,
+      action,
+      defaultValues: providedDefaultValues ?? backendDefaultValues,
+      subaction,
+      validateField,
+      registerReceiveFocus,
+    });
+  }, [
+    action,
+    formAtom,
+    providedDefaultValues,
+    registerReceiveFocus,
+    subaction,
+    syncFormContext,
+    validateField,
+    backendDefaultValues,
+  ]);
+
+  useEffect(() => {
+    setFieldErrors({
+      fieldErrors: backendError?.fieldErrors ?? {},
+      formAtom,
+    });
+  }, [backendError?.fieldErrors, formAtom, setFieldErrors]);
+
+  useSubmitComplete(hasActiveSubmission, () => {
+    endSubmit({ formAtom });
+  });
 
   let clickedButtonRef = React.useRef<any>();
   useEffect(() => {
@@ -336,56 +331,63 @@ export function ValidatedForm<DataType>({
     };
   }, []);
 
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    startSubmit({ formAtom });
+    const result = await validator.validate(getDataFromForm(e.currentTarget));
+    if (result.error) {
+      endSubmit({ formAtom });
+      setFieldErrors({ fieldErrors: result.error.fieldErrors, formAtom });
+      if (!disableFocusOnError) {
+        focusFirstInvalidInput(
+          result.error.fieldErrors,
+          customFocusHandlers(),
+          formRef.current!
+        );
+      }
+    } else {
+      const eventProxy = formEventProxy(e);
+      await onSubmit?.(result.data, eventProxy);
+      if (eventProxy.defaultPrevented) {
+        endSubmit({ formAtom });
+        return;
+      }
+
+      if (fetcher) fetcher.submit(clickedButtonRef.current || e.currentTarget);
+      else
+        submit(clickedButtonRef.current || e.currentTarget, {
+          method,
+          replace,
+        });
+      clickedButtonRef.current = null;
+    }
+  };
+
   return (
     <Form
       ref={mergeRefs([formRef, formRefProp])}
       {...rest}
+      id={id}
       action={action}
       method={method}
       replace={replace}
-      onSubmit={async (e) => {
+      onSubmit={(e) => {
         e.preventDefault();
-        setHasBeenSubmitted(true);
-        startSubmit();
-        const result = await validator.validate(
-          getDataFromForm(e.currentTarget)
-        );
-        if (result.error) {
-          endSubmit();
-          setFieldErrors(result.error.fieldErrors);
-          if (!disableFocusOnError) {
-            focusFirstInvalidInput(
-              result.error.fieldErrors,
-              customFocusHandlers(),
-              formRef.current!
-            );
-          }
-        } else {
-          onSubmit && onSubmit(result.data, e);
-          if (fetcher)
-            fetcher.submit(clickedButtonRef.current || e.currentTarget);
-          else
-            submit(clickedButtonRef.current || e.currentTarget, {
-              method,
-              replace,
-            });
-          clickedButtonRef.current = null;
-        }
+        handleSubmit(e);
       }}
       onReset={(event) => {
         onReset?.(event);
         if (event.defaultPrevented) return;
-        setFieldErrors({});
-        setTouchedFields({});
-        setHasBeenSubmitted(false);
+        reset({ formAtom });
       }}
     >
-      <FormContext.Provider value={contextValue}>
+      <InternalFormContext.Provider value={contextValue}>
+        <FormResetter formRef={formRef} resetAfterSubmit={resetAfterSubmit} />
         {subaction && (
           <input type="hidden" value={subaction} name="subaction" />
         )}
+        {id && <input type="hidden" value={id} name={FORM_ID_FIELD} />}
         {children}
-      </FormContext.Provider>
+      </InternalFormContext.Provider>
     </Form>
   );
 }

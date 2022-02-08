@@ -7,6 +7,7 @@ type PropHeaderProps = {
   prop: string;
   type: string;
   optional?: boolean;
+  noAnchor?: boolean;
 };
 
 const variantHeaderColors = {
@@ -24,23 +25,28 @@ export const PropHeader = ({
   type,
   optional,
   variant: Variant = "h3",
+  noAnchor = false,
 }: PropHeaderProps) => {
   const location = useLocation();
   const focusedProp = location.hash.replace("#", "");
   return (
     <Variant>
       <div className={variantHeaderColors[Variant]}>
-        <a
-          id={prop}
-          href={`#${prop}`}
-          className={classNames(
-            "-ml-6 flex items-center group",
-            focusedProp !== prop && "no-underline"
-          )}
-        >
-          <LinkIcon className="h-4 w-4 mr-2 invisible group-hover:visible" />
-          {prop}
-        </a>
+        {noAnchor ? (
+          prop
+        ) : (
+          <a
+            id={prop}
+            href={`#${prop}`}
+            className={classNames(
+              "-ml-6 flex items-center group",
+              focusedProp !== prop && "no-underline"
+            )}
+          >
+            <LinkIcon className="h-4 w-4 mr-2 invisible group-hover:visible" />
+            {prop}
+          </a>
+        )}
       </div>
       <div
         className={classNames(

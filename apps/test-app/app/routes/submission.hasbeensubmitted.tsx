@@ -18,7 +18,7 @@ const IsSubmitted = () => {
 export default function FrontendValidation() {
   return (
     <ValidatedForm validator={validator}>
-      <Input name="firstName" label="First Name" validateOnBlur />
+      <Input name="firstName" label="First Name" />
       <SubmitButton />
       <IsSubmitted />
       <button type="reset">Reset</button>

@@ -45,3 +45,11 @@ const action: ActionFunction = async ({ request }) => {
   // do something with result.data
 };
 ```
+
+## Other Considerations
+
+### Using fields outside of a `ValidatedForm` component
+
+If you're using fields outside of the `ValidatedForm` component,
+the default values may not correctly populate.
+To set default values in a way that works without JS, use [setFormDefaults](/reference/set-form-defaults).

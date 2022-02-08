@@ -86,4 +86,54 @@ describe("Validation", () => {
     cy.findByText("Reset").click();
     cy.findByText("Submitted!").should("not.exist");
   });
+
+  it("should include submit button value when external", () => {
+    cy.visit("/submission/external");
+    cy.findByText("Submitted submitVal").should("not.exist");
+
+    cy.findByText("Submit").click();
+    cy.findByText("Submitting...").should("exist");
+    cy.findByText("Submit").should("exist");
+    cy.findByText("Submitted submitVal").should("exist");
+  });
+
+  it("should include submit button value when internal", () => {
+    cy.visit("/submission/external");
+    cy.findByText("Submitted internalVal").should("not.exist");
+
+    cy.findByText("Submit 2").click();
+    cy.findByText("Submitting 2").should("exist");
+    cy.findByText("Submit 2").should("exist");
+    cy.findByText("Submitted internalVal").should("exist");
+  });
+
+  describe("onSubmit", () => {
+    it("should abort submit if preventDefault called on event", () => {
+      cy.visit("submission/onsubmit");
+      cy.findByText("shouldPreventDefault").click();
+      cy.findByText("Submit").click();
+      cy.findByText("Submitting...").should("exist");
+      cy.findByText("Submit").should("exist");
+      cy.findByText("Submitted!").should("not.exist");
+    });
+
+    it("should continue with submit as normal if default not prevented", () => {
+      cy.visit("submission/onsubmit");
+      cy.findByText("Submit").click();
+      cy.findByText("Submitting...").should("exist");
+      cy.findByText("Submit").should("exist");
+      cy.findByText("Submitted!").should("exist");
+    });
+  });
+
+  it("should clean up isSubmitting state even when action redirects", () => {
+    cy.visit("submission/redirect");
+    cy.findByText("Submit").click();
+    cy.findByText("Submitting...").should("exist");
+
+    // redirects
+    cy.findByText("Go back").click();
+
+    cy.findByText("Submit").should("exist");
+  });
 });

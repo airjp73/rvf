@@ -99,12 +99,6 @@ describe("Validation", () => {
     cy.findByTestId("expected").should("be.focused");
   });
 
-  it("should focus the first invalid field even if it's outside the form", () => {
-    cy.visit("/validation-external");
-    cy.findByText("Submit").click();
-    cy.findByLabelText("Text 1").should("be.focused");
-  });
-
   it("should not focus the first invalid field if disableFocusOnError is true", () => {
     cy.visit("/validation-nofocus");
 
@@ -175,7 +169,9 @@ describe("Validation", () => {
     cy.findByText("Submit").click();
 
     cy.findByText("Error").should("exist");
+    cy.findByText("Error 2").should("exist");
     cy.findByLabelText("First Name").should("have.value", "Bob");
+    cy.findByLabelText("Last Name").should("have.value", "Ross");
   });
 
   it("should reset validation errors when resetting the form", () => {

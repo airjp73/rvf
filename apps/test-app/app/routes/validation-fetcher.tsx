@@ -24,12 +24,19 @@ export const action: ActionFunction = async ({ request }) => {
 export default function FrontendValidation() {
   const fetcher = useFetcher();
   return (
-    <ValidatedForm validator={validator} method="post" fetcher={fetcher}>
+    <>
       {fetcher.data?.message && <h1>{fetcher.data.message}</h1>}
-      <Input name="firstName" label="First Name" />
-      <Input name="lastName" label="Last Name" />
-      <Input name="email" label="Email" />
-      <SubmitButton />
-    </ValidatedForm>
+      <Input name="firstName" label="First Name" form="test-form" />
+      <ValidatedForm
+        validator={validator}
+        method="post"
+        fetcher={fetcher}
+        id="test-form"
+      >
+        <Input name="lastName" label="Last Name" />
+        <Input name="email" label="Email" />
+        <SubmitButton />
+      </ValidatedForm>
+    </>
   );
 }

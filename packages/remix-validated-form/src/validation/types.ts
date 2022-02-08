@@ -6,16 +6,18 @@ export type GenericObject = { [key: string]: any };
 
 export type ValidatorError = {
   subaction?: string;
+  formId?: string;
   fieldErrors: FieldErrors;
 };
 
 export type ValidationErrorResponseData = {
   subaction?: string;
+  formId?: string;
   fieldErrors: FieldErrors;
   repopulateFields?: unknown;
 };
 
-export type BaseResult = { submittedData: GenericObject };
+export type BaseResult = { submittedData: GenericObject; formId?: string };
 export type ErrorResult = BaseResult & {
   error: ValidatorError;
   data: undefined;

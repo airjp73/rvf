@@ -28,6 +28,8 @@ export default function MyForm() {
   const data = useActionData();
   const [historyLength, setHistoryLength] = useState<number>(0);
 
+  // We want this to run on every render to get the current history length
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     setHistoryLength(window.history.length);
   });

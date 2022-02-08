@@ -4,61 +4,17 @@ meta:
 ---
 
 import { PropHeader } from "~/components/PropHeader";
+import { Alert } from "~/components/Alert";
 
 <PropHeader
   variant="h1"
   prop="useFormContext"
-  type="() => FormContext"
+  type="(formId?: string) => FormContextValue"
 />
 
-Uses the context api to return the value of the current form context.
-This should be used within the context of a `ValidatedForm`.
+Returns information about the specified form.
 
-_Note:_ It is generally recommended to use more specific hooks rather than accessing the form context directly.
-It is provided for use in more complex or advanced cases.
-
-#### Usage
-
-_Correct_: This will work because it's used within the context of a `ValidatedForm`.
-
-```tsx
-const Button = () => {
-  const { isSubmitting } = useFormContext();
-  return (
-    <Button disabled={isSubmitting}>
-      {isSubmitting ? "Submitting..." : "Submit"}
-    </Button>
-  );
-};
-
-const FormComponent = () => {
-  return (
-    <ValidatedForm>
-      <input name="name" />
-      <Button>Submit</Button>
-    </ValidatedForm>
-  );
-};
-```
-
-_Incorrect_: This will not work because it's used outside the `ValidatedForm`.
-
-```tsx
-const FormComponent = () => {
-  const { isSubmitting } = useFormContext();
-
-  return (
-    <ValidatedForm>
-      <input name="name" />
-      <Button disabled={isSubmitting}>
-        {isSubmitting ? "Submitting..." : "Submit"}
-      </Button>
-    </ValidatedForm>
-  );
-};
-```
-
-## FormContext
+## FormContextValue
 
 <PropHeader
   prop="fieldErrors"

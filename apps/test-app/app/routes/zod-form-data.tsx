@@ -3,7 +3,6 @@ import {
   ActionFunction,
   json,
   LoaderFunction,
-  redirect,
   useActionData,
   useLoaderData,
 } from "remix";
@@ -55,7 +54,6 @@ export const action: ActionFunction = async ({ request }) => {
 
 export const loader: LoaderFunction = async ({ request }) => {
   const params = paramSchema.parse(new URL(request.url).searchParams);
-  if (params.error) throw redirect("/");
   return json(params);
 };
 

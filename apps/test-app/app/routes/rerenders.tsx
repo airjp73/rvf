@@ -39,8 +39,6 @@ const RenderCounter = () => {
 };
 
 export default function FrontendValidation() {
-  console.log("render");
-
   return (
     <ValidatedForm validator={validator} method="post">
       <Input name="firstName" label="First Name" />

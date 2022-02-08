@@ -28,7 +28,7 @@ export default function FrontendValidation() {
   return (
     <ValidatedForm validator={validator} method="post">
       {actionData && <h1>{actionData.message}</h1>}
-      <Fieldset label="Likes">
+      <Fieldset label="Likes" name="likes">
         <label>
           Pizza
           <input type="checkbox" name="likes" value="pizza" />

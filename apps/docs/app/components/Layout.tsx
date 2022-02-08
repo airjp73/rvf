@@ -46,13 +46,17 @@ const navSections: Section[] = [
         to: "/validation-library-support",
       },
       {
+        label: "Using hooks outside forms",
+        to: "/use-outside-forms",
+      },
+      {
         label: "Supporting users without JS",
         to: "/supporting-no-js",
       },
     ],
   },
   {
-    header: "Api Reference",
+    header: "Client API",
     navItems: [
       {
         label: "ValidatedForm",
@@ -74,9 +78,18 @@ const navSections: Section[] = [
         label: "useFormContext",
         to: "/reference/use-form-context",
       },
+    ],
+  },
+  {
+    header: "Server API",
+    navItems: [
       {
         label: "validationError",
         to: "/reference/validation-error",
+      },
+      {
+        label: "setFormDefaults",
+        to: "/reference/set-form-defaults",
       },
     ],
   },

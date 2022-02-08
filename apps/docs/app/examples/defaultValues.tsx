@@ -1,10 +1,5 @@
 import { withZod } from "@remix-validated-form/with-zod";
-import {
-  json,
-  LoaderFunction,
-  useActionData,
-  useLoaderData,
-} from "remix";
+import { useActionData } from "remix";
 import { ValidatedForm } from "remix-validated-form";
 import { z } from "zod";
 import { Alert } from "~/components/Alert";
@@ -24,32 +19,17 @@ export const validator = withZod(
   })
 );
 
-type LoaderData = {
-  defaultValues: {
-    firstName: string;
-    lastName: string;
-    email: string;
-  };
-};
-
-export const loader: LoaderFunction = () => {
-  return json<LoaderData>({
-    defaultValues: {
-      firstName: "John",
-      lastName: "Doe",
-      email: "test@example.com",
-    },
-  });
-};
-
 export default function Demo() {
-  const { defaultValues } = useLoaderData<LoaderData>();
   const data = useActionData();
   return (
     <ValidatedForm
       validator={validator}
       method="post"
-      defaultValues={defaultValues}
+      defaultValues={{
+        firstName: "John",
+        lastName: "Doe",
+        email: "test@example.com",
+      }}
     >
       <FormInput name="firstName" label="First Name" />
       <FormInput name="lastName" label="Last Name" />

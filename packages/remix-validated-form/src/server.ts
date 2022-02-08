@@ -1,5 +1,9 @@
 import { json } from "@remix-run/server-runtime";
 import {
+  formDefaultValuesKey,
+  FORM_DEFAULTS_FIELD,
+} from "./internal/constants";
+import {
   ValidatorError,
   ValidationErrorResponseData,
 } from "./validation/types";
@@ -27,7 +31,19 @@ export function validationError(
       fieldErrors: error.fieldErrors,
       subaction: error.subaction,
       repopulateFields,
+      formId: error.formId,
     },
     { status: 422 }
   );
 }
+
+export type FormDefaults = {
+  [formDefaultsKey: `${typeof FORM_DEFAULTS_FIELD}_${string}`]: any;
+};
+
+export const setFormDefaults = <DataType = any>(
+  formId: string,
+  defaultValues: Partial<DataType>
+): FormDefaults => ({
+  [formDefaultValuesKey(formId)]: defaultValues,
+});

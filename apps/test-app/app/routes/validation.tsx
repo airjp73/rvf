@@ -51,15 +51,17 @@ export const action: ActionFunction = async ({ request }) => {
 export default function FrontendValidation() {
   const actionData = useActionData();
   return (
-    <ValidatedForm validator={validator} method="post">
-      {actionData && <h1>{actionData.message}</h1>}
-      <Input name="firstName" label="First Name" />
-      <Input name="lastName" label="Last Name" />
-      <Input name="email" label="Email" />
-      <Input name="contacts[0].name" label="Name of a contact" />
-      <Input name="likesPizza" type="checkbox" label="Likes pizza" />
-      <SubmitButton />
-      <button type="reset">Reset</button>
-    </ValidatedForm>
+    <>
+      <Input name="firstName" label="First Name" form="test-form" />
+      <ValidatedForm validator={validator} method="post" id="test-form">
+        {actionData && <h1>{actionData.message}</h1>}
+        <Input name="lastName" label="Last Name" />
+        <Input name="email" label="Email" />
+        <Input name="contacts[0].name" label="Name of a contact" />
+        <Input name="likesPizza" type="checkbox" label="Likes pizza" />
+        <SubmitButton />
+        <button type="reset">Reset</button>
+      </ValidatedForm>
+    </>
   );
 }

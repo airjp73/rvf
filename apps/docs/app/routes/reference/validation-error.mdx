@@ -90,6 +90,9 @@ const action: ActionFunction = async ({ request }) => {
         // you need to specify a subaction here
         // or else the errors won't be displayed.
         subaction: result.data.subaction,
+        // You can also provide a `formId` instead of a `subaction`
+        // if your form has an `id` prop
+        formId: result.formId,
       },
       result.data
     );

@@ -1,0 +1,59 @@
+---
+meta:
+  title: Using hooks outside forms (Remix Validated Form)
+---
+
+import { Alert } from "~/components/Alert";
+
+# Using hooks outside forms
+
+Most of the time, you'll be using the hooks in this library
+within the context of a `ValidatedForm` component.
+However, also possible use any of the hooks _outside_ a `ValidatedForm`
+and have it still work.
+All you have to do is put an `id` on your form and pass that `id` to the hook.
+
+### Normal usage inside a `ValidatedForm`
+
+```tsx
+const SubmitButton = () => {
+  const isSubmitting = useIsSubmitting();
+  return (
+    <Button disabled={isSubmitting}>
+      {isSubmitting ? "Submitting..." : "Submit"}
+    </Button>
+  );
+};
+
+const FormComponent = () => {
+  return (
+    <ValidatedForm>
+      <input name="name" />
+      <SubmitButton />
+    </ValidatedForm>
+  );
+};
+```
+
+### Usage outside of a `ValidatedForm`
+
+```tsx
+const FormComponent = () => {
+  // The id "myForm" is passed both to the hook _and_ to the form
+  const isSubmitting = useIsSubmitting("myForm");
+
+  return (
+    <ValidatedForm id="myForm">
+      <input name="name" />
+      <Button disabled={isSubmitting}>
+        {isSubmitting ? "Submitting..." : "Submit"}
+      </Button>
+    </ValidatedForm>
+  );
+};
+```
+
+## Considerations for no-JS users
+
+If a user has JavaScript disabled, the default values may not correctly populate.
+To set default values in a way that works without JS, use [setFormDefaults](/reference/set-form-defaults).

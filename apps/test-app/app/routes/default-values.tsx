@@ -55,7 +55,7 @@ export default function DefaultValues() {
         label="Likes Pizza"
         value="yes"
       />
-      <Fieldset label="Which colors do you like">
+      <Fieldset label="Which colors do you like" name="likesColors">
         <Input
           data-testid="red"
           name="likesColors"
@@ -82,7 +82,7 @@ export default function DefaultValues() {
         />
         <input name="likesColors" type="checkbox" value="yellow" />
       </Fieldset>
-      <Fieldset label="Favorite dessert">
+      <Fieldset label="Favorite dessert" name="likesColors">
         <Input
           data-testid="iceCream"
           label="Ice Cream"

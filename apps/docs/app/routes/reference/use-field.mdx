@@ -10,6 +10,7 @@ import { PropHeader } from "~/components/PropHeader";
   variant="h1"
   prop="useField"
   type="(name: string, options?: UseFieldOptions) => FieldProps"
+  noAnchor
 />
 
 Accepts the `name` of the field and returns
@@ -66,6 +67,11 @@ If you're using `getInputProps`, a field will become touched on blur.
 Sets the `touched` state of the field to whatever you pass in.
 
 ## UseFieldOptions
+
+<PropHeader prop="formId" optional type="string" />
+
+Allows you to connect to any form on the page,
+even if the field isn't inside the form.
 
 <PropHeader
   prop="validationBehavior"
