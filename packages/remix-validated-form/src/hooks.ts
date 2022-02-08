@@ -5,7 +5,6 @@ import {
   ValidationBehaviorOptions,
 } from "./internal/getInputProps";
 import {
-  useUnknownFormContextSelectAtom,
   useInternalFormContext,
   useFieldTouched,
   useFieldError,
@@ -29,16 +28,20 @@ import {
  *
  * @param formId
  */
-export const useIsSubmitting = (formId?: string) =>
-  useUnknownFormContextSelectAtom(formId, isSubmittingAtom, "useIsSubmitting");
+export const useIsSubmitting = (formId?: string) => {
+  const formContext = useInternalFormContext(formId, "useIsSubmitting");
+  return useContextSelectAtom(formContext.formId, isSubmittingAtom);
+};
 
 /**
  * Returns whether or not the current form is valid.
  *
  * @param formId the id of the form. Only necessary if being used outside a ValidatedForm.
  */
-export const useIsValid = (formId?: string) =>
-  useUnknownFormContextSelectAtom(formId, isValidAtom, "useIsValid");
+export const useIsValid = (formId?: string) => {
+  const formContext = useInternalFormContext(formId, "useIsValid");
+  return useContextSelectAtom(formContext.formId, isValidAtom);
+};
 
 export type FieldProps = {
   /**

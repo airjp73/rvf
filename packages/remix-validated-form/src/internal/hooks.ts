@@ -48,15 +48,6 @@ export const useContextSelectAtom = <T>(
   return useAtomValue(selectorAtom, ATOM_SCOPE);
 };
 
-export const useUnknownFormContextSelectAtom = <T>(
-  formId: string | symbol | undefined,
-  selectorAtomCreator: FormSelectorAtomCreator<T>,
-  hookName: string
-) => {
-  const formContext = useInternalFormContext(formId, hookName);
-  return useContextSelectAtom(formContext.formId, selectorAtomCreator);
-};
-
 export const useHydratableSelector = <T, U>(
   { formId }: InternalFormContextValue,
   atomCreator: FormSelectorAtomCreator<T>,
