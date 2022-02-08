@@ -191,6 +191,12 @@ function formEventProxy<T extends object>(event: T): T {
   }) as T;
 }
 
+const useFormAtom = (formId: string | symbol) => {
+  const formAtom = formRegistry(formId);
+  useEffect(() => () => formRegistry.remove(formId), [formId]);
+  return formAtom;
+};
+
 /**
  * The primary form component of `remix-validated-form`.
  */
@@ -212,7 +218,7 @@ export function ValidatedForm<DataType>({
   ...rest
 }: FormProps<DataType>) {
   const formId = useFormId(id);
-  const formAtom = formRegistry(formId);
+  const formAtom = useFormAtom(formId);
   const contextValue = useMemo<InternalFormContextValue>(
     () => ({
       formId,

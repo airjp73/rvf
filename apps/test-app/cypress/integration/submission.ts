@@ -125,4 +125,15 @@ describe("Validation", () => {
       cy.findByText("Submitted!").should("exist");
     });
   });
+
+  it("should clean up isSubmitting state even when action redirects", () => {
+    cy.visit("submission/redirect");
+    cy.findByText("Submit").click();
+    cy.findByText("Submitting...").should("exist");
+
+    // redirects
+    cy.findByText("Go back").click();
+
+    cy.findByText("Submit").should("exist");
+  });
 });
