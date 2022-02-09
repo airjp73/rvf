@@ -1,4 +1,4 @@
-import { isEqual } from "lodash";
+import isEqual from "lodash/isEqual";
 import type React from "react";
 import { useEffect, useLayoutEffect, useRef } from "react";
 
