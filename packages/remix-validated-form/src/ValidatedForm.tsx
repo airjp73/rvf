@@ -38,6 +38,7 @@ import {
 import { useSubmitComplete } from "./internal/submissionCallbacks";
 import {
   mergeRefs,
+  useDeepEqualsMemo,
   useIsomorphicLayoutEffect as useLayoutEffect,
 } from "./internal/util";
 import { FieldErrors, Validator } from "./validation/types";
@@ -206,7 +207,7 @@ export function ValidatedForm<DataType>({
   children,
   fetcher,
   action,
-  defaultValues: providedDefaultValues,
+  defaultValues: unMemoizedDefaults,
   formRef: formRefProp,
   onReset,
   subaction,
@@ -219,6 +220,7 @@ export function ValidatedForm<DataType>({
 }: FormProps<DataType>) {
   const formId = useFormId(id);
   const formAtom = useFormAtom(formId);
+  const providedDefaultValues = useDeepEqualsMemo(unMemoizedDefaults);
   const contextValue = useMemo<InternalFormContextValue>(
     () => ({
       formId,

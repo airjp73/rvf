@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useCallback, useRef } from "react";
 
 export class MultiValueMap<Key, Value> {
   private dict: Map<Key, Value[]> = new Map();
@@ -30,9 +30,9 @@ export class MultiValueMap<Key, Value> {
 
 export const useMultiValueMap = <Key, Value>() => {
   const ref = useRef<MultiValueMap<Key, Value> | null>(null);
-  return () => {
+  return useCallback(() => {
     if (ref.current) return ref.current;
     ref.current = new MultiValueMap();
     return ref.current;
-  };
+  }, []);
 };

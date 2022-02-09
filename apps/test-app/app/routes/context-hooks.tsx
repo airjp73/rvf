@@ -1,4 +1,5 @@
 import { withYup } from "@remix-validated-form/with-yup";
+import { useMemo, useRef } from "react";
 import { ActionFunction, json, useActionData } from "remix";
 import { useFormContext, ValidatedForm } from "remix-validated-form";
 import * as yup from "yup";
@@ -66,6 +67,10 @@ const DisplayContext = ({
 
 export default function FrontendValidation() {
   const actionData = useActionData();
+
+  // Verify we don't get an infinite loop
+  useFormContext("test-form");
+
   return (
     <>
       {actionData?.message && <h1>{actionData.message}</h1>}
