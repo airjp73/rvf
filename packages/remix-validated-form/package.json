@@ -1,6 +1,6 @@
 {
   "name": "remix-validated-form",
-  "version": "4.1.1",
+  "version": "4.1.2",
   "description": "Form component and utils for easy form validation in remix",
   "browser": "./browser/index.js",
   "main": "./build/index.js",
