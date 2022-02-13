@@ -1,1 +1,8 @@
 blank_issues_enabled: false
+contact_links:
+  - name: 🤔 Questions or ideas?
+    url: https://github.com/airjp73/remix-validated-form/discussions
+    about: Ask long-form questions and discuss ideas.
+  - name: 💬 Remix Discord / Community Chat
+    url: https://rmx.as/discord
+    about: Interact with other people using Remix 📀
