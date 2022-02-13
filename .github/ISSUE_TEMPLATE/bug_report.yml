@@ -37,26 +37,60 @@ body:
     validations:
       required: true
   - type: input
+    id: link
     attributes:
       label: Please provide a link to a minimal reproduction of the issue.
-      description: You can click the reproduction starter link above and edit the sandbox.
+      description: |
+        You can click the reproduction starter link above and edit the sandbox.
+        Note:
+        - Please read these tips for providing a minimal example: https://stackoverflow.com/help/mcve.
+      placeholder: |
+        e.g. https://codesanbox.io/edit/...... OR Github Repo
     validations:
       required: true
   - type: textarea
+    id: steps
     attributes:
-      label: Steps to Reproduce
-      description: Steps to reproduce the behavior.
+      label: Steps to Reproduce the Bug or Issue
+      description: Describe the steps we have to take to reproduce the behavior.
+      placeholder: |
+        1. Go to '...'
+        2. Click on '....'
+        3. Scroll down to '....'
+        4. See error
     validations:
       required: true
   - type: textarea
+    id: expected
     attributes:
-      label: Expected Behavior
-      description: A concise description of what you expected to happen.
+      label: Expected behavior
+      description: Provide a clear and concise description of what you expected to happen.
+      placeholder: |
+        As a user, I expected ___ behavior but i am seeing ___
     validations:
       required: true
   - type: textarea
+    id: screenshots_or_videos
     attributes:
-      label: Actual Behavior
-      description: A concise description of what you're experiencing.
+      label: Screenshots or Videos
+      description: |
+        If applicable, add screenshots or a video to help explain your problem.
+        For more information on the supported file image/file types and the file size limits, please refer
+        to the following link: https://docs.github.com/en/github/writing-on-github/working-with-advanced-formatting/attaching-files
+      placeholder: |
+        You can drag your video or image files inside of this editor ↓
+  - type: textarea
+    id: platform
+    attributes:
+      label: Platform
+      value: |
+        - OS: [e.g. macOS, Windows, Linux]
+        - Browser: [e.g. Chrome, Safari, Firefox]
+        - Version: [e.g. 91.1]
     validations:
       required: true
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional context
+      description: Add any other context about the problem here.
