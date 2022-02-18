@@ -114,6 +114,14 @@ describe("Validation", () => {
     cy.findByText("Submitted to in-route action.").should("not.exist");
   });
 
+  it("should submit to the correct action even when inside a dialog", () => {
+    cy.visit("/submission/action");
+    cy.findByText("Open Dialog").click();
+    cy.findByTestId("dialog-submit").click();
+    cy.findByText("Submitted to action prop action").should("exist");
+    cy.findByText("Submitted to in-route action.").should("not.exist");
+  });
+
   describe("onSubmit", () => {
     it("should abort submit if preventDefault called on event", () => {
       cy.visit("submission/onsubmit");

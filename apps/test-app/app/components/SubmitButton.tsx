@@ -7,6 +7,7 @@ type Props = {
   form?: string;
   name?: string;
   value?: string;
+  "data-testid"?: string;
 };
 
 export const SubmitButton = ({
@@ -16,6 +17,7 @@ export const SubmitButton = ({
   form,
   name,
   value,
+  "data-testid": dataTestid,
 }: Props) => {
   const isSubmitting = useIsSubmitting(form);
   const isValid = useIsValid(form);
@@ -26,6 +28,7 @@ export const SubmitButton = ({
       name={name}
       value={value}
       form={form}
+      data-testid={dataTestid}
     >
       {isSubmitting ? submittingLabel : label}
     </button>

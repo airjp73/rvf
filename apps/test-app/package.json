@@ -14,6 +14,7 @@
     "start": "remix-serve build"
   },
   "dependencies": {
+    "@headlessui/react": "^1.5.0",
     "@remix-run/dev": "^1.2.1",
     "@remix-run/react": "^1.2.1",
     "@remix-run/serve": "^1.2.1",
