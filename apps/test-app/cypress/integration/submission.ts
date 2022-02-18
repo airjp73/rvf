@@ -107,6 +107,13 @@ describe("Validation", () => {
     cy.findByText("Submitted internalVal").should("exist");
   });
 
+  it("should submit to the correct action", () => {
+    cy.visit("/submission/action");
+    cy.findByText("Submit").click();
+    cy.findByText("Submitted to action prop action").should("exist");
+    cy.findByText("Submitted to in-route action.").should("not.exist");
+  });
+
   describe("onSubmit", () => {
     it("should abort submit if preventDefault called on event", () => {
       cy.visit("submission/onsubmit");
