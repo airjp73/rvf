@@ -354,12 +354,18 @@ export function ValidatedForm<DataType>({
         return;
       }
 
-      if (fetcher) fetcher.submit(clickedButtonRef.current || e.currentTarget);
+      // We deviate from the remix code here a bit because of our async submit.
+      // In remix's `FormImpl`, they use `event.currentTarget` to get the form,
+      // but we already have the form in `formRef.current` so we can just use that.
+      // If we use `event.currentTarget` here, it will break because `currentTarget`
+      // will have changed since the start of the submission.
+      if (fetcher) fetcher.submit(clickedButtonRef.current || formRef.current);
       else
-        submit(clickedButtonRef.current || e.currentTarget, {
+        submit(clickedButtonRef.current || formRef.current, {
           method,
           replace,
         });
+
       clickedButtonRef.current = null;
     }
   };
