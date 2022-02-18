@@ -24,7 +24,7 @@ export default function FrontendValidation() {
         action="/submission/action/target"
       >
         {data?.message && <p>{data.message}</p>}
-        <SubmitButton />
+        <SubmitButton name="whichForm" value="Not in a dialog" />
       </ValidatedForm>
 
       <button type="button" onClick={() => setIsOpen(true)}>
@@ -52,7 +52,11 @@ export default function FrontendValidation() {
           action="/submission/action/target"
         >
           {data?.message && <p>{data.message}</p>}
-          <SubmitButton data-testid="dialog-submit" />
+          <SubmitButton
+            data-testid="dialog-submit"
+            name="whichForm"
+            value="In a dialog"
+          />
         </ValidatedForm>
       </Dialog>
     </>

@@ -327,9 +327,9 @@ export function ValidatedForm<DataType>({
       }
     }
 
-    window.addEventListener("click", handleClick);
+    window.addEventListener("click", handleClick, { capture: true });
     return () => {
-      window.removeEventListener("click", handleClick);
+      window.removeEventListener("click", handleClick, { capture: true });
     };
   }, []);
 

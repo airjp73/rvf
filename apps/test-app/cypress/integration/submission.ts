@@ -110,7 +110,9 @@ describe("Validation", () => {
   it("should submit to the correct action", () => {
     cy.visit("/submission/action");
     cy.findByText("Submit").click();
-    cy.findByText("Submitted to action prop action").should("exist");
+    cy.findByText(
+      "Submitted to action prop action from form: Not in a dialog"
+    ).should("exist");
     cy.findByText("Submitted to in-route action.").should("not.exist");
   });
 
@@ -118,7 +120,9 @@ describe("Validation", () => {
     cy.visit("/submission/action");
     cy.findByText("Open Dialog").click();
     cy.findByTestId("dialog-submit").click();
-    cy.findByText("Submitted to action prop action").should("exist");
+    cy.findByText(
+      "Submitted to action prop action from form: In a dialog"
+    ).should("exist");
     cy.findByText("Submitted to in-route action.").should("not.exist");
   });
 
