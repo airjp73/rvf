@@ -192,6 +192,59 @@ describe("zod helpers", () => {
     });
   });
 
+  describe("json", () => {
+    type Case = {
+      value: any;
+      schema: z.ZodTypeAny;
+    };
+    const cases: Case[] = [
+      { value: {}, schema: z.object({}) },
+      { value: { foo: "bar" }, schema: z.object({ foo: z.string() }) },
+      {
+        value: { foo: { bar: "baz" } },
+        schema: z.object({ foo: z.object({ bar: z.string() }) }),
+      },
+      { value: [], schema: z.array(z.any()) },
+      {
+        value: [{ foo: "bar" }],
+        schema: z.array(z.object({ foo: z.string() })),
+      },
+      {
+        value: [{ foo: { bar: "baz" } }],
+        schema: z.array(z.object({ foo: z.object({ bar: z.string() }) })),
+      },
+      {
+        value: [{ foo: "bar" }, { bar: "baz" }],
+        schema: z.array(
+          z.object({ foo: z.string().optional(), bar: z.string().optional() })
+        ),
+      },
+      { value: "simpleString", schema: z.string() },
+      { value: 12345, schema: z.number() },
+      { value: true, schema: z.boolean() },
+    ];
+
+    it.each(cases)("should correctly parse $value", ({ value, schema }) => {
+      const s = zfd.json(schema);
+      expect(s.parse(JSON.stringify(value))).toEqual(value);
+    });
+
+    it("should correctly error when invalid", () => {
+      const s = zfd.json(z.object({}));
+      expectError(s, JSON.stringify([]));
+    });
+
+    it("should return undefined for empty strings", () => {
+      const s = zfd.json(z.object({}).optional());
+      expect(s.parse("")).toBe(undefined);
+    });
+
+    it("should not fail validation but not error if invalid json string", () => {
+      const s = zfd.json(z.object({}));
+      expectError(s, "I am not valid json");
+    });
+  });
+
   describe("formData", () => {
     it("should gather up repeated fields into arrays and leave single fields alone", () => {
       const s = zfd.formData({

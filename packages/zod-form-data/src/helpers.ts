@@ -118,6 +118,22 @@ type FormDataType = {
   <T extends z.ZodTypeAny>(schema: T): ZodEffects<T>;
 };
 
+const safeParseJson = (jsonString: string) => {
+  try {
+    return JSON.parse(jsonString);
+  } catch {
+    return jsonString;
+  }
+};
+
+export const json = <T extends ZodTypeAny>(schema: T): ZodEffects<T> =>
+  z.preprocess(
+    preprocessIfValid(
+      z.union([stripEmpty, z.string().transform((val) => safeParseJson(val))])
+    ),
+    schema
+  );
+
 /**
  * This helper takes the place of the `z.object` at the root of your schema.
  * It wraps your schema in a `z.preprocess` that extracts all the data out of a `FormData`
