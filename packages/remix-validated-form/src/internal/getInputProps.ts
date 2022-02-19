@@ -1,4 +1,6 @@
 import omitBy from "lodash/omitBy";
+import { getCheckboxChecked } from "./logic/getCheckboxChecked";
+import { getRadioChecked } from "./logic/getRadioChecked";
 
 export type ValidationBehavior = "onBlur" | "onChange" | "onSubmit";
 
@@ -41,13 +43,6 @@ const defaultValidationBehavior: ValidationBehaviorOptions = {
   whenSubmitted: "onChange",
 };
 
-const getCheckboxDefaultChecked = (value: string, defaultValue: any) => {
-  if (Array.isArray(defaultValue)) return defaultValue.includes(value);
-  if (typeof defaultValue === "boolean") return defaultValue;
-  if (typeof defaultValue === "string") return defaultValue === value;
-  return undefined;
-};
-
 export const createGetInputProps = ({
   clearError,
   validate,
@@ -86,14 +81,9 @@ export const createGetInputProps = ({
     };
 
     if (props.type === "checkbox") {
-      const value = props.value ?? "on";
-      inputProps.defaultChecked = getCheckboxDefaultChecked(
-        value,
-        defaultValue
-      );
+      inputProps.defaultChecked = getCheckboxChecked(props.value, defaultValue);
     } else if (props.type === "radio") {
-      const value = props.value ?? "on";
-      inputProps.defaultChecked = defaultValue === value;
+      inputProps.defaultChecked = getRadioChecked(props.value, defaultValue);
     } else {
       inputProps.defaultValue = defaultValue;
     }
