@@ -9,17 +9,21 @@ import {
   useFieldTouched,
   useFieldError,
   useFieldDefaultValue,
-  useContextSelectAtom,
   useClearError,
   useSetTouched,
+  useDefaultValuesForForm,
+  useFieldErrorsForForm,
+  useFormAtomValue,
 } from "./internal/hooks";
 import {
+  fieldErrorsAtom,
+  formPropsAtom,
   hasBeenSubmittedAtom,
   isSubmittingAtom,
   isValidAtom,
-  registerReceiveFocusAtom,
-  validateFieldAtom,
+  touchedFieldsAtom,
 } from "./internal/state";
+import { FieldErrors, TouchedFields } from ".";
 
 /**
  * Returns whether or not the parent form is currently being submitted.
@@ -30,7 +34,7 @@ import {
  */
 export const useIsSubmitting = (formId?: string) => {
   const formContext = useInternalFormContext(formId, "useIsSubmitting");
-  return useContextSelectAtom(formContext.formId, isSubmittingAtom);
+  return useFormAtomValue(isSubmittingAtom(formContext.formId));
 };
 
 /**
@@ -40,7 +44,101 @@ export const useIsSubmitting = (formId?: string) => {
  */
 export const useIsValid = (formId?: string) => {
   const formContext = useInternalFormContext(formId, "useIsValid");
-  return useContextSelectAtom(formContext.formId, isValidAtom);
+  return useFormAtomValue(isValidAtom(formContext.formId));
+};
+
+export type FormState = {
+  fieldErrors: FieldErrors;
+  isSubmitting: boolean;
+  hasBeenSubmitted: boolean;
+  touchedFields: TouchedFields;
+  defaultValues: { [fieldName: string]: any };
+  action?: string;
+  subaction?: string;
+  isValid: boolean;
+};
+
+/**
+ * Returns information about the form.
+ *
+ * @param formId the id of the form. Only necessary if being used outside a ValidatedForm.
+ */
+export const useFormState = (formId?: string): FormState => {
+  const formContext = useInternalFormContext(formId, "useIsValid");
+  const formProps = useFormAtomValue(formPropsAtom(formContext.formId));
+  const isSubmitting = useFormAtomValue(isSubmittingAtom(formContext.formId));
+  const hasBeenSubmitted = useFormAtomValue(
+    hasBeenSubmittedAtom(formContext.formId)
+  );
+  const touchedFields = useFormAtomValue(touchedFieldsAtom(formContext.formId));
+  const isValid = useFormAtomValue(isValidAtom(formContext.formId));
+
+  const defaultValuesToUse = useDefaultValuesForForm(formContext);
+  const hydratedDefaultValues = defaultValuesToUse.hydrateTo(
+    formProps.defaultValues
+  );
+
+  const fieldErrorsFromState = useFormAtomValue(
+    fieldErrorsAtom(formContext.formId)
+  );
+  const fieldErrorsToUse = useFieldErrorsForForm(formContext);
+  const hydratedFieldErrors = fieldErrorsToUse.hydrateTo(fieldErrorsFromState);
+
+  return useMemo(
+    () => ({
+      ...formProps,
+      defaultValues: hydratedDefaultValues,
+      fieldErrors: hydratedFieldErrors ?? {},
+      hasBeenSubmitted,
+      isSubmitting,
+      touchedFields,
+      isValid,
+    }),
+    [
+      formProps,
+      hasBeenSubmitted,
+      hydratedDefaultValues,
+      hydratedFieldErrors,
+      isSubmitting,
+      isValid,
+      touchedFields,
+    ]
+  );
+};
+
+export type FormHelpers = {
+  /**
+   * Clear the error of the specified field.
+   */
+  clearError: (fieldName: string) => void;
+  /**
+   * Validate the specified field.
+   */
+  validateField: (fieldName: string) => Promise<string | null>;
+  /**
+   * Change the touched state of the specified field.
+   */
+  setTouched: (fieldName: string, touched: boolean) => void;
+};
+
+/**
+ * Returns helpers that can be used to update the form state.
+ *
+ * @param formId the id of the form. Only necessary if being used outside a ValidatedForm.
+ */
+export const useFormHelpers = (formId?: string): FormHelpers => {
+  const formContext = useInternalFormContext(formId, "useFormHelpers");
+  const setTouched = useSetTouched(formContext);
+  const { validateField } = useFormAtomValue(formPropsAtom(formContext.formId));
+  const clearError = useClearError(formContext);
+  return useMemo(
+    () => ({
+      setTouched,
+      validateField,
+      clearError,
+    }),
+    [clearError, setTouched, validateField]
+  );
 };
 
 export type FieldProps = {
@@ -97,26 +195,18 @@ export const useField = (
     formId?: string;
   }
 ): FieldProps => {
-  const { handleReceiveFocus, formId: providedFormId } = options ?? {};
+  const { formId: providedFormId, handleReceiveFocus } = options ?? {};
   const formContext = useInternalFormContext(providedFormId, "useField");
 
   const defaultValue = useFieldDefaultValue(name, formContext);
-  const touched = useFieldTouched(name, formContext);
-  const error = useFieldError(name, formContext);
+  const [touched, setTouched] = useFieldTouched(name, formContext);
+  const [error, setError] = useFieldError(name, formContext);
 
-  const clearError = useClearError(formContext);
-  const setTouched = useSetTouched(formContext);
-  const hasBeenSubmitted = useContextSelectAtom(
-    formContext.formId,
-    hasBeenSubmittedAtom
+  const hasBeenSubmitted = useFormAtomValue(
+    hasBeenSubmittedAtom(formContext.formId)
   );
-  const validateField = useContextSelectAtom(
-    formContext.formId,
-    validateFieldAtom
-  );
-  const registerReceiveFocus = useContextSelectAtom(
-    formContext.formId,
-    registerReceiveFocusAtom
+  const { validateField, registerReceiveFocus } = useFormAtomValue(
+    formPropsAtom(formContext.formId)
   );
 
   useEffect(() => {
@@ -127,13 +217,13 @@ export const useField = (
   const field = useMemo<FieldProps>(() => {
     const helpers = {
       error,
-      clearError: () => clearError(name),
+      clearError: () => setError(undefined),
       validate: () => {
         validateField(name);
       },
       defaultValue,
       touched,
-      setTouched: (touched: boolean) => setTouched(name, touched),
+      setTouched,
     };
     const getInputProps = createGetInputProps({
       ...helpers,
@@ -149,12 +239,12 @@ export const useField = (
     error,
     defaultValue,
     touched,
+    setTouched,
     name,
     hasBeenSubmitted,
     options?.validationBehavior,
-    clearError,
+    setError,
     validateField,
-    setTouched,
   ]);
 
   return field;
