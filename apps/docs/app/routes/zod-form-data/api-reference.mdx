@@ -14,6 +14,7 @@ import { PropHeader } from "~/components/PropHeader";
 - [checkbox](#checkbox)
 - [repeatable](#repeatable)
 - [repeatableOfType](#repeatableOfType)
+- [json](#json)
 
 <PropHeader
   prop="formData"
@@ -238,6 +239,32 @@ Instead of passing the schema for an entire array, you pass in the schema for th
 const schema = zfd.formData({
   repeatableNumberField: zfd.repeatableOfType(
     zfd.numeric()
+  ),
+});
+```
+
+<PropHeader
+  prop="json"
+  type="(schema: ZodTypeAny) => ZodEffects"
+/>
+
+Preprocess a field where you expect a JSON string.
+This often happens when using a controlled component like `react-select` in remix.
+In that case you might choose to store the entire value of the component in a hidden input encoded as json.
+
+Unlike other helpers, providing a schema is required.
+
+#### Usage
+
+```ts
+const schema = zfd.formData({
+  jsonField: zfd.json(
+    z.array(
+      z.object({
+        label: z.string(),
+        value: z.string(),
+      })
+    )
   ),
 });
 ```
