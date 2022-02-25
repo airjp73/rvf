@@ -1,0 +1,39 @@
+---
+meta:
+  title: useFormHelpers (Remix Validated Form)
+---
+
+import { PropHeader } from "~/components/PropHeader";
+import { Alert } from "~/components/Alert";
+
+<PropHeader
+  variant="h1"
+  prop="useFormHelpers"
+  type="(formId?: string) => FormHelpers"
+/>
+
+Returns some helper functions for the specified form.
+
+## FormHelpers
+
+<PropHeader
+  prop="clearError"
+  type="(fieldName: string) => void"
+/>
+
+Clear the error from the specified field.
+
+<PropHeader
+  prop="validateField"
+  type="(fieldName: string) => Promise<string | null>"
+/>
+
+Performs validation on the specified field and populates `fieldErrors` if there is an error.
+Also returns the error message if there is an error.
+
+<PropHeader
+  prop="setFieldTouched"
+  type="(fieldName: string, touched: boolean) => void"
+/>
+
+Manually set the `touched` state of the specified field.
