@@ -1,8 +1,8 @@
 import { useCallback } from "react";
 import { useFormAtomValue, useInternalFormContext } from "./internal/hooks";
 import { formPropsAtom } from "./internal/state";
+import { useFormHelpers, useFormState } from "./unreleased/formStateHooks";
 import { FieldErrors, TouchedFields } from "./validation/types";
-import { useFormHelpers, useFormState } from ".";
 
 export type FormContextValue = {
   /**
@@ -55,8 +55,6 @@ export type FormContextValue = {
 };
 
 /**
- * @deprecated in favor of `useFormState` and `useFormHelpers`
- *
  * Provides access to some of the internal state of the form.
  */
 export const useFormContext = (formId?: string): FormContextValue => {
