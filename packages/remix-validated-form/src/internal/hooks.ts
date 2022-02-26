@@ -1,26 +1,32 @@
 import { useActionData, useMatches, useTransition } from "@remix-run/react";
-import { Atom } from "jotai";
+import { Atom, useAtom, WritableAtom } from "jotai";
 import { useAtomValue, useUpdateAtom } from "jotai/utils";
 import lodashGet from "lodash/get";
-import identity from "lodash/identity";
-import { useCallback, useContext, useMemo } from "react";
-import { ValidationErrorResponseData } from "..";
+import { useCallback, useContext } from "react";
+import invariant from "tiny-invariant";
+import { FieldErrors, ValidationErrorResponseData } from "..";
 import { formDefaultValuesKey } from "./constants";
 import { InternalFormContext, InternalFormContextValue } from "./formContext";
+import { Hydratable, hydratable } from "./hydratable";
 import {
   ATOM_SCOPE,
-  clearErrorAtom,
-  fieldDefaultValueAtom,
   fieldErrorAtom,
   fieldTouchedAtom,
-  FormAtom,
-  formRegistry,
+  formPropsAtom,
   isHydratedAtom,
+  setFieldErrorAtom,
   setTouchedAtom,
 } from "./state";
 
-type FormSelectorAtomCreator<T> = (formState: FormAtom) => Atom<T>;
-const USE_HYDRATED_STATE = Symbol("USE_HYDRATED_STATE");
+export const useFormUpdateAtom: typeof useUpdateAtom = (atom) =>
+  useUpdateAtom(atom, ATOM_SCOPE);
+
+export const useFormAtom = <Value, Update, Result extends void | Promise<void>>(
+  anAtom: WritableAtom<Value, Update, Result>
+) => useAtom(anAtom, ATOM_SCOPE);
+
+export const useFormAtomValue = <Value>(anAtom: Atom<Value>) =>
+  useAtomValue(anAtom, ATOM_SCOPE);
 
 export const useInternalFormContext = (
   formId?: string | symbol,
@@ -34,28 +40,6 @@ export const useInternalFormContext = (
   throw new Error(
     `Unable to determine form for ${hookName}. Please use it inside a form or pass a 'formId'.`
   );
-};
-
-export const useContextSelectAtom = <T>(
-  formId: string | symbol,
-  selectorAtomCreator: FormSelectorAtomCreator<T>
-) => {
-  const formAtom = formRegistry(formId);
-  const selectorAtom = useMemo(
-    () => selectorAtomCreator(formAtom),
-    [formAtom, selectorAtomCreator]
-  );
-  return useAtomValue(selectorAtom, ATOM_SCOPE);
-};
-
-export const useHydratableSelector = <T, U>(
-  { formId }: InternalFormContextValue,
-  atomCreator: FormSelectorAtomCreator<T>,
-  dataToUse: U | typeof USE_HYDRATED_STATE,
-  selector: (data: U) => T = identity
-) => {
-  const dataFromState = useContextSelectAtom(formId, atomCreator);
-  return dataToUse === USE_HYDRATED_STATE ? dataFromState : selector(dataToUse);
 };
 
 export function useErrorResponseForForm({
@@ -84,10 +68,12 @@ export function useErrorResponseForForm({
   return null;
 }
 
-export const useFieldErrorsForForm = (context: InternalFormContextValue) => {
+export const useFieldErrorsForForm = (
+  context: InternalFormContextValue
+): Hydratable<FieldErrors | undefined> => {
   const response = useErrorResponseForForm(context);
-  const hydrated = useContextSelectAtom(context.formId, isHydratedAtom);
-  return hydrated ? USE_HYDRATED_STATE : response?.fieldErrors;
+  const hydrated = useFormAtomValue(isHydratedAtom(context.formId));
+  return hydratable.from(response?.fieldErrors, hydrated);
 };
 
 export const useDefaultValuesFromLoader = ({
@@ -107,9 +93,11 @@ export const useDefaultValuesFromLoader = ({
   return null;
 };
 
-export const useDefaultValuesForForm = (context: InternalFormContextValue) => {
+export const useDefaultValuesForForm = (
+  context: InternalFormContextValue
+): Hydratable<{ [fieldName: string]: any }> => {
   const { formId, defaultValuesProp } = context;
-  const hydrated = useContextSelectAtom(formId, isHydratedAtom);
+  const hydrated = useFormAtomValue(isHydratedAtom(formId));
   const errorResponse = useErrorResponseForForm(context);
   const defaultValuesFromLoader = useDefaultValuesFromLoader(context);
 
@@ -119,10 +107,17 @@ export const useDefaultValuesForForm = (context: InternalFormContextValue) => {
   // - State gets hydrated with default values
   // - After submit, we may need to use values from the error
 
-  if (hydrated) return USE_HYDRATED_STATE;
-  if (errorResponse?.repopulateFields) return errorResponse.repopulateFields;
-  if (defaultValuesProp) return defaultValuesProp;
-  return defaultValuesFromLoader;
+  if (hydrated) return hydratable.hydratedData();
+  if (errorResponse?.repopulateFields) {
+    invariant(
+      typeof errorResponse.repopulateFields === "object",
+      "repopulateFields returned something other than an object"
+    );
+    return hydratable.serverData(errorResponse.repopulateFields);
+  }
+  if (defaultValuesProp) return hydratable.serverData(defaultValuesProp);
+
+  return hydratable.serverData(defaultValuesFromLoader);
 };
 
 export const useHasActiveFormSubmit = ({
@@ -136,56 +131,49 @@ export const useHasActiveFormSubmit = ({
 };
 
 export const useFieldTouched = (
-  name: string,
+  field: string,
   { formId }: InternalFormContextValue
-) => {
-  const atomCreator = useMemo(() => fieldTouchedAtom(name), [name]);
-  return useContextSelectAtom(formId, atomCreator);
-};
+) => useFormAtom(fieldTouchedAtom({ formId, field }));
 
 export const useFieldError = (
   name: string,
   context: InternalFormContextValue
 ) => {
-  return useHydratableSelector(
-    context,
-    useMemo(() => fieldErrorAtom(name), [name]),
-    useFieldErrorsForForm(context),
-    (fieldErrors) => fieldErrors?.[name]
+  const fieldErrors = useFieldErrorsForForm(context);
+  const [state, set] = useFormAtom(
+    fieldErrorAtom({ formId: context.formId, field: name })
   );
+  return [
+    fieldErrors.map((fieldErrors) => fieldErrors?.[name]).hydrateTo(state),
+    set,
+  ] as const;
 };
 
 export const useFieldDefaultValue = (
   name: string,
   context: InternalFormContextValue
 ) => {
-  return useHydratableSelector(
-    context,
-    useMemo(() => fieldDefaultValueAtom(name), [name]),
-    useDefaultValuesForForm(context),
-    (val) => lodashGet(val, name)
+  const defaultValues = useDefaultValuesForForm(context);
+  const { defaultValues: state } = useFormAtomValue(
+    formPropsAtom(context.formId)
+  );
+  return defaultValues
+    .map((val) => lodashGet(val, name))
+    .hydrateTo(state[name]);
+};
+
+export const useClearError = ({ formId }: InternalFormContextValue) => {
+  const updateError = useFormUpdateAtom(setFieldErrorAtom(formId));
+  return useCallback(
+    (name: string) => updateError({ field: name, error: undefined }),
+    [updateError]
   );
 };
 
-export const useFormUpdateAtom: typeof useUpdateAtom = (atom) =>
-  useUpdateAtom(atom, ATOM_SCOPE);
-
-export const useClearError = (context: InternalFormContextValue) => {
-  const clearError = useFormUpdateAtom(clearErrorAtom);
+export const useSetTouched = ({ formId }: InternalFormContextValue) => {
+  const setTouched = useFormUpdateAtom(setTouchedAtom(formId));
   return useCallback(
-    (name: string) => {
-      clearError({ name, formAtom: formRegistry(context.formId) });
-    },
-    [clearError, context.formId]
-  );
-};
-
-export const useSetTouched = (context: InternalFormContextValue) => {
-  const setTouched = useFormUpdateAtom(setTouchedAtom);
-  return useCallback(
-    (name: string, touched: boolean) => {
-      setTouched({ name, formAtom: formRegistry(context.formId), touched });
-    },
-    [setTouched, context.formId]
+    (name: string, touched: boolean) => setTouched({ field: name, touched }),
+    [setTouched]
   );
 };
