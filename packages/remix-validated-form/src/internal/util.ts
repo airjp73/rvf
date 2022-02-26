@@ -10,8 +10,6 @@ export const omit = (obj: any, ...keys: string[]) => {
   return result;
 };
 
-export const identity = <T>(value: T): T => value;
-
 export const mergeRefs = <T = any>(
   refs: Array<React.MutableRefObject<T> | React.LegacyRef<T> | undefined>
 ): React.RefCallback<T> => {
