@@ -38,7 +38,7 @@ export const useInternalFormContext = (
   if (formContext) return formContext;
 
   throw new Error(
-    `Unable to determine form for ${hookName}. Please use it inside a form or pass a 'formId'.`
+    `Unable to determine form for ${hookName}. Please use it inside a ValidatedForm or pass a 'formId'.`
   );
 };
 
