@@ -22,6 +22,10 @@ export type FormContextValue = {
    */
   action?: string;
   /**
+   * The `subaction` prop of the form.
+   */
+  subaction?: string;
+  /**
    * Whether or not the form is submitting.
    */
   isSubmitting: boolean;
