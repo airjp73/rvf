@@ -85,4 +85,17 @@ describe("Validation", () => {
     cy.findByTestId("form1input").should("have.value", "John");
     cy.findByTestId("form2input").should("have.value", "Bob");
   });
+
+  it("should maintain default value after the first render for nested values", () => {
+    cy.visit("/nested-defaults");
+    cy.findByTestId("check").should("contain", '"defaultChecked": true');
+    cy.findByTestId("nestedCheckTrue").should(
+      "contain",
+      '"defaultChecked": true'
+    );
+    cy.findByTestId("nestedCheckFalse").should(
+      "contain",
+      '"defaultChecked": false'
+    );
+  });
 });
