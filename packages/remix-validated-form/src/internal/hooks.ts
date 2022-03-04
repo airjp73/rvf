@@ -159,7 +159,7 @@ export const useFieldDefaultValue = (
   );
   return defaultValues
     .map((val) => lodashGet(val, name))
-    .hydrateTo(state[name]);
+    .hydrateTo(lodashGet(state, name));
 };
 
 export const useClearError = ({ formId }: InternalFormContextValue) => {
