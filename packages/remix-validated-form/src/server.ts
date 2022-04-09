@@ -1,13 +1,12 @@
-import { json } from '@remix-run/server-runtime';
-
+import { json } from "@remix-run/server-runtime";
 import {
-  FORM_DEFAULTS_FIELD,
   formDefaultValuesKey,
-} from './internal/constants';
+  FORM_DEFAULTS_FIELD,
+} from "./internal/constants";
 import {
-  ValidationErrorResponseData,
   ValidatorError,
-} from './validation/types';
+  ValidationErrorResponseData,
+} from "./validation/types";
 
 /**
  * Takes the errors from a `Validator` and returns a `Response`.
@@ -26,7 +25,7 @@ import {
 export function validationError(
   error: ValidatorError,
   repopulateFields?: unknown,
-  init?: Omit<ResponseInit, "status">
+  init?: ResponseInit
 ): Response {
   return json<ValidationErrorResponseData>(
     {
@@ -35,7 +34,7 @@ export function validationError(
       repopulateFields,
       formId: error.formId,
     },
-    { ...init, status: 422 }
+    { ...init, status: init.status || 422 }
   );
 }
 
