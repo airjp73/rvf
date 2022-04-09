@@ -12,22 +12,20 @@ With the helpers in `zod-form-data`, you can write your types closer to how you 
 ## Example
 
 ```tsx
-import { zfd } from 'zod-form-data';
+import { zfd } from "zod-form-data";
 
 const schema = zfd.formData({
   name: zfd.text(),
-  age: zfd.numeric(
-    z.number().min(25).max(50)
-  ),
-  likesPizza: zfd.checkbox()
-})
+  age: zfd.numeric(z.number().min(25).max(50)),
+  likesPizza: zfd.checkbox(),
+});
 
 // This example is using `remix`, but it will work
 // with any `FormData` or `URLSearchParams` no matter where you get it from.
 export const action = async ({ request }) => {
-  const { name, age, likesPizza } = schema.parse(await request.formData())
+  const { name, age, likesPizza } = schema.parse(await request.formData());
   // do something with parsed data
-}
+};
 ```
 
 ## Installation
@@ -44,13 +42,14 @@ If you have a helper for an input type that isn't in this library, feel free to 
 ## API Reference
 
 Contents
-* [formData](#formData)
-* [text](#text)
-* [numeric](#numeric)
-* [checkbox](#checkbox)
-* [file](#file)
-* [repeatable](#repeatable)
-* [repeatableOfType](#repeatableOfType)
+
+- [formData](#formData)
+- [text](#text)
+- [numeric](#numeric)
+- [checkbox](#checkbox)
+- [file](#file)
+- [repeatable](#repeatable)
+- [repeatableOfType](#repeatableOfType)
 
 ### formData
 
@@ -73,7 +72,7 @@ You can use this the same way you would use `z.object`.
 const schema = zfd.formData({
   field1: zfd.text(),
   field2: zfd.text(),
-})
+});
 
 const someFormData = new FormData();
 const dataObject = schema.parse(someFormData);
@@ -82,10 +81,12 @@ const dataObject = schema.parse(someFormData);
 It's also possible to pass a zod schema to `formData`.
 
 ```ts
-const schema = zfd.formData(z.object({
-  field1: zfd.text(),
-  field2: zfd.text(),
-}))
+const schema = zfd.formData(
+  z.object({
+    field1: zfd.text(),
+    field2: zfd.text(),
+  })
+);
 ```
 
 ### text
@@ -123,7 +124,7 @@ const schema = zfd.formData({
   requiredNumber: zfd.numeric(),
   numberWithMin: zfd.numeric(z.number().min(13)),
   optional: zfd.numeric(z.number().optional()),
-})
+});
 ```
 
 ### checkbox
@@ -143,8 +144,8 @@ If you have a checkbox group and you want to leave the values as strings,
 const schema = zfd.formData({
   defaultCheckbox: zfd.checkbox(),
   checkboxWithValue: zfd.checkbox({ trueValue: "true" }),
-  mustBeTrue: zfd.checkbox().refine(val => val, "Please check this box")
-})
+  mustBeTrue: zfd.checkbox().refine((val) => val, "Please check this box"),
+});
 ```
 
 #### Background on native checkbox behavior
@@ -186,10 +187,10 @@ If you call `zfd.file` with no arguments, it will assume the field is a required
 const schema = zfd.formData({
   requiredFile: zfd.file(),
   optional: zfd.file(z.instanceof(File).optional()),
-})
+});
 ```
 
-There is a unique case in Remix when using a CustomUploadHandler, 
+There is a unique case in Remix when using a CustomUploadHandler,
 the field will be a `File` on the client side, but an ID string (or URL) after uploading on the server.
 
 In this case you will need the schema to switch to string on the server:
@@ -199,16 +200,20 @@ const baseSchema = z.object({
   someOtherField: zfd.text(),
 });
 
-const clientSchema = z.formData(baseSchema.and({
-  file: zfd.file()
-}))
+const clientSchema = z.formData(
+  baseSchema.and({
+    file: zfd.file(),
+  })
+);
 
-const serverSchema = z.formData(baseSchema.and({
-  file: z.string()
-}))
+const serverSchema = z.formData(
+  baseSchema.and({
+    file: z.string(),
+  })
+);
 ```
 
-*Note: This will return `File | string` for the type. TODO: Example of type safety for this* 
+_Note: This will return `File | string` for the type. TODO: Example of type safety for this_
 
 ### repeatable
 
@@ -227,7 +232,7 @@ you can use [repeatableOfType](#repeatableOfType).
 const schema = zfd.formData({
   myCheckboxGroup: zfd.repeatable(),
   atLeastOneItem: zfd.repeatable(z.array(zfd.text()).min(1)),
-})
+});
 ```
 
 ### repeatableOfType
@@ -239,6 +244,6 @@ Instead of passing the schema for an entire array, you pass in the schema for th
 
 ```ts
 const schema = zfd.formData({
-  repeatableNumberField: zfd.repeatableOfType(zfd.numeric())
-})
+  repeatableNumberField: zfd.repeatableOfType(zfd.numeric()),
+});
 ```
