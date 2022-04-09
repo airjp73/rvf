@@ -45,14 +45,19 @@ type MySelectProps = {
   options: string[];
 };
 
-export const MySelect = ({ name, label, options }: MySelectProps) => {
+export const MySelect = ({
+  name,
+  label,
+  options
+}: MySelectProps) => {
   const { error, getInputProps, validate } = useField(name);
   const [value, setValue] = useControlField<string[]>(name);
   return (
     <div>
       {/*
         Even though we're tracking the value as an array,
-        we can still serialize the data using repeated inputs if we want.
+        we can still serialize the data
+        using repeated inputs if we want.
       */}
       {value.map(val => (
         <input
