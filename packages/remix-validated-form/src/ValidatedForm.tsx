@@ -25,6 +25,7 @@ import {
   useHasActiveFormSubmit,
 } from "./internal/hooks";
 import { MultiValueMap, useMultiValueMap } from "./internal/MultiValueMap";
+import { resetAtom } from "./internal/reset";
 import {
   cleanupFormState,
   endSubmitAtom,
@@ -32,7 +33,6 @@ import {
   formElementAtom,
   formPropsAtom,
   isHydratedAtom,
-  resetAtom,
   setFieldErrorAtom,
   startSubmitAtom,
   SyncedFormProps,
