@@ -22,14 +22,12 @@ export const controlledFieldsAtom = formAtomFamily<
 const refCountAtom = fieldAtomFamily(() => atom(0));
 const fieldValueAtom = fieldAtomFamily(() => atom<unknown>(undefined));
 const fieldValueHydratedAtom = fieldAtomFamily(() => atom(false));
-export const pendingValidateAtom = fieldAtomFamily(() =>
-  atom<
-    | {
-        promise: Promise<void>;
-        resolve: () => void;
-      }
-    | undefined
-  >(undefined)
+
+export const valueUpdatePromiseAtom = fieldAtomFamily(() =>
+  atom<Promise<void> | undefined>(undefined)
+);
+export const resolveValueUpdateAtom = fieldAtomFamily(() =>
+  atom<(() => void) | undefined>(undefined)
 );
 
 const registerAtom = atom(null, (get, set, { formId, field }: FieldAtomKey) => {
@@ -53,7 +51,7 @@ const unregisterAtom = atom(
     if (newRefCount === 0) {
       set(controlledFieldsAtom(formId), (prev) => omit(prev, field));
       fieldValueAtom.remove({ formId, field });
-      pendingValidateAtom.remove({ formId, field });
+      resolveValueUpdateAtom.remove({ formId, field });
       fieldValueHydratedAtom.remove({ formId, field });
     }
   }
@@ -71,16 +69,17 @@ export const setControlledFieldValueAtom = atom(
     }: { formId: InternalFormId; field: string; value: unknown }
   ) => {
     set(fieldValueAtom({ formId, field }), value);
-    const pending = pendingValidateAtom({ formId, field });
-    const promise: any = new Promise<void>((resolve) =>
-      set(pending, {
-        promise,
-        resolve: () => {
-          resolve();
-          set(pending, undefined);
-        },
+    const resolveAtom = resolveValueUpdateAtom({ formId, field });
+    const promiseAtom = valueUpdatePromiseAtom({ formId, field });
+
+    const promise = new Promise<void>((resolve) =>
+      set(resolveAtom, () => {
+        resolve();
+        set(resolveAtom, undefined);
+        set(promiseAtom, undefined);
       })
     );
+    set(promiseAtom, promise);
   }
 );
 
@@ -116,10 +115,12 @@ export const useControlledFieldValue = (
 };
 
 export const useControllableValue = (formId: InternalFormId, field: string) => {
-  const pending = useFormAtomValue(pendingValidateAtom({ formId, field }));
+  const resolveUpdate = useFormAtomValue(
+    resolveValueUpdateAtom({ formId, field })
+  );
   useEffect(() => {
-    pending?.resolve();
-  }, [pending]);
+    resolveUpdate?.();
+  }, [resolveUpdate]);
 
   const register = useFormUpdateAtom(registerAtom);
   const unregister = useFormUpdateAtom(unregisterAtom);
@@ -142,8 +143,7 @@ export const useControllableValue = (formId: InternalFormId, field: string) => {
 };
 
 export const useAwaitValue = (formId: InternalFormId) => {
-  return useAtomCallback(async (get, set, field: string) => {
-    const pending = get(pendingValidateAtom({ formId, field }));
-    await pending?.promise;
+  return useAtomCallback(async (get, _set, field: string) => {
+    await get(valueUpdatePromiseAtom({ formId, field }));
   });
 };
