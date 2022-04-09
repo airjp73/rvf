@@ -159,7 +159,12 @@ export const useUpdateControllableValue = (formId: InternalFormId) => {
 };
 
 export const useAwaitValue = (formId: InternalFormId) => {
-  return useAtomCallback(async (get, _set, field: string) => {
-    await get(valueUpdatePromiseAtom({ formId, field }));
-  });
+  return useAtomCallback(
+    useCallback(
+      async (get, _set, field: string) => {
+        await get(valueUpdatePromiseAtom({ formId, field }));
+      },
+      [formId]
+    )
+  );
 };
