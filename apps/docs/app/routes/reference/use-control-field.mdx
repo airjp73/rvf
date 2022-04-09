@@ -124,3 +124,35 @@ export const MyInput = ({ name, label }: MyInputProps) => {
   );
 };
 ```
+
+## Occasional field tracking
+
+If you only sometimes need to update the values of a field,
+this can be used on a case-to-case basis in your form.
+
+```tsx
+export const MyForm = () => {
+  const [value, setValue] = useControlField(
+    "myField",
+    "myForm"
+  );
+
+  useEffect(() => {
+    // Now we can update the value of the field
+    // for whatever reason we need.
+    setValue("Some value");
+  });
+
+  return (
+    <ValidatedForm validator={myValidator} id="myForm">
+      <MyInput
+        name="myField"
+        // This assumes your input component
+        // has a `value` and `onChange` prop
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+      />
+    </ValidatedForm>
+  );
+};
+```
