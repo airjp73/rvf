@@ -27,6 +27,57 @@ it will always return the same value, assuming both calls are in the context of 
 The companion hook [`useUpdateControlledField`](/reference/use-update-controlled-field) can also be used
 to update the value being tracked with this hook.
 
+## Controlled Components
+
+This hookcan make it easy to integrate controlled components.
+Here's an example using a made-up `ControlledSelect` component.
+
+```tsx
+import {
+  useField,
+  useControlField,
+} from "remix-validated-form";
+import { ControlledSelect } from 'some-library';
+
+type MySelectProps = {
+  name: string;
+  label: string;
+  options: string[];
+};
+
+export const MySelect = ({ name, label, options }: MySelectProps) => {
+  const { error, getInputProps, validate } = useField(name);
+  const [value, setValue] = useControlField<string[]>(name);
+  return (
+    <div>
+      {/*
+        Even though we're tracking the value as an array,
+        we can still serialize the data using repeated inputs if we want.
+      */}
+      {value.map(val => (
+        <input
+          type="hidden"
+          name={name}
+          key={val}
+          value={val}
+        />
+      ))}
+      <ControlledSelect
+        label={label}
+        options={options}
+        selectedOptions={value}
+        onSelectionChange={(newSelection) => {
+          setValue(newSelection);
+          validate();
+        }}
+      />
+      {error && (
+        <span className="my-error-class">{error}</span>
+      )}
+    </div>
+  );
+```
+
 ## Globally tracking / updating all fields
 
 If you regularly have advanced use-cases that require updating field values,
