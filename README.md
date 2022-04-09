@@ -71,9 +71,7 @@ export const MyInput = ({ name, label }: MyInputProps) => {
     <div>
       <label htmlFor={name}>{label}</label>
       <input {...getInputProps({ id: name })} />
-      {error && (
-        <span className="my-error-class">{error}</span>
-      )}
+      {error && <span className="my-error-class">{error}</span>}
     </div>
   );
 };
@@ -92,13 +90,16 @@ export const MySubmitButton = () => {
   const disabled = isSubmitting || !isValid;
 
   return (
-    <button type="submit" disabled={disabled} className={disabled ? "disabled-btn" : "btn"}>
+    <button
+      type="submit"
+      disabled={disabled}
+      className={disabled ? "disabled-btn" : "btn"}
+    >
       {isSubmitting ? "Submitting..." : "Submit"}
     </button>
   );
 };
 ```
-
 
 ## Use the form!
 
@@ -258,5 +259,6 @@ Problem: how do we trigger a toast message on success if the action redirects aw
 See the [Remix](https://remix.run/docs/en/v1/api/remix#sessionflashkey-value) documentation for more information.
 
 ## Why is my cancel button triggering form submission?
+
 Problem: the cancel button has an onClick handler to navigate away from the form route but instead it is submitting the form.
 A button defaults to `type="submit"` in a form which will submit the form by default. If you want to prevent this you can add `type="reset"` or `type="button"` to the cancel button.

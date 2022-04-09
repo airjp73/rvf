@@ -34,7 +34,7 @@ export function validationError(
       repopulateFields,
       formId: error.formId,
     },
-    { status: 422, ...init, }
+    { status: 422, ...init }
   );
 }
 
