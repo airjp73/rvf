@@ -1,0 +1,70 @@
+---
+meta:
+  title: useControlField (Remix Validated Form)
+---
+
+import { PropHeader } from "~/components/PropHeader";
+import { Alert } from "~/components/Alert";
+
+<PropHeader
+  variant="h1"
+  prop="useControlField"
+  type="<T>(field: string, formId?: string) => [T, (value: T) => void]"
+/>
+
+Used for tracking the value of a field in state.
+The return signature is the same as the React's own `useState`,
+but this hook does a few things for you automatically.
+
+- The value is automatically defaulted to the default value of the field.
+- The value is globally accessible for a specific form.
+- The value can be updated from anywhere.
+- `validate` function will automatically wait for the value to be fully updated before performing the validation.
+
+_Note:_ If you call this hook multiple times with the same field name,
+it will always return the same value, assuming both calls are in the context of the same form.
+
+The companion hook [`useUpdateControlledField`](/reference/use-update-controlled-field) can also be used
+to update the value being tracked with this hook.
+
+## Globally tracking / updating all fields
+
+If you regularly have advanced use-cases that require updating field values,
+you may opt to track field state in all fields.
+This is as simple as adding `useControlField` to all your input components.
+
+_Note_: This would prevent you from using repeated fields.
+In this case, you would favor using [array syntax](/arrays-and-nested) instead.
+
+Here's a modified version of `MyInput` from the [integrate your components](/integrate-your-components) page.
+
+```tsx
+import {
+  useField,
+  useControlField,
+} from "remix-validated-form";
+
+type MyInputProps = {
+  name: string;
+  label: string;
+};
+
+export const MyInput = ({ name, label }: MyInputProps) => {
+  const { error, getInputProps } = useField(name);
+  const [value, setValue] = useControlField(name);
+  return (
+    <div>
+      <label htmlFor={name}>{label}</label>
+      <input
+        {...getInputProps({
+          value,
+          onChange: (e) => setValue(e.target.value),
+        })}
+      />
+      {error && (
+        <span className="my-error-class">{error}</span>
+      )}
+    </div>
+  );
+};
+```

@@ -1,0 +1,19 @@
+---
+meta:
+  title: useControlField (Remix Validated Form)
+---
+
+import { PropHeader } from "~/components/PropHeader";
+import { Alert } from "~/components/Alert";
+
+<PropHeader
+  variant="h1"
+  prop="useUpdateControlledField"
+  type="(formId?: string) => (field: string, value: unknown) => void"
+/>
+
+Used to update a value being tracked with [`useControlledValue`](/reference/use-control-field).
+This is useful for when you don't want to render every time the value changes,
+but still need to be able to change the value.
+This hook can also update the value for any field without having to call
+the hook multiple times.
