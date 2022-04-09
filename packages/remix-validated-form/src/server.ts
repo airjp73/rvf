@@ -1,13 +1,12 @@
-import { json } from '@remix-run/server-runtime';
-
+import { json } from "@remix-run/server-runtime";
 import {
-  FORM_DEFAULTS_FIELD,
   formDefaultValuesKey,
-} from './internal/constants';
+  FORM_DEFAULTS_FIELD,
+} from "./internal/constants";
 import {
-  ValidationErrorResponseData,
   ValidatorError,
-} from './validation/types';
+  ValidationErrorResponseData,
+} from "./validation/types";
 
 /**
  * Takes the errors from a `Validator` and returns a `Response`.
