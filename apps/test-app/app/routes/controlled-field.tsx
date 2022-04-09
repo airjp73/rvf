@@ -27,8 +27,8 @@ export const action: ActionFunction = async ({ request }) => {
 const Controlled = () => {
   const { error, validate } = useField("myField");
   const [value, setValue] = useControlField<string>("myField");
-  const update = async (value: string) => {
-    await setValue(value);
+  const update = (value: string) => {
+    setValue(value);
     validate();
   };
 
@@ -62,8 +62,8 @@ const ControlledInput = () => {
   const [value, setValue] = useControlField<string>("text");
   const [count, setCount] = useState(0);
 
-  const update = async (value: string) => {
-    await setValue(value);
+  const update = (value: string) => {
+    setValue(value);
     validate();
     setCount((prev) => prev + 1);
   };
