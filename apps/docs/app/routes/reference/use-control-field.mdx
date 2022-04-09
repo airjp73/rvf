@@ -21,8 +21,12 @@ but this hook does a few things for you automatically.
 - The value can be updated from anywhere.
 - `validate` function will automatically wait for the value to be fully updated before performing the validation.
 
-_Note:_ If you call this hook multiple times with the same field name,
-it will always return the same value, assuming both calls are in the context of the same form.
+_Caveats:_
+
+- If you call this hook multiple times with the same field name,
+  it will always return the same value, assuming both calls are in the context of the same form.
+- If you all instances of this hook pointing at a particular field are unmounted, the value will be reset.
+  This mimicks default input behavior
 
 The companion hook [`useUpdateControlledField`](/reference/use-update-controlled-field) can also be used
 to update the value being tracked with this hook.
