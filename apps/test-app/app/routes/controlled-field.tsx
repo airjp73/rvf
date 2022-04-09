@@ -119,6 +119,7 @@ export default function ControlledField() {
       >
         Force Update
       </button>
+      <button type="reset">Reset</button>
       <SubmitButton />
     </ValidatedForm>
   );
