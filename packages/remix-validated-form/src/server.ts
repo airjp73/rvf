@@ -24,7 +24,8 @@ import {
  */
 export function validationError(
   error: ValidatorError,
-  repopulateFields?: unknown
+  repopulateFields?: unknown,
+  init?: ResponseInit
 ): Response {
   return json<ValidationErrorResponseData>(
     {
@@ -33,7 +34,7 @@ export function validationError(
       repopulateFields,
       formId: error.formId,
     },
-    { status: 422 }
+    { status: 422, ...init, }
   );
 }
 
