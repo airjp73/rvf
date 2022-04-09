@@ -48,14 +48,6 @@ export const isValidAtom = atomFamily((formId: InternalFormId) =>
   atom((get) => Object.keys(get(fieldErrorsAtom(formId))).length === 0)
 );
 
-export const resetAtom = atomFamily((formId: InternalFormId) =>
-  atom(null, (_get, set) => {
-    set(fieldErrorsAtom(formId), {});
-    set(touchedFieldsAtom(formId), {});
-    set(hasBeenSubmittedAtom(formId), false);
-  })
-);
-
 export const startSubmitAtom = atomFamily((formId: InternalFormId) =>
   atom(null, (_get, set) => {
     set(isSubmittingAtom(formId), true);

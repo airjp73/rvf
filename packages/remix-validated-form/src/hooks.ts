@@ -17,6 +17,10 @@ import {
   isSubmittingAtom,
   isValidAtom,
 } from "./internal/state";
+import {
+  useControllableValue,
+  useUpdateControllableValue,
+} from "./internal/state/controlledFields";
 
 /**
  * Returns whether or not the parent form is currently being submitted.
@@ -147,4 +151,15 @@ export const useField = (
   ]);
 
   return field;
+};
+
+export const useControlField = <T>(name: string, formId?: string) => {
+  const context = useInternalFormContext(formId, "useControlField");
+  const [value, setValue] = useControllableValue(context, name);
+  return [value as T, setValue as (value: T) => void] as const;
+};
+
+export const useUpdateControlledField = (formId?: string) => {
+  const context = useInternalFormContext(formId, "useControlField");
+  return useUpdateControllableValue(context.formId);
 };

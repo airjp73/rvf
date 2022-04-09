@@ -84,7 +84,8 @@ export const createGetInputProps = ({
       inputProps.defaultChecked = getCheckboxChecked(props.value, defaultValue);
     } else if (props.type === "radio") {
       inputProps.defaultChecked = getRadioChecked(props.value, defaultValue);
-    } else {
+    } else if (props.value === undefined) {
+      // We should only set the defaultValue if the input is uncontrolled.
       inputProps.defaultValue = defaultValue;
     }
 

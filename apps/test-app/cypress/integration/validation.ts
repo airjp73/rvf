@@ -116,8 +116,13 @@ describe("Validation", () => {
 
   it("should support custom recieveFocus handlers", () => {
     cy.visit("/validation-focus-custom");
+
     cy.findByText("Submit").click();
-    cy.findByTestId("search-contactSelect").should("be.focused");
+    cy.findByLabelText("Something").should("be.focused");
+
+    cy.findByLabelText("Something").type("Something");
+    cy.findByText("Submit").click();
+    cy.findByTestId("custom").should("be.focused");
   });
 
   it("should show validation errors even with JS disabled", () => {

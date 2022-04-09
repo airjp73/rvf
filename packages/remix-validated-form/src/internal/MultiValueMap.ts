@@ -11,6 +11,10 @@ export class MultiValueMap<Key, Value> {
     }
   };
 
+  delete = (key: Key) => {
+    this.dict.delete(key);
+  };
+
   remove = (key: Key, value: Value) => {
     if (!this.dict.has(key)) return;
     const array = this.dict.get(key)!;
@@ -24,6 +28,8 @@ export class MultiValueMap<Key, Value> {
   };
 
   entries = (): IterableIterator<[Key, Value[]]> => this.dict.entries();
+
+  values = (): IterableIterator<Value[]> => this.dict.values();
 
   has = (key: Key): boolean => this.dict.has(key);
 }

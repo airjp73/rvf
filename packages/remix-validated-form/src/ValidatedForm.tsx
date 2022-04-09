@@ -1,4 +1,5 @@
 import { Form as RemixForm, useFetcher, useSubmit } from "@remix-run/react";
+import { useAtomCallback } from "jotai/utils";
 import uniq from "lodash/uniq";
 import React, {
   ComponentProps,
@@ -24,6 +25,7 @@ import {
   useHasActiveFormSubmit,
 } from "./internal/hooks";
 import { MultiValueMap, useMultiValueMap } from "./internal/MultiValueMap";
+import { resetAtom } from "./internal/reset";
 import {
   cleanupFormState,
   endSubmitAtom,
@@ -31,11 +33,11 @@ import {
   formElementAtom,
   formPropsAtom,
   isHydratedAtom,
-  resetAtom,
   setFieldErrorAtom,
   startSubmitAtom,
   SyncedFormProps,
 } from "./internal/state";
+import { useAwaitValue } from "./internal/state/controlledFields";
 import { useSubmitComplete } from "./internal/submissionCallbacks";
 import {
   mergeRefs,
@@ -246,9 +248,11 @@ export function ValidatedForm<DataType>({
     return () => cleanupFormState(formId);
   }, [formId, setHydrated]);
 
+  const awaitValue = useAwaitValue(formId);
   const validateField: SyncedFormProps["validateField"] = useCallback(
     async (field) => {
       invariant(formRef.current, "Cannot find reference to form");
+      await awaitValue(field);
       const { error } = await validator.validateField(
         getDataFromForm(formRef.current),
         field
@@ -262,7 +266,7 @@ export function ValidatedForm<DataType>({
         return null;
       }
     },
-    [setFieldError, validator]
+    [awaitValue, setFieldError, validator]
   );
 
   const customFocusHandlers = useMultiValueMap<string, () => void>();

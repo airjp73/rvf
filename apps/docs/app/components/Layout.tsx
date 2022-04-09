@@ -71,6 +71,14 @@ const navSections: Section[] = [
         to: "/reference/use-is-submitting",
       },
       {
+        label: "useControlField",
+        to: "/reference/use-control-field",
+      },
+      {
+        label: "useUpdateControlledField",
+        to: "/reference/use-update-controlled-field",
+      },
+      {
         label: "useIsValid",
         to: "/reference/use-is-valid",
       },
