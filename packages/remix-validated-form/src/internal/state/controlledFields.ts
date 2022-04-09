@@ -1,4 +1,5 @@
 import { atom, PrimitiveAtom } from "jotai";
+import { useAtomCallback } from "jotai/utils";
 import omit from "lodash/omit";
 import { useCallback, useEffect } from "react";
 import {
@@ -21,8 +22,14 @@ export const controlledFieldsAtom = formAtomFamily<
 const refCountAtom = fieldAtomFamily(() => atom(0));
 const fieldValueAtom = fieldAtomFamily(() => atom<unknown>(undefined));
 const fieldValueHydratedAtom = fieldAtomFamily(() => atom(false));
-const pendingValidateAtom = fieldAtomFamily(() =>
-  atom<(() => void) | undefined>(undefined)
+export const pendingValidateAtom = fieldAtomFamily(() =>
+  atom<
+    | {
+        promise: Promise<void>;
+        resolve: () => void;
+      }
+    | undefined
+  >(undefined)
 );
 
 const registerAtom = atom(null, (get, set, { formId, field }: FieldAtomKey) => {
@@ -54,7 +61,7 @@ const unregisterAtom = atom(
 
 export const setControlledFieldValueAtom = atom(
   null,
-  async (
+  (
     _get,
     set,
     {
@@ -65,8 +72,15 @@ export const setControlledFieldValueAtom = atom(
   ) => {
     set(fieldValueAtom({ formId, field }), value);
     const pending = pendingValidateAtom({ formId, field });
-    await new Promise<void>((resolve) => set(pending, resolve));
-    set(pending, undefined);
+    const promise: any = new Promise<void>((resolve) =>
+      set(pending, {
+        promise,
+        resolve: () => {
+          resolve();
+          set(pending, undefined);
+        },
+      })
+    );
   }
 );
 
@@ -104,7 +118,7 @@ export const useControlledFieldValue = (
 export const useControllableValue = (formId: InternalFormId, field: string) => {
   const pending = useFormAtomValue(pendingValidateAtom({ formId, field }));
   useEffect(() => {
-    pending?.();
+    pending?.resolve();
   }, [pending]);
 
   const register = useFormUpdateAtom(registerAtom);
@@ -125,4 +139,11 @@ export const useControllableValue = (formId: InternalFormId, field: string) => {
   const value = useControlledFieldValue(formId, field);
 
   return [value, setValue] as const;
+};
+
+export const useAwaitValue = (formId: InternalFormId) => {
+  return useAtomCallback(async (get, set, field: string) => {
+    const pending = get(pendingValidateAtom({ formId, field }));
+    await pending?.promise;
+  });
 };
