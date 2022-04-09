@@ -15,6 +15,16 @@ describe("Controlled fields", () => {
     cy.findByText("Color chosen is blue").should("exist");
   });
 
+  it("should update using the update-only hook", () => {
+    cy.visit("/controlled-field");
+    cy.findByTestId("text-input").type("bob");
+    cy.findByText("Force Update").click();
+    cy.findByTestId("text-input").should(
+      "have.value",
+      "Hello from update hook"
+    );
+  });
+
   it("should correctly unregsiter when no instances of the field are present", () => {
     cy.visit("/controlled-field");
 

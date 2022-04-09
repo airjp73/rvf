@@ -6,6 +6,7 @@ import {
   useControlField,
   validationError,
   useField,
+  useUpdateControlledField,
 } from "remix-validated-form";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
@@ -91,8 +92,10 @@ function* range(min: number, max: number) {
 export default function ControlledField() {
   const data = useActionData();
   const [count, setCount] = useState(1);
+  const update = useUpdateControlledField("test-form");
   return (
     <ValidatedForm
+      id="test-form"
       validator={validator}
       method="post"
       defaultValues={{ myField: "green" as any }}
@@ -110,6 +113,12 @@ export default function ControlledField() {
         <Controlled key={i} />
       ))}
       <ControlledInput />
+      <button
+        onClick={() => update("text", "Hello from update hook")}
+        type="button"
+      >
+        Force Update
+      </button>
       <SubmitButton />
     </ValidatedForm>
   );
