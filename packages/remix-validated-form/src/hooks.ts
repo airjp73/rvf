@@ -158,7 +158,7 @@ export type UseControlFieldOptions = {
 };
 export const useControlField = <T>(name: string, formId?: string) => {
   const context = useInternalFormContext(formId, "useControlField");
-  const [value, setValue] = useControllableValue(context.formId, name);
+  const [value, setValue] = useControllableValue(context, name);
   return [value as T, setValue as (value: T) => void] as const;
 };
 

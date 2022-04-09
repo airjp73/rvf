@@ -98,7 +98,7 @@ export default function ControlledField() {
       id="test-form"
       validator={validator}
       method="post"
-      defaultValues={{ myField: "green" as any }}
+      defaultValues={{ myField: "green" as any, text: "" as any }}
     >
       {data?.message && <div>{data.message}</div>}
       <div style={{ margin: "1rem" }}>

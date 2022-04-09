@@ -2,6 +2,7 @@ import { atom, PrimitiveAtom } from "jotai";
 import { useAtomCallback } from "jotai/utils";
 import omit from "lodash/omit";
 import { useCallback, useEffect } from "react";
+import { InternalFormContextValue } from "../formContext";
 import {
   useFieldDefaultValue,
   useFormAtomValue,
@@ -84,16 +85,16 @@ export const setControlledFieldValueAtom = atom(
 );
 
 export const useControlledFieldValue = (
-  formId: InternalFormId,
+  context: InternalFormContextValue,
   field: string
 ) => {
-  const fieldAtom = fieldValueAtom({ formId, field });
+  const fieldAtom = fieldValueAtom({ formId: context.formId, field });
   const [value, setValue] = useFormAtom(fieldAtom);
 
-  const defaultValue = useFieldDefaultValue(field, { formId });
-  const isHydrated = useFormAtomValue(isHydratedAtom(formId));
+  const defaultValue = useFieldDefaultValue(field, context);
+  const isHydrated = useFormAtomValue(isHydratedAtom(context.formId));
   const [isFieldHydrated, setIsFieldHydrated] = useFormAtom(
-    fieldValueHydratedAtom({ formId, field })
+    fieldValueHydratedAtom({ formId: context.formId, field })
   );
 
   useEffect(() => {
@@ -104,7 +105,7 @@ export const useControlledFieldValue = (
   }, [
     defaultValue,
     field,
-    formId,
+    context.formId,
     isFieldHydrated,
     isHydrated,
     setIsFieldHydrated,
@@ -114,9 +115,12 @@ export const useControlledFieldValue = (
   return isFieldHydrated ? value : defaultValue;
 };
 
-export const useControllableValue = (formId: InternalFormId, field: string) => {
+export const useControllableValue = (
+  context: InternalFormContextValue,
+  field: string
+) => {
   const resolveUpdate = useFormAtomValue(
-    resolveValueUpdateAtom({ formId, field })
+    resolveValueUpdateAtom({ formId: context.formId, field })
   );
   useEffect(() => {
     resolveUpdate?.();
@@ -125,19 +129,20 @@ export const useControllableValue = (formId: InternalFormId, field: string) => {
   const register = useFormUpdateAtom(registerAtom);
   const unregister = useFormUpdateAtom(unregisterAtom);
   useEffect(() => {
-    register({ formId, field });
-    return () => unregister({ formId, field });
-  }, [field, formId, register, unregister]);
+    register({ formId: context.formId, field });
+    return () => unregister({ formId: context.formId, field });
+  }, [context.formId, field, register, unregister]);
 
   const setControlledFieldValue = useFormUpdateAtom(
     setControlledFieldValueAtom
   );
   const setValue = useCallback(
-    (value: unknown) => setControlledFieldValue({ formId, field, value }),
-    [field, formId, setControlledFieldValue]
+    (value: unknown) =>
+      setControlledFieldValue({ formId: context.formId, field, value }),
+    [field, context.formId, setControlledFieldValue]
   );
 
-  const value = useControlledFieldValue(formId, field);
+  const value = useControlledFieldValue(context, field);
 
   return [value, setValue] as const;
 };
