@@ -1,8 +1,10 @@
 {
   "name": "@remix-validated-form/with-zod",
   "version": "2.0.1",
-  "browser": "./browser/index.js",
-  "main": "./build/index.js",
+  "browser": "./dist/remix-validated-form__with-zod.cjs.js",
+  "main": "./dist/remix-validated-form__with-zod.umd.js",
+  "module": "./dist/remix-validated-form__with-zod.es.js",
+  "types": "./dist/types/index.d.ts",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -10,9 +12,7 @@
   },
   "scripts": {
     "dev": "tsc --module ESNext --outDir ./browser --watch",
-    "build": "npm run build:browser && npm run build:main",
-    "build:browser": "tsc --module ESNext --outDir ./browser",
-    "build:main": "tsc --module CommonJS --outDir ./build",
+    "build": "vite build",
     "prepublishOnly": "npm run build"
   },
   "peerDependencies": {
@@ -23,6 +23,7 @@
     "remix-validated-form": "*",
     "tsconfig": "*",
     "typescript": "^4.5.4",
+    "vite-config": "*",
     "zod": "^3.11.6"
   }
 }

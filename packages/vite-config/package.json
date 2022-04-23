@@ -1,0 +1,10 @@
+{
+  "name": "vite-config",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "vite": "^2.9.5",
+    "vite-plugin-dts": "^1.1.0"
+  }
+}

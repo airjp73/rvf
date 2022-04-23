@@ -8,7 +8,7 @@ export const getRadioChecked = (
 
 if (import.meta.vitest) {
   const { it, expect } = import.meta.vitest;
-  it("add", () => {
+  it("getRadioChecked", () => {
     expect(getRadioChecked("on", "on")).toBe(true);
     expect(getRadioChecked("on", undefined)).toBe(undefined);
     expect(getRadioChecked("trueValue", undefined)).toBe(undefined);
