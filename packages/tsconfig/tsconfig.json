@@ -8,7 +8,9 @@
     "strict": true,
     "skipLibCheck": true,
     "declaration": true,
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+    "types": ["vitest/importMeta"],
+    "module": "esnext"
   },
   "exclude": ["**/*.test.ts", "**/*.test.tsx"]
 }

@@ -2,8 +2,9 @@
   "name": "remix-validated-form",
   "version": "4.3.0",
   "description": "Form component and utils for easy form validation in remix",
-  "browser": "./browser/index.js",
-  "main": "./build/index.js",
+  "browser": "./dist/remix-validated-form.cjs.js",
+  "main": "./dist/remix-validated-form.cjs.js",
+  "types": "./dist/types/index.d.ts",
   "repository": {
     "type": "git",
     "url": "https://github.com/airjp73/remix-validated-form"
@@ -11,9 +12,10 @@
   "sideEffects": false,
   "scripts": {
     "dev": "tsc --module ESNext --outDir ./browser --watch",
-    "build": "npm run build:browser && npm run build:main",
+    "build": "npm run build:vite",
     "build:browser": "tsc --module ESNext --outDir ./browser",
     "build:main": "tsc --module CommonJS --outDir ./build",
+    "build:vite": "vite build",
     "prepublishOnly": "cp ../../README.md ./README.md && npm run build",
     "postpublish": "rm ./README.md"
   },
@@ -45,7 +47,9 @@
     "fetch-blob": "^3.1.3",
     "react": "^17.0.2",
     "tsconfig": "*",
-    "typescript": "^4.5.3"
+    "typescript": "^4.5.3",
+    "vite": "^2.9.5",
+    "vite-plugin-dts": "^1.1.0"
   },
   "dependencies": {
     "jotai": "^1.5.3",
