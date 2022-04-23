@@ -24,6 +24,7 @@ To run `sample-app`:
 git clone https://github.com/airjp73/remix-validated-form
 cd ./remix-validated-form
 yarn install
+yarn build
 yarn sample-app
 ```
 
