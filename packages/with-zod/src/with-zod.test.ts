@@ -1,6 +1,7 @@
-import { withZod } from "@remix-validated-form/with-zod";
+import { anyString } from "@remix-validated-form/test-utils";
+import { describe, it, expect } from "vitest";
 import { z } from "zod";
-import { anyString } from "./util";
+import { withZod } from "./";
 
 describe("withZod", () => {
   it("returns coherent errors for complex schemas", async () => {

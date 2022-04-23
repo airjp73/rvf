@@ -9,5 +9,6 @@
     "skipLibCheck": true,
     "declaration": true,
     "jsx": "react-jsx"
-  }
+  },
+  "exclude": ["**/*.test.ts", "**/*.test.tsx"]
 }

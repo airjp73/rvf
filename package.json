@@ -13,7 +13,8 @@
     "docs": "yarn dev --scope=docs --include-dependencies",
     "dev": "turbo run dev --parallel --include-dependencies --no-cache",
     "test": "turbo run test",
-    "package-tests": "turbo run test --scope=validation-tests",
+    "vitest": "vitest",
+    "vitest:run": "vitest run",
     "lint": "eslint .",
     "prettier": "prettier . --write",
     "build": "turbo run build",
@@ -40,7 +41,8 @@
     "jest": "^27.4.4",
     "lint-staged": "^12.1.2",
     "prettier": "^2.5.1",
-    "turbo": "latest"
+    "turbo": "latest",
+    "vitest": "^0.9.4"
   },
   "turbo": {
     "pipeline": {

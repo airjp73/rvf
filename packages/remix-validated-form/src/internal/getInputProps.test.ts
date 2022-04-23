@@ -1,7 +1,8 @@
+import { describe, it, expect, vi } from "vitest";
 import {
   createGetInputProps,
   CreateGetInputPropsOptions,
-} from "remix-validated-form/src/internal/getInputProps";
+} from "./getInputProps";
 
 const fakeEvent = { fake: "event" } as any;
 
@@ -13,15 +14,15 @@ describe("getInputProps", () => {
         defaultValue: "test default value",
         touched: false,
         hasBeenSubmitted: false,
-        setTouched: jest.fn(),
-        clearError: jest.fn(),
-        validate: jest.fn(),
+        setTouched: vi.fn(),
+        clearError: vi.fn(),
+        validate: vi.fn(),
       };
       const getInputProps = createGetInputProps(options);
 
       const provided = {
-        onBlur: jest.fn(),
-        onChange: jest.fn(),
+        onBlur: vi.fn(),
+        onChange: vi.fn(),
       };
       const { onChange, onBlur } = getInputProps(provided);
 
@@ -45,9 +46,9 @@ describe("getInputProps", () => {
         defaultValue: "test default value",
         touched: false,
         hasBeenSubmitted: false,
-        setTouched: jest.fn(),
-        clearError: jest.fn(),
-        validate: jest.fn(),
+        setTouched: vi.fn(),
+        clearError: vi.fn(),
+        validate: vi.fn(),
         validationBehavior: {
           initial: "onChange",
         },
@@ -55,8 +56,8 @@ describe("getInputProps", () => {
       const getInputProps = createGetInputProps(options);
 
       const provided = {
-        onBlur: jest.fn(),
-        onChange: jest.fn(),
+        onBlur: vi.fn(),
+        onChange: vi.fn(),
       };
       const { onChange, onBlur } = getInputProps(provided);
 
@@ -80,9 +81,9 @@ describe("getInputProps", () => {
         defaultValue: "test default value",
         touched: false,
         hasBeenSubmitted: false,
-        setTouched: jest.fn(),
-        clearError: jest.fn(),
-        validate: jest.fn(),
+        setTouched: vi.fn(),
+        clearError: vi.fn(),
+        validate: vi.fn(),
         validationBehavior: {
           initial: "onSubmit",
         },
@@ -90,8 +91,8 @@ describe("getInputProps", () => {
       const getInputProps = createGetInputProps(options);
 
       const provided = {
-        onBlur: jest.fn(),
-        onChange: jest.fn(),
+        onBlur: vi.fn(),
+        onChange: vi.fn(),
       };
       const { onChange, onBlur } = getInputProps(provided);
 
@@ -117,15 +118,15 @@ describe("getInputProps", () => {
         defaultValue: "test default value",
         touched: true,
         hasBeenSubmitted: false,
-        setTouched: jest.fn(),
-        clearError: jest.fn(),
-        validate: jest.fn(),
+        setTouched: vi.fn(),
+        clearError: vi.fn(),
+        validate: vi.fn(),
       };
       const getInputProps = createGetInputProps(options);
 
       const provided = {
-        onBlur: jest.fn(),
-        onChange: jest.fn(),
+        onBlur: vi.fn(),
+        onChange: vi.fn(),
       };
       const { onChange, onBlur } = getInputProps(provided);
 
@@ -149,9 +150,9 @@ describe("getInputProps", () => {
         defaultValue: "test default value",
         touched: true,
         hasBeenSubmitted: false,
-        setTouched: jest.fn(),
-        clearError: jest.fn(),
-        validate: jest.fn(),
+        setTouched: vi.fn(),
+        clearError: vi.fn(),
+        validate: vi.fn(),
         validationBehavior: {
           whenTouched: "onBlur",
         },
@@ -159,8 +160,8 @@ describe("getInputProps", () => {
       const getInputProps = createGetInputProps(options);
 
       const provided = {
-        onBlur: jest.fn(),
-        onChange: jest.fn(),
+        onBlur: vi.fn(),
+        onChange: vi.fn(),
       };
       const { onChange, onBlur } = getInputProps(provided);
 
@@ -186,15 +187,15 @@ describe("getInputProps", () => {
         defaultValue: "test default value",
         touched: true,
         hasBeenSubmitted: true,
-        setTouched: jest.fn(),
-        clearError: jest.fn(),
-        validate: jest.fn(),
+        setTouched: vi.fn(),
+        clearError: vi.fn(),
+        validate: vi.fn(),
       };
       const getInputProps = createGetInputProps(options);
 
       const provided = {
-        onBlur: jest.fn(),
-        onChange: jest.fn(),
+        onBlur: vi.fn(),
+        onChange: vi.fn(),
       };
       const { onChange, onBlur } = getInputProps(provided);
 
@@ -218,9 +219,9 @@ describe("getInputProps", () => {
         defaultValue: "test default value",
         touched: true,
         hasBeenSubmitted: true,
-        setTouched: jest.fn(),
-        clearError: jest.fn(),
-        validate: jest.fn(),
+        setTouched: vi.fn(),
+        clearError: vi.fn(),
+        validate: vi.fn(),
         validationBehavior: {
           whenSubmitted: "onBlur",
         },
@@ -228,8 +229,8 @@ describe("getInputProps", () => {
       const getInputProps = createGetInputProps(options);
 
       const provided = {
-        onBlur: jest.fn(),
-        onChange: jest.fn(),
+        onBlur: vi.fn(),
+        onChange: vi.fn(),
       };
       const { onChange, onBlur } = getInputProps(provided);
 

@@ -24,8 +24,8 @@ jobs:
       - name: Build
         run: yarn run build
 
-      - name: Jest Tests
-        run: yarn run package-tests
+      - name: Vitest
+        run: yarn run vitest:run
 
       - name: Cypress Tests
         uses: cypress-io/github-action@v2

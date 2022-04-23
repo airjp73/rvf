@@ -1,10 +1,11 @@
+import { anyString, TestFormData } from "@remix-validated-form/test-utils";
 import { withYup } from "@remix-validated-form/with-yup/src";
 import { withZod } from "@remix-validated-form/with-zod";
 import { Validator } from "remix-validated-form/src";
 import { objectFromPathEntries } from "remix-validated-form/src/internal/flatten";
+import { describe, it, expect } from "vitest";
 import * as yup from "yup";
 import { z } from "zod";
-import { anyString, TestFormData } from "./util";
 
 // If adding an adapter, write a validator that validates this shape
 type Person = {

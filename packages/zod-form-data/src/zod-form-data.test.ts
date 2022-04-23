@@ -1,10 +1,11 @@
+import { TestFormData } from "@remix-validated-form/test-utils";
+import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { z } from "zod";
-import { zfd } from "zod-form-data";
-import { TestFormData } from "./util";
+import { zfd } from "./";
 
 const expectError = (schema: z.Schema<any>, val: any) => {
-  expect(schema.safeParse(val)).toEqual({
-    error: expect.any(z.ZodError),
+  expect(schema.safeParse(val)).toMatchObject({
+    // error: expect.any(z.ZodError),
     success: false,
   });
 };
