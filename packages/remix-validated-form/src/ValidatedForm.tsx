@@ -234,10 +234,6 @@ export function ValidatedForm<DataType>({
   const endSubmit = useFormStore(formId, (state) => state.endSubmit);
   const syncFormProps = useFormStore(formId, (state) => state.syncFormProps);
   const setHydrated = useFormStore(formId, (state) => state.setHydrated);
-  const setFormElementInState = useFormStore(
-    formId,
-    (state) => state.setFormElement
-  );
 
   useEffect(() => {
     setHydrated();
@@ -368,7 +364,7 @@ export function ValidatedForm<DataType>({
 
   return (
     <Form
-      ref={mergeRefs([formRef, formRefProp, setFormElementInState])}
+      ref={mergeRefs([formRef, formRefProp])}
       {...rest}
       id={id}
       action={action}

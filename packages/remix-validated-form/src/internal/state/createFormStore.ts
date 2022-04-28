@@ -19,7 +19,6 @@ export type FormState = {
   fieldErrors: FieldErrors;
   touchedFields: TouchedFields;
   formProps: SyncedFormProps;
-  formElement: HTMLFormElement | null;
 
   isValid: () => boolean;
   startSubmit: () => void;
@@ -31,7 +30,6 @@ export type FormState = {
   reset: () => void;
   syncFormProps: (props: SyncedFormProps) => void;
   setHydrated: () => void;
-  setFormElement: (formElement: HTMLFormElement | null) => void;
 };
 
 export const formStore = storeFamily(() =>
@@ -42,7 +40,6 @@ export const formStore = storeFamily(() =>
       hasBeenSubmitted: false,
       touchedFields: {},
       fieldErrors: {},
-      formElement: null,
       formProps: {
         validateField: () => Promise.resolve(null),
         registerReceiveFocus: () => () => {},
@@ -89,10 +86,6 @@ export const formStore = storeFamily(() =>
       setHydrated: () =>
         set((state) => {
           state.isHydrated = true;
-        }),
-      setFormElement: (formElement: HTMLFormElement | null) =>
-        set((state) => {
-          state.formElement = formElement as any; // weird type issue here
         }),
     }))
   )
