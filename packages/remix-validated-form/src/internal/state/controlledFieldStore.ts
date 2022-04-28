@@ -80,12 +80,7 @@ export const controlledFieldStore = storeFamily(() =>
         }),
 
       awaitValueUpdate: async (field) => {
-        invariant(
-          get().fields[field],
-          "Attempted to await the value update of a controlled field that isn't registered. This is probably a bug in remix-validated-form."
-        );
-
-        await get().fields[field].valueUpdatePromise;
+        await get().fields[field]?.valueUpdatePromise;
       },
 
       reset: () =>
