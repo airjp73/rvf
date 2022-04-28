@@ -51,6 +51,7 @@
   "dependencies": {
     "jotai": "^1.5.3",
     "lodash": "^4.17.21",
-    "tiny-invariant": "^1.2.0"
+    "tiny-invariant": "^1.2.0",
+    "zustand": "^4.0.0-rc.0"
   }
 }
