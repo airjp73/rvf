@@ -5,13 +5,13 @@
 
 export type InternalFormId = string | symbol;
 
-export const storeFamily = <T>(create: () => T) => {
+export const storeFamily = <T>(create: (formId: InternalFormId) => T) => {
   const stores: Map<InternalFormId, T> = new Map();
 
   const family = (formId: InternalFormId) => {
     if (stores.has(formId)) return stores.get(formId)!;
 
-    const store = create();
+    const store = create(formId);
     stores.set(formId, store);
     return store;
   };

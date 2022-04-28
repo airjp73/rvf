@@ -161,8 +161,22 @@ export const useInternalIsValid = (formId: InternalFormId) =>
 export const useInternalHasBeenSubmitted = (formId: InternalFormId) =>
   useFormStore(formId, (state) => state.hasBeenSubmitted);
 
+export const useValidateField = (formId: InternalFormId) =>
+  useFormStore(formId, (state) => state.validateField);
+
+export const useValidate = (formId: InternalFormId) =>
+  useFormStore(formId, (state) => state.validate);
+
 export const useSyncedFormProps = (formId: InternalFormId) =>
-  useFormStore(formId, (state) => state.formProps);
+  useFormStore(
+    formId,
+    (state) =>
+      state.formProps ?? {
+        validateField: () => Promise.resolve(null),
+        registerReceiveFocus: () => () => {},
+        defaultValues: {},
+      }
+  );
 
 export const useSetTouched = ({ formId }: InternalFormContextValue) =>
   useFormStore(formId, (state) => state.setTouched);
@@ -172,3 +186,9 @@ export const useTouchedFields = (formId: InternalFormId) =>
 
 export const useFieldErrors = (formId: InternalFormId) =>
   useFormStore(formId, (state) => state.fieldErrors);
+
+export const useSetFieldErrors = (formId: InternalFormId) =>
+  useFormStore(formId, (state) => state.setFieldErrors);
+
+export const useFormElement = (formId: InternalFormId) =>
+  useFormStore(formId, (state) => state.formElement);

@@ -1,6 +1,8 @@
+import invariant from "tiny-invariant";
 import create from "zustand";
 import { immer } from "zustand/middleware/immer";
-import { FieldErrors, TouchedFields } from "../../validation/types";
+import { FieldErrors, TouchedFields, Validator } from "../../validation/types";
+import { controlledFieldStore } from "./controlledFieldStore";
 import { storeFamily } from "./storeFamily";
 
 export type SyncedFormProps = {
@@ -8,8 +10,8 @@ export type SyncedFormProps = {
   action?: string;
   subaction?: string;
   defaultValues: { [fieldName: string]: any };
-  validateField: (fieldName: string) => Promise<string | null>;
   registerReceiveFocus: (fieldName: string, handler: () => void) => () => void;
+  validator: Validator<unknown>;
 };
 
 export type FormState = {
@@ -18,7 +20,7 @@ export type FormState = {
   hasBeenSubmitted: boolean;
   fieldErrors: FieldErrors;
   touchedFields: TouchedFields;
-  formProps: SyncedFormProps;
+  formProps?: SyncedFormProps;
   formElement: HTMLFormElement | null;
 
   isValid: () => boolean;
@@ -32,9 +34,11 @@ export type FormState = {
   syncFormProps: (props: SyncedFormProps) => void;
   setHydrated: () => void;
   setFormElement: (formElement: HTMLFormElement | null) => void;
+  validateField: (fieldName: string) => Promise<string | null>;
+  validate: () => Promise<void>;
 };
 
-export const formStore = storeFamily(() =>
+export const formStore = storeFamily((formId) =>
   create<FormState>()(
     immer((set, get, api) => ({
       isHydrated: false,
@@ -43,11 +47,6 @@ export const formStore = storeFamily(() =>
       touchedFields: {},
       fieldErrors: {},
       formElement: null,
-      formProps: {
-        validateField: () => Promise.resolve(null),
-        registerReceiveFocus: () => () => {},
-        defaultValues: {},
-      },
 
       isValid: () => Object.keys(get().fieldErrors).length === 0,
       startSubmit: () =>
@@ -94,6 +93,52 @@ export const formStore = storeFamily(() =>
         set((state) => {
           state.formElement = formElement as any; // weird type issue here
         }),
+
+      validateField: async (field: string) => {
+        const formElement = get().formElement;
+        invariant(
+          formElement,
+          "Cannot find reference to form. This is probably a bug in remix-validated-form."
+        );
+
+        const validator = get().formProps?.validator;
+        invariant(
+          validator,
+          "Cannot validator. This is probably a bug in remix-validated-form."
+        );
+
+        await controlledFieldStore(formId).getState().awaitValueUpdate?.(field);
+
+        const { error } = await validator.validateField(
+          new FormData(formElement),
+          field
+        );
+
+        if (error) {
+          get().setFieldError(field, error);
+          return error;
+        } else {
+          get().clearFieldError(field);
+          return null;
+        }
+      },
+
+      validate: async () => {
+        const formElement = get().formElement;
+        invariant(
+          formElement,
+          "Cannot find reference to form. This is probably a bug in remix-validated-form."
+        );
+
+        const validator = get().formProps?.validator;
+        invariant(
+          validator,
+          "Cannot validator. This is probably a bug in remix-validated-form."
+        );
+
+        const { error } = await validator.validate(new FormData(formElement));
+        if (error) get().setFieldErrors(error.fieldErrors);
+      },
     }))
   )
 );

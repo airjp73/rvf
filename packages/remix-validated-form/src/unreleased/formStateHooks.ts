@@ -12,6 +12,10 @@ import {
   useTouchedFields,
   useInternalIsValid,
   useFieldErrors,
+  useValidateField,
+  useValidate,
+  useSetFieldErrors,
+  useFormElement,
 } from "../internal/hooks";
 import { FieldErrors, TouchedFields } from "../validation/types";
 
@@ -83,6 +87,14 @@ export type FormHelpers = {
    * Change the touched state of the specified field.
    */
   setTouched: (fieldName: string, touched: boolean) => void;
+  /**
+   * Validate the whole form and populate any errors.
+   */
+  validate: () => Promise<void>;
+  /**
+   * Clears all errors on the form.
+   */
+  clearAllErrors: () => void;
 };
 
 /**
@@ -93,14 +105,27 @@ export type FormHelpers = {
 export const useFormHelpers = (formId?: string): FormHelpers => {
   const formContext = useInternalFormContext(formId, "useFormHelpers");
   const setTouched = useSetTouched(formContext);
-  const { validateField } = useSyncedFormProps(formContext.formId);
+  const validateField = useValidateField(formContext.formId);
+  const validate = useValidate(formContext.formId);
   const clearError = useClearError(formContext);
+  const setFieldErrors = useSetFieldErrors(formContext.formId);
+  const formElement = useFormElement(formContext.formId);
   return useMemo(
     () => ({
       setTouched,
       validateField,
       clearError,
+      validate,
+      clearAllErrors: () => setFieldErrors({}),
+      reset: () => formElement?.reset(),
     }),
-    [clearError, setTouched, validateField]
+    [
+      clearError,
+      formElement,
+      setFieldErrors,
+      setTouched,
+      validate,
+      validateField,
+    ]
   );
 };

@@ -55,6 +55,14 @@ export type FormContextValue = {
    * Change the touched state of the specified field.
    */
   setFieldTouched: (fieldName: string, touched: boolean) => void;
+  /**
+   * Validate the whole form and populate any errors.
+   */
+  validate: () => Promise<void>;
+  /**
+   * Clears all errors on the form.
+   */
+  clearAllErrors: () => void;
 };
 
 /**
@@ -68,6 +76,8 @@ export const useFormContext = (formId?: string): FormContextValue => {
     clearError: internalClearError,
     setTouched,
     validateField,
+    clearAllErrors,
+    validate,
   } = useFormHelpers(formId);
 
   const { registerReceiveFocus } = useSyncedFormProps(context.formId);
@@ -87,5 +97,7 @@ export const useFormContext = (formId?: string): FormContextValue => {
     validateField,
     clearError,
     registerReceiveFocus,
+    clearAllErrors,
+    validate,
   };
 };

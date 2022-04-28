@@ -10,7 +10,6 @@ import React, {
   useRef,
   useState,
 } from "react";
-import invariant from "tiny-invariant";
 import { useIsSubmitting, useIsValid } from "./hooks";
 import { FORM_ID_FIELD } from "./internal/constants";
 import {
@@ -24,7 +23,6 @@ import {
 } from "./internal/hooks";
 import { MultiValueMap, useMultiValueMap } from "./internal/MultiValueMap";
 import { cleanupFormState } from "./internal/state/cleanup";
-import { useAwaitValue } from "./internal/state/controlledFields";
 import { SyncedFormProps } from "./internal/state/createFormStore";
 import {
   useControlledFieldStore,
@@ -228,10 +226,6 @@ export function ValidatedForm<DataType>({
   const submit = useSubmit();
   const setFieldErrors = useFormStore(formId, (state) => state.setFieldErrors);
   const setFieldError = useFormStore(formId, (state) => state.setFieldError);
-  const clearFieldError = useFormStore(
-    formId,
-    (state) => state.clearFieldError
-  );
   const reset = useFormStore(formId, (state) => state.reset);
   const resetControlledFields = useControlledFieldStore(
     formId,
@@ -251,27 +245,6 @@ export function ValidatedForm<DataType>({
     return () => cleanupFormState(formId);
   }, [formId, setHydrated]);
 
-  const awaitValue = useAwaitValue(formId);
-  const validateField: SyncedFormProps["validateField"] = useCallback(
-    async (field) => {
-      invariant(formRef.current, "Cannot find reference to form");
-      await awaitValue(field);
-      const { error } = await validator.validateField(
-        getDataFromForm(formRef.current),
-        field
-      );
-
-      if (error) {
-        setFieldError(field, error);
-        return error;
-      } else {
-        clearFieldError(field);
-        return null;
-      }
-    },
-    [awaitValue, clearFieldError, setFieldError, validator]
-  );
-
   const customFocusHandlers = useMultiValueMap<string, () => void>();
   const registerReceiveFocus: SyncedFormProps["registerReceiveFocus"] =
     useCallback(
@@ -289,8 +262,8 @@ export function ValidatedForm<DataType>({
       action,
       defaultValues: providedDefaultValues ?? backendDefaultValues ?? {},
       subaction,
-      validateField,
       registerReceiveFocus,
+      validator,
     });
   }, [
     action,
@@ -298,8 +271,8 @@ export function ValidatedForm<DataType>({
     registerReceiveFocus,
     subaction,
     syncFormProps,
-    validateField,
     backendDefaultValues,
+    validator,
   ]);
 
   useEffect(() => {
