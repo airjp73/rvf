@@ -10,14 +10,14 @@ export const useControlledFieldValue = (
   field: string
 ) => {
   const useValueStore = controlledFieldStore(context.formId);
-  const value = useValueStore((state) => state.fields[field].value);
+  const value = useValueStore((state) => state.fields[field]?.value);
 
   const useFormStore = formStore(context.formId);
   const isFormHydrated = useFormStore((state) => state.isHydrated);
   const defaultValue = useFieldDefaultValue(field, context);
 
   const isFieldHydrated = useValueStore(
-    (state) => state.fields[field].hydrated
+    (state) => state.fields[field]?.hydrated ?? false
   );
   const hydrateWithDefault = useValueStore((state) => state.hydrateWithDefault);
 
@@ -43,7 +43,7 @@ export const useControllableValue = (
   const useValueStore = controlledFieldStore(context.formId);
 
   const resolveUpdate = useValueStore(
-    (state) => state.fields[field].resolveValueUpdate
+    (state) => state.fields[field]?.resolveValueUpdate
   );
   useEffect(() => {
     resolveUpdate?.();
