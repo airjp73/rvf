@@ -26,7 +26,10 @@ import { MultiValueMap, useMultiValueMap } from "./internal/MultiValueMap";
 import { cleanupFormState } from "./internal/state/cleanup";
 import { useAwaitValue } from "./internal/state/controlledFields";
 import { SyncedFormProps } from "./internal/state/createFormStore";
-import { useFormStore } from "./internal/state/storeHooks";
+import {
+  useControlledFieldStore,
+  useFormStore,
+} from "./internal/state/storeHooks";
 import { useSubmitComplete } from "./internal/submissionCallbacks";
 import {
   mergeRefs,
@@ -230,6 +233,10 @@ export function ValidatedForm<DataType>({
     (state) => state.clearFieldError
   );
   const reset = useFormStore(formId, (state) => state.reset);
+  const resetControlledFields = useControlledFieldStore(
+    formId,
+    (state) => state.reset
+  );
   const startSubmit = useFormStore(formId, (state) => state.startSubmit);
   const endSubmit = useFormStore(formId, (state) => state.endSubmit);
   const syncFormProps = useFormStore(formId, (state) => state.syncFormProps);
@@ -378,6 +385,7 @@ export function ValidatedForm<DataType>({
         onReset?.(event);
         if (event.defaultPrevented) return;
         reset();
+        resetControlledFields();
       }}
     >
       <InternalFormContext.Provider value={contextValue}>
