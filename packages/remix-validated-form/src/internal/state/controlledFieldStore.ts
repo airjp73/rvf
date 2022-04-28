@@ -28,7 +28,7 @@ export const controlledFieldStore = storeFamily(() =>
       fields: {},
 
       register: (field) =>
-        set((state: ControlledFieldState) => {
+        set((state) => {
           if (state.fields[field]) {
             state.fields[field].refCount++;
           } else {
@@ -43,7 +43,7 @@ export const controlledFieldStore = storeFamily(() =>
         }),
 
       unregister: (field) =>
-        set((state: ControlledFieldState) => {
+        set((state) => {
           invariant(
             state.fields[field],
             "Attempted to unregister a field that isn't registered. This is probably a bug in remix-validated-form."
@@ -54,7 +54,7 @@ export const controlledFieldStore = storeFamily(() =>
         }),
 
       setValue: (field, value) =>
-        set((state: ControlledFieldState) => {
+        set((state) => {
           invariant(
             state.fields[field],
             "Attempted to update the value of a controlled field that isn't registered. This is probably a bug in remix-validated-form."
@@ -68,7 +68,7 @@ export const controlledFieldStore = storeFamily(() =>
         }),
 
       hydrateWithDefault: (field, defaultValue) =>
-        set((state: ControlledFieldState) => {
+        set((state) => {
           invariant(
             state.fields[field],
             "Attempted to update the value of a controlled field that isn't registered. This is probably a bug in remix-validated-form."
@@ -89,7 +89,7 @@ export const controlledFieldStore = storeFamily(() =>
       },
 
       reset: () =>
-        set((state: ControlledFieldState) => {
+        set((state) => {
           Object.values(state.fields).forEach((field) => {
             field.value = field.defaultValue;
           });

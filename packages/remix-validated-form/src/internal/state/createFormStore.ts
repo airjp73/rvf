@@ -51,48 +51,48 @@ export const formStore = storeFamily(() =>
 
       isValid: () => Object.keys(get().fieldErrors).length === 0,
       startSubmit: () =>
-        set((state: FormState) => {
+        set((state) => {
           state.isSubmitting = true;
           state.hasBeenSubmitted = true;
         }),
       endSubmit: () =>
-        set((state: FormState) => {
+        set((state) => {
           state.isSubmitting = false;
         }),
       setTouched: (fieldName, touched) =>
-        set((state: FormState) => {
+        set((state) => {
           state.touchedFields[fieldName] = touched;
         }),
       setFieldError: (fieldName: string, error: string) =>
-        set((state: FormState) => {
+        set((state) => {
           state.fieldErrors[fieldName] = error;
         }),
       setFieldErrors: (errors: FieldErrors) =>
-        set((state: FormState) => {
+        set((state) => {
           state.fieldErrors = errors;
         }),
       clearFieldError: (fieldName: string) =>
-        set((state: FormState) => {
+        set((state) => {
           delete state.fieldErrors[fieldName];
         }),
 
       reset: () =>
-        set((state: FormState) => {
+        set((state) => {
           state.fieldErrors = {};
           state.touchedFields = {};
           state.hasBeenSubmitted = false;
         }),
       syncFormProps: (props: SyncedFormProps) =>
-        set((state: FormState) => {
+        set((state) => {
           state.formProps = props;
         }),
       setHydrated: () =>
-        set((state: FormState) => {
+        set((state) => {
           state.isHydrated = true;
         }),
       setFormElement: (formElement: HTMLFormElement | null) =>
-        set((state: FormState) => {
-          state.formElement = formElement;
+        set((state) => {
+          state.formElement = formElement as any; // weird type issue here
         }),
     }))
   )
