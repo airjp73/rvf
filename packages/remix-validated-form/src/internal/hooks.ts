@@ -1,6 +1,4 @@
 import { useActionData, useMatches, useTransition } from "@remix-run/react";
-import { Atom, useAtom, WritableAtom } from "jotai";
-import { useAtomValue, useUpdateAtom } from "jotai/utils";
 import lodashGet from "lodash/get";
 import { useCallback, useContext } from "react";
 import invariant from "tiny-invariant";
@@ -8,25 +6,8 @@ import { FieldErrors, ValidationErrorResponseData } from "..";
 import { formDefaultValuesKey } from "./constants";
 import { InternalFormContext, InternalFormContextValue } from "./formContext";
 import { Hydratable, hydratable } from "./hydratable";
-import {
-  ATOM_SCOPE,
-  fieldErrorAtom,
-  fieldTouchedAtom,
-  formPropsAtom,
-  isHydratedAtom,
-  setFieldErrorAtom,
-  setTouchedAtom,
-} from "./state";
-
-export const useFormUpdateAtom: typeof useUpdateAtom = (atom) =>
-  useUpdateAtom(atom, ATOM_SCOPE);
-
-export const useFormAtom = <Value, Update, Result extends void | Promise<void>>(
-  anAtom: WritableAtom<Value, Update, Result>
-) => useAtom(anAtom, ATOM_SCOPE);
-
-export const useFormAtomValue = <Value>(anAtom: Atom<Value>) =>
-  useAtomValue(anAtom, ATOM_SCOPE);
+import { InternalFormId } from "./state/storeFamily";
+import { useFormStore } from "./state/storeHooks";
 
 export const useInternalFormContext = (
   formId?: string | symbol,
@@ -72,7 +53,7 @@ export const useFieldErrorsForForm = (
   context: InternalFormContextValue
 ): Hydratable<FieldErrors | undefined> => {
   const response = useErrorResponseForForm(context);
-  const hydrated = useFormAtomValue(isHydratedAtom(context.formId));
+  const hydrated = useFormStore(context.formId, (state) => state.isHydrated);
   return hydratable.from(response?.fieldErrors, hydrated);
 };
 
@@ -97,7 +78,7 @@ export const useDefaultValuesForForm = (
   context: InternalFormContextValue
 ): Hydratable<{ [fieldName: string]: any }> => {
   const { formId, defaultValuesProp } = context;
-  const hydrated = useFormAtomValue(isHydratedAtom(formId));
+  const hydrated = useFormStore(formId, (state) => state.isHydrated);
   const errorResponse = useErrorResponseForForm(context);
   const defaultValuesFromLoader = useDefaultValuesFromLoader(context);
 
@@ -133,20 +114,31 @@ export const useHasActiveFormSubmit = ({
 export const useFieldTouched = (
   field: string,
   { formId }: InternalFormContextValue
-) => useFormAtom(fieldTouchedAtom({ formId, field }));
+) => {
+  const touched = useFormStore(formId, (state) => state.touchedFields[field]);
+  const setFieldTouched = useFormStore(formId, (state) => state.setTouched);
+  const setTouched = useCallback(
+    (touched: boolean) => setFieldTouched(field, touched),
+    [field, setFieldTouched]
+  );
+  return [touched, setTouched] as const;
+};
 
 export const useFieldError = (
   name: string,
   context: InternalFormContextValue
 ) => {
   const fieldErrors = useFieldErrorsForForm(context);
-  const [state, set] = useFormAtom(
-    fieldErrorAtom({ formId: context.formId, field: name })
+  const state = useFormStore(
+    context.formId,
+    (state) => state.fieldErrors[name]
   );
-  return [
-    fieldErrors.map((fieldErrors) => fieldErrors?.[name]).hydrateTo(state),
-    set,
-  ] as const;
+  return fieldErrors.map((fieldErrors) => fieldErrors?.[name]).hydrateTo(state);
+};
+
+export const useClearError = (context: InternalFormContextValue) => {
+  const { formId } = context;
+  return useFormStore(formId, (state) => state.clearFieldError);
 };
 
 export const useFieldDefaultValue = (
@@ -154,26 +146,29 @@ export const useFieldDefaultValue = (
   context: InternalFormContextValue
 ) => {
   const defaultValues = useDefaultValuesForForm(context);
-  const { defaultValues: state } = useFormAtomValue(
-    formPropsAtom(context.formId)
-  );
+  const { defaultValues: state } = useSyncedFormProps(context.formId);
   return defaultValues
     .map((val) => lodashGet(val, name))
     .hydrateTo(lodashGet(state, name));
 };
 
-export const useClearError = ({ formId }: InternalFormContextValue) => {
-  const updateError = useFormUpdateAtom(setFieldErrorAtom(formId));
-  return useCallback(
-    (name: string) => updateError({ field: name, error: undefined }),
-    [updateError]
-  );
-};
+export const useInternalIsSubmitting = (formId: InternalFormId) =>
+  useFormStore(formId, (state) => state.isSubmitting);
 
-export const useSetTouched = ({ formId }: InternalFormContextValue) => {
-  const setTouched = useFormUpdateAtom(setTouchedAtom(formId));
-  return useCallback(
-    (name: string, touched: boolean) => setTouched({ field: name, touched }),
-    [setTouched]
-  );
-};
+export const useInternalIsValid = (formId: InternalFormId) =>
+  useFormStore(formId, (state) => state.isValid());
+
+export const useInternalHasBeenSubmitted = (formId: InternalFormId) =>
+  useFormStore(formId, (state) => state.hasBeenSubmitted);
+
+export const useSyncedFormProps = (formId: InternalFormId) =>
+  useFormStore(formId, (state) => state.formProps);
+
+export const useSetTouched = ({ formId }: InternalFormContextValue) =>
+  useFormStore(formId, (state) => state.setTouched);
+
+export const useTouchedFields = (formId: InternalFormId) =>
+  useFormStore(formId, (state) => state.touchedFields);
+
+export const useFieldErrors = (formId: InternalFormId) =>
+  useFormStore(formId, (state) => state.fieldErrors);

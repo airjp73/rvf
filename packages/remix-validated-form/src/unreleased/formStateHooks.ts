@@ -6,16 +6,13 @@ import {
   useSetTouched,
   useDefaultValuesForForm,
   useFieldErrorsForForm,
-  useFormAtomValue,
+  useSyncedFormProps,
+  useInternalIsSubmitting,
+  useInternalHasBeenSubmitted,
+  useTouchedFields,
+  useInternalIsValid,
+  useFieldErrors,
 } from "../internal/hooks";
-import {
-  fieldErrorsAtom,
-  formPropsAtom,
-  hasBeenSubmittedAtom,
-  isSubmittingAtom,
-  isValidAtom,
-  touchedFieldsAtom,
-} from "../internal/state";
 import { FieldErrors, TouchedFields } from "../validation/types";
 
 export type FormState = {
@@ -36,22 +33,18 @@ export type FormState = {
  */
 export const useFormState = (formId?: string): FormState => {
   const formContext = useInternalFormContext(formId, "useIsValid");
-  const formProps = useFormAtomValue(formPropsAtom(formContext.formId));
-  const isSubmitting = useFormAtomValue(isSubmittingAtom(formContext.formId));
-  const hasBeenSubmitted = useFormAtomValue(
-    hasBeenSubmittedAtom(formContext.formId)
-  );
-  const touchedFields = useFormAtomValue(touchedFieldsAtom(formContext.formId));
-  const isValid = useFormAtomValue(isValidAtom(formContext.formId));
+  const formProps = useSyncedFormProps(formContext.formId);
+  const isSubmitting = useInternalIsSubmitting(formContext.formId);
+  const hasBeenSubmitted = useInternalHasBeenSubmitted(formContext.formId);
+  const touchedFields = useTouchedFields(formContext.formId);
+  const isValid = useInternalIsValid(formContext.formId);
 
   const defaultValuesToUse = useDefaultValuesForForm(formContext);
   const hydratedDefaultValues = defaultValuesToUse.hydrateTo(
     formProps.defaultValues
   );
 
-  const fieldErrorsFromState = useFormAtomValue(
-    fieldErrorsAtom(formContext.formId)
-  );
+  const fieldErrorsFromState = useFieldErrors(formContext.formId);
   const fieldErrorsToUse = useFieldErrorsForForm(formContext);
   const hydratedFieldErrors = fieldErrorsToUse.hydrateTo(fieldErrorsFromState);
 
@@ -100,7 +93,7 @@ export type FormHelpers = {
 export const useFormHelpers = (formId?: string): FormHelpers => {
   const formContext = useInternalFormContext(formId, "useFormHelpers");
   const setTouched = useSetTouched(formContext);
-  const { validateField } = useFormAtomValue(formPropsAtom(formContext.formId));
+  const { validateField } = useSyncedFormProps(formContext.formId);
   const clearError = useClearError(formContext);
   return useMemo(
     () => ({

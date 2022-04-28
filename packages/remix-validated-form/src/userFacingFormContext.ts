@@ -1,6 +1,5 @@
 import { useCallback } from "react";
-import { useFormAtomValue, useInternalFormContext } from "./internal/hooks";
-import { formPropsAtom } from "./internal/state";
+import { useInternalFormContext, useSyncedFormProps } from "./internal/hooks";
 import { useFormHelpers, useFormState } from "./unreleased/formStateHooks";
 import { FieldErrors, TouchedFields } from "./validation/types";
 
@@ -71,9 +70,7 @@ export const useFormContext = (formId?: string): FormContextValue => {
     validateField,
   } = useFormHelpers(formId);
 
-  const { registerReceiveFocus } = useFormAtomValue(
-    formPropsAtom(context.formId)
-  );
+  const { registerReceiveFocus } = useSyncedFormProps(context.formId);
 
   const clearError = useCallback(
     (...names: string[]) => {

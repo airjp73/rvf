@@ -1,5 +1,4 @@
 import { Form as RemixForm, useFetcher, useSubmit } from "@remix-run/react";
-import { useAtomCallback } from "jotai/utils";
 import uniq from "lodash/uniq";
 import React, {
   ComponentProps,
@@ -21,23 +20,13 @@ import {
 import {
   useDefaultValuesFromLoader,
   useErrorResponseForForm,
-  useFormUpdateAtom,
   useHasActiveFormSubmit,
 } from "./internal/hooks";
 import { MultiValueMap, useMultiValueMap } from "./internal/MultiValueMap";
-import { resetAtom } from "./internal/reset";
-import {
-  cleanupFormState,
-  endSubmitAtom,
-  fieldErrorsAtom,
-  formElementAtom,
-  formPropsAtom,
-  isHydratedAtom,
-  setFieldErrorAtom,
-  startSubmitAtom,
-  SyncedFormProps,
-} from "./internal/state";
+import { cleanupFormState } from "./internal/state/cleanup";
 import { useAwaitValue } from "./internal/state/controlledFields";
+import { SyncedFormProps } from "./internal/state/createFormStore";
+import { useFormStore } from "./internal/state/storeHooks";
 import { useSubmitComplete } from "./internal/submissionCallbacks";
 import {
   mergeRefs,
@@ -234,17 +223,24 @@ export function ValidatedForm<DataType>({
   const Form = fetcher?.Form ?? RemixForm;
 
   const submit = useSubmit();
-  const setFieldErrors = useFormUpdateAtom(fieldErrorsAtom(formId));
-  const setFieldError = useFormUpdateAtom(setFieldErrorAtom(formId));
-  const reset = useFormUpdateAtom(resetAtom(formId));
-  const startSubmit = useFormUpdateAtom(startSubmitAtom(formId));
-  const endSubmit = useFormUpdateAtom(endSubmitAtom(formId));
-  const syncFormProps = useFormUpdateAtom(formPropsAtom(formId));
-  const setHydrated = useFormUpdateAtom(isHydratedAtom(formId));
-  const setFormElementInState = useFormUpdateAtom(formElementAtom(formId));
+  const setFieldErrors = useFormStore(formId, (state) => state.setFieldErrors);
+  const setFieldError = useFormStore(formId, (state) => state.setFieldError);
+  const clearFieldError = useFormStore(
+    formId,
+    (state) => state.clearFieldError
+  );
+  const reset = useFormStore(formId, (state) => state.reset);
+  const startSubmit = useFormStore(formId, (state) => state.startSubmit);
+  const endSubmit = useFormStore(formId, (state) => state.endSubmit);
+  const syncFormProps = useFormStore(formId, (state) => state.syncFormProps);
+  const setHydrated = useFormStore(formId, (state) => state.setHydrated);
+  const setFormElementInState = useFormStore(
+    formId,
+    (state) => state.setFormElement
+  );
 
   useEffect(() => {
-    setHydrated(true);
+    setHydrated();
     return () => cleanupFormState(formId);
   }, [formId, setHydrated]);
 
@@ -259,14 +255,14 @@ export function ValidatedForm<DataType>({
       );
 
       if (error) {
-        setFieldError({ field, error });
+        setFieldError(field, error);
         return error;
       } else {
-        setFieldError({ field, error: undefined });
+        clearFieldError(field);
         return null;
       }
     },
-    [awaitValue, setFieldError, validator]
+    [awaitValue, clearFieldError, setFieldError, validator]
   );
 
   const customFocusHandlers = useMultiValueMap<string, () => void>();
