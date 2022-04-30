@@ -1,16 +1,9 @@
 import { withYup } from "@remix-validated-form/with-yup";
-import { useMemo, useRef } from "react";
 import { ActionFunction, json, useActionData } from "remix";
 import { useFormContext, ValidatedForm } from "remix-validated-form";
 import * as yup from "yup";
 import { Input } from "~/components/Input";
 import { SubmitButton } from "~/components/SubmitButton";
-
-const validator = withYup(
-  yup.object({
-    firstName: yup.string().label("First Name").required(),
-  })
-);
 
 export const action: ActionFunction = async ({ request }) => {
   const data = await request.formData();
@@ -76,7 +69,11 @@ export default function FrontendValidation() {
       {actionData?.message && <h1>{actionData.message}</h1>}
       <DisplayContext testid="external-values" form="test-form" />
       <ValidatedForm
-        validator={validator}
+        validator={withYup(
+          yup.object({
+            firstName: yup.string().label("First Name").required(),
+          })
+        )}
         method="post"
         id="test-form"
         action="/context-hooks"
