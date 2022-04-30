@@ -13,8 +13,8 @@ import {
   useInternalIsSubmitting,
   useInternalIsValid,
   useInternalHasBeenSubmitted,
-  useSyncedFormProps,
   useValidateField,
+  useRegisterReceiveFocus,
 } from "./internal/hooks";
 import {
   useControllableValue,
@@ -107,7 +107,7 @@ export const useField = (
 
   const hasBeenSubmitted = useInternalHasBeenSubmitted(formContext.formId);
   const validateField = useValidateField(formContext.formId);
-  const { registerReceiveFocus } = useSyncedFormProps(formContext.formId);
+  const registerReceiveFocus = useRegisterReceiveFocus(formContext.formId);
 
   useEffect(() => {
     if (handleReceiveFocus)

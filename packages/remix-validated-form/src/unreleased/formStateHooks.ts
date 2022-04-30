@@ -6,7 +6,6 @@ import {
   useSetTouched,
   useDefaultValuesForForm,
   useFieldErrorsForForm,
-  useSyncedFormProps,
   useInternalIsSubmitting,
   useInternalHasBeenSubmitted,
   useTouchedFields,
@@ -16,6 +15,9 @@ import {
   useValidate,
   useSetFieldErrors,
   useResetFormElement,
+  useSyncedDefaultValues,
+  useFormActionProp,
+  useFormSubactionProp,
 } from "../internal/hooks";
 import { FieldErrors, TouchedFields } from "../validation/types";
 
@@ -37,16 +39,17 @@ export type FormState = {
  */
 export const useFormState = (formId?: string): FormState => {
   const formContext = useInternalFormContext(formId, "useFormState");
-  const formProps = useSyncedFormProps(formContext.formId);
   const isSubmitting = useInternalIsSubmitting(formContext.formId);
   const hasBeenSubmitted = useInternalHasBeenSubmitted(formContext.formId);
   const touchedFields = useTouchedFields(formContext.formId);
   const isValid = useInternalIsValid(formContext.formId);
+  const action = useFormActionProp(formContext.formId);
+  const subaction = useFormSubactionProp(formContext.formId);
 
+  const syncedDefaultValues = useSyncedDefaultValues(formContext.formId);
   const defaultValuesToUse = useDefaultValuesForForm(formContext);
-  const hydratedDefaultValues = defaultValuesToUse.hydrateTo(
-    formProps.defaultValues
-  );
+  const hydratedDefaultValues =
+    defaultValuesToUse.hydrateTo(syncedDefaultValues);
 
   const fieldErrorsFromState = useFieldErrors(formContext.formId);
   const fieldErrorsToUse = useFieldErrorsForForm(formContext);
@@ -54,7 +57,8 @@ export const useFormState = (formId?: string): FormState => {
 
   return useMemo(
     () => ({
-      ...formProps,
+      action,
+      subaction,
       defaultValues: hydratedDefaultValues,
       fieldErrors: hydratedFieldErrors ?? {},
       hasBeenSubmitted,
@@ -63,12 +67,13 @@ export const useFormState = (formId?: string): FormState => {
       isValid,
     }),
     [
-      formProps,
+      action,
       hasBeenSubmitted,
       hydratedDefaultValues,
       hydratedFieldErrors,
       isSubmitting,
       isValid,
+      subaction,
       touchedFields,
     ]
   );

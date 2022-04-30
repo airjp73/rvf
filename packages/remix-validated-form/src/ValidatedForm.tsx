@@ -20,6 +20,7 @@ import {
   useDefaultValuesFromLoader,
   useErrorResponseForForm,
   useHasActiveFormSubmit,
+  useSetFieldErrors,
 } from "./internal/hooks";
 import { MultiValueMap, useMultiValueMap } from "./internal/MultiValueMap";
 import { cleanupFormState } from "./internal/state/cleanup";
@@ -224,7 +225,7 @@ export function ValidatedForm<DataType>({
   const Form = fetcher?.Form ?? RemixForm;
 
   const submit = useSubmit();
-  const setFieldErrors = useFormStore(formId, (state) => state.setFieldErrors);
+  const setFieldErrors = useSetFieldErrors(formId);
   const setFieldError = useFormStore(formId, (state) => state.setFieldError);
   const reset = useFormStore(formId, (state) => state.reset);
   const resetControlledFields = useControlledFieldStore(

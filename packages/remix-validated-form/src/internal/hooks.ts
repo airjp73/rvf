@@ -146,7 +146,7 @@ export const useFieldDefaultValue = (
   context: InternalFormContextValue
 ) => {
   const defaultValues = useDefaultValuesForForm(context);
-  const { defaultValues: state } = useSyncedFormProps(context.formId);
+  const state = useSyncedDefaultValues(context.formId);
   return defaultValues
     .map((val) => lodashGet(val, name))
     .hydrateTo(lodashGet(state, name));
@@ -167,15 +167,18 @@ export const useValidateField = (formId: InternalFormId) =>
 export const useValidate = (formId: InternalFormId) =>
   useFormStore(formId, (state) => state.validate);
 
-export const useSyncedFormProps = (formId: InternalFormId) =>
+const noOpReceiver = () => () => {};
+export const useRegisterReceiveFocus = (formId: InternalFormId) =>
   useFormStore(
     formId,
-    (state) =>
-      state.formProps ?? {
-        validateField: () => Promise.resolve(null),
-        registerReceiveFocus: () => () => {},
-        defaultValues: {},
-      }
+    (state) => state.formProps?.registerReceiveFocus ?? noOpReceiver
+  );
+
+const defaultDefaultValues = {};
+export const useSyncedDefaultValues = (formId: InternalFormId) =>
+  useFormStore(
+    formId,
+    (state) => state.formProps?.defaultValues ?? defaultDefaultValues
   );
 
 export const useSetTouched = ({ formId }: InternalFormContextValue) =>
@@ -192,3 +195,9 @@ export const useSetFieldErrors = (formId: InternalFormId) =>
 
 export const useResetFormElement = (formId: InternalFormId) =>
   useFormStore(formId, (state) => state.resetFormElement);
+
+export const useFormActionProp = (formId: InternalFormId) =>
+  useFormStore(formId, (state) => state.formProps?.action);
+
+export const useFormSubactionProp = (formId: InternalFormId) =>
+  useFormStore(formId, (state) => state.formProps?.subaction);
