@@ -36,6 +36,7 @@ export type FormState = {
   setFormElement: (formElement: HTMLFormElement | null) => void;
   validateField: (fieldName: string) => Promise<string | null>;
   validate: () => Promise<void>;
+  resetFormElement: () => void;
 };
 
 export const formStore = storeFamily((formId) =>
@@ -89,11 +90,16 @@ export const formStore = storeFamily((formId) =>
         set((state) => {
           state.isHydrated = true;
         }),
-      setFormElement: (formElement: HTMLFormElement | null) =>
+      setFormElement: (formElement: HTMLFormElement | null) => {
+        // This gets called frequently, so we want to avoid calling set() every time
+        // Or else we wind up with an infinite loop
+        if (get().formElement === formElement) return;
         set((state) => {
-          state.formElement = formElement as any; // weird type issue here
-        }),
-
+          // weird type issue here
+          // seems to be because formElement is a writable draft
+          state.formElement = formElement as any;
+        });
+      },
       validateField: async (field: string) => {
         const formElement = get().formElement;
         invariant(
@@ -139,6 +145,8 @@ export const formStore = storeFamily((formId) =>
         const { error } = await validator.validate(new FormData(formElement));
         if (error) get().setFieldErrors(error.fieldErrors);
       },
+
+      resetFormElement: () => get().formElement?.reset(),
     }))
   )
 );

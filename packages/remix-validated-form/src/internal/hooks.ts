@@ -190,5 +190,5 @@ export const useFieldErrors = (formId: InternalFormId) =>
 export const useSetFieldErrors = (formId: InternalFormId) =>
   useFormStore(formId, (state) => state.setFieldErrors);
 
-export const useFormElement = (formId: InternalFormId) =>
-  useFormStore(formId, (state) => state.formElement);
+export const useResetFormElement = (formId: InternalFormId) =>
+  useFormStore(formId, (state) => state.resetFormElement);

@@ -15,7 +15,7 @@ import {
   useValidateField,
   useValidate,
   useSetFieldErrors,
-  useFormElement,
+  useResetFormElement,
 } from "../internal/hooks";
 import { FieldErrors, TouchedFields } from "../validation/types";
 
@@ -36,7 +36,7 @@ export type FormState = {
  * @param formId the id of the form. Only necessary if being used outside a ValidatedForm.
  */
 export const useFormState = (formId?: string): FormState => {
-  const formContext = useInternalFormContext(formId, "useIsValid");
+  const formContext = useInternalFormContext(formId, "useFormState");
   const formProps = useSyncedFormProps(formContext.formId);
   const isSubmitting = useInternalIsSubmitting(formContext.formId);
   const hasBeenSubmitted = useInternalHasBeenSubmitted(formContext.formId);
@@ -109,7 +109,7 @@ export const useFormHelpers = (formId?: string): FormHelpers => {
   const validate = useValidate(formContext.formId);
   const clearError = useClearError(formContext);
   const setFieldErrors = useSetFieldErrors(formContext.formId);
-  const formElement = useFormElement(formContext.formId);
+  const reset = useResetFormElement(formContext.formId);
   return useMemo(
     () => ({
       setTouched,
@@ -117,15 +117,8 @@ export const useFormHelpers = (formId?: string): FormHelpers => {
       clearError,
       validate,
       clearAllErrors: () => setFieldErrors({}),
-      reset: () => formElement?.reset(),
+      reset,
     }),
-    [
-      clearError,
-      formElement,
-      setFieldErrors,
-      setTouched,
-      validate,
-      validateField,
-    ]
+    [clearError, reset, setFieldErrors, setTouched, validate, validateField]
   );
 };
