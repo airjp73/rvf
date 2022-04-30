@@ -95,6 +95,13 @@ export type FormHelpers = {
    * Clears all errors on the form.
    */
   clearAllErrors: () => void;
+  /**
+   * Resets the form.
+   *
+   * _Note_: The equivalent behavior can be achieved by calling formElement.reset()
+   * or clicking a button element with `type="reset"`.
+   */
+  reset: () => void;
 };
 
 /**
