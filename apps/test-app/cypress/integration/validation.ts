@@ -196,4 +196,17 @@ describe("Validation", () => {
     cy.findByText("First Name is a required field").should("not.exist");
     cy.findByText("Name of a contact is a required field").should("not.exist");
   });
+
+  it("should show errors for forms with form ids and clear them upon navigating away", () => {
+    cy.visit("form-id-validation");
+
+    cy.findByText("Submit").click();
+    cy.findByText("Required").should("exist");
+
+    cy.findByText("Other").click();
+    cy.findByText("Form").click();
+
+    cy.findByText("Test input").should("exist");
+    cy.findByText("Required").should("not.exist");
+  });
 });

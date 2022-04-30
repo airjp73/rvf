@@ -6,16 +6,19 @@ import {
   useSetTouched,
   useDefaultValuesForForm,
   useFieldErrorsForForm,
-  useFormAtomValue,
+  useInternalIsSubmitting,
+  useInternalHasBeenSubmitted,
+  useTouchedFields,
+  useInternalIsValid,
+  useFieldErrors,
+  useValidateField,
+  useValidate,
+  useSetFieldErrors,
+  useResetFormElement,
+  useSyncedDefaultValues,
+  useFormActionProp,
+  useFormSubactionProp,
 } from "../internal/hooks";
-import {
-  fieldErrorsAtom,
-  formPropsAtom,
-  hasBeenSubmittedAtom,
-  isSubmittingAtom,
-  isValidAtom,
-  touchedFieldsAtom,
-} from "../internal/state";
 import { FieldErrors, TouchedFields } from "../validation/types";
 
 export type FormState = {
@@ -35,29 +38,27 @@ export type FormState = {
  * @param formId the id of the form. Only necessary if being used outside a ValidatedForm.
  */
 export const useFormState = (formId?: string): FormState => {
-  const formContext = useInternalFormContext(formId, "useIsValid");
-  const formProps = useFormAtomValue(formPropsAtom(formContext.formId));
-  const isSubmitting = useFormAtomValue(isSubmittingAtom(formContext.formId));
-  const hasBeenSubmitted = useFormAtomValue(
-    hasBeenSubmittedAtom(formContext.formId)
-  );
-  const touchedFields = useFormAtomValue(touchedFieldsAtom(formContext.formId));
-  const isValid = useFormAtomValue(isValidAtom(formContext.formId));
+  const formContext = useInternalFormContext(formId, "useFormState");
+  const isSubmitting = useInternalIsSubmitting(formContext.formId);
+  const hasBeenSubmitted = useInternalHasBeenSubmitted(formContext.formId);
+  const touchedFields = useTouchedFields(formContext.formId);
+  const isValid = useInternalIsValid(formContext.formId);
+  const action = useFormActionProp(formContext.formId);
+  const subaction = useFormSubactionProp(formContext.formId);
 
+  const syncedDefaultValues = useSyncedDefaultValues(formContext.formId);
   const defaultValuesToUse = useDefaultValuesForForm(formContext);
-  const hydratedDefaultValues = defaultValuesToUse.hydrateTo(
-    formProps.defaultValues
-  );
+  const hydratedDefaultValues =
+    defaultValuesToUse.hydrateTo(syncedDefaultValues);
 
-  const fieldErrorsFromState = useFormAtomValue(
-    fieldErrorsAtom(formContext.formId)
-  );
+  const fieldErrorsFromState = useFieldErrors(formContext.formId);
   const fieldErrorsToUse = useFieldErrorsForForm(formContext);
   const hydratedFieldErrors = fieldErrorsToUse.hydrateTo(fieldErrorsFromState);
 
   return useMemo(
     () => ({
-      ...formProps,
+      action,
+      subaction,
       defaultValues: hydratedDefaultValues,
       fieldErrors: hydratedFieldErrors ?? {},
       hasBeenSubmitted,
@@ -66,12 +67,13 @@ export const useFormState = (formId?: string): FormState => {
       isValid,
     }),
     [
-      formProps,
+      action,
       hasBeenSubmitted,
       hydratedDefaultValues,
       hydratedFieldErrors,
       isSubmitting,
       isValid,
+      subaction,
       touchedFields,
     ]
   );
@@ -90,6 +92,21 @@ export type FormHelpers = {
    * Change the touched state of the specified field.
    */
   setTouched: (fieldName: string, touched: boolean) => void;
+  /**
+   * Validate the whole form and populate any errors.
+   */
+  validate: () => Promise<void>;
+  /**
+   * Clears all errors on the form.
+   */
+  clearAllErrors: () => void;
+  /**
+   * Resets the form.
+   *
+   * _Note_: The equivalent behavior can be achieved by calling formElement.reset()
+   * or clicking a button element with `type="reset"`.
+   */
+  reset: () => void;
 };
 
 /**
@@ -100,14 +117,20 @@ export type FormHelpers = {
 export const useFormHelpers = (formId?: string): FormHelpers => {
   const formContext = useInternalFormContext(formId, "useFormHelpers");
   const setTouched = useSetTouched(formContext);
-  const { validateField } = useFormAtomValue(formPropsAtom(formContext.formId));
+  const validateField = useValidateField(formContext.formId);
+  const validate = useValidate(formContext.formId);
   const clearError = useClearError(formContext);
+  const setFieldErrors = useSetFieldErrors(formContext.formId);
+  const reset = useResetFormElement(formContext.formId);
   return useMemo(
     () => ({
       setTouched,
       validateField,
       clearError,
+      validate,
+      clearAllErrors: () => setFieldErrors({}),
+      reset,
     }),
-    [clearError, setTouched, validateField]
+    [clearError, reset, setFieldErrors, setTouched, validate, validateField]
   );
 };

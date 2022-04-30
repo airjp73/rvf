@@ -8,15 +8,14 @@ import {
   useInternalFormContext,
   useFieldTouched,
   useFieldError,
-  useFormAtomValue,
   useFieldDefaultValue,
+  useClearError,
+  useInternalIsSubmitting,
+  useInternalIsValid,
+  useInternalHasBeenSubmitted,
+  useValidateField,
+  useRegisterReceiveFocus,
 } from "./internal/hooks";
-import {
-  formPropsAtom,
-  hasBeenSubmittedAtom,
-  isSubmittingAtom,
-  isValidAtom,
-} from "./internal/state";
 import {
   useControllableValue,
   useUpdateControllableValue,
@@ -31,7 +30,7 @@ import {
  */
 export const useIsSubmitting = (formId?: string) => {
   const formContext = useInternalFormContext(formId, "useIsSubmitting");
-  return useFormAtomValue(isSubmittingAtom(formContext.formId));
+  return useInternalIsSubmitting(formContext.formId);
 };
 
 /**
@@ -41,7 +40,7 @@ export const useIsSubmitting = (formId?: string) => {
  */
 export const useIsValid = (formId?: string) => {
   const formContext = useInternalFormContext(formId, "useIsValid");
-  return useFormAtomValue(isValidAtom(formContext.formId));
+  return useInternalIsValid(formContext.formId);
 };
 
 export type FieldProps = {
@@ -103,14 +102,12 @@ export const useField = (
 
   const defaultValue = useFieldDefaultValue(name, formContext);
   const [touched, setTouched] = useFieldTouched(name, formContext);
-  const [error, setError] = useFieldError(name, formContext);
+  const error = useFieldError(name, formContext);
+  const clearError = useClearError(formContext);
 
-  const hasBeenSubmitted = useFormAtomValue(
-    hasBeenSubmittedAtom(formContext.formId)
-  );
-  const { validateField, registerReceiveFocus } = useFormAtomValue(
-    formPropsAtom(formContext.formId)
-  );
+  const hasBeenSubmitted = useInternalHasBeenSubmitted(formContext.formId);
+  const validateField = useValidateField(formContext.formId);
+  const registerReceiveFocus = useRegisterReceiveFocus(formContext.formId);
 
   useEffect(() => {
     if (handleReceiveFocus)
@@ -120,7 +117,7 @@ export const useField = (
   const field = useMemo<FieldProps>(() => {
     const helpers = {
       error,
-      clearError: () => setError(undefined),
+      clearError: () => clearError(name),
       validate: () => {
         validateField(name);
       },
@@ -140,13 +137,13 @@ export const useField = (
     };
   }, [
     error,
+    clearError,
     defaultValue,
     touched,
     setTouched,
     name,
     hasBeenSubmitted,
     options?.validationBehavior,
-    setError,
     validateField,
   ]);
 
