@@ -38,6 +38,10 @@ Whether or not the form valid.
 
 Clear the errors from all the specified fields.
 
+<PropHeader prop="clearAllErrors" type="() => void" />
+
+Clears all the errors in the form.
+
 <PropHeader
   prop="validateField"
   type="(fieldName: string) => Promise<string | null>"
@@ -45,6 +49,10 @@ Clear the errors from all the specified fields.
 
 Performs validation on the specified field and populates `fieldErrors` if there is an error.
 Also returns the error message if there is an error.
+
+<PropHeader prop="validate" type="() => void" />
+
+Validates the whole form and updates `fieldErrors`.
 
 <PropHeader prop="action" type="string | undefined" />
 
@@ -91,3 +99,11 @@ If you set touched to `false` manually, then the value will be `false`.
 />
 
 Manually set the `touched` state of the specified field.
+
+<PropHeader prop="reset" type="() => void" />
+
+Resets the form, setting values back to default
+and clearing all errors and touched states..
+
+_Note_: This same behavior can be achieved by calling `reset` on the form element itself
+or by clicking a button with `type="reset"`

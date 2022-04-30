@@ -1,5 +1,4 @@
 import { Form as RemixForm, useFetcher, useSubmit } from "@remix-run/react";
-import { useAtomCallback } from "jotai/utils";
 import uniq from "lodash/uniq";
 import React, {
   ComponentProps,
@@ -11,7 +10,6 @@ import React, {
   useRef,
   useState,
 } from "react";
-import invariant from "tiny-invariant";
 import { useIsSubmitting, useIsValid } from "./hooks";
 import { FORM_ID_FIELD } from "./internal/constants";
 import {
@@ -21,23 +19,16 @@ import {
 import {
   useDefaultValuesFromLoader,
   useErrorResponseForForm,
-  useFormUpdateAtom,
   useHasActiveFormSubmit,
+  useSetFieldErrors,
 } from "./internal/hooks";
 import { MultiValueMap, useMultiValueMap } from "./internal/MultiValueMap";
-import { resetAtom } from "./internal/reset";
+import { cleanupFormState } from "./internal/state/cleanup";
+import { SyncedFormProps } from "./internal/state/createFormStore";
 import {
-  cleanupFormState,
-  endSubmitAtom,
-  fieldErrorsAtom,
-  formElementAtom,
-  formPropsAtom,
-  isHydratedAtom,
-  setFieldErrorAtom,
-  startSubmitAtom,
-  SyncedFormProps,
-} from "./internal/state";
-import { useAwaitValue } from "./internal/state/controlledFields";
+  useControlledFieldStore,
+  useFormStore,
+} from "./internal/state/storeHooks";
 import { useSubmitComplete } from "./internal/submissionCallbacks";
 import {
   mergeRefs,
@@ -234,40 +225,26 @@ export function ValidatedForm<DataType>({
   const Form = fetcher?.Form ?? RemixForm;
 
   const submit = useSubmit();
-  const setFieldErrors = useFormUpdateAtom(fieldErrorsAtom(formId));
-  const setFieldError = useFormUpdateAtom(setFieldErrorAtom(formId));
-  const reset = useFormUpdateAtom(resetAtom(formId));
-  const startSubmit = useFormUpdateAtom(startSubmitAtom(formId));
-  const endSubmit = useFormUpdateAtom(endSubmitAtom(formId));
-  const syncFormProps = useFormUpdateAtom(formPropsAtom(formId));
-  const setHydrated = useFormUpdateAtom(isHydratedAtom(formId));
-  const setFormElementInState = useFormUpdateAtom(formElementAtom(formId));
+  const setFieldErrors = useSetFieldErrors(formId);
+  const setFieldError = useFormStore(formId, (state) => state.setFieldError);
+  const reset = useFormStore(formId, (state) => state.reset);
+  const resetControlledFields = useControlledFieldStore(
+    formId,
+    (state) => state.reset
+  );
+  const startSubmit = useFormStore(formId, (state) => state.startSubmit);
+  const endSubmit = useFormStore(formId, (state) => state.endSubmit);
+  const syncFormProps = useFormStore(formId, (state) => state.syncFormProps);
+  const setHydrated = useFormStore(formId, (state) => state.setHydrated);
+  const setFormElementInState = useFormStore(
+    formId,
+    (state) => state.setFormElement
+  );
 
   useEffect(() => {
-    setHydrated(true);
+    setHydrated();
     return () => cleanupFormState(formId);
   }, [formId, setHydrated]);
-
-  const awaitValue = useAwaitValue(formId);
-  const validateField: SyncedFormProps["validateField"] = useCallback(
-    async (field) => {
-      invariant(formRef.current, "Cannot find reference to form");
-      await awaitValue(field);
-      const { error } = await validator.validateField(
-        getDataFromForm(formRef.current),
-        field
-      );
-
-      if (error) {
-        setFieldError({ field, error });
-        return error;
-      } else {
-        setFieldError({ field, error: undefined });
-        return null;
-      }
-    },
-    [awaitValue, setFieldError, validator]
-  );
 
   const customFocusHandlers = useMultiValueMap<string, () => void>();
   const registerReceiveFocus: SyncedFormProps["registerReceiveFocus"] =
@@ -286,8 +263,8 @@ export function ValidatedForm<DataType>({
       action,
       defaultValues: providedDefaultValues ?? backendDefaultValues ?? {},
       subaction,
-      validateField,
       registerReceiveFocus,
+      validator,
     });
   }, [
     action,
@@ -295,8 +272,8 @@ export function ValidatedForm<DataType>({
     registerReceiveFocus,
     subaction,
     syncFormProps,
-    validateField,
     backendDefaultValues,
+    validator,
   ]);
 
   useEffect(() => {
@@ -386,6 +363,7 @@ export function ValidatedForm<DataType>({
         onReset?.(event);
         if (event.defaultPrevented) return;
         reset();
+        resetControlledFields();
       }}
     >
       <InternalFormContext.Provider value={contextValue}>
