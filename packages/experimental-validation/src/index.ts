@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-use-before-define */
+
 type ValidationContext<Value> = {
   value: Value;
 };
@@ -8,11 +10,59 @@ type Refine<Input, Output> = (
 
 class ValidationError extends Error {}
 
-class Refinement<Input, Output> {
-  private _refinement: Refine<Input, Output>;
+type RefinementCreator<Input, Output> = (
+  ...args: any[]
+) => Refinement<Input, Output, {}>;
 
-  constructor(refinement: Refine<Input, Output>) {
+type ChainObj = Record<string, RefinementCreator<any, any>>;
+
+// type ChainMethods<T extends ChainObj> = {
+//   [K in keyof T]: T[K] extends RefinementCreator<infer In, infer Out>
+//     ? (...args: Parameters<T[K]>) => Refinement<In, Out, {}>
+//     : never;
+// };
+
+// abstract class Type<Input, Output> {
+//   abstract perform: Refine<Input, Output>;
+// }
+
+// type RefinementInput<R> = R extends Refinement<infer In, any, any> ? In : never;
+// type RefinementOutput<R> = R extends Refinement<any, infer Out, any>
+//   ? Out
+//   : never;
+// type RefinementChains<R> = R extends Refinement<any, any, infer Chains>
+//   ? Chains
+//   : never;
+
+class Refinement<Input, Output, Chains extends ChainObj> {
+  private _refinement: Refine<Input, Output>;
+  private _chains: Chains;
+
+  static of<Input, Output>(
+    refinement: Refine<Input, Output>
+  ): Refinement<Input, Output, {}>;
+  static of<Input, Output, Chains extends ChainObj>(
+    refinement: Refine<Input, Output>,
+    chains: Chains
+  ): Refinement<Input, Output, Chains> & Chains;
+  static of<Input, Output, Chains extends ChainObj>(
+    refinement: Refine<Input, Output>,
+    chains?: Chains
+  ): any {
+    if (chains) return new Refinement(refinement, chains);
+    return new Refinement(refinement, {});
+  }
+
+  private constructor(refinement: Refine<Input, Output>, chains: Chains) {
     this._refinement = refinement;
+    this._chains = chains;
+
+    // for (const [method, creator] of Object.entries(chains)) {
+    //   this[method] = (...args: any[]) => {
+    //     const refinement = creator(...args);
+    //     return this.refine(refinement);
+    //   };
+    // }
   }
 
   validateSync(input: Input): Output {
@@ -30,19 +80,37 @@ class Refinement<Input, Output> {
     return MaybePromise.of(this._refinement(context));
   }
 
-  refine<NewOutput>(
-    refinement: Refinement<Output, NewOutput>
-  ): Refinement<Input, NewOutput> {
-    return new Refinement((context) => {
+  refine<NewOutput extends Output>(
+    refinement: Refinement<Output, NewOutput, Chains>
+  ) {
+    return new Refinement<Input, NewOutput, Chains>((context) => {
       return this.validateMaybeAsync(context.value).then((refined) =>
         refinement.validateMaybeAsync(refined)
       );
-    });
+    }, this._chains);
+  }
+
+  transform<NewOutput>(refinement: Refinement<Output, NewOutput, Chains>) {
+    return new Refinement<Input, NewOutput, {}>((context) => {
+      return this.validateMaybeAsync(context.value).then((refined) =>
+        refinement.validateMaybeAsync(refined)
+      );
+    }, {});
+  }
+
+  as<NewOutput, NewChains extends ChainObj>(
+    nextRefinement: Refinement<Output, NewOutput, NewChains>
+  ) {
+    return new Refinement<Input, NewOutput, NewChains>((context) => {
+      return this.validateMaybeAsync(context.value).then((refined) =>
+        nextRefinement.validateMaybeAsync(refined)
+      );
+    }, nextRefinement._chains);
   }
 }
 
 const makeRefinement = <Input, Output>(refine: Refine<Input, Output>) =>
-  new Refinement(refine);
+  Refinement.of(refine);
 
 type AwaitedArray<T extends any[]> = {
   [K in keyof T]: Awaited<T[K]>;
@@ -106,6 +174,24 @@ const str = makeRefinement<unknown, string>(({ value }) => {
   throw new ValidationError("Not a string");
 });
 
+const number = makeRefinement<unknown, number>(({ value }) => {
+  if (typeof value === "number") return value;
+  if (value === undefined) throw new ValidationError("Required");
+  throw new ValidationError("Not a number");
+});
+
+const min = (min: number) =>
+  makeRefinement<number, number>(({ value }) => {
+    if (value < min) throw new ValidationError(`Must be at least ${min}`);
+    return value;
+  });
+
+const max = (max: number) =>
+  makeRefinement<number, number>(({ value }) => {
+    if (value > max) throw new ValidationError(`Must be less than ${max}`);
+    return value;
+  });
+
 const maxLength = (max: number) =>
   makeRefinement<string, string>(({ value }) => {
     if (value.length > max) throw new ValidationError(`Max length ${max}`);
@@ -117,6 +203,10 @@ const minLength = (min: number) =>
     if (value.length < min) throw new ValidationError(`Min length ${min}`);
     return value;
   });
+
+const stringToNumber = makeRefinement<string, number>(({ value }) => {
+  return Number(value);
+});
 
 const user = makeRefinement<string, { id: string }>(({ value }) =>
   Promise.resolve({ id: value })
@@ -148,8 +238,21 @@ if (import.meta.vitest) {
       expect(() => s.validateSync("123456")).toThrow();
     });
 
+    it("should be able to refine, transform, and continue refining on new type", () => {
+      const s = str
+        .refine(maxLength(5))
+        .transform(stringToNumber)
+        .as(number)
+        .refine(max(99999));
+
+      expect(s.validateSync("12")).toEqual(12);
+      expect(s.validateSync("12345")).toEqual(12345);
+      expect(s.validateSync("99999")).toEqual(99999);
+      expect(() => s.validateSync("100000")).toThrow();
+    });
+
     it("should handle async refinements", async () => {
-      const s = str.refine(maxLength(6)).refine(minLength(6)).refine(user);
+      const s = str.refine(maxLength(6)).refine(minLength(6)).transform(user);
       expect(await s.validateAsync("123456")).toEqual({ id: "123456" });
       expect(() => s.validateSync("123456")).toThrow();
       expect(await s.validateMaybeAsync("123456").await()).toEqual({
