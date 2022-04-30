@@ -10,59 +10,115 @@ type Refine<Input, Output> = (
 
 class ValidationError extends Error {}
 
-type RefinementCreator<Input, Output> = (
-  ...args: any[]
-) => Refinement<Input, Output, {}>;
+type RefinementCreator<
+  Input,
+  Output,
+  CR extends ChainObj,
+  CT extends ChainObj
+> = (...args: any[]) => Refinement<Input, Output, CR, CT>;
 
-type ChainObj = Record<string, RefinementCreator<any, any>>;
+interface ChainObj {
+  [key: string]: RefinementCreator<any, any, {}, {}>;
+}
+type ChainableRefinements<T> = Record<
+  string,
+  RefinementCreator<T, T, any, any>
+>;
+type ChainableTransforms<T> = Record<
+  string,
+  RefinementCreator<T, unknown, any, any>
+>;
 
-// type ChainMethods<T extends ChainObj> = {
-//   [K in keyof T]: T[K] extends RefinementCreator<infer In, infer Out>
-//     ? (...args: Parameters<T[K]>) => Refinement<In, Out, {}>
-//     : never;
-// };
+type ChainRefinementMethods<
+  In,
+  Out,
+  CR extends ChainObj,
+  CT extends ChainObj
+> = {
+  [K in keyof CR]: CR[K] extends RefinementCreator<any, any, any, any>
+    ? (...args: Parameters<CR[K]>) => RefinementType<In, Out, CR, CT>
+    : never;
+} & {
+  [K in keyof CT]: CT[K] extends RefinementCreator<
+    any,
+    infer TransformOut,
+    infer TransformCR,
+    infer TransformCT
+  >
+    ? (
+        ...args: Parameters<CT[K]>
+      ) => RefinementType<In, TransformOut, TransformCR, TransformCT>
+    : never;
+};
 
-// abstract class Type<Input, Output> {
-//   abstract perform: Refine<Input, Output>;
-// }
+type RefinementType<
+  Input,
+  Output,
+  ChainRefines extends ChainObj,
+  ChainTransforms extends ChainObj
+> = Refinement<Input, Output, ChainRefines, ChainTransforms> &
+  ChainRefinementMethods<Input, Output, ChainRefines, ChainTransforms>;
 
-// type RefinementInput<R> = R extends Refinement<infer In, any, any> ? In : never;
-// type RefinementOutput<R> = R extends Refinement<any, infer Out, any>
-//   ? Out
-//   : never;
-// type RefinementChains<R> = R extends Refinement<any, any, infer Chains>
-//   ? Chains
-//   : never;
-
-class Refinement<Input, Output, Chains extends ChainObj> {
+class Refinement<
+  Input,
+  Output,
+  ChainRefines extends ChainObj,
+  ChainTransforms extends ChainObj
+> {
   private _refinement: Refine<Input, Output>;
-  private _chains: Chains;
+  private _chainRefinements: ChainRefines;
+  private _chainTransforms: ChainTransforms;
 
   static of<Input, Output>(
     refinement: Refine<Input, Output>
-  ): Refinement<Input, Output, {}>;
-  static of<Input, Output, Chains extends ChainObj>(
+  ): Refinement<Input, Output, {}, {}>;
+  static of<
+    Input,
+    Output,
+    CR extends ChainableRefinements<Input>,
+    CT extends ChainableTransforms<Input>
+  >(
     refinement: Refine<Input, Output>,
-    chains: Chains
-  ): Refinement<Input, Output, Chains> & Chains;
-  static of<Input, Output, Chains extends ChainObj>(
+    chainRefines: CR,
+    chainTransforms: CT
+  ): RefinementType<Input, Output, CR, CT>;
+  static of<
+    Input,
+    Output,
+    CR extends ChainableRefinements<Input>,
+    CT extends ChainableTransforms<Input>
+  >(
     refinement: Refine<Input, Output>,
-    chains?: Chains
+    chainRefines?: CR,
+    chainTransforms?: CT
   ): any {
-    if (chains) return new Refinement(refinement, chains);
-    return new Refinement(refinement, {});
+    if (chainRefines && chainTransforms)
+      return new Refinement(refinement, chainRefines, chainTransforms);
+    return new Refinement(refinement, {}, {});
   }
 
-  private constructor(refinement: Refine<Input, Output>, chains: Chains) {
+  private constructor(
+    refinement: Refine<Input, Output>,
+    chainRefines: ChainRefines,
+    chainTransforms: ChainTransforms
+  ) {
     this._refinement = refinement;
-    this._chains = chains;
+    this._chainRefinements = chainRefines;
+    this._chainTransforms = chainTransforms;
 
-    // for (const [method, creator] of Object.entries(chains)) {
-    //   this[method] = (...args: any[]) => {
-    //     const refinement = creator(...args);
-    //     return this.refine(refinement);
-    //   };
-    // }
+    for (const [method, creator] of Object.entries(chainRefines)) {
+      (this as any)[method] = (...args: any[]) => {
+        const refinement = creator(...args);
+        return this.refine(refinement);
+      };
+    }
+
+    for (const [method, creator] of Object.entries(chainTransforms)) {
+      (this as any)[method] = (...args: any[]) => {
+        const refinement = creator(...args);
+        return this.transform(refinement);
+      };
+    }
   }
 
   validateSync(input: Input): Output {
@@ -81,31 +137,64 @@ class Refinement<Input, Output, Chains extends ChainObj> {
   }
 
   refine<NewOutput extends Output>(
-    refinement: Refinement<Output, NewOutput, Chains>
+    refinement: Refinement<Output, NewOutput, {}, {}>
   ) {
-    return new Refinement<Input, NewOutput, Chains>((context) => {
-      return this.validateMaybeAsync(context.value).then((refined) =>
-        refinement.validateMaybeAsync(refined)
-      );
-    }, this._chains);
+    return Refinement.of<Input, NewOutput, ChainRefines, ChainTransforms>(
+      (context) => {
+        return this.validateMaybeAsync(context.value).then((refined) =>
+          refinement.validateMaybeAsync(refined)
+        );
+      },
+      this._chainRefinements,
+      this._chainTransforms
+    );
   }
 
-  transform<NewOutput>(refinement: Refinement<Output, NewOutput, Chains>) {
-    return new Refinement<Input, NewOutput, {}>((context) => {
-      return this.validateMaybeAsync(context.value).then((refined) =>
-        refinement.validateMaybeAsync(refined)
-      );
-    }, {});
+  transform<NewOutput, NewCR extends ChainObj, NewCT extends ChainObj>(
+    refinement: Refinement<Output, NewOutput, NewCR, NewCT>
+  ) {
+    return Refinement.of<Input, NewOutput, NewCR, NewCT>(
+      (context) => {
+        return this.validateMaybeAsync(context.value).then((refined) =>
+          refinement.validateMaybeAsync(refined)
+        );
+      },
+      refinement._chainRefinements,
+      refinement._chainTransforms
+    );
   }
 
-  as<NewOutput, NewChains extends ChainObj>(
-    nextRefinement: Refinement<Output, NewOutput, NewChains>
+  as<NewOutput, NewCR extends ChainObj, NewCT extends ChainObj>(
+    nextRefinement: Refinement<Output, NewOutput, NewCR, NewCT>
   ) {
-    return new Refinement<Input, NewOutput, NewChains>((context) => {
-      return this.validateMaybeAsync(context.value).then((refined) =>
-        nextRefinement.validateMaybeAsync(refined)
-      );
-    }, nextRefinement._chains);
+    return Refinement.of<Input, NewOutput, NewCR, NewCT>(
+      (context) => {
+        return this.validateMaybeAsync(context.value).then((refined) =>
+          nextRefinement.validateMaybeAsync(refined)
+        );
+      },
+      nextRefinement._chainRefinements,
+      nextRefinement._chainTransforms
+    );
+  }
+
+  withRefinements<NewCR extends ChainObj>(
+    chains: NewCR
+  ): RefinementType<Input, Output, NewCR & ChainRefines, ChainTransforms> {
+    return Refinement.of(
+      this._refinement,
+      { ...this._chainRefinements, ...chains },
+      this._chainTransforms
+    );
+  }
+
+  withTransforms<NewCT extends ChainObj>(
+    chains: NewCT
+  ): RefinementType<Input, Output, ChainRefines, ChainTransforms & NewCT> {
+    return Refinement.of(this._refinement, this._chainRefinements, {
+      ...this._chainTransforms,
+      ...chains,
+    });
   }
 }
 
@@ -212,6 +301,18 @@ const user = makeRefinement<string, { id: string }>(({ value }) =>
   Promise.resolve({ id: value })
 );
 
+const numChainable = number.withRefinements({ min, max });
+
+const testing = stringToNumber.as(numChainable);
+const strChainable = str
+  .withRefinements({
+    minLength,
+    maxLength,
+  })
+  .withTransforms({
+    stringToNumber: () => testing,
+  });
+
 if (import.meta.vitest) {
   const { describe, it, expect } = import.meta.vitest;
 
@@ -249,6 +350,21 @@ if (import.meta.vitest) {
       expect(s.validateSync("12345")).toEqual(12345);
       expect(s.validateSync("99999")).toEqual(99999);
       expect(() => s.validateSync("100000")).toThrow();
+    });
+
+    it("should be nestable", () => {
+      const s = str.transform(stringToNumber).refine(number.refine(max(10)));
+      expect(() => s.validateSync("11")).toThrow();
+      expect(s.validateSync("10")).toEqual(10);
+      expect(s.validateSync("9")).toEqual(9);
+    });
+
+    it("should be chainable", () => {
+      const s = strChainable.maxLength(2).minLength(1).stringToNumber().max(11);
+      expect(s.validateSync("1")).toEqual(1);
+      expect(s.validateSync("11")).toEqual(11);
+      expect(() => s.validateSync("12")).toThrow();
+      expect(() => s.validateSync("")).toThrow();
     });
 
     it("should handle async refinements", async () => {
