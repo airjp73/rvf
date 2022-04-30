@@ -3,77 +3,96 @@
 // User can create their own schemas
 // Creates a chainable API
 
-import { ArgumentsType } from "vitest";
-import { ParseReturnType } from "zod";
+/**
+ * Result
+ * ```ts
+ * const schema = v.object({
+ *   firstName: v.string(),
+ *   middleName: v.optional().string(),
+ *   lastName: v.string(),
+ *   email: v.string().email(),
+ *   dob: v.string().date().between('1/1/1900', '1/1/2000'),
+ * });
+ * ```
+ *
+ * Base building blocks
+ * type
+ */
 
-type ValidationContext = {
-  value: unknown;
-};
+type IsValid<Input, Output extends Input> = (value: Input) => value is Output;
 
-const call;
+/////////// Some code I've written
 
-type Validate<T> = (context: ValidationContext) => T;
+// type ValidationContext = {
+//   value: unknown;
+// };
 
-//// Internal helper types
+// const call;
 
-const unknownRecord: Validate<Record<any, any>> = ({ value }) => {
-  // Method taken from io-ts
-  // https://github.com/gcanti/io-ts/blob/master/src/index.ts#L995-L996
-  const stringRepresentation = Object.prototype.toString.call(value);
-  const isRecord =
-    stringRepresentation === "[object Object]" ||
-    stringRepresentation === "[object Window]";
+// type Validate<T> = (context: ValidationContext) => T;
 
-  if (!isRecord) throw new Error(`Expected a record but got ${value}`);
-  return value as Record<any, any>;
-};
+// //// Internal helper types
 
-const literal =
-  <T>(expected: T): Validate<T> =>
-  ({ value }) => {
-    if (value === expected) return value as T;
-    throw new Error(`Expected ${expected} but got ${value}`);
-  };
+// const unknownRecord: Validate<Record<any, any>> = ({ value }) => {
+//   // Method taken from io-ts
+//   // https://github.com/gcanti/io-ts/blob/master/src/index.ts#L995-L996
+//   const stringRepresentation = Object.prototype.toString.call(value);
+//   const isRecord =
+//     stringRepresentation === "[object Object]" ||
+//     stringRepresentation === "[object Window]";
 
-type FieldValidators<Fields extends Record<string, any>> = {
-  [K in keyof Fields]: Validate<Fields[K]>;
-};
+//   if (!isRecord) throw new Error(`Expected a record but got ${value}`);
+//   return value as Record<any, any>;
+// };
 
-const object =
-  <Fields extends Record<string, any>>(
-    schema: FieldValidators<Fields>
-  ): Validate<Fields> =>
-  ({ value }) => {
-    return {} as any;
-  };
+// const literal =
+//   <T>(expected: T): Validate<T> =>
+//   ({ value }) => {
+//     if (value === expected) return value as T;
+//     throw new Error(`Expected ${expected} but got ${value}`);
+//   };
 
-const test = object({ a: literal(1), b: literal("hi") });
-const test2 = test({ value: { a: 1, b: "hi" } });
+// type FieldValidators<Fields extends Record<string, any>> = {
+//   [K in keyof Fields]: Validate<Fields[K]>;
+// };
 
-const withChainables = <
-  Chainables extends Record<string, (...args: any[]) => Validate<any>>
->(
-  chainables: Chainables
-) => {
-  const chainFuncs = {};
-  for (const [key, value] of Object.entries(chainables)) {
-  }
-};
+// const object =
+//   <Fields extends Record<string, any>>(
+//     schema: FieldValidators<Fields>
+//   ): Validate<Fields> =>
+//   ({ value }) => {
+//     return {} as any;
+//   };
 
-type Schema<
-  Args extends any[],
-  ReturnType,
-  Chainables extends Record<string, (...args: any[]) => Validate<any>>
-> = {
-  make: (...args: Args) => Validate<ReturnType>;
-  chainables: Chainables;
-};
+// const test = object({ a: literal(1), b: literal("hi") });
+// const test2 = test({ value: { a: 1, b: "hi" } });
 
-const makeValidator = <Args extends any[], ReturnType>(
-  make: (...args: Args) => Validate<ReturnType>
-): Schema<Args, ReturnType, {}> => {
-  return {
-    chainables: {},
-    make,
-  };
-};
+// type Schema<
+//   Args extends any[],
+//   ReturnType,
+//   Chainables extends Record<string, (...args: any[]) => Validate<any>>
+// > = {
+//   make: (...args: Args) => Validate<ReturnType>;
+//   chainables: Chainables;
+// };
+
+// const makeValidator = <Args extends any[], ReturnType>(
+//   make: (...args: Args) => Validate<ReturnType>
+// ): Schema<Args, ReturnType, {}> => {
+//   return {
+//     chainables: {},
+//     make,
+//   };
+// };
+
+// const withChainables = <
+//   Chainables extends Record<string, (...args: any[]) => Validate<any>>,
+//   S extends Schema<any, any, any>
+// >(
+//   s: S,
+//   chainables: Chainables
+// ) => {
+//   const chainFuncs = {};
+//   for (const [key, value] of Object.entries(chainables)) {
+//   }
+// };

@@ -1,0 +1,23 @@
+{
+  "name": "experimental-validation",
+  "version": "0.0.1",
+  "browser": "./dist/experimental-validation.cjs.js",
+  "main": "./dist/experimental-validation.umd.js",
+  "module": "./dist/experimental-validation.es.js",
+  "types": "./dist/types/index.d.ts",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/airjp73/remix-validated-form"
+  },
+  "scripts": {
+    "dev": "tsc --module ESNext --outDir ./browser --watch",
+    "build": "vite build",
+    "prepublishOnly": "npm run build"
+  },
+  "devDependencies": {
+    "tsconfig": "*",
+    "typescript": "^4.5.4",
+    "vite-config": "*"
+  }
+}
