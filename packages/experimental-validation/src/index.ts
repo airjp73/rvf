@@ -1,7 +1,11 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 
+// Things to figure out how to implement
+// pick / omit from object schema. It's not really a refinement or transformation -- it's just a method.
+
 type ValidationContext<Value> = {
   value: Value;
+  meta: Record<string, any>;
 };
 
 type Refine<Input, Output> = (
@@ -70,6 +74,7 @@ class Refinement<
   private _refinement: Refine<Input, Output>;
   private _chainRefinements: ChainRefines;
   private _chainTransforms: ChainTransforms;
+  private _metadata: Record<string, any>;
 
   static of<Input, Output>(
     refinement: Refine<Input, Output>
@@ -82,7 +87,8 @@ class Refinement<
   >(
     refinement: Refine<Input, Output>,
     chainRefines: CR,
-    chainTransforms: CT
+    chainTransforms: CT,
+    metadata?: Record<string, any>
   ): RefinementType<Input, Output, CR, CT>;
   static of<
     Input,
@@ -92,21 +98,29 @@ class Refinement<
   >(
     refinement: Refine<Input, Output>,
     chainRefines?: CR,
-    chainTransforms?: CT
+    chainTransforms?: CT,
+    metadata?: Record<string, any>
   ): any {
     if (chainRefines && chainTransforms)
-      return new Refinement(refinement, chainRefines, chainTransforms);
-    return new Refinement(refinement, {}, {});
+      return new Refinement(
+        refinement,
+        chainRefines,
+        chainTransforms,
+        metadata
+      );
+    return new Refinement(refinement, {}, {}, metadata);
   }
 
   private constructor(
     refinement: Refine<Input, Output>,
     chainRefines: ChainRefines,
-    chainTransforms: ChainTransforms
+    chainTransforms: ChainTransforms,
+    metadata: Record<string, any> = {}
   ) {
     this._refinement = refinement;
     this._chainRefinements = chainRefines;
     this._chainTransforms = chainTransforms;
+    this._metadata = metadata;
 
     for (const [method, creator] of Object.entries(chainRefines)) {
       (this as any)[method] = (...args: any[]) => {
@@ -124,7 +138,7 @@ class Refinement<
   }
 
   validateSync(input: Input): Output {
-    const context = { value: input };
+    const context = { value: input, meta: this._metadata };
     try {
       return MaybePromise.of(() => this._refinement(context)).assertSync();
     } catch (err) {
@@ -134,12 +148,12 @@ class Refinement<
   }
 
   validateAsync(input: Input): Promise<Output> {
-    const context = { value: input };
+    const context = { value: input, meta: this._metadata };
     return MaybePromise.of(() => this._refinement(context)).await();
   }
 
   validateMaybeAsync(input: Input): MaybePromise<Output> {
-    const context = { value: input };
+    const context = { value: input, meta: this._metadata };
     return MaybePromise.of(() => this._refinement(context));
   }
 
@@ -153,7 +167,8 @@ class Refinement<
         );
       },
       this._chainRefinements,
-      this._chainTransforms
+      this._chainTransforms,
+      this._metadata
     );
   }
 
@@ -167,7 +182,8 @@ class Refinement<
         );
       },
       refinement._chainRefinements,
-      refinement._chainTransforms
+      refinement._chainTransforms,
+      this._metadata
     );
   }
 
@@ -181,7 +197,8 @@ class Refinement<
         );
       },
       nextRefinement._chainRefinements,
-      nextRefinement._chainTransforms
+      nextRefinement._chainTransforms,
+      this._metadata
     );
   }
 
@@ -191,17 +208,28 @@ class Refinement<
     return Refinement.of(
       this._refinement,
       { ...this._chainRefinements, ...chains },
-      this._chainTransforms
+      this._chainTransforms,
+      this._metadata
     );
   }
 
   withTransforms<NewCT extends ChainObj>(
     chains: NewCT
   ): RefinementType<Input, Output, ChainRefines, ChainTransforms & NewCT> {
-    return Refinement.of(this._refinement, this._chainRefinements, {
-      ...this._chainTransforms,
-      ...chains,
-    });
+    return Refinement.of(
+      this._refinement,
+      this._chainRefinements,
+      {
+        ...this._chainTransforms,
+        ...chains,
+      },
+      this._metadata
+    );
+  }
+
+  setMetadata(key: string, value: any): this {
+    this._metadata[key] = value;
+    return this;
   }
 }
 
@@ -333,9 +361,10 @@ const str = makeRefinement<unknown, string>(({ value }) => {
   throw new ValidationError("Not a string");
 });
 
-const number = makeRefinement<unknown, number>(({ value }) => {
+const number = makeRefinement<unknown, number>(({ value, meta: { label } }) => {
   if (typeof value === "number") return value;
-  if (value === undefined) throw new ValidationError("Required");
+  if (value === undefined)
+    throw new ValidationError(label ? `${label} is required` : "Required");
   throw new ValidationError("Not a number");
 });
 
@@ -477,6 +506,14 @@ if (import.meta.vitest) {
       expect(await s.validateMaybeAsync("123456").await()).toEqual({
         id: "123456",
       });
+    });
+
+    it("should handle metadata like label", () => {
+      expect(() => number.validateSync(undefined)).toThrowError("Required");
+      const s = number.setMetadata("label", "MyNumber");
+      expect(() => s.validateSync(undefined)).toThrowError(
+        "MyNumber is required"
+      );
     });
   });
 
