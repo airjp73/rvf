@@ -40,7 +40,7 @@ type ChainRefinementMethods<
   CT extends ChainObj,
   Meta extends Record<any, any>
 > = {
-  [K in keyof CR]: CR[K] extends RefinementCreator<any, any, any, any>
+  [K in keyof CR]: CR[K] extends RefinementCreator<any, any, {}, {}>
     ? (...args: Parameters<CR[K]>) => RefinementType<In, Out, CR, CT, Meta>
     : never;
 } & {
@@ -72,6 +72,7 @@ type OutputType<T> = T extends Refinement<any, infer Out, {}, {}> ? Out : never;
  * Instead of { a: string } & { b: string } you can get { a: string, b: string }
  */
 type MergeIntersection<T> = {} & { [K in keyof T]: T[K] };
+type Merge<T, U> = MergeIntersection<Omit<T, keyof U> & U>;
 
 class Refinement<
   Input,
@@ -163,8 +164,11 @@ class Refinement<
     return MaybePromise.of(() => this._refinement(context)).await();
   }
 
-  validateMaybeAsync(input: Input): MaybePromise<Output> {
-    const context = { value: input, meta: this._metadata };
+  validateMaybeAsync(
+    input: Input,
+    metadata: Record<any, any>
+  ): MaybePromise<Output> {
+    const context = { value: input, meta: { ...this._metadata, ...metadata } };
     return MaybePromise.of(() => this._refinement(context));
   }
 
@@ -173,13 +177,13 @@ class Refinement<
   ) {
     return Refinement.of<Input, NewOutput, ChainRefines, ChainTransforms, Meta>(
       (context) => {
-        return this.validateMaybeAsync(context.value).then((refined) =>
-          refinement.validateMaybeAsync(refined)
+        return this.validateMaybeAsync(context.value, this._metadata).then(
+          (refined) => refinement.validateMaybeAsync(refined, this._metadata)
         );
       },
       this._chainRefinements,
       this._chainTransforms,
-      this._metadata
+      { ...this._metadata }
     );
   }
 
@@ -188,13 +192,13 @@ class Refinement<
   ) {
     return Refinement.of<Input, NewOutput, NewCR, NewCT, Meta>(
       (context) => {
-        return this.validateMaybeAsync(context.value).then((refined) =>
-          refinement.validateMaybeAsync(refined)
+        return this.validateMaybeAsync(context.value, this._metadata).then(
+          (refined) => refinement.validateMaybeAsync(refined, this._metadata)
         );
       },
       refinement._chainRefinements,
       refinement._chainTransforms,
-      this._metadata
+      { ...this._metadata }
     );
   }
 
@@ -203,13 +207,14 @@ class Refinement<
   ) {
     return Refinement.of<Input, NewOutput, NewCR, NewCT, Meta>(
       (context) => {
-        return this.validateMaybeAsync(context.value).then((refined) =>
-          nextRefinement.validateMaybeAsync(refined)
+        return this.validateMaybeAsync(context.value, this._metadata).then(
+          (refined) =>
+            nextRefinement.validateMaybeAsync(refined, this._metadata)
         );
       },
       nextRefinement._chainRefinements,
       nextRefinement._chainTransforms,
-      this._metadata
+      { ...this._metadata }
     );
   }
 
@@ -218,7 +223,7 @@ class Refinement<
   ): RefinementType<
     Input,
     Output,
-    NewCR & ChainRefines,
+    Merge<ChainRefines, NewCR>,
     ChainTransforms,
     Meta
   > {
@@ -226,7 +231,7 @@ class Refinement<
       this._refinement,
       { ...this._chainRefinements, ...chains },
       this._chainTransforms,
-      this._metadata
+      { ...this._metadata }
     );
   }
 
@@ -236,7 +241,7 @@ class Refinement<
     Input,
     Output,
     ChainRefines,
-    ChainTransforms & NewCT,
+    Merge<ChainTransforms, NewCT>,
     Meta
   > {
     return Refinement.of(
@@ -246,7 +251,7 @@ class Refinement<
         ...this._chainTransforms,
         ...chains,
       },
-      this._metadata
+      { ...this._metadata }
     );
   }
 
@@ -258,7 +263,7 @@ class Refinement<
     Output,
     ChainRefines,
     ChainTransforms,
-    MergeIntersection<Omit<Meta, Key> & { [K in Key]: Value }>
+    Merge<Meta, { [K in Key]: Value }>
   > {
     return Refinement.of(
       this._refinement,
@@ -281,7 +286,7 @@ function makeRefinement<Input, Output, Meta extends Record<any, any>>(
   metadata?: Meta
 ) {
   if (metadata) return Refinement.of(refine, {}, {}, metadata);
-  Refinement.of(refine);
+  return Refinement.of(refine);
 }
 
 type AwaitedArray<T extends any[]> = {
@@ -407,20 +412,32 @@ const number = makeRefinement<unknown, number>(({ value, meta: { label } }) => {
   if (typeof value === "number") return value;
   if (value === undefined)
     throw new ValidationError(label ? `${label} is required` : "Required");
-  throw new ValidationError("Not a number");
+  throw new ValidationError(
+    label ? `${label} is not a number` : "Not a number"
+  );
 });
 
 const min = (min: number) =>
-  makeRefinement<number, number>(({ value }) => {
-    if (value < min) throw new ValidationError(`Must be at least ${min}`);
+  makeRefinement<number, number>(({ value, meta: { label } }) => {
+    if (value < min)
+      throw new ValidationError(
+        label ? `${label} must be at least ${min}` : `Must be at least ${min}`
+      );
     return value;
   });
 
 const max = (max: number) =>
-  makeRefinement<number, number>(({ value }) => {
-    if (value > max) throw new ValidationError(`Must be less than ${max}`);
+  makeRefinement<number, number>(({ value, meta: { label } }) => {
+    if (value > max)
+      throw new ValidationError(
+        label
+          ? `${label} must be less than or equal to ${max}`
+          : `Must be less than or equal to ${max}`
+      );
     return value;
   });
+
+const numChainable = number.withRefinements({ min, max });
 
 const maxLength = (max: number) =>
   makeRefinement<string, string>(({ value }) => {
@@ -446,11 +463,11 @@ type UnionTypes<T extends Refinement<any, any, {}, {}>[]> = {
   [K in keyof T]: OutputType<T[K]>;
 }[number];
 const union = <T extends Refinement<any, any, {}, {}>[]>(...types: T) =>
-  makeRefinement<unknown, UnionTypes<T>>(({ value }) => {
+  makeRefinement<unknown, UnionTypes<T>>(({ value, meta }) => {
     const [firstType, ...restTypes] = types;
-    let maybe = firstType.validateMaybeAsync(value);
+    let maybe = firstType.validateMaybeAsync(value, meta);
     for (const type of restTypes) {
-      maybe = maybe.catch(() => type.validateMaybeAsync(value));
+      maybe = maybe.catch(() => type.validateMaybeAsync(value, meta));
     }
     return maybe;
   });
@@ -469,12 +486,12 @@ const unknownRecord = makeRefinement<unknown, Record<any, unknown>>(
 const object = <T extends Record<any, Refinement<any, any, {}, {}>>>(
   typeObj: T
 ): Refinement<any, ObjectOutput<T>, {}, {}> => {
-  return makeRefinement<unknown, ObjectOutput<T>>(({ value }) => {
+  return makeRefinement<unknown, ObjectOutput<T>>(({ value, meta }) => {
     if (value === null || value === undefined) throw new Error("Required");
     const valueObj = unknownRecord.validateSync(value);
     const keys = Object.keys(typeObj);
     const maybes = Object.entries(typeObj).map(([key, type]) =>
-      type.validateMaybeAsync(valueObj[key])
+      type.validateMaybeAsync(valueObj[key], meta)
     );
     return MaybePromise.all(maybes)
       .then((newValues) => newValues.map((val, index) => [keys[index], val]))
@@ -489,8 +506,6 @@ const undef = makeRefinement<unknown, undefined>(({ value }) => {
 const optional = <T extends Refinement<any, any, {}, {}>>(refinement: T) =>
   union(undef, refinement);
 
-const numChainable = number.withRefinements({ min, max });
-
 const testing = stringToNumber.as(numChainable);
 const strChainable = str
   .withRefinements({
@@ -499,6 +514,17 @@ const strChainable = str
   })
   .withTransforms({
     stringToNumber: () => testing,
+  });
+
+const u = makeRefinement<unknown, unknown>(({ value }) => value);
+const test = u.setMetadata("label", "").withRefinements({
+  number: () => numChainable,
+});
+test.number();
+const label = (labelString: string) =>
+  u.setMetadata("label", labelString).withTransforms({
+    string: () => strChainable,
+    number: () => numChainable,
   });
 
 if (import.meta.vitest) {
@@ -628,19 +654,34 @@ if (import.meta.vitest) {
       const s = str.refine(maxLength(6)).refine(minLength(6)).transform(user);
       expect(await s.validateAsync("123456")).toEqual({ id: "123456" });
       expect(() => s.validateSync("123456")).toThrow();
-      expect(await s.validateMaybeAsync("123456").await()).toEqual({
+      expect(await s.validateMaybeAsync("123456", {}).await()).toEqual({
         id: "123456",
       });
     });
 
     it("should handle metadata like label", () => {
       expect(() => number.validateSync(undefined)).toThrowError("Required");
-      const s = number
-        .setMetadata("label", "MyNumber")
-        .setMetadata("bob", "Ross")
-        .setMetadata("label", 13);
+      const s = number.setMetadata("label", "MyNumber");
       expect(() => s.validateSync(undefined)).toThrowError(
         "MyNumber is required"
+      );
+    });
+
+    it("should only change metadata for subsequent chains", () => {
+      const s = label("MyNumber")
+        .number()
+        .setMetadata("label", "MyNumber2")
+        .min(1)
+        .setMetadata("label", "MyNumber3")
+        .max(2);
+      expect(() => s.validateSync(undefined)).toThrowError(
+        "MyNumber is required"
+      );
+      expect(() => s.validateSync(0)).toThrowError(
+        "MyNumber2 must be at least 1"
+      );
+      expect(() => s.validateSync(3)).toThrowError(
+        "MyNumber3 must be less than or equal to 2"
       );
     });
   });
