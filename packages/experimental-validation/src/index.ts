@@ -59,6 +59,8 @@ type RefinementType<
 > = Refinement<Input, Output, ChainRefines, ChainTransforms> &
   ChainRefinementMethods<Input, Output, ChainRefines, ChainTransforms>;
 
+type OutputType<T> = T extends Refinement<any, infer Out, {}, {}> ? Out : never;
+
 class Refinement<
   Input,
   Output,
@@ -123,17 +125,17 @@ class Refinement<
 
   validateSync(input: Input): Output {
     const context = { value: input };
-    return MaybePromise.of(this._refinement(context)).assertSync();
+    return MaybePromise.of(() => this._refinement(context)).assertSync();
   }
 
   validateAsync(input: Input): Promise<Output> {
     const context = { value: input };
-    return MaybePromise.of(this._refinement(context)).await();
+    return MaybePromise.of(() => this._refinement(context)).await();
   }
 
   validateMaybeAsync(input: Input): MaybePromise<Output> {
     const context = { value: input };
-    return MaybePromise.of(this._refinement(context));
+    return MaybePromise.of(() => this._refinement(context));
   }
 
   refine<NewOutput extends Output>(
@@ -205,53 +207,116 @@ type AwaitedArray<T extends any[]> = {
   [K in keyof T]: Awaited<T[K]>;
 };
 
+type MaybePromiseResult<T> =
+  | { type: "promise"; promise: Promise<T> }
+  | { type: "maybePromise"; maybePromise: MaybePromise<T> }
+  | { type: "value"; value: T }
+  | { type: "error"; error: unknown };
+
 class MaybePromise<T> {
   static all<Values extends any[]>(
     ...values: Values
   ): MaybePromise<AwaitedArray<Values>> {
     if (values.some((value) => value instanceof Promise)) {
-      return new MaybePromise(Promise.all(values));
+      return new MaybePromise(() => Promise.all(values));
     }
-    return new MaybePromise(values as AwaitedArray<Values>);
+    return new MaybePromise(() => values as AwaitedArray<Values>);
   }
 
   static of<Value>(
-    value: Value | Promise<Value> | MaybePromise<Value>
+    func: () => Value | Promise<Value> | MaybePromise<Value>
   ): MaybePromise<Value> {
-    if (value instanceof MaybePromise) return value;
-    return new MaybePromise(value);
+    return new MaybePromise(func);
   }
 
-  private _value: T | Promise<T>;
+  private _result: MaybePromiseResult<T>;
 
-  constructor(value: T | Promise<T>) {
-    this._value = value;
+  constructor(func: () => T | Promise<T> | MaybePromise<T>) {
+    try {
+      const result = func();
+      if (result instanceof Promise) {
+        this._result = { type: "promise", promise: result };
+      } else if (result instanceof MaybePromise) {
+        this._result = { type: "maybePromise", maybePromise: result };
+      } else {
+        this._result = { type: "value", value: result };
+      }
+    } catch (error) {
+      this._result = { type: "error", error };
+    }
   }
 
   then = <U>(
     onFulfilled: (value: T) => U | Promise<U> | MaybePromise<U>
   ): MaybePromise<U> => {
-    if (this._value instanceof Promise) {
-      return MaybePromise.of(
-        this._value.then((val) => {
+    // If it's an error type, the return type doesn't matter too much
+    if (this._result.type === "error") return this as any as MaybePromise<U>;
+
+    if (this._result.type === "promise") {
+      const { promise } = this._result;
+      return MaybePromise.of(() =>
+        promise.then((val) => {
           const result = onFulfilled(val);
           if (result instanceof MaybePromise) return result.await();
           return result;
         })
       );
     }
-    return MaybePromise.of(onFulfilled(this._value));
+
+    if (this._result.type === "maybePromise") {
+      const { maybePromise } = this._result;
+      return MaybePromise.of(() =>
+        maybePromise.then((val) => onFulfilled(val))
+      );
+    }
+
+    const { value } = this._result;
+    return MaybePromise.of(() => onFulfilled(value));
   };
 
-  await = async () => this._value;
+  catch = <U = never>(onRejected: (err: unknown) => U): MaybePromise<U | T> => {
+    if (this._result.type === "value") return this;
 
-  assertSync = () => {
-    if (this._value instanceof Promise) {
+    if (this._result.type === "promise") {
+      const { promise } = this._result;
+      return MaybePromise.of(() =>
+        promise.catch((err) => {
+          const result = onRejected(err);
+          if (result instanceof MaybePromise) return result.await();
+          return result;
+        })
+      );
+    }
+
+    if (this._result.type === "maybePromise") {
+      const { maybePromise } = this._result;
+      return MaybePromise.of(() =>
+        maybePromise.catch((err) => onRejected(err))
+      );
+    }
+
+    const { error } = this._result;
+    return MaybePromise.of(() => onRejected(error));
+  };
+
+  await = async (): Promise<T> => {
+    if (this._result.type === "error") throw this._result.error;
+    if (this._result.type === "promise") return this._result.promise;
+    if (this._result.type === "maybePromise")
+      return this._result.maybePromise.await();
+    return this._result.value;
+  };
+
+  assertSync = (): T => {
+    const type = this._result.type;
+    if (type === "promise") {
       throw new Error(
         "Expected a synchronous value but got an asynchronous one"
       );
     }
-    return this._value;
+    if (type === "error") throw this._result.error;
+    if (type === "maybePromise") return this._result.maybePromise.assertSync();
+    return this._result.value;
   };
 }
 
@@ -300,6 +365,19 @@ const stringToNumber = makeRefinement<string, number>(({ value }) => {
 const user = makeRefinement<string, { id: string }>(({ value }) =>
   Promise.resolve({ id: value })
 );
+
+// type UnionTypes<T extends Refinement<any, any, {}, {}>[]> = {
+//   [K in keyof T]: OutputType<T[K]>;
+// }[number];
+// const union = <T extends Refinement<any, any, {}, {}>[]>(...types: T) =>
+//   makeRefinement<unknown, UnionTypes<T>>(({ value }) => {});
+
+// const test = union(str, number);
+
+// const optional = makeRefinement(({ value }) => {
+//   if (value === undefined) return undefined;
+//   return value;
+// });
 
 const numChainable = number.withRefinements({ min, max });
 
@@ -379,28 +457,56 @@ if (import.meta.vitest) {
 
   describe("MaybePromise", () => {
     it("should work with promises", async () => {
-      const prom = new MaybePromise(Promise.resolve("hello"));
+      const prom = new MaybePromise(() => Promise.resolve("hello"));
       expect(await prom.await()).toEqual("hello");
       expect(() => prom.assertSync()).toThrow();
     });
 
     it("should work with non promises", async () => {
-      const prom = new MaybePromise("hello");
+      const prom = new MaybePromise(() => "hello");
       expect(await prom.await()).toEqual("hello");
       expect(prom.assertSync()).toEqual("hello");
     });
 
     it("should be thenable", async () => {
-      const test = new MaybePromise("hell")
+      const test = new MaybePromise(() => "hell")
         .then((value) => value + "o")
         .then((value) => value + "!")
         .then((value) => Promise.resolve(value + "!"))
-        .then((value) => new MaybePromise(value + "!"));
+        .then((value) => new MaybePromise(() => value + "!"));
       expect(await test.await()).toEqual("hello!!!");
     });
 
+    it("should be catchable", () => {
+      const test = new MaybePromise(() => {
+        throw new Error("Hi");
+      })
+        .catch((err: any) => err.message)
+        .then((msg) => msg + "!");
+      expect(test.assertSync()).toEqual("Hi!");
+    });
+
+    it("should be catchable with promises", async () => {
+      const test = new MaybePromise(() => Promise.reject(new Error("Hi")))
+        .catch((err: any) => err.message)
+        .then((msg) => msg + "!");
+      expect(await test.await()).toEqual("Hi!");
+    });
+
+    it("should be catchable with maybe promises", async () => {
+      const test = new MaybePromise(
+        () =>
+          new MaybePromise(() => {
+            throw new Error("Hi");
+          })
+      )
+        .catch((err: any) => err.message)
+        .then((msg) => msg + "!");
+      expect(await test.await()).toEqual("Hi!");
+    });
+
     it("should correctly type transformations when then chaining", async () => {
-      const test = new MaybePromise(123)
+      const test = new MaybePromise(() => 123)
         .then((value) => {
           expectNumber(value);
           return value + 1;
@@ -415,7 +521,7 @@ if (import.meta.vitest) {
         })
         .then((value) => {
           expectNumber(value);
-          return new MaybePromise(String(value));
+          return new MaybePromise(() => String(value));
         });
       const result: string = await test.await();
       expect(result).toEqual("49");
