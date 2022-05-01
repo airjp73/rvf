@@ -258,7 +258,7 @@ class Refinement<
     Output,
     ChainRefines,
     ChainTransforms,
-    MergeIntersection<Meta & { [K in Key]: Value }>
+    MergeIntersection<Omit<Meta, Key> & { [K in Key]: Value }>
   > {
     return Refinement.of(
       this._refinement,
@@ -637,7 +637,8 @@ if (import.meta.vitest) {
       expect(() => number.validateSync(undefined)).toThrowError("Required");
       const s = number
         .setMetadata("label", "MyNumber")
-        .setMetadata("bob", "Ross");
+        .setMetadata("bob", "Ross")
+        .setMetadata("label", 13);
       expect(() => s.validateSync(undefined)).toThrowError(
         "MyNumber is required"
       );
