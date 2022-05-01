@@ -218,6 +218,24 @@ class Refinement<
     );
   }
 
+  setMetadata<Key extends string | number | symbol, Value>(
+    key: Key,
+    value: Value
+  ): RefinementType<
+    Input,
+    Output,
+    ChainRefines,
+    ChainTransforms,
+    Merge<Meta, { [K in Key]: Value }>
+  > {
+    return Refinement.of<Input, Output, ChainRefines, ChainTransforms, Meta>(
+      (context) => this.validateMaybeAsync(context.value, this._metadata),
+      this._chainRefinements,
+      this._chainTransforms,
+      { ...this._metadata, [key]: value }
+    );
+  }
+
   withRefinements<NewCR extends ChainObj>(
     chains: NewCR
   ): RefinementType<
@@ -252,24 +270,6 @@ class Refinement<
         ...chains,
       },
       { ...this._metadata }
-    );
-  }
-
-  setMetadata<Key extends string | number | symbol, Value>(
-    key: Key,
-    value: Value
-  ): RefinementType<
-    Input,
-    Output,
-    ChainRefines,
-    ChainTransforms,
-    Merge<Meta, { [K in Key]: Value }>
-  > {
-    return Refinement.of(
-      this._refinement,
-      this._chainRefinements,
-      this._chainTransforms,
-      { ...this._metadata, [key]: value }
     );
   }
 }
@@ -659,14 +659,6 @@ if (import.meta.vitest) {
       });
     });
 
-    it("should handle metadata like label", () => {
-      expect(() => number.validateSync(undefined)).toThrowError("Required");
-      const s = number.setMetadata("label", "MyNumber");
-      expect(() => s.validateSync(undefined)).toThrowError(
-        "MyNumber is required"
-      );
-    });
-
     it("should only change metadata for subsequent chains", () => {
       const s = label("MyNumber")
         .number()
@@ -682,6 +674,35 @@ if (import.meta.vitest) {
       );
       expect(() => s.validateSync(3)).toThrowError(
         "MyNumber3 must be less than or equal to 2"
+      );
+
+      const s2 = numChainable.min(1).setMetadata("label", "MyNumber").max(2);
+      expect(() => s2.validateSync(undefined)).toThrowError("Required");
+      expect(() => s2.validateSync(0)).toThrowError("Must be at least 1");
+      expect(() => s2.validateSync(3)).toThrowError(
+        "MyNumber must be less than or equal to 2"
+      );
+
+      const s3 = number
+        .refine(min(1))
+        .setMetadata("label", "MyNumber")
+        .refine(max(2));
+      expect(() => s3.validateSync(undefined)).toThrowError("Required");
+      expect(() => s3.validateSync(0)).toThrowError("Must be at least 1");
+      expect(() => s3.validateSync(3)).toThrowError(
+        "MyNumber must be less than or equal to 2"
+      );
+
+      const s4 = number
+        .setMetadata("label", "MyNumber")
+        .refine(min(1))
+        .refine(max(2));
+      expect(() => s4.validateSync(undefined)).toThrowError("Required");
+      expect(() => s4.validateSync(0)).toThrowError(
+        "MyNumber must be at least 1"
+      );
+      expect(() => s4.validateSync(3)).toThrowError(
+        "MyNumber must be less than or equal to 2"
       );
     });
   });
