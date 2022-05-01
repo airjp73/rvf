@@ -125,7 +125,12 @@ class Refinement<
 
   validateSync(input: Input): Output {
     const context = { value: input };
-    return MaybePromise.of(() => this._refinement(context)).assertSync();
+    try {
+      return MaybePromise.of(() => this._refinement(context)).assertSync();
+    } catch (err) {
+      if (err instanceof Error) Error.captureStackTrace(err, this.validateSync);
+      throw err;
+    }
   }
 
   validateAsync(input: Input): Promise<Output> {
@@ -366,18 +371,18 @@ const user = makeRefinement<string, { id: string }>(({ value }) =>
   Promise.resolve({ id: value })
 );
 
-// type UnionTypes<T extends Refinement<any, any, {}, {}>[]> = {
-//   [K in keyof T]: OutputType<T[K]>;
-// }[number];
-// const union = <T extends Refinement<any, any, {}, {}>[]>(...types: T) =>
-//   makeRefinement<unknown, UnionTypes<T>>(({ value }) => {});
-
-// const test = union(str, number);
-
-// const optional = makeRefinement(({ value }) => {
-//   if (value === undefined) return undefined;
-//   return value;
-// });
+type UnionTypes<T extends Refinement<any, any, {}, {}>[]> = {
+  [K in keyof T]: OutputType<T[K]>;
+}[number];
+const union = <T extends Refinement<any, any, {}, {}>[]>(...types: T) =>
+  makeRefinement<unknown, UnionTypes<T>>(({ value }) => {
+    const [firstType, ...restTypes] = types;
+    let maybe = firstType.validateMaybeAsync(value);
+    for (const type of restTypes) {
+      maybe = maybe.catch(() => type.validateMaybeAsync(value));
+    }
+    return maybe;
+  });
 
 const numChainable = number.withRefinements({ min, max });
 
@@ -401,6 +406,26 @@ if (import.meta.vitest) {
   const expectNumber = (arg: number) => {
     expect(typeof arg === "number").toBe(true);
   };
+
+  describe("union", () => {
+    it("should validate a union of types", () => {
+      const s = union(str, number);
+      expect(() => s.validateSync(undefined)).toThrow();
+      expect(() => s.validateSync({})).toThrow();
+      expect(s.validateSync("something")).toEqual("something");
+      expect(s.validateSync(123)).toEqual(123);
+    });
+
+    it("should work correctly with async", async () => {
+      const s = union(str.transform(user), number);
+      expect(() => s.validateSync("123")).toThrow();
+      expect(await s.validateAsync("something")).toEqual({ id: "something" });
+
+      // This technically works synchronously too, but it should be used async
+      // so that's what we should test
+      expect(await s.validateAsync(123)).toEqual(123);
+    });
+  });
 
   describe("core", () => {
     it("should validate", () => {
