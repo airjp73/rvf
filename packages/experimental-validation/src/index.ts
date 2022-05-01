@@ -173,12 +173,25 @@ class Refinement<
   }
 
   refine<NewOutput extends Output>(
-    refinement: Refinement<Output, NewOutput, {}, {}>
+    refinement: Refinement<Output, NewOutput, {}, {}, {}>
+  ): Refinement<Input, NewOutput, ChainRefines, ChainTransforms, Meta>;
+  refine<NewOutput extends Output>(
+    refine: Refine<Output, NewOutput>
+  ): Refinement<Input, NewOutput, ChainRefines, ChainTransforms, Meta>;
+  refine<NewOutput extends Output>(
+    refinement:
+      | Refinement<Output, NewOutput, {}, {}>
+      | Refine<Output, NewOutput>
   ) {
     return Refinement.of<Input, NewOutput, ChainRefines, ChainTransforms, Meta>(
       (context) => {
         return this.validateMaybeAsync(context.value, this._metadata).then(
-          (refined) => refinement.validateMaybeAsync(refined, this._metadata)
+          (refined) => {
+            if (typeof refinement === "function") {
+              return refinement({ value: refined, meta: context.meta });
+            }
+            return refinement.validateMaybeAsync(refined, context.meta);
+          }
         );
       },
       this._chainRefinements,
@@ -274,14 +287,34 @@ class Refinement<
   }
 }
 
-function makeRefinement<Input, Output>(
+function makeRefinement<Input, Output extends Input>(
   refine: Refine<Input, Output>
 ): Refinement<Input, Output, {}, {}>;
-function makeRefinement<Input, Output, Meta extends Record<any, any>>(
+function makeRefinement<
+  Input,
+  Output extends Input,
+  Meta extends Record<any, any>
+>(
   refine: Refine<Input, Output>,
   metadata: Meta
 ): Refinement<Input, Output, {}, {}, Meta>;
-function makeRefinement<Input, Output, Meta extends Record<any, any>>(
+function makeRefinement<
+  Input,
+  Output extends Input,
+  Meta extends Record<any, any>
+>(refine: Refine<Input, Output>, metadata?: Meta) {
+  if (metadata) return Refinement.of(refine, {}, {}, metadata);
+  return Refinement.of(refine);
+}
+
+function makeTransform<Input, Output>(
+  refine: Refine<Input, Output>
+): Refinement<Input, Output, {}, {}>;
+function makeTransform<Input, Output, Meta extends Record<any, any>>(
+  refine: Refine<Input, Output>,
+  metadata: Meta
+): Refinement<Input, Output, {}, {}, Meta>;
+function makeTransform<Input, Output, Meta extends Record<any, any>>(
   refine: Refine<Input, Output>,
   metadata?: Meta
 ) {
@@ -402,13 +435,15 @@ class MaybePromise<T> {
 
 //// Implementations & testing
 
+const u = Refinement.of<unknown, unknown>(({ value }) => value);
+
 const str = makeRefinement<unknown, string>(({ value }) => {
   if (typeof value === "string") return value;
   if (value === undefined) throw new ValidationError("Required");
   throw new ValidationError("Not a string");
 });
 
-const number = makeRefinement<unknown, number>(({ value, meta: { label } }) => {
+const number = u.refine(({ value, meta: { label } }) => {
   if (typeof value === "number") return value;
   if (value === undefined)
     throw new ValidationError(label ? `${label} is required` : "Required");
@@ -451,11 +486,11 @@ const minLength = (min: number) =>
     return value;
   });
 
-const stringToNumber = makeRefinement<string, number>(({ value }) => {
+const stringToNumber = makeTransform<string, number>(({ value }) => {
   return Number(value);
 });
 
-const user = makeRefinement<string, { id: string }>(({ value }) =>
+const user = makeTransform<string, { id: string }>(({ value }) =>
   Promise.resolve({ id: value })
 );
 
@@ -516,7 +551,6 @@ const strChainable = str
     stringToNumber: () => testing,
   });
 
-const u = makeRefinement<unknown, unknown>(({ value }) => value);
 const test = u.setMetadata("label", "").withRefinements({
   number: () => numChainable,
 });
