@@ -37,10 +37,11 @@ type ChainRefinementMethods<
   In,
   Out,
   CR extends ChainObj,
-  CT extends ChainObj
+  CT extends ChainObj,
+  Meta extends Record<any, any>
 > = {
   [K in keyof CR]: CR[K] extends RefinementCreator<any, any, any, any>
-    ? (...args: Parameters<CR[K]>) => RefinementType<In, Out, CR, CT>
+    ? (...args: Parameters<CR[K]>) => RefinementType<In, Out, CR, CT, Meta>
     : never;
 } & {
   [K in keyof CT]: CT[K] extends RefinementCreator<
@@ -51,7 +52,7 @@ type ChainRefinementMethods<
   >
     ? (
         ...args: Parameters<CT[K]>
-      ) => RefinementType<In, TransformOut, TransformCR, TransformCT>
+      ) => RefinementType<In, TransformOut, TransformCR, TransformCT, Meta>
     : never;
 };
 
@@ -59,22 +60,30 @@ type RefinementType<
   Input,
   Output,
   ChainRefines extends ChainObj,
-  ChainTransforms extends ChainObj
-> = Refinement<Input, Output, ChainRefines, ChainTransforms> &
-  ChainRefinementMethods<Input, Output, ChainRefines, ChainTransforms>;
+  ChainTransforms extends ChainObj,
+  Meta extends Record<any, any>
+> = Refinement<Input, Output, ChainRefines, ChainTransforms, Meta> &
+  ChainRefinementMethods<Input, Output, ChainRefines, ChainTransforms, Meta>;
 
 type OutputType<T> = T extends Refinement<any, infer Out, {}, {}> ? Out : never;
+
+/**
+ * Improves readability of the tooltip for object intersections.
+ * Instead of { a: string } & { b: string } you can get { a: string, b: string }
+ */
+type MergeIntersection<T> = {} & { [K in keyof T]: T[K] };
 
 class Refinement<
   Input,
   Output,
   ChainRefines extends ChainObj,
-  ChainTransforms extends ChainObj
+  ChainTransforms extends ChainObj,
+  Meta extends Record<any, any> = {}
 > {
   private _refinement: Refine<Input, Output>;
   private _chainRefinements: ChainRefines;
   private _chainTransforms: ChainTransforms;
-  private _metadata: Record<string, any>;
+  private _metadata: Meta;
 
   static of<Input, Output>(
     refinement: Refine<Input, Output>
@@ -83,39 +92,41 @@ class Refinement<
     Input,
     Output,
     CR extends ChainableRefinements<Input>,
-    CT extends ChainableTransforms<Input>
+    CT extends ChainableTransforms<Input>,
+    Meta extends Record<any, any>
   >(
     refinement: Refine<Input, Output>,
     chainRefines: CR,
     chainTransforms: CT,
-    metadata?: Record<string, any>
-  ): RefinementType<Input, Output, CR, CT>;
+    metadata: Meta
+  ): RefinementType<Input, Output, CR, CT, Meta>;
   static of<
     Input,
     Output,
     CR extends ChainableRefinements<Input>,
-    CT extends ChainableTransforms<Input>
+    CT extends ChainableTransforms<Input>,
+    Meta extends Record<any, any>
   >(
     refinement: Refine<Input, Output>,
     chainRefines?: CR,
     chainTransforms?: CT,
-    metadata?: Record<string, any>
+    metadata?: Meta
   ): any {
-    if (chainRefines && chainTransforms)
+    if (chainRefines && chainTransforms && metadata)
       return new Refinement(
         refinement,
         chainRefines,
         chainTransforms,
         metadata
       );
-    return new Refinement(refinement, {}, {}, metadata);
+    return new Refinement(refinement, {}, {}, {});
   }
 
   private constructor(
     refinement: Refine<Input, Output>,
     chainRefines: ChainRefines,
     chainTransforms: ChainTransforms,
-    metadata: Record<string, any> = {}
+    metadata: Meta
   ) {
     this._refinement = refinement;
     this._chainRefinements = chainRefines;
@@ -160,7 +171,7 @@ class Refinement<
   refine<NewOutput extends Output>(
     refinement: Refinement<Output, NewOutput, {}, {}>
   ) {
-    return Refinement.of<Input, NewOutput, ChainRefines, ChainTransforms>(
+    return Refinement.of<Input, NewOutput, ChainRefines, ChainTransforms, Meta>(
       (context) => {
         return this.validateMaybeAsync(context.value).then((refined) =>
           refinement.validateMaybeAsync(refined)
@@ -175,7 +186,7 @@ class Refinement<
   transform<NewOutput, NewCR extends ChainObj, NewCT extends ChainObj>(
     refinement: Refinement<Output, NewOutput, NewCR, NewCT>
   ) {
-    return Refinement.of<Input, NewOutput, NewCR, NewCT>(
+    return Refinement.of<Input, NewOutput, NewCR, NewCT, Meta>(
       (context) => {
         return this.validateMaybeAsync(context.value).then((refined) =>
           refinement.validateMaybeAsync(refined)
@@ -190,7 +201,7 @@ class Refinement<
   as<NewOutput, NewCR extends ChainObj, NewCT extends ChainObj>(
     nextRefinement: Refinement<Output, NewOutput, NewCR, NewCT>
   ) {
-    return Refinement.of<Input, NewOutput, NewCR, NewCT>(
+    return Refinement.of<Input, NewOutput, NewCR, NewCT, Meta>(
       (context) => {
         return this.validateMaybeAsync(context.value).then((refined) =>
           nextRefinement.validateMaybeAsync(refined)
@@ -204,7 +215,13 @@ class Refinement<
 
   withRefinements<NewCR extends ChainObj>(
     chains: NewCR
-  ): RefinementType<Input, Output, NewCR & ChainRefines, ChainTransforms> {
+  ): RefinementType<
+    Input,
+    Output,
+    NewCR & ChainRefines,
+    ChainTransforms,
+    Meta
+  > {
     return Refinement.of(
       this._refinement,
       { ...this._chainRefinements, ...chains },
@@ -215,7 +232,13 @@ class Refinement<
 
   withTransforms<NewCT extends ChainObj>(
     chains: NewCT
-  ): RefinementType<Input, Output, ChainRefines, ChainTransforms & NewCT> {
+  ): RefinementType<
+    Input,
+    Output,
+    ChainRefines,
+    ChainTransforms & NewCT,
+    Meta
+  > {
     return Refinement.of(
       this._refinement,
       this._chainRefinements,
@@ -227,14 +250,39 @@ class Refinement<
     );
   }
 
-  setMetadata(key: string, value: any): this {
-    this._metadata[key] = value;
-    return this;
+  setMetadata<Key extends string | number | symbol, Value>(
+    key: Key,
+    value: Value
+  ): RefinementType<
+    Input,
+    Output,
+    ChainRefines,
+    ChainTransforms,
+    MergeIntersection<Meta & { [K in Key]: Value }>
+  > {
+    return Refinement.of(
+      this._refinement,
+      this._chainRefinements,
+      this._chainTransforms,
+      { ...this._metadata, [key]: value }
+    );
   }
 }
 
-const makeRefinement = <Input, Output>(refine: Refine<Input, Output>) =>
+function makeRefinement<Input, Output>(
+  refine: Refine<Input, Output>
+): Refinement<Input, Output, {}, {}>;
+function makeRefinement<Input, Output, Meta extends Record<any, any>>(
+  refine: Refine<Input, Output>,
+  metadata: Meta
+): Refinement<Input, Output, {}, {}, Meta>;
+function makeRefinement<Input, Output, Meta extends Record<any, any>>(
+  refine: Refine<Input, Output>,
+  metadata?: Meta
+) {
+  if (metadata) return Refinement.of(refine, {}, {}, metadata);
   Refinement.of(refine);
+}
 
 type AwaitedArray<T extends any[]> = {
   [K in keyof T]: Awaited<T[K]>;
@@ -587,7 +635,9 @@ if (import.meta.vitest) {
 
     it("should handle metadata like label", () => {
       expect(() => number.validateSync(undefined)).toThrowError("Required");
-      const s = number.setMetadata("label", "MyNumber");
+      const s = number
+        .setMetadata("label", "MyNumber")
+        .setMetadata("bob", "Ross");
       expect(() => s.validateSync(undefined)).toThrowError(
         "MyNumber is required"
       );
