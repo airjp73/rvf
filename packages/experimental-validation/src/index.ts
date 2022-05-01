@@ -240,20 +240,27 @@ type AwaitedArray<T extends any[]> = {
   [K in keyof T]: Awaited<T[K]>;
 };
 
+type PossiblyPromise<T> = T | Promise<T> | MaybePromise<T>;
+type AwaitableArray<T extends any[]> = {
+  [K in keyof T]: PossiblyPromise<T[K]>;
+};
+
 type MaybePromiseResult<T> =
   | { type: "promise"; promise: Promise<T> }
-  | { type: "maybePromise"; maybePromise: MaybePromise<T> }
   | { type: "value"; value: T }
   | { type: "error"; error: unknown };
 
 class MaybePromise<T> {
-  static all<Values extends any[]>(
-    ...values: Values
-  ): MaybePromise<AwaitedArray<Values>> {
-    if (values.some((value) => value instanceof Promise)) {
-      return new MaybePromise(() => Promise.all(values));
+  static all<Values extends unknown[]>(
+    values: AwaitableArray<Values>
+  ): MaybePromise<Values> {
+    const awaitable = values.map((value) =>
+      value instanceof MaybePromise ? value.await() : value
+    );
+    if (awaitable.some((value) => value instanceof Promise)) {
+      return new MaybePromise(() => Promise.all(awaitable) as Promise<Values>);
     }
-    return new MaybePromise(() => values as AwaitedArray<Values>);
+    return new MaybePromise(() => awaitable as AwaitedArray<Values>);
   }
 
   static of<Value>(
@@ -266,11 +273,13 @@ class MaybePromise<T> {
 
   constructor(func: () => T | Promise<T> | MaybePromise<T>) {
     try {
-      const result = func();
+      let result = func();
+      while (result instanceof MaybePromise) {
+        result = result.flatten();
+      }
+
       if (result instanceof Promise) {
         this._result = { type: "promise", promise: result };
-      } else if (result instanceof MaybePromise) {
-        this._result = { type: "maybePromise", maybePromise: result };
       } else {
         this._result = { type: "value", value: result };
       }
@@ -296,13 +305,6 @@ class MaybePromise<T> {
       );
     }
 
-    if (this._result.type === "maybePromise") {
-      const { maybePromise } = this._result;
-      return MaybePromise.of(() =>
-        maybePromise.then((val) => onFulfilled(val))
-      );
-    }
-
     const { value } = this._result;
     return MaybePromise.of(() => onFulfilled(value));
   };
@@ -321,24 +323,11 @@ class MaybePromise<T> {
       );
     }
 
-    if (this._result.type === "maybePromise") {
-      const { maybePromise } = this._result;
-      return MaybePromise.of(() =>
-        maybePromise.catch((err) => onRejected(err))
-      );
-    }
-
     const { error } = this._result;
     return MaybePromise.of(() => onRejected(error));
   };
 
-  await = async (): Promise<T> => {
-    if (this._result.type === "error") throw this._result.error;
-    if (this._result.type === "promise") return this._result.promise;
-    if (this._result.type === "maybePromise")
-      return this._result.maybePromise.await();
-    return this._result.value;
-  };
+  await = async (): Promise<T> => this.flatten();
 
   assertSync = (): T => {
     const type = this._result.type;
@@ -348,7 +337,12 @@ class MaybePromise<T> {
       );
     }
     if (type === "error") throw this._result.error;
-    if (type === "maybePromise") return this._result.maybePromise.assertSync();
+    return this._result.value;
+  };
+
+  flatten = (): T | Promise<T> => {
+    if (this._result.type === "error") throw this._result.error;
+    if (this._result.type === "promise") return this._result.promise;
     return this._result.value;
   };
 }
@@ -413,6 +407,40 @@ const union = <T extends Refinement<any, any, {}, {}>[]>(...types: T) =>
     return maybe;
   });
 
+type ObjectOutput<T extends Record<any, Refinement<any, any, {}, {}>>> = {
+  [K in keyof T]: OutputType<T[K]>;
+};
+
+const unknownRecord = makeRefinement<unknown, Record<any, unknown>>(
+  ({ value }) => {
+    if (value !== null && typeof value === "object" && !Array.isArray(value))
+      return value as Record<any, unknown>;
+    throw new ValidationError("Not an object");
+  }
+);
+const object = <T extends Record<any, Refinement<any, any, {}, {}>>>(
+  typeObj: T
+): Refinement<any, ObjectOutput<T>, {}, {}> => {
+  return makeRefinement<unknown, ObjectOutput<T>>(({ value }) => {
+    if (value === null || value === undefined) throw new Error("Required");
+    const valueObj = unknownRecord.validateSync(value);
+    const keys = Object.keys(typeObj);
+    const maybes = Object.entries(typeObj).map(([key, type]) =>
+      type.validateMaybeAsync(valueObj[key])
+    );
+    return MaybePromise.all(maybes)
+      .then((newValues) => newValues.map((val, index) => [keys[index], val]))
+      .then(Object.fromEntries);
+  });
+};
+
+const undef = makeRefinement<unknown, undefined>(({ value }) => {
+  if (value === undefined) return undefined;
+  throw new ValidationError("Not undefined");
+});
+const optional = <T extends Refinement<any, any, {}, {}>>(refinement: T) =>
+  union(undef, refinement);
+
 const numChainable = number.withRefinements({ min, max });
 
 const testing = stringToNumber.as(numChainable);
@@ -453,6 +481,55 @@ if (import.meta.vitest) {
       // This technically works synchronously too, but it should be used async
       // so that's what we should test
       expect(await s.validateAsync(123)).toEqual(123);
+    });
+  });
+
+  describe("object", () => {
+    it("should validate objects", async () => {
+      const s = object({
+        field1: strChainable.maxLength(10),
+        field2: strChainable.minLength(5).transform(user),
+        field3: numChainable.max(3),
+        field4: optional(numChainable.min(4)),
+      });
+
+      expect(
+        await s.validateAsync({
+          field1: "123",
+          field2: "12345",
+          field3: 2,
+        })
+      ).toEqual({
+        field1: "123",
+        field2: { id: "12345" },
+        field3: 2,
+      });
+
+      expect(
+        await s.validateAsync({
+          field1: "123",
+          field2: "12345",
+          field3: 2,
+          field4: 4,
+        })
+      ).toEqual({
+        field1: "123",
+        field2: { id: "12345" },
+        field3: 2,
+        field4: 4,
+      });
+
+      await expect(
+        s.validateAsync({ field1: "123", field2: "12345" })
+      ).rejects.toThrow();
+      await expect(
+        s.validateAsync({
+          field1: "123",
+          field2: "12345",
+          field3: 2,
+          field4: 1,
+        })
+      ).rejects.toThrow();
     });
   });
 
