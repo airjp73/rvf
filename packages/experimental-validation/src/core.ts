@@ -1,8 +1,17 @@
-import { MaybePromise } from "./maybePromise";
+import { MaybePromise, PossiblyPromise } from "./maybePromise";
 
-type AssertType<T> = (value: unknown) => asserts value is T;
-type Check<T> = (value: T) => void;
-type Transform<T, U> = (value: T) => U;
+type AssertType<T, Meta extends AnyMeta = AnyMeta> = (
+  value: unknown,
+  meta: Meta
+) => asserts value is T;
+type Check<T, Meta extends AnyMeta = AnyMeta> = (
+  value: T,
+  meta: Meta
+) => PossiblyPromise<void>;
+type Transform<T, U, Meta = AnyMeta> = (
+  value: T,
+  meta: Meta
+) => PossiblyPromise<U>;
 
 type AnySchema = Schema<any, any, {}, {}>;
 type AnySchemaMethod<
@@ -11,6 +20,13 @@ type AnySchemaMethod<
 > = (...args: any[]) => (schema: InSchema) => OutSchema;
 type AnySchemaMethods = Record<string, AnySchemaMethod<any, any>>;
 type AnyMeta = Record<any, any>;
+
+/**
+ * Improves readability of the tooltip for object intersections.
+ * Instead of { a: string } & { b: string } you can get { a: string, b: string }
+ */
+type MergeIntersection<T> = {} & { [K in keyof T]: T[K] };
+type Merge<T, U> = MergeIntersection<Omit<T, keyof U> & U>;
 
 type SchemaTypeAfterCheck<T extends AnySchema> = T extends Schema<
   infer TypeAfterCheck,
@@ -47,8 +63,6 @@ type SchemaMethods<T extends AnySchema> = T extends Schema<
 >
   ? Methods
   : never;
-
-type MaybeAsync<T> = T | Promise<T> | MaybePromise<T>;
 
 type SchemaOptions<
   TypeAfterCheck,
@@ -104,11 +118,11 @@ class Schema<
       this._parent?.validateMaybeAsync?.(input, combinedMeta) ?? input;
     return MaybePromise.of(validateParent)
       .then((val) => {
-        this._typecheck(val);
-        const checks = this._checks.map((check) => check(val));
+        this._typecheck(val, combinedMeta);
+        const checks = this._checks.map((check) => check(val, combinedMeta));
         return MaybePromise.all(checks).then(() => val);
       })
-      .then(this._transform);
+      .then((val) => this._transform(val, combinedMeta));
   }
 
   validateSync(input: unknown): TypeAfterTransform {
@@ -125,6 +139,18 @@ class Schema<
   validateAsync(input: unknown): Promise<TypeAfterTransform> {
     return MaybePromise.of(() => this.validateMaybeAsync(input, {})).await();
   }
+
+  check(
+    check: Check<TypeAfterCheck, Meta>
+  ): Schema<TypeAfterCheck, TypeAfterTransform, Meta, Methods> {
+    return new Schema({
+      typecheck: this._typecheck,
+      checks: [...this._checks, check],
+      meta: this._meta,
+      methods: this._methods,
+      transform: this._transform,
+    });
+  }
 }
 
 const makeType = <T>(typecheck: AssertType<T>) =>
@@ -138,11 +164,11 @@ const makeType = <T>(typecheck: AssertType<T>) =>
 
 ///// Implementations
 
-const unknownType = makeType((value) => {});
+const unknownType = makeType<unknown>((value) => {});
 const stringType = makeType<string>((value) => {
   if (typeof value !== "string") throw new Error("Expected string");
 });
-const numberType = makeType((value) => {
+const numberType = makeType<number>((value) => {
   if (typeof value !== "number") throw new Error("Expected number");
 });
 
@@ -156,6 +182,20 @@ if (import.meta.vitest) {
       expect(() => stringType.validateSync(123)).toThrow();
       expect(numberType.validateSync(123)).toEqual(123);
       expect(() => numberType.validateSync("123")).toThrow();
+    });
+
+    it("should verify checks", () => {
+      const s = numberType
+        .check((val) => {
+          if (val > 10) throw new Error("Can't be more than 10");
+        })
+        .check((val) => {
+          if (val < 5) throw new Error("Can't be less than 5");
+        });
+      expect(() => s.validateSync(11)).toThrow();
+      expect(s.validateSync(10)).toEqual(10);
+      expect(s.validateSync(5)).toEqual(5);
+      expect(() => s.validateSync(4)).toThrow();
     });
   });
 }
