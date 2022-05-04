@@ -66,6 +66,13 @@ export type FormContextValue = {
    * Clears all errors on the form.
    */
   clearAllErrors: () => void;
+  /**
+   * Resets the form.
+   *
+   * _Note_: The equivalent behavior can be achieved by calling formElement.reset()
+   * or clicking a button element with `type="reset"`.
+   */
+  reset: () => void;
 };
 
 /**
@@ -81,6 +88,7 @@ export const useFormContext = (formId?: string): FormContextValue => {
     validateField,
     clearAllErrors,
     validate,
+    reset,
   } = useFormHelpers(formId);
 
   const registerReceiveFocus = useRegisterReceiveFocus(context.formId);
@@ -102,5 +110,6 @@ export const useFormContext = (formId?: string): FormContextValue => {
     registerReceiveFocus,
     clearAllErrors,
     validate,
+    reset,
   };
 };
