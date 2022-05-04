@@ -1,7 +1,6 @@
-# @remix-validated-form/with-zod
+# Experimental validation library
 
-Zod adapter for [remix-validated-form](https://github.com/airjp73/remix-validated-form).
+Playing around with some ideas for a library that fills the role that yup & zod do.
+I've had some pain points with both libraries and this would hopefully address those.
 
-## Docs
-
-The docs are located a [remix-validated-form.io](https://www.remix-validated-form.io).
+When all is said and done, this will probably live in a separate repository.
