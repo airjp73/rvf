@@ -1,5 +1,53 @@
 import { MaybePromise, PossiblyPromise } from "./maybePromise";
 
+/**
+ * Some options
+ *
+ * const s = u
+ *   .meta("label", "A label")
+ *   .string()
+ *   .check(s.minLength(3))
+ *   .check(s.maxLength(4))
+ *   .transform(s.toNumber)
+ *   .check(n.max(999)));
+ *
+ * const s = u
+ *   .label("A label")
+ *   .string()
+ *   .minLength(3)
+ *   .maxLength(4)
+ *   .toNumber()
+ *   .as(numberSchema)
+ *   .min(100);
+ *   .max(9999);
+ *
+ * const s = string()
+ *   .check(
+ *     s.minLength(3),
+ *     s.maxLength(4),
+ *   )
+ *   .transform(s.toNumber)
+ *   .check(
+ *     n.min(100),
+ *     n.max(100),
+ *   )
+ *
+ * const s = t(
+ *   meta("label", "123")
+ *   typecheck(val => typeof val === "string"),
+ *   check(val => val.length > 3),
+ *   transform(val => val.toNumber()),
+ * )
+ * which becomes
+ * const s = t(
+ *   label("123"),
+ *   str,
+ *   str.minLength(3),
+ *   str.toNumber(),
+ *   num.min(100),
+ * )
+ */
+
 type AssertType<T, Meta extends AnyMeta = AnyMeta> = (
   value: unknown,
   meta: Meta
@@ -14,12 +62,12 @@ type Transform<T, U, Meta = AnyMeta> = (
 ) => PossiblyPromise<U>;
 
 type AnySchema = Schema<any, any, {}, {}>;
-type AnySchemaMethod<
-  InSchema extends AnySchema,
-  OutSchema extends AnySchema
-> = (...args: any[]) => (schema: InSchema) => OutSchema;
-type AnySchemaMethods = Record<string, AnySchemaMethod<any, any>>;
 type AnyMeta = Record<any, any>;
+
+type ChecksAndTransforms<InType> = Record<
+  string,
+  Check<InType> | Transform<InType, any>
+>;
 
 /**
  * Improves readability of the tooltip for object intersections.
@@ -68,7 +116,7 @@ type SchemaOptions<
   TypeAfterCheck,
   TypeAfterTransform,
   Meta extends AnyMeta,
-  Methods extends AnySchemaMethods
+  Methods extends ChecksAndTransforms<TypeAfterCheck>
 > = {
   parent?: AnySchema;
   typecheck: AssertType<TypeAfterCheck>;
@@ -84,7 +132,7 @@ class Schema<
   TypeAfterCheck,
   TypeAfterTransform,
   Meta extends AnyMeta,
-  Methods extends AnySchemaMethods
+  Methods extends ChecksAndTransforms<TypeAfterCheck>
 > {
   private _parent: AnySchema | undefined;
   private _typecheck: AssertType<TypeAfterCheck>;

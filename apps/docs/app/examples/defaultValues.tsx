@@ -19,6 +19,16 @@ export const validator = withZod(
   })
 );
 
+/**
+ * const validator = withExperimental(
+ *   t(
+ *     obj({
+ *       firstName: t(label("First name"), str())
+ *     })
+ *   )
+ * )
+ */
+
 export default function Demo() {
   const data = useActionData();
   return (
