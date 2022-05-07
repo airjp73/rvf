@@ -1,14 +1,14 @@
 export type PossiblyPromise<T> = T | Promise<T> | MaybePromise<T>;
 
-export type AwaitedArray<T extends any[]> = {
+type AwaitedArray<T extends any[]> = {
   [K in keyof T]: Awaited<T[K]>;
 };
 
-export type AwaitableArray<T extends any[]> = {
+type AwaitableArray<T extends any[]> = {
   [K in keyof T]: PossiblyPromise<T[K]>;
 };
 
-export type MaybePromiseResult<T> =
+type MaybePromiseResult<T> =
   | { type: "promise"; promise: Promise<T> }
   | { type: "value"; value: T }
   | { type: "error"; error: unknown };
@@ -26,9 +26,7 @@ export class MaybePromise<T> {
     return new MaybePromise(() => awaitable as AwaitedArray<Values>);
   }
 
-  static of<Value>(
-    func: () => Value | Promise<Value> | MaybePromise<Value>
-  ): MaybePromise<Value> {
+  static of<Value>(func: () => PossiblyPromise<Value>): MaybePromise<Value> {
     return new MaybePromise(func);
   }
 

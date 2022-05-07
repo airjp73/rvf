@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { MaybePromise, PossiblyPromise } from "./maybePromise";
-import { Merge } from "./types";
+import { Merge } from "./typeHelpers";
 
 export type AnyMeta = Record<string | number | symbol, any>;
 export type AnyProps = any;
