@@ -1,13 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { MaybePromise } from "./maybePromise";
-
-const expectString = (arg: string) => {
-  expect(typeof arg === "string").toBe(true);
-};
-
-const expectNumber = (arg: number) => {
-  expect(typeof arg === "number").toBe(true);
-};
+import { expectNumber, expectString } from "./testHelpers";
 
 describe("MaybePromise", () => {
   it("should work with promises", async () => {
