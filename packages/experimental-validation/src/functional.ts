@@ -1,117 +1,99 @@
-// Taken from here
-// https://github.com/drizzer14/fnts/blob/main/src/pipe.ts
-
 import { describe, expect, it } from "vitest";
 import { MaybePromise, PossiblyPromise } from "./maybePromise";
+import { Merge } from "./types";
 
-export type ValidationPipeline<Input, Output> = {
-  perform: (input: Input) => PossiblyPromise<Output>;
-  validateMaybeAsync: (input: Input) => MaybePromise<Output>;
+export type AnyMeta = Record<string | number | symbol, any>;
+export type AnyProps = any;
+
+export interface ValidationPipeline<Input, Output, Meta extends AnyMeta = {}> {
+  perform: (input: Input, meta: AnyMeta) => PossiblyPromise<Output>;
+  validateMaybeAsync: (input: Input, meta: AnyMeta) => MaybePromise<Output>;
   validateSync: (input: Input) => Output;
   validateAsync: (input: Input) => Promise<Output>;
-};
+  meta: Meta;
+  props?: AnyProps;
 
-export type AnyValidationPipeline = ValidationPipeline<any, any>;
-
-export type PipeOutput<Pipeline> = Pipeline extends ValidationPipeline<
-  any,
-  infer Out
->
-  ? Out
-  : never;
-
-export type PipeInput<Pipeline> = Pipeline extends ValidationPipeline<
-  infer In,
-  any
->
-  ? In
-  : never;
+  extend<NewMeta extends AnyMeta>(
+    pipeline: ValidationPipeline<unknown, unknown, NewMeta>
+  ): ValidationPipeline<Input, Output, Merge<Meta, NewMeta>>;
+  extend<NewOutput, NewMeta extends AnyMeta>(
+    pipeline: ValidationPipeline<Output, NewOutput, NewMeta>
+  ): ValidationPipeline<Input, NewOutput, Merge<Meta, NewMeta>>;
+}
 
 /**
  * Picks the last entry from the tuple or array.
  */
 export type Last<T extends any[]> = T extends [...any[], infer L] ? L : any;
 
-/**
- * Creates a `Pipeline` type which parses all of the provided functions' types.
- * Any function with either an incorrect argument or a return type will not fit
- * into the pipeline and should be typed according to it, so that its argument's
- * type matches the return type of the previous function and its return type
- * matches the type of the next function's argument.
- */
-export type Pipeline<
-  Validations extends AnyValidationPipeline[],
-  Length extends number = Validations["length"]
-> = Length extends 1
-  ? Validations
-  : Validations extends [infer First, infer Second, ...infer Rest]
-  ? [
-      First,
-      ...Pipeline<
-        First extends AnyValidationPipeline
-          ? Second extends AnyValidationPipeline
-            ? Rest extends AnyValidationPipeline[]
-              ? [
-                  ValidationPipeline<PipeOutput<First>, PipeOutput<Second>>,
-                  ...Rest
-                ]
-              : never
-            : never
-          : never
-      >
-    ]
-  : Validations;
-
-export const makeValidator = <Input, Output>(
-  perform: (input: Input) => PossiblyPromise<Output>
-): ValidationPipeline<Input, Output> => {
-  const validateMaybeAsync = (input: Input) =>
-    MaybePromise.of(() => perform(input));
+export function makeValidator<Input, Output>(
+  perform: (input: Input, meta: AnyMeta) => PossiblyPromise<Output>
+): ValidationPipeline<Input, Output, {}>;
+export function makeValidator<Input, Output, Meta extends AnyMeta>(
+  perform: (input: Input, meta: AnyMeta) => PossiblyPromise<Output>,
+  meta: Meta
+): ValidationPipeline<Input, Output, Meta>;
+export function makeValidator<
+  Input,
+  Output,
+  Meta extends AnyMeta,
+  Props extends AnyProps
+>(
+  perform: (input: Input, meta: AnyMeta) => PossiblyPromise<Output>,
+  meta: Meta,
+  props: Props
+): ValidationPipeline<Input, Output, Meta>;
+export function makeValidator<Input, Output>(
+  perform: (input: Input, meta: AnyMeta) => PossiblyPromise<Output>,
+  meta: AnyMeta = {},
+  props?: AnyProps
+): ValidationPipeline<Input, Output, AnyMeta> {
+  const validateMaybeAsync = (input: Input, passedMeta: AnyMeta) =>
+    MaybePromise.of(() => perform(input, passedMeta));
   return {
     perform,
     validateMaybeAsync,
-    validateSync: (input) => validateMaybeAsync(input).assertSync(),
-    validateAsync: (input) => validateMaybeAsync(input).await(),
+    meta,
+    props,
+    validateSync: (input) => validateMaybeAsync(input, meta).assertSync(),
+    validateAsync: (input) => validateMaybeAsync(input, meta).await(),
+    extend(pipe: any) {
+      return makeValidator(
+        (input: Input, passedMeta) =>
+          validateMaybeAsync(input, passedMeta).then((res) =>
+            pipe.validateMaybeAsync(res, passedMeta)
+          ),
+        { ...meta, ...pipe.meta },
+        { parent: this }
+      );
+    },
   };
-};
-
-/**
- * Applies all of the provided `functions` one-by-one in left-to-right order
- * starting from the `argument`.
- */
-export default function pipe<Pipes extends AnyValidationPipeline[]>(
-  ...pipelines: Pipeline<Pipes>
-): ValidationPipeline<PipeInput<Pipes[0]>, PipeOutput<Last<Pipes>>> {
-  return makeValidator((val) => {
-    let res: any = val;
-    for (const pipe of pipelines) {
-      res = pipe.perform(res);
-    }
-    return res;
-  });
 }
 
 const typecheck = <T>(
-  doCheck: (val: unknown) => val is T,
-  makeError: () => string
+  doCheck: (val: unknown, meta: AnyMeta) => val is T,
+  makeError: (val: unknown, meta: AnyMeta) => string
 ): ValidationPipeline<unknown, T> =>
-  makeValidator((val) => {
-    if (doCheck(val)) return val as T;
-    throw new Error(makeError());
+  makeValidator((val, meta) => {
+    if (doCheck(val, meta)) return val as T;
+    throw new Error(makeError(val, meta));
   });
 
 const check = <Input>(
   doCheck: (val: Input) => PossiblyPromise<boolean>,
-  makeError: () => string
+  makeError: (val: Input, meta: AnyMeta) => string
 ): ValidationPipeline<Input, Input> =>
-  makeValidator((val) => {
+  makeValidator((val, meta) => {
     if (doCheck(val)) return val;
-    throw new Error(makeError());
+    throw new Error(makeError(val, meta));
   });
 
 const transform = <Input, Output>(
-  doTransform: (val: Input) => PossiblyPromise<Output>
+  doTransform: (val: Input, meta: AnyMeta) => PossiblyPromise<Output>
 ): ValidationPipeline<Input, Output> => makeValidator(doTransform);
+
+const setMeta = <M extends AnyMeta>(meta: M) =>
+  makeValidator((val) => val, meta);
 
 ////////// Implementations
 
@@ -140,46 +122,64 @@ const max = (max: number) =>
     (val) => val <= max,
     () => `Expected a number <= ${max}`
   );
+const label = (label: string) => setMeta({ label });
 
 if (import.meta.vitest) {
   describe("functional", () => {
-    describe("composition", () => {
-      it("should be able to pass pipelines to other pipelines", () => {
-        const pipeline = pipe(isString(), maxLength(5), toNumber(), max(55555));
-        const minus100 = transform((val: number) => val - 100);
-        const merged = pipe(pipeline, minus100);
-        expect(merged.validateSync("10100")).toEqual(10000);
+    describe("builder", () => {
+      it("should be able to compose pipelines together", () => {
+        const pipeline = isString()
+          .extend(maxLength(5))
+          .extend(toNumber())
+          .extend(max(55555))
+          .extend(transform((val: number) => val - 100));
+        expect(pipeline.validateSync("10100")).toEqual(10000);
+        expect(() => pipeline.validateSync("123456")).toThrow();
+        expect(() => pipeline.validateSync("55556")).toThrow();
+        expect(() => pipeline.validateSync(123)).toThrow();
       });
-    });
 
-    describe("sync", () => {
-      it("should work synchronously", () => {
-        const pipeline = pipe(isString(), maxLength(5), toNumber(), max(55555));
-        expect(pipeline.validateSync("12345")).toEqual(12345);
-        expect(() => pipeline.validateSync("123456")).toThrow(
-          "Expected a string with length <= 5"
+      it("should be able to set meta", () => {
+        const pipeline = isString().extend(setMeta({ label: "hi" }));
+        expect(pipeline.meta).toEqual({ label: "hi" });
+      });
+
+      it("should be able to use metadata in errors in any order", () => {
+        const raiseError = check(
+          () => false,
+          (_, meta) => `This error is for field ${meta.label}`
         );
-        expect(() => pipeline.validateSync(123)).toThrow("Expected a string");
-        expect(() => pipeline.validateSync("66666")).toThrow(
-          "Expected a number <= 55555"
+        const testLabel = label("MyField");
+
+        const pipeline1 = isString().extend(raiseError).extend(testLabel);
+        const pipeline2 = isString().extend(testLabel).extend(raiseError);
+
+        expect(() => pipeline1.validateSync("123")).toThrow(
+          "This error is for field MyField"
+        );
+        expect(() => pipeline2.validateSync("123")).toThrow(
+          "This error is for field MyField"
         );
       });
-    });
 
-    describe("async", () => {
-      const userExists = check(
-        () => Promise.resolve(true),
-        () => "User does not exist"
-      );
-      const makeUser = transform(() => Promise.resolve({ id: 123 }));
-      const pipeline = pipe(isString(), userExists, makeUser);
+      it("should use last metadata when set in 2 places", () => {
+        const testCheck = check(
+          (val: string) => val.length >= 5,
+          (val, meta) => `${meta.label} must be at least 5 characters`
+        );
+        const longString = isString()
+          .extend(label("longString"))
+          .extend(testCheck);
+        const myString = longString.extend(label("myString"));
 
-      it("should support async checks and transforms", () => {
-        expect(pipeline.validateAsync("123")).resolves.toEqual({ id: 123 });
-      });
+        expect(() => myString.validateSync("1")).toThrow(
+          "myString must be at least 5 characters"
+        );
 
-      it("should throw if trying to validate synchronously", () => {
-        expect(() => pipeline.validateSync("123")).toThrow();
+        const string2 = isString().extend(longString).extend(label("myString"));
+        expect(() => string2.validateSync("1")).toThrow(
+          "myString must be at least 5 characters"
+        );
       });
     });
   });
