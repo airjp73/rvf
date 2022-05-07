@@ -13,10 +13,10 @@ export interface ValidationPipeline<Input, Output, Meta extends AnyMeta = {}> {
   meta: Meta;
   props?: AnyProps;
 
-  extend<NewMeta extends AnyMeta>(
+  e<NewMeta extends AnyMeta>(
     pipeline: ValidationPipeline<unknown, unknown, NewMeta>
   ): ValidationPipeline<Input, Output, Merge<Meta, NewMeta>>;
-  extend<NewOutput, NewMeta extends AnyMeta>(
+  e<NewOutput, NewMeta extends AnyMeta>(
     pipeline: ValidationPipeline<Output, NewOutput, NewMeta>
   ): ValidationPipeline<Input, NewOutput, Merge<Meta, NewMeta>>;
 }
@@ -57,7 +57,7 @@ export function makeValidator<Input, Output>(
     props,
     validateSync: (input) => validateMaybeAsync(input, meta).assertSync(),
     validateAsync: (input) => validateMaybeAsync(input, meta).await(),
-    extend(pipe: any) {
+    e(pipe: any) {
       return makeValidator(
         (input: Input, passedMeta) =>
           validateMaybeAsync(input, passedMeta).then((res) =>
@@ -129,10 +129,10 @@ if (import.meta.vitest) {
     describe("builder", () => {
       it("should be able to compose pipelines together", () => {
         const pipeline = isString()
-          .extend(maxLength(5))
-          .extend(toNumber())
-          .extend(max(55555))
-          .extend(transform((val: number) => val - 100));
+          .e(maxLength(5))
+          .e(toNumber())
+          .e(max(55555))
+          .e(transform((val: number) => val - 100));
         expect(pipeline.validateSync("10100")).toEqual(10000);
         expect(() => pipeline.validateSync("123456")).toThrow();
         expect(() => pipeline.validateSync("55556")).toThrow();
@@ -140,7 +140,7 @@ if (import.meta.vitest) {
       });
 
       it("should be able to set meta", () => {
-        const pipeline = isString().extend(setMeta({ label: "hi" }));
+        const pipeline = isString().e(setMeta({ label: "hi" }));
         expect(pipeline.meta).toEqual({ label: "hi" });
       });
 
@@ -151,8 +151,8 @@ if (import.meta.vitest) {
         );
         const testLabel = label("MyField");
 
-        const pipeline1 = isString().extend(raiseError).extend(testLabel);
-        const pipeline2 = isString().extend(testLabel).extend(raiseError);
+        const pipeline1 = isString().e(raiseError).e(testLabel);
+        const pipeline2 = isString().e(testLabel).e(raiseError);
 
         expect(() => pipeline1.validateSync("123")).toThrow(
           "This error is for field MyField"
@@ -167,16 +167,14 @@ if (import.meta.vitest) {
           (val: string) => val.length >= 5,
           (val, meta) => `${meta.label} must be at least 5 characters`
         );
-        const longString = isString()
-          .extend(label("longString"))
-          .extend(testCheck);
-        const myString = longString.extend(label("myString"));
+        const longString = isString().e(label("longString")).e(testCheck);
+        const myString = longString.e(label("myString"));
 
         expect(() => myString.validateSync("1")).toThrow(
           "myString must be at least 5 characters"
         );
 
-        const string2 = isString().extend(longString).extend(label("myString"));
+        const string2 = isString().e(longString).e(label("myString"));
         expect(() => string2.validateSync("1")).toThrow(
           "myString must be at least 5 characters"
         );
