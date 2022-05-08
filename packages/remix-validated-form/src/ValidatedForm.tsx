@@ -186,6 +186,14 @@ function formEventProxy<T extends object>(event: T): T {
   }) as T;
 }
 
+type HTMLSubmitEvent = React.BaseSyntheticEvent<
+  SubmitEvent,
+  Event,
+  HTMLFormElement
+>;
+
+type HTMLFormSubmitter = HTMLButtonElement | HTMLInputElement;
+
 /**
  * The primary form component of `remix-validated-form`.
  */
@@ -331,17 +339,16 @@ export function ValidatedForm<DataType>({
         return;
       }
 
+      const submitter = (e as unknown as HTMLSubmitEvent).nativeEvent
+        .submitter as HTMLFormSubmitter | null;
+
       // We deviate from the remix code here a bit because of our async submit.
       // In remix's `FormImpl`, they use `event.currentTarget` to get the form,
       // but we already have the form in `formRef.current` so we can just use that.
       // If we use `event.currentTarget` here, it will break because `currentTarget`
       // will have changed since the start of the submission.
-      if (fetcher) fetcher.submit(clickedButtonRef.current || formRef.current);
-      else
-        submit(clickedButtonRef.current || formRef.current, {
-          method,
-          replace,
-        });
+      if (fetcher) fetcher.submit(submitter || e.currentTarget);
+      else submit(submitter || e.currentTarget, { method, replace });
 
       clickedButtonRef.current = null;
     }
