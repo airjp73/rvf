@@ -16,6 +16,7 @@ exports.makeConfig = ({ lib, external, dir }) =>
         formats: ["cjs", "es", "umd"],
       },
       rollupOptions: { external },
+      sourcemap: true,
     },
     plugins: [
       dts({
