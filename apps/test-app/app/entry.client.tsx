@@ -1,10 +1,10 @@
-import { StrictMode } from "react";
-import { hydrate } from "react-dom";
-import { RemixBrowser } from "remix";
+import { RemixBrowser } from "@remix-run/react";
+import React from "react";
+import { hydrateRoot } from "react-dom/client";
 
-hydrate(
-  <StrictMode>
+hydrateRoot(
+  document,
+  <React.StrictMode>
     <RemixBrowser />
-  </StrictMode>,
-  document
+  </React.StrictMode>
 );
