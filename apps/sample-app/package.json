@@ -19,8 +19,8 @@
     "@remix-validated-form/with-zod": "*",
     "dotenv-cli": "^4.1.1",
     "framer-motion": "^4.1.17",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
+    "react": "^18.1.0",
+    "react-dom": "^18.1.0",
     "remix": "^1.2.1",
     "remix-validated-form": "*",
     "zod": "^3.11.6"
