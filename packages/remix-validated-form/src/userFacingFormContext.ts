@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import {
   useInternalFormContext,
   useRegisterReceiveFocus,
@@ -102,14 +102,26 @@ export const useFormContext = (formId?: string): FormContextValue => {
     [internalClearError]
   );
 
-  return {
-    ...state,
-    setFieldTouched: setTouched,
-    validateField,
-    clearError,
-    registerReceiveFocus,
-    clearAllErrors,
-    validate,
-    reset,
-  };
+  return useMemo(
+    () => ({
+      ...state,
+      setFieldTouched: setTouched,
+      validateField,
+      clearError,
+      registerReceiveFocus,
+      clearAllErrors,
+      validate,
+      reset,
+    }),
+    [
+      clearAllErrors,
+      clearError,
+      registerReceiveFocus,
+      reset,
+      setTouched,
+      state,
+      validate,
+      validateField,
+    ]
+  );
 };
