@@ -2,15 +2,14 @@ import {
   ControlledFieldState,
   controlledFieldStore,
 } from "./controlledFieldStore";
-import { FormState, formStore } from "./createFormStore";
+import { FormState, useRootFormStore } from "./createFormStore";
 import { InternalFormId } from "./storeFamily";
 
 export const useFormStore = <T>(
   formId: InternalFormId,
   selector: (state: FormState) => T
 ) => {
-  const useStore = formStore(formId);
-  return useStore(selector);
+  return useRootFormStore((state) => selector(state.form(formId)));
 };
 
 export const useControlledFieldStore = <T>(

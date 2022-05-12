@@ -2,8 +2,8 @@ import { useCallback, useEffect } from "react";
 import { InternalFormContextValue } from "../formContext";
 import { useFieldDefaultValue } from "../hooks";
 import { controlledFieldStore } from "./controlledFieldStore";
-import { formStore } from "./createFormStore";
 import { InternalFormId } from "./storeFamily";
+import { useFormStore } from "./storeHooks";
 
 export const useControlledFieldValue = (
   context: InternalFormContextValue,
@@ -12,8 +12,10 @@ export const useControlledFieldValue = (
   const useValueStore = controlledFieldStore(context.formId);
   const value = useValueStore((state) => state.fields[field]?.value);
 
-  const useFormStore = formStore(context.formId);
-  const isFormHydrated = useFormStore((state) => state.isHydrated);
+  const isFormHydrated = useFormStore(
+    context.formId,
+    (state) => state.isHydrated
+  );
   const defaultValue = useFieldDefaultValue(field, context);
 
   const isFieldHydrated = useValueStore(

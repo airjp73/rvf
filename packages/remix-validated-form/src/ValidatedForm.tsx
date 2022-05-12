@@ -23,8 +23,10 @@ import {
   useSetFieldErrors,
 } from "./internal/hooks";
 import { MultiValueMap, useMultiValueMap } from "./internal/MultiValueMap";
-import { cleanupFormState } from "./internal/state/cleanup";
-import { SyncedFormProps } from "./internal/state/createFormStore";
+import {
+  SyncedFormProps,
+  useRootFormStore,
+} from "./internal/state/createFormStore";
 import {
   useControlledFieldStore,
   useFormStore,
@@ -243,16 +245,21 @@ export function ValidatedForm<DataType>({
   const startSubmit = useFormStore(formId, (state) => state.startSubmit);
   const endSubmit = useFormStore(formId, (state) => state.endSubmit);
   const syncFormProps = useFormStore(formId, (state) => state.syncFormProps);
-  const setHydrated = useFormStore(formId, (state) => state.setHydrated);
   const setFormElementInState = useFormStore(
     formId,
     (state) => state.setFormElement
   );
+  const cleanupForm = useRootFormStore((state) => state.cleanupForm);
+  const registerForm = useRootFormStore((state) => state.registerForm);
+
+  useLayoutEffect(() => {
+    setFormElementInState(formRef.current);
+  }, [setFormElementInState]);
 
   useEffect(() => {
-    setHydrated();
-    return () => cleanupFormState(formId);
-  }, [formId, setHydrated]);
+    registerForm(formId);
+    return () => cleanupForm(formId);
+  }, [cleanupForm, formId, registerForm]);
 
   const customFocusHandlers = useMultiValueMap<string, () => void>();
   const registerReceiveFocus: SyncedFormProps["registerReceiveFocus"] =
@@ -356,7 +363,7 @@ export function ValidatedForm<DataType>({
 
   return (
     <Form
-      ref={mergeRefs([formRef, formRefProp, setFormElementInState])}
+      ref={mergeRefs([formRef, formRefProp])}
       {...rest}
       id={id}
       action={action}
