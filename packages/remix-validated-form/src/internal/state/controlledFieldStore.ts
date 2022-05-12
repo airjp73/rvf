@@ -1,7 +1,5 @@
-import invariant from "tiny-invariant";
-import create from "zustand";
-import { immer } from "zustand/middleware/immer";
-import { storeFamily } from "./storeFamily";
+import { WritableDraft } from "immer/dist/internal";
+import { GetState } from "zustand";
 
 export type ControlledFieldState = {
   fields: {
@@ -24,68 +22,78 @@ export type ControlledFieldState = {
   reset: () => void;
 };
 
-export const controlledFieldStore = storeFamily(() =>
-  create<ControlledFieldState>()(
-    immer((set, get, api) => ({
-      fields: {},
+const noOp = () => {};
+export const defaultControlledFieldState: ControlledFieldState = {
+  fields: {},
+  register: noOp,
+  unregister: noOp,
+  setValue: noOp,
+  hydrateWithDefault: noOp,
+  awaitValueUpdate: async () => {},
+  reset: noOp,
+};
 
-      register: (field) =>
-        set((state) => {
-          if (state.fields[field]) {
-            state.fields[field]!.refCount++;
-          } else {
-            state.fields[field] = {
-              refCount: 1,
-              value: undefined,
-              hydrated: false,
-              valueUpdatePromise: undefined,
-              resolveValueUpdate: undefined,
-            };
-          }
-        }),
+export const createControlledFieldState = (
+  set: (setter: (draft: WritableDraft<ControlledFieldState>) => void) => void,
+  get: GetState<ControlledFieldState>
+): ControlledFieldState => ({
+  fields: {},
 
-      unregister: (field) =>
-        set((state) => {
-          const fieldState = state.fields[field];
-          if (!fieldState) return;
+  register: (field) =>
+    set((state) => {
+      if (state.fields[field]) {
+        state.fields[field]!.refCount++;
+      } else {
+        state.fields[field] = {
+          refCount: 1,
+          value: undefined,
+          hydrated: false,
+          valueUpdatePromise: undefined,
+          resolveValueUpdate: undefined,
+        };
+      }
+    }),
 
-          fieldState.refCount--;
-          if (fieldState.refCount === 0) delete state.fields[field];
-        }),
+  unregister: (field) =>
+    set((state) => {
+      const fieldState = state.fields[field];
+      if (!fieldState) return;
 
-      setValue: (field, value) =>
-        set((state) => {
-          const fieldState = state.fields[field];
-          if (!fieldState) return;
+      fieldState.refCount--;
+      if (fieldState.refCount === 0) delete state.fields[field];
+    }),
 
-          fieldState.value = value;
-          const promise = new Promise<void>((resolve) => {
-            fieldState.resolveValueUpdate = resolve;
-          });
-          fieldState.valueUpdatePromise = promise;
-        }),
+  setValue: (field, value) =>
+    set((state) => {
+      const fieldState = state.fields[field];
+      if (!fieldState) return;
 
-      hydrateWithDefault: (field, defaultValue) =>
-        set((state) => {
-          const fieldState = state.fields[field];
-          if (!fieldState) return;
+      fieldState.value = value;
+      const promise = new Promise<void>((resolve) => {
+        fieldState.resolveValueUpdate = resolve;
+      });
+      fieldState.valueUpdatePromise = promise;
+    }),
 
-          fieldState.value = defaultValue;
-          fieldState.defaultValue = defaultValue;
-          fieldState.hydrated = true;
-        }),
+  hydrateWithDefault: (field, defaultValue) =>
+    set((state) => {
+      const fieldState = state.fields[field];
+      if (!fieldState) return;
 
-      awaitValueUpdate: async (field) => {
-        await get().fields[field]?.valueUpdatePromise;
-      },
+      fieldState.value = defaultValue;
+      fieldState.defaultValue = defaultValue;
+      fieldState.hydrated = true;
+    }),
 
-      reset: () =>
-        set((state) => {
-          Object.values(state.fields).forEach((field) => {
-            if (!field) return;
-            field.value = field.defaultValue;
-          });
-        }),
-    }))
-  )
-);
+  awaitValueUpdate: async (field) => {
+    await get().fields[field]?.valueUpdatePromise;
+  },
+
+  reset: () =>
+    set((state) => {
+      Object.values(state.fields).forEach((field) => {
+        if (!field) return;
+        field.value = field.defaultValue;
+      });
+    }),
+});
