@@ -252,15 +252,6 @@ export function ValidatedForm<DataType>({
   const cleanupForm = useRootFormStore((state) => state.cleanupForm);
   const registerForm = useRootFormStore((state) => state.registerForm);
 
-  useLayoutEffect(() => {
-    setFormElementInState(formRef.current);
-  }, [setFormElementInState]);
-
-  useEffect(() => {
-    registerForm(formId);
-    return () => cleanupForm(formId);
-  }, [cleanupForm, formId, registerForm]);
-
   const customFocusHandlers = useMultiValueMap<string, () => void>();
   const registerReceiveFocus: SyncedFormProps["registerReceiveFocus"] =
     useCallback(
@@ -272,6 +263,11 @@ export function ValidatedForm<DataType>({
       },
       [customFocusHandlers]
     );
+
+  useLayoutEffect(() => {
+    registerForm(formId);
+    return () => cleanupForm(formId);
+  }, [cleanupForm, formId, registerForm]);
 
   useLayoutEffect(() => {
     syncFormProps({
@@ -290,6 +286,10 @@ export function ValidatedForm<DataType>({
     backendDefaultValues,
     validator,
   ]);
+
+  useLayoutEffect(() => {
+    setFormElementInState(formRef.current);
+  }, [setFormElementInState]);
 
   useEffect(() => {
     setFieldErrors(backendError?.fieldErrors ?? {});
