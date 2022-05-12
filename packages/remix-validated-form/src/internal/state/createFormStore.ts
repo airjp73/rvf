@@ -9,7 +9,7 @@ import {
   createControlledFieldState,
   defaultControlledFieldState,
 } from "./controlledFieldStore";
-import { InternalFormId } from "./storeFamily";
+import { InternalFormId } from "./types";
 
 export type SyncedFormProps = {
   formId?: string;
@@ -157,7 +157,7 @@ const createFormState = (
       "Cannot validator. This is probably a bug in remix-validated-form."
     );
 
-    getControlledFields().awaitValueUpdate?.(field);
+    await getControlledFields().awaitValueUpdate?.(field);
 
     const { error } = await validator.validateField(
       new FormData(formElement),

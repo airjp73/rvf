@@ -1,8 +1,8 @@
 import { useCallback, useEffect } from "react";
 import { InternalFormContextValue } from "../formContext";
 import { useFieldDefaultValue } from "../hooks";
-import { InternalFormId } from "./storeFamily";
 import { useControlledFieldStore, useFormStore } from "./storeHooks";
+import { InternalFormId } from "./types";
 
 export const useControlledFieldValue = (
   context: InternalFormContextValue,
