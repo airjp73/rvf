@@ -56,6 +56,7 @@ export type FormState = {
 
 const noOp = () => {};
 const defaultFormState: FormState = {
+  // If we're falling back to default, it's not hydrated
   isHydrated: false,
   isSubmitting: false,
   hasBeenSubmitted: false,
@@ -86,6 +87,7 @@ const createFormState = (
   get: GetState<FormState>,
   getControlledFields: GetState<ControlledFieldState>
 ): FormState => ({
+  // If we're registering, then we're hydrated
   isHydrated: true,
   isSubmitting: false,
   hasBeenSubmitted: false,
