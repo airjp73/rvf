@@ -259,6 +259,8 @@ export function ValidatedForm<DataType>({
       [customFocusHandlers]
     );
 
+  // TODO: all these hooks running at startup cause extra, unnecessary renders
+  // There must be a nice way to avoid this.
   useLayoutEffect(() => {
     registerForm(formId);
     return () => cleanupForm(formId);
