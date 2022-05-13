@@ -6,8 +6,8 @@ import { FieldErrors, ValidationErrorResponseData } from "..";
 import { formDefaultValuesKey } from "./constants";
 import { InternalFormContext, InternalFormContextValue } from "./formContext";
 import { Hydratable, hydratable } from "./hydratable";
-import { InternalFormId } from "./state/storeFamily";
 import { useFormStore } from "./state/storeHooks";
+import { InternalFormId } from "./state/types";
 
 export const useInternalFormContext = (
   formId?: string | symbol,
