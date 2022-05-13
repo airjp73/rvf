@@ -1,7 +1,6 @@
 import { WritableDraft } from "immer/dist/internal";
 import invariant from "tiny-invariant";
 import create, { GetState } from "zustand";
-import { devtools } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 import { FieldErrors, TouchedFields, Validator } from "../../validation/types";
 import { useControlledFieldStore } from "./controlledFieldStore";
@@ -190,31 +189,25 @@ const createFormState = (
 });
 
 export const useRootFormStore = create<FormStoreState>()(
-  devtools(
-    immer((set, get) => ({
-      forms: {},
-      form: (formId) => {
-        return get().forms[formId] ?? defaultFormState;
-      },
-      cleanupForm: (formId: InternalFormId) => {
-        set((state) => {
-          delete state.forms[formId];
-        });
-      },
-      registerForm: (formId: InternalFormId) => {
-        if (get().forms[formId]) return;
-        set((state) => {
-          state.forms[formId] = createFormState(
-            formId,
-            (setter) => set((state) => setter(state.forms[formId])),
-            () => get().forms[formId]
-          ) as WritableDraft<FormState>;
-        });
-      },
-    })),
-    {
-      enabled: true,
-      name: "remix-validated-form",
-    }
-  )
+  immer((set, get) => ({
+    forms: {},
+    form: (formId) => {
+      return get().forms[formId] ?? defaultFormState;
+    },
+    cleanupForm: (formId: InternalFormId) => {
+      set((state) => {
+        delete state.forms[formId];
+      });
+    },
+    registerForm: (formId: InternalFormId) => {
+      if (get().forms[formId]) return;
+      set((state) => {
+        state.forms[formId] = createFormState(
+          formId,
+          (setter) => set((state) => setter(state.forms[formId])),
+          () => get().forms[formId]
+        ) as WritableDraft<FormState>;
+      });
+    },
+  }))
 );
