@@ -4,11 +4,7 @@ import create, { GetState } from "zustand";
 import { devtools } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 import { FieldErrors, TouchedFields, Validator } from "../../validation/types";
-import {
-  ControlledFieldState,
-  createControlledFieldState,
-  defaultControlledFieldState,
-} from "./controlledFieldStore";
+import { useControlledFieldStore } from "./controlledFieldStore";
 import { InternalFormId } from "./types";
 
 export type SyncedFormProps = {
@@ -22,9 +18,7 @@ export type SyncedFormProps = {
 
 export type FormStoreState = {
   forms: { [formId: InternalFormId]: FormState };
-  controlledFields: { [formId: InternalFormId]: ControlledFieldState };
   form: (formId: InternalFormId) => FormState;
-  formFields: (formId: InternalFormId) => ControlledFieldState;
   registerForm: (formId: InternalFormId) => void;
   cleanupForm: (formId: InternalFormId) => void;
 };
@@ -83,9 +77,9 @@ const defaultFormState: FormState = {
 };
 
 const createFormState = (
+  formId: InternalFormId,
   set: (setter: (draft: WritableDraft<FormState>) => void) => void,
-  get: GetState<FormState>,
-  getControlledFields: GetState<ControlledFieldState>
+  get: GetState<FormState>
 ): FormState => ({
   // If we're registering, then we're hydrated
   isHydrated: true,
@@ -159,7 +153,7 @@ const createFormState = (
       "Cannot validator. This is probably a bug in remix-validated-form."
     );
 
-    await getControlledFields().awaitValueUpdate?.(field);
+    await useControlledFieldStore.getState().awaitValueUpdate?.(formId, field);
 
     const { error } = await validator.validateField(
       new FormData(formElement),
@@ -199,12 +193,8 @@ export const useRootFormStore = create<FormStoreState>()(
   devtools(
     immer((set, get) => ({
       forms: {},
-      controlledFields: {},
       form: (formId) => {
         return get().forms[formId] ?? defaultFormState;
-      },
-      formFields: (formId) => {
-        return get().controlledFields[formId] ?? defaultControlledFieldState;
       },
       cleanupForm: (formId: InternalFormId) => {
         set((state) => {
@@ -215,15 +205,10 @@ export const useRootFormStore = create<FormStoreState>()(
         if (get().forms[formId]) return;
         set((state) => {
           state.forms[formId] = createFormState(
+            formId,
             (setter) => set((state) => setter(state.forms[formId])),
-            () => get().forms[formId],
-            () => get().controlledFields[formId]
+            () => get().forms[formId]
           ) as WritableDraft<FormState>;
-
-          state.controlledFields[formId] = createControlledFieldState(
-            (setter) => set((state) => setter(state.controlledFields[formId])),
-            () => get().controlledFields[formId]
-          );
         });
       },
     })),

@@ -1,7 +1,8 @@
 import { useCallback, useEffect } from "react";
 import { InternalFormContextValue } from "../formContext";
 import { useFieldDefaultValue } from "../hooks";
-import { useControlledFieldStore, useFormStore } from "./storeHooks";
+import { useControlledFieldStore } from "./controlledFieldStore";
+import { useFormStore } from "./storeHooks";
 import { InternalFormId } from "./types";
 
 export const useControlledFieldValue = (
@@ -9,8 +10,7 @@ export const useControlledFieldValue = (
   field: string
 ) => {
   const value = useControlledFieldStore(
-    context.formId,
-    (state) => state.fields[field]?.value
+    (state) => state.getField(context.formId, field)?.value
   );
 
   const isFormHydrated = useFormStore(
@@ -20,19 +20,18 @@ export const useControlledFieldValue = (
   const defaultValue = useFieldDefaultValue(field, context);
 
   const isFieldHydrated = useControlledFieldStore(
-    context.formId,
-    (state) => state.fields[field]?.hydrated ?? false
+    (state) => state.getField(context.formId, field)?.hydrated ?? false
   );
   const hydrateWithDefault = useControlledFieldStore(
-    context.formId,
     (state) => state.hydrateWithDefault
   );
 
   useEffect(() => {
     if (isFormHydrated && !isFieldHydrated) {
-      hydrateWithDefault(field, defaultValue);
+      hydrateWithDefault(context.formId, field, defaultValue);
     }
   }, [
+    context.formId,
     defaultValue,
     field,
     hydrateWithDefault,
@@ -48,33 +47,25 @@ export const useControllableValue = (
   field: string
 ) => {
   const resolveUpdate = useControlledFieldStore(
-    context.formId,
-    (state) => state.fields[field]?.resolveValueUpdate
+    (state) => state.getField(context.formId, field)?.resolveValueUpdate
   );
   useEffect(() => {
     resolveUpdate?.();
   }, [resolveUpdate]);
 
-  const register = useControlledFieldStore(
-    context.formId,
-    (state) => state.register
-  );
-  const unregister = useControlledFieldStore(
-    context.formId,
-    (state) => state.unregister
-  );
+  const register = useControlledFieldStore((state) => state.register);
+  const unregister = useControlledFieldStore((state) => state.unregister);
   useEffect(() => {
-    register(field);
-    return () => unregister(field);
+    register(context.formId, field);
+    return () => unregister(context.formId, field);
   }, [context.formId, field, register, unregister]);
 
   const setControlledFieldValue = useControlledFieldStore(
-    context.formId,
     (state) => state.setValue
   );
   const setValue = useCallback(
-    (value: unknown) => setControlledFieldValue(field, value),
-    [field, setControlledFieldValue]
+    (value: unknown) => setControlledFieldValue(context.formId, field, value),
+    [context.formId, field, setControlledFieldValue]
   );
 
   const value = useControlledFieldValue(context, field);
@@ -83,9 +74,17 @@ export const useControllableValue = (
 };
 
 export const useUpdateControllableValue = (formId: InternalFormId) => {
-  return useControlledFieldStore(formId, (state) => state.setValue);
+  const setValue = useControlledFieldStore((state) => state.setValue);
+  return useCallback(
+    (field: string, value: unknown) => setValue(formId, field, value),
+    [formId, setValue]
+  );
 };
 
 export const useAwaitValue = (formId: InternalFormId) => {
-  return useControlledFieldStore(formId, (state) => state.awaitValueUpdate);
+  const awaitValue = useControlledFieldStore((state) => state.awaitValueUpdate);
+  return useCallback(
+    (field: string) => awaitValue(formId, field),
+    [awaitValue, formId]
+  );
 };

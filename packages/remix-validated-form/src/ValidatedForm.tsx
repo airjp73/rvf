@@ -23,14 +23,12 @@ import {
   useSetFieldErrors,
 } from "./internal/hooks";
 import { MultiValueMap, useMultiValueMap } from "./internal/MultiValueMap";
+import { useControlledFieldStore } from "./internal/state/controlledFieldStore";
 import {
   SyncedFormProps,
   useRootFormStore,
 } from "./internal/state/createFormStore";
-import {
-  useControlledFieldStore,
-  useFormStore,
-} from "./internal/state/storeHooks";
+import { useFormStore } from "./internal/state/storeHooks";
 import { useSubmitComplete } from "./internal/submissionCallbacks";
 import {
   mergeRefs,
@@ -238,10 +236,7 @@ export function ValidatedForm<DataType>({
   const setFieldErrors = useSetFieldErrors(formId);
   const setFieldError = useFormStore(formId, (state) => state.setFieldError);
   const reset = useFormStore(formId, (state) => state.reset);
-  const resetControlledFields = useControlledFieldStore(
-    formId,
-    (state) => state.reset
-  );
+  const resetControlledFields = useControlledFieldStore((state) => state.reset);
   const startSubmit = useFormStore(formId, (state) => state.startSubmit);
   const endSubmit = useFormStore(formId, (state) => state.endSubmit);
   const syncFormProps = useFormStore(formId, (state) => state.syncFormProps);
@@ -377,7 +372,7 @@ export function ValidatedForm<DataType>({
         onReset?.(event);
         if (event.defaultPrevented) return;
         reset();
-        resetControlledFields();
+        resetControlledFields(formId);
       }}
     >
       <InternalFormContext.Provider value={contextValue}>
