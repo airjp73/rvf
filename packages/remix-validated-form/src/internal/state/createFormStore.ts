@@ -49,7 +49,6 @@ export type FormState = {
 
 const noOp = () => {};
 const defaultFormState: FormState = {
-  // If we're falling back to default, it's not hydrated
   isHydrated: false,
   isSubmitting: false,
   hasBeenSubmitted: false,
@@ -80,8 +79,8 @@ const createFormState = (
   set: (setter: (draft: WritableDraft<FormState>) => void) => void,
   get: GetState<FormState>
 ): FormState => ({
-  // If we're registering, then we're hydrated
-  isHydrated: true,
+  // It's not "hydrated" until the form props are synced
+  isHydrated: false,
   isSubmitting: false,
   hasBeenSubmitted: false,
   touchedFields: {},
@@ -124,6 +123,7 @@ const createFormState = (
   syncFormProps: (props: SyncedFormProps) =>
     set((state) => {
       state.formProps = props;
+      state.isHydrated = true;
     }),
   setHydrated: () =>
     set((state) => {
