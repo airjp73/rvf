@@ -87,7 +87,7 @@ export const useControlledFieldStore = create<ControlledFieldState>()(
 
     hydrateWithDefault: (formId, field, defaultValue) =>
       set((state) => {
-        const fieldState = state.forms[formId][field];
+        const fieldState = state.forms[formId]?.[field];
         if (!fieldState) return;
 
         fieldState.value = defaultValue;
@@ -96,12 +96,14 @@ export const useControlledFieldStore = create<ControlledFieldState>()(
       }),
 
     awaitValueUpdate: async (formId, field) => {
-      await get().forms[formId][field]?.valueUpdatePromise;
+      await get().getField(formId, field)?.valueUpdatePromise;
     },
 
     reset: (formId) =>
       set((state) => {
-        Object.values(state.forms[formId]).forEach((field) => {
+        const formState = state.forms[formId];
+        if (!formState) return;
+        Object.values(formState).forEach((field) => {
           if (!field) return;
           field.value = field.defaultValue;
         });
