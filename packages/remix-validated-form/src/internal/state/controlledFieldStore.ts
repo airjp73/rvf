@@ -1,91 +1,112 @@
-import invariant from "tiny-invariant";
 import create from "zustand";
 import { immer } from "zustand/middleware/immer";
-import { storeFamily } from "./storeFamily";
+import { InternalFormId } from "./types";
 
-export type ControlledFieldState = {
-  fields: {
-    [fieldName: string]:
-      | {
-          refCount: number;
-          value: unknown;
-          defaultValue?: unknown;
-          hydrated: boolean;
-          valueUpdatePromise: Promise<void> | undefined;
-          resolveValueUpdate: (() => void) | undefined;
-        }
-      | undefined;
-  };
-  register: (fieldName: string) => void;
-  unregister: (fieldName: string) => void;
-  setValue: (fieldName: string, value: unknown) => void;
-  hydrateWithDefault: (fieldName: string, defaultValue: unknown) => void;
-  awaitValueUpdate: (fieldName: string) => Promise<void>;
-  reset: () => void;
+export type FieldState = {
+  refCount: number;
+  value: unknown;
+  defaultValue?: unknown;
+  hydrated: boolean;
+  valueUpdatePromise: Promise<void> | undefined;
+  resolveValueUpdate: (() => void) | undefined;
 };
 
-export const controlledFieldStore = storeFamily(() =>
-  create<ControlledFieldState>()(
-    immer((set, get, api) => ({
-      fields: {},
+export type ControlledFieldState = {
+  forms: {
+    [formId: InternalFormId]: {
+      [fieldName: string]: FieldState | undefined;
+    };
+  };
+  register: (formId: InternalFormId, fieldName: string) => void;
+  unregister: (formId: InternalFormId, fieldName: string) => void;
+  getField: (
+    formId: InternalFormId,
+    fieldName: string
+  ) => FieldState | undefined;
+  setValue: (formId: InternalFormId, fieldName: string, value: unknown) => void;
+  hydrateWithDefault: (
+    formId: InternalFormId,
+    fieldName: string,
+    defaultValue: unknown
+  ) => void;
+  awaitValueUpdate: (
+    formId: InternalFormId,
+    fieldName: string
+  ) => Promise<void>;
+  reset: (formId: InternalFormId) => void;
+};
 
-      register: (field) =>
-        set((state) => {
-          if (state.fields[field]) {
-            state.fields[field]!.refCount++;
-          } else {
-            state.fields[field] = {
-              refCount: 1,
-              value: undefined,
-              hydrated: false,
-              valueUpdatePromise: undefined,
-              resolveValueUpdate: undefined,
-            };
-          }
-        }),
+export const useControlledFieldStore = create<ControlledFieldState>()(
+  immer((set, get) => ({
+    forms: {},
 
-      unregister: (field) =>
-        set((state) => {
-          const fieldState = state.fields[field];
-          if (!fieldState) return;
+    register: (formId, field) =>
+      set((state) => {
+        if (!state.forms[formId]) {
+          state.forms[formId] = {};
+        }
 
-          fieldState.refCount--;
-          if (fieldState.refCount === 0) delete state.fields[field];
-        }),
+        if (state.forms[formId][field]) {
+          state.forms[formId][field]!.refCount++;
+        } else {
+          state.forms[formId][field] = {
+            refCount: 1,
+            value: undefined,
+            hydrated: false,
+            valueUpdatePromise: undefined,
+            resolveValueUpdate: undefined,
+          };
+        }
+      }),
 
-      setValue: (field, value) =>
-        set((state) => {
-          const fieldState = state.fields[field];
-          if (!fieldState) return;
+    unregister: (formId, field) =>
+      set((state) => {
+        const formState = state.forms?.[formId];
+        const fieldState = formState?.[field];
+        if (!fieldState) return;
 
-          fieldState.value = value;
-          const promise = new Promise<void>((resolve) => {
-            fieldState.resolveValueUpdate = resolve;
-          });
-          fieldState.valueUpdatePromise = promise;
-        }),
+        fieldState.refCount--;
+        if (fieldState.refCount === 0) delete formState[field];
+      }),
 
-      hydrateWithDefault: (field, defaultValue) =>
-        set((state) => {
-          const fieldState = state.fields[field];
-          if (!fieldState) return;
+    getField: (formId, field) => {
+      return get().forms?.[formId]?.[field];
+    },
 
-          fieldState.value = defaultValue;
-          fieldState.defaultValue = defaultValue;
-          fieldState.hydrated = true;
-        }),
+    setValue: (formId, field, value) =>
+      set((state) => {
+        const fieldState = state.forms?.[formId]?.[field];
+        if (!fieldState) return;
 
-      awaitValueUpdate: async (field) => {
-        await get().fields[field]?.valueUpdatePromise;
-      },
+        fieldState.value = value;
+        const promise = new Promise<void>((resolve) => {
+          fieldState.resolveValueUpdate = resolve;
+        });
+        fieldState.valueUpdatePromise = promise;
+      }),
 
-      reset: () =>
-        set((state) => {
-          Object.values(state.fields).forEach((field) => {
-            if (!field) return;
-            field.value = field.defaultValue;
-          });
-        }),
-    }))
-  )
+    hydrateWithDefault: (formId, field, defaultValue) =>
+      set((state) => {
+        const fieldState = state.forms[formId]?.[field];
+        if (!fieldState) return;
+
+        fieldState.value = defaultValue;
+        fieldState.defaultValue = defaultValue;
+        fieldState.hydrated = true;
+      }),
+
+    awaitValueUpdate: async (formId, field) => {
+      await get().getField(formId, field)?.valueUpdatePromise;
+    },
+
+    reset: (formId) =>
+      set((state) => {
+        const formState = state.forms[formId];
+        if (!formState) return;
+        Object.values(formState).forEach((field) => {
+          if (!field) return;
+          field.value = field.defaultValue;
+        });
+      }),
+  }))
 );

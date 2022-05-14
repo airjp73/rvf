@@ -23,12 +23,12 @@ import {
   useSetFieldErrors,
 } from "./internal/hooks";
 import { MultiValueMap, useMultiValueMap } from "./internal/MultiValueMap";
-import { cleanupFormState } from "./internal/state/cleanup";
-import { SyncedFormProps } from "./internal/state/createFormStore";
+import { useControlledFieldStore } from "./internal/state/controlledFieldStore";
 import {
-  useControlledFieldStore,
-  useFormStore,
-} from "./internal/state/storeHooks";
+  SyncedFormProps,
+  useRootFormStore,
+} from "./internal/state/createFormStore";
+import { useFormStore } from "./internal/state/storeHooks";
 import { useSubmitComplete } from "./internal/submissionCallbacks";
 import {
   mergeRefs,
@@ -236,23 +236,16 @@ export function ValidatedForm<DataType>({
   const setFieldErrors = useSetFieldErrors(formId);
   const setFieldError = useFormStore(formId, (state) => state.setFieldError);
   const reset = useFormStore(formId, (state) => state.reset);
-  const resetControlledFields = useControlledFieldStore(
-    formId,
-    (state) => state.reset
-  );
+  const resetControlledFields = useControlledFieldStore((state) => state.reset);
   const startSubmit = useFormStore(formId, (state) => state.startSubmit);
   const endSubmit = useFormStore(formId, (state) => state.endSubmit);
   const syncFormProps = useFormStore(formId, (state) => state.syncFormProps);
-  const setHydrated = useFormStore(formId, (state) => state.setHydrated);
   const setFormElementInState = useFormStore(
     formId,
     (state) => state.setFormElement
   );
-
-  useEffect(() => {
-    setHydrated();
-    return () => cleanupFormState(formId);
-  }, [formId, setHydrated]);
+  const cleanupForm = useRootFormStore((state) => state.cleanupForm);
+  const registerForm = useRootFormStore((state) => state.registerForm);
 
   const customFocusHandlers = useMultiValueMap<string, () => void>();
   const registerReceiveFocus: SyncedFormProps["registerReceiveFocus"] =
@@ -265,6 +258,13 @@ export function ValidatedForm<DataType>({
       },
       [customFocusHandlers]
     );
+
+  // TODO: all these hooks running at startup cause extra, unnecessary renders
+  // There must be a nice way to avoid this.
+  useLayoutEffect(() => {
+    registerForm(formId);
+    return () => cleanupForm(formId);
+  }, [cleanupForm, formId, registerForm]);
 
   useLayoutEffect(() => {
     syncFormProps({
@@ -283,6 +283,10 @@ export function ValidatedForm<DataType>({
     backendDefaultValues,
     validator,
   ]);
+
+  useLayoutEffect(() => {
+    setFormElementInState(formRef.current);
+  }, [setFormElementInState]);
 
   useEffect(() => {
     setFieldErrors(backendError?.fieldErrors ?? {});
@@ -356,7 +360,7 @@ export function ValidatedForm<DataType>({
 
   return (
     <Form
-      ref={mergeRefs([formRef, formRefProp, setFormElementInState])}
+      ref={mergeRefs([formRef, formRefProp])}
       {...rest}
       id={id}
       action={action}
@@ -370,7 +374,7 @@ export function ValidatedForm<DataType>({
         onReset?.(event);
         if (event.defaultPrevented) return;
         reset();
-        resetControlledFields();
+        resetControlledFields(formId);
       }}
     >
       <InternalFormContext.Provider value={contextValue}>

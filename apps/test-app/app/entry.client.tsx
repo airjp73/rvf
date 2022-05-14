@@ -1,10 +1,12 @@
 import { RemixBrowser } from "@remix-run/react";
 import React from "react";
-import { hydrateRoot } from "react-dom/client";
+import { hydrate } from "react-dom";
 
-hydrateRoot(
-  document,
+// TODO: Switch to hydrateRoot when possible
+// https://github.com/remix-run/remix/issues/2570
+hydrate(
   <React.StrictMode>
     <RemixBrowser />
-  </React.StrictMode>
+  </React.StrictMode>,
+  document
 );

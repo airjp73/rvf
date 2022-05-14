@@ -1,31 +1,37 @@
 import { useCallback, useEffect } from "react";
 import { InternalFormContextValue } from "../formContext";
 import { useFieldDefaultValue } from "../hooks";
-import { controlledFieldStore } from "./controlledFieldStore";
-import { formStore } from "./createFormStore";
-import { InternalFormId } from "./storeFamily";
+import { useControlledFieldStore } from "./controlledFieldStore";
+import { useFormStore } from "./storeHooks";
+import { InternalFormId } from "./types";
 
 export const useControlledFieldValue = (
   context: InternalFormContextValue,
   field: string
 ) => {
-  const useValueStore = controlledFieldStore(context.formId);
-  const value = useValueStore((state) => state.fields[field]?.value);
+  const value = useControlledFieldStore(
+    (state) => state.getField(context.formId, field)?.value
+  );
 
-  const useFormStore = formStore(context.formId);
-  const isFormHydrated = useFormStore((state) => state.isHydrated);
+  const isFormHydrated = useFormStore(
+    context.formId,
+    (state) => state.isHydrated
+  );
   const defaultValue = useFieldDefaultValue(field, context);
 
-  const isFieldHydrated = useValueStore(
-    (state) => state.fields[field]?.hydrated ?? false
+  const isFieldHydrated = useControlledFieldStore(
+    (state) => state.getField(context.formId, field)?.hydrated ?? false
   );
-  const hydrateWithDefault = useValueStore((state) => state.hydrateWithDefault);
+  const hydrateWithDefault = useControlledFieldStore(
+    (state) => state.hydrateWithDefault
+  );
 
   useEffect(() => {
     if (isFormHydrated && !isFieldHydrated) {
-      hydrateWithDefault(field, defaultValue);
+      hydrateWithDefault(context.formId, field, defaultValue);
     }
   }, [
+    context.formId,
     defaultValue,
     field,
     hydrateWithDefault,
@@ -40,26 +46,26 @@ export const useControllableValue = (
   context: InternalFormContextValue,
   field: string
 ) => {
-  const useValueStore = controlledFieldStore(context.formId);
-
-  const resolveUpdate = useValueStore(
-    (state) => state.fields[field]?.resolveValueUpdate
+  const resolveUpdate = useControlledFieldStore(
+    (state) => state.getField(context.formId, field)?.resolveValueUpdate
   );
   useEffect(() => {
     resolveUpdate?.();
   }, [resolveUpdate]);
 
-  const register = useValueStore((state) => state.register);
-  const unregister = useValueStore((state) => state.unregister);
+  const register = useControlledFieldStore((state) => state.register);
+  const unregister = useControlledFieldStore((state) => state.unregister);
   useEffect(() => {
-    register(field);
-    return () => unregister(field);
+    register(context.formId, field);
+    return () => unregister(context.formId, field);
   }, [context.formId, field, register, unregister]);
 
-  const setControlledFieldValue = useValueStore((state) => state.setValue);
+  const setControlledFieldValue = useControlledFieldStore(
+    (state) => state.setValue
+  );
   const setValue = useCallback(
-    (value: unknown) => setControlledFieldValue(field, value),
-    [field, setControlledFieldValue]
+    (value: unknown) => setControlledFieldValue(context.formId, field, value),
+    [context.formId, field, setControlledFieldValue]
   );
 
   const value = useControlledFieldValue(context, field);
@@ -68,11 +74,17 @@ export const useControllableValue = (
 };
 
 export const useUpdateControllableValue = (formId: InternalFormId) => {
-  const useValueStore = controlledFieldStore(formId);
-  return useValueStore((state) => state.setValue);
+  const setValue = useControlledFieldStore((state) => state.setValue);
+  return useCallback(
+    (field: string, value: unknown) => setValue(formId, field, value),
+    [formId, setValue]
+  );
 };
 
 export const useAwaitValue = (formId: InternalFormId) => {
-  const useValueStore = controlledFieldStore(formId);
-  return useValueStore((state) => state.awaitValueUpdate);
+  const awaitValue = useControlledFieldStore((state) => state.awaitValueUpdate);
+  return useCallback(
+    (field: string) => awaitValue(formId, field),
+    [awaitValue, formId]
+  );
 };
