@@ -18,6 +18,7 @@ import {
   useSyncedDefaultValues,
   useFormActionProp,
   useFormSubactionProp,
+  useSubmitForm,
 } from "../internal/hooks";
 import {
   FieldErrors,
@@ -111,6 +112,12 @@ export type FormHelpers = {
    * or clicking a button element with `type="reset"`.
    */
   reset: () => void;
+  /**
+   * Submits the form, running all validations first.
+   *
+   * _Note_: This is equivalent to clicking a button element with `type="submit"` or calling formElement.submit().
+   */
+  submit: () => void;
 };
 
 /**
@@ -126,6 +133,7 @@ export const useFormHelpers = (formId?: string): FormHelpers => {
   const clearError = useClearError(formContext);
   const setFieldErrors = useSetFieldErrors(formContext.formId);
   const reset = useResetFormElement(formContext.formId);
+  const submit = useSubmitForm(formContext.formId);
   return useMemo(
     () => ({
       setTouched,
@@ -134,7 +142,16 @@ export const useFormHelpers = (formId?: string): FormHelpers => {
       validate,
       clearAllErrors: () => setFieldErrors({}),
       reset,
+      submit,
     }),
-    [clearError, reset, setFieldErrors, setTouched, validate, validateField]
+    [
+      clearError,
+      reset,
+      setFieldErrors,
+      setTouched,
+      submit,
+      validate,
+      validateField,
+    ]
   );
 };
