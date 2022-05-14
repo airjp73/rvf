@@ -124,6 +124,19 @@ export const useFieldTouched = (
   return [touched, setTouched] as const;
 };
 
+export const useFieldDirty = (
+  field: string,
+  { formId }: InternalFormContextValue
+) => {
+  const dirty = useFormStore(formId, (state) => state.dirtyFields[field]);
+  const setFieldDirty = useFormStore(formId, (state) => state.setDirty);
+  const setDirty = useCallback(
+    (dirty: boolean) => setFieldDirty(field, dirty),
+    [field, setFieldDirty]
+  );
+  return [dirty, setDirty] as const;
+};
+
 export const useFieldError = (
   name: string,
   context: InternalFormContextValue
@@ -158,6 +171,12 @@ export const useInternalIsSubmitting = (formId: InternalFormId) =>
 export const useInternalIsValid = (formId: InternalFormId) =>
   useFormStore(formId, (state) => state.isValid());
 
+export const useInternalIsDirty = (formId: InternalFormId) =>
+  useFormStore(formId, (state) => state.isDirty());
+
+export const useInternalIsPristine = (formId: InternalFormId) =>
+  useFormStore(formId, (state) => state.isPristine());
+
 export const useInternalHasBeenSubmitted = (formId: InternalFormId) =>
   useFormStore(formId, (state) => state.hasBeenSubmitted);
 
@@ -184,6 +203,9 @@ export const useSyncedDefaultValues = (formId: InternalFormId) =>
 export const useSetTouched = ({ formId }: InternalFormContextValue) =>
   useFormStore(formId, (state) => state.setTouched);
 
+export const useSetDirty = ({ formId }: InternalFormContextValue) =>
+  useFormStore(formId, (state) => state.setDirty);
+
 export const useTouchedFields = (formId: InternalFormId) =>
   useFormStore(formId, (state) => state.touchedFields);
 
@@ -195,6 +217,9 @@ export const useSetFieldErrors = (formId: InternalFormId) =>
 
 export const useResetFormElement = (formId: InternalFormId) =>
   useFormStore(formId, (state) => state.resetFormElement);
+
+export const useSubmitForm = (formId: InternalFormId) =>
+  useFormStore(formId, (state) => state.submit);
 
 export const useFormActionProp = (formId: InternalFormId) =>
   useFormStore(formId, (state) => state.formProps?.action);

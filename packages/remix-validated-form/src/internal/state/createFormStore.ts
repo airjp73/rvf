@@ -3,6 +3,7 @@ import invariant from "tiny-invariant";
 import create, { GetState } from "zustand";
 import { immer } from "zustand/middleware/immer";
 import {
+  DirtyFields,
   FieldErrors,
   TouchedFields,
   ValidationResult,
@@ -35,11 +36,14 @@ export type FormState = {
   touchedFields: TouchedFields;
   formProps?: SyncedFormProps;
   formElement: HTMLFormElement | null;
+  dirtyFields: DirtyFields;
 
   isValid: () => boolean;
+  isDirty: () => boolean;
   startSubmit: () => void;
   endSubmit: () => void;
   setTouched: (field: string, touched: boolean) => void;
+  setDirty: (field: string, dirty: boolean) => void;
   setFieldError: (field: string, error: string) => void;
   setFieldErrors: (errors: FieldErrors) => void;
   clearFieldError: (field: string) => void;
@@ -59,12 +63,15 @@ const defaultFormState: FormState = {
   isSubmitting: false,
   hasBeenSubmitted: false,
   touchedFields: {},
+  dirtyFields: {},
   fieldErrors: {},
   formElement: null,
   isValid: () => true,
+  isDirty: () => false,
   startSubmit: noOp,
   endSubmit: noOp,
   setTouched: noOp,
+  setDirty: noOp,
   setFieldError: noOp,
   setFieldErrors: noOp,
   clearFieldError: noOp,
@@ -96,10 +103,12 @@ const createFormState = (
   isSubmitting: false,
   hasBeenSubmitted: false,
   touchedFields: {},
+  dirtyFields: {},
   fieldErrors: {},
   formElement: null,
 
   isValid: () => Object.keys(get().fieldErrors).length === 0,
+  isDirty: () => Object.values(get().dirtyFields).some(Boolean),
   startSubmit: () =>
     set((state) => {
       state.isSubmitting = true;
@@ -112,6 +121,10 @@ const createFormState = (
   setTouched: (fieldName, touched) =>
     set((state) => {
       state.touchedFields[fieldName] = touched;
+    }),
+  setDirty: (fieldName, dirty) =>
+    set((state) => {
+      state.dirtyFields[fieldName] = dirty;
     }),
   setFieldError: (fieldName: string, error: string) =>
     set((state) => {

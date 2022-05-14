@@ -2,6 +2,8 @@ export type FieldErrors = Record<string, string>;
 
 export type TouchedFields = Record<string, boolean>;
 
+export type DirtyFields = Record<string, boolean>;
+
 export type GenericObject = { [key: string]: any };
 
 export type ValidatorError = {

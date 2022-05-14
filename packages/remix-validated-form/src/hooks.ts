@@ -15,6 +15,7 @@ import {
   useInternalHasBeenSubmitted,
   useValidateField,
   useRegisterReceiveFocus,
+  useFieldDirty,
 } from "./internal/hooks";
 import {
   useControllableValue,
@@ -69,6 +70,18 @@ export type FieldProps = {
    */
   setTouched: (touched: boolean) => void;
   /**
+   * Whether or not the field has been changed from the default.
+   */
+  dirty: boolean;
+  /**
+   * Opposite of dirty. True if the field has not been changed.
+   */
+  pristine: boolean;
+  /**
+   * Helper to set the touched state of the field.
+   */
+  setDirty: (touched: boolean) => void;
+  /**
    * Helper to get all the props necessary for a regular input.
    */
   getInputProps: GetInputProps;
@@ -102,6 +115,7 @@ export const useField = (
 
   const defaultValue = useFieldDefaultValue(name, formContext);
   const [touched, setTouched] = useFieldTouched(name, formContext);
+  const [dirty, setDirty] = useFieldDirty(name, formContext);
   const error = useFieldError(name, formContext);
   const clearError = useClearError(formContext);
 
@@ -124,12 +138,16 @@ export const useField = (
       defaultValue,
       touched,
       setTouched,
+      dirty,
+      pristine: !dirty,
+      setDirty,
     };
     const getInputProps = createGetInputProps({
       ...helpers,
       name,
       hasBeenSubmitted,
       validationBehavior: options?.validationBehavior,
+      formId: formContext.formId,
     });
     return {
       ...helpers,
@@ -137,13 +155,16 @@ export const useField = (
     };
   }, [
     error,
-    clearError,
     defaultValue,
     touched,
     setTouched,
+    dirty,
+    setDirty,
     name,
     hasBeenSubmitted,
     options?.validationBehavior,
+    formContext.formId,
+    clearError,
     validateField,
   ]);
 
