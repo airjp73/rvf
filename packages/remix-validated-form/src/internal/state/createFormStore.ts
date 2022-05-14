@@ -2,7 +2,12 @@ import { WritableDraft } from "immer/dist/internal";
 import invariant from "tiny-invariant";
 import create, { GetState } from "zustand";
 import { immer } from "zustand/middleware/immer";
-import { FieldErrors, TouchedFields, Validator } from "../../validation/types";
+import {
+  FieldErrors,
+  TouchedFields,
+  ValidationResult,
+  Validator,
+} from "../../validation/types";
 import { useControlledFieldStore } from "./controlledFieldStore";
 import { InternalFormId } from "./types";
 
@@ -43,7 +48,7 @@ export type FormState = {
   setHydrated: () => void;
   setFormElement: (formElement: HTMLFormElement | null) => void;
   validateField: (fieldName: string) => Promise<string | null>;
-  validate: () => Promise<void>;
+  validate: () => Promise<ValidationResult<unknown>>;
   resetFormElement: () => void;
 };
 
@@ -69,7 +74,9 @@ const defaultFormState: FormState = {
   setFormElement: noOp,
   validateField: async () => null,
 
-  validate: async () => {},
+  validate: async () => {
+    throw new Error("Validate called before form was initialized.");
+  },
 
   resetFormElement: noOp,
 };
@@ -181,8 +188,9 @@ const createFormState = (
       "Cannot validator. This is probably a bug in remix-validated-form."
     );
 
-    const { error } = await validator.validate(new FormData(formElement));
-    if (error) get().setFieldErrors(error.fieldErrors);
+    const result = await validator.validate(new FormData(formElement));
+    if (result.error) get().setFieldErrors(result.error.fieldErrors);
+    return result;
   },
 
   resetFormElement: () => get().formElement?.reset(),
