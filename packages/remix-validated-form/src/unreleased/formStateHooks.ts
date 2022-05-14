@@ -19,7 +19,11 @@ import {
   useFormActionProp,
   useFormSubactionProp,
 } from "../internal/hooks";
-import { FieldErrors, TouchedFields } from "../validation/types";
+import {
+  FieldErrors,
+  TouchedFields,
+  ValidationResult,
+} from "../validation/types";
 
 export type FormState = {
   fieldErrors: FieldErrors;
@@ -95,7 +99,7 @@ export type FormHelpers = {
   /**
    * Validate the whole form and populate any errors.
    */
-  validate: () => Promise<void>;
+  validate: () => Promise<ValidationResult<unknown>>;
   /**
    * Clears all errors on the form.
    */
