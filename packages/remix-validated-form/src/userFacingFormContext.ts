@@ -4,7 +4,11 @@ import {
   useRegisterReceiveFocus,
 } from "./internal/hooks";
 import { useFormHelpers, useFormState } from "./unreleased/formStateHooks";
-import { FieldErrors, TouchedFields } from "./validation/types";
+import {
+  FieldErrors,
+  TouchedFields,
+  ValidationResult,
+} from "./validation/types";
 
 export type FormContextValue = {
   /**
@@ -61,7 +65,7 @@ export type FormContextValue = {
   /**
    * Validate the whole form and populate any errors.
    */
-  validate: () => Promise<void>;
+  validate: () => Promise<ValidationResult<unknown>>;
   /**
    * Clears all errors on the form.
    */
@@ -73,6 +77,12 @@ export type FormContextValue = {
    * or clicking a button element with `type="reset"`.
    */
   reset: () => void;
+  /**
+   * Submits the form, running all validations first.
+   *
+   * _Note_: This is equivalent to clicking a button element with `type="submit"` or calling formElement.submit().
+   */
+  submit: () => void;
 };
 
 /**
@@ -89,6 +99,7 @@ export const useFormContext = (formId?: string): FormContextValue => {
     clearAllErrors,
     validate,
     reset,
+    submit,
   } = useFormHelpers(formId);
 
   const registerReceiveFocus = useRegisterReceiveFocus(context.formId);
@@ -112,6 +123,7 @@ export const useFormContext = (formId?: string): FormContextValue => {
       clearAllErrors,
       validate,
       reset,
+      submit,
     }),
     [
       clearAllErrors,
@@ -120,6 +132,7 @@ export const useFormContext = (formId?: string): FormContextValue => {
       reset,
       setTouched,
       state,
+      submit,
       validate,
       validateField,
     ]

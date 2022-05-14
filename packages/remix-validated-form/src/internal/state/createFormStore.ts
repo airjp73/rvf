@@ -50,6 +50,7 @@ export type FormState = {
   validateField: (fieldName: string) => Promise<string | null>;
   validate: () => Promise<ValidationResult<unknown>>;
   resetFormElement: () => void;
+  submit: () => void;
 };
 
 const noOp = () => {};
@@ -76,6 +77,10 @@ const defaultFormState: FormState = {
 
   validate: async () => {
     throw new Error("Validate called before form was initialized.");
+  },
+
+  submit: async () => {
+    throw new Error("Submit called before form was initialized.");
   },
 
   resetFormElement: noOp,
@@ -191,6 +196,16 @@ const createFormState = (
     const result = await validator.validate(new FormData(formElement));
     if (result.error) get().setFieldErrors(result.error.fieldErrors);
     return result;
+  },
+
+  submit: () => {
+    const formElement = get().formElement;
+    invariant(
+      formElement,
+      "Cannot find reference to form. This is probably a bug in remix-validated-form."
+    );
+
+    formElement.submit();
   },
 
   resetFormElement: () => get().formElement?.reset(),

@@ -196,6 +196,9 @@ export const useSetFieldErrors = (formId: InternalFormId) =>
 export const useResetFormElement = (formId: InternalFormId) =>
   useFormStore(formId, (state) => state.resetFormElement);
 
+export const useSubmitForm = (formId: InternalFormId) =>
+  useFormStore(formId, (state) => state.submit);
+
 export const useFormActionProp = (formId: InternalFormId) =>
   useFormStore(formId, (state) => state.formProps?.action);
 
