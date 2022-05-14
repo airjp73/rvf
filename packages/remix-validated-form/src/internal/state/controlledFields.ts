@@ -39,7 +39,7 @@ export const useControlledFieldValue = (
     isFormHydrated,
   ]);
 
-  return isFieldHydrated ? value : defaultValue;
+  return [isFieldHydrated ? value : defaultValue, defaultValue] as const;
 };
 
 export const useControllableValue = (
@@ -60,15 +60,20 @@ export const useControllableValue = (
     return () => unregister(context.formId, field);
   }, [context.formId, field, register, unregister]);
 
+  const setDirty = useFormStore(context.formId, (state) => state.setDirty);
   const setControlledFieldValue = useControlledFieldStore(
     (state) => state.setValue
   );
-  const setValue = useCallback(
-    (value: unknown) => setControlledFieldValue(context.formId, field, value),
-    [context.formId, field, setControlledFieldValue]
-  );
 
-  const value = useControlledFieldValue(context, field);
+  const [value, defaultValue] = useControlledFieldValue(context, field);
+
+  const setValue = useCallback(
+    (nextValue: unknown) => {
+      setControlledFieldValue(context.formId, field, nextValue);
+      setDirty(context.formId, nextValue !== defaultValue);
+    },
+    [context.formId, defaultValue, field, setControlledFieldValue, setDirty]
+  );
 
   return [value, setValue] as const;
 };
@@ -87,4 +92,8 @@ export const useAwaitValue = (formId: InternalFormId) => {
     (field: string) => awaitValue(formId, field),
     [awaitValue, formId]
   );
+};
+
+export const isControlledField = (formId: InternalFormId, field: string) => {
+  return !!useControlledFieldStore.getState().getField(formId, field);
 };

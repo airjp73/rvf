@@ -247,3 +247,13 @@ export const useRootFormStore = create<FormStoreState>()(
     },
   }))
 );
+
+export const getRawFieldValue = (formId: InternalFormId, fieldName: string) => {
+  const formElement = useRootFormStore.getState().form(formId).formElement;
+  invariant(
+    formElement,
+    "Cannot find reference to form. This is probably a bug in remix-validated-form."
+  );
+
+  return new FormData(formElement).getAll(fieldName);
+};
