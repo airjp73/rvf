@@ -4,6 +4,7 @@ import { Merge } from "./typeHelpers";
 export type AnyMeta = Record<string | number | symbol, any>;
 export type AnyMethods = Record<string, any>;
 export type AnySchema = Schema<any, any, any, any>;
+export type SchemaOf<T> = Schema<any, T, any, any>;
 
 type SchemaType<Input, Output, Meta, Methods> = Schema<
   Input,
@@ -75,20 +76,34 @@ export class Schema<
     }
   }
 
-  withMeta<NextMeta extends AnyMeta>(nextMeta: NextMeta) {
-    return Schema.of<Input, Output, Merge<Meta, NextMeta>, Methods>(
-      this.perform,
-      { ...this.meta, ...nextMeta },
-      this.methods,
+  withMeta<NextMeta extends AnyMeta>(
+    nextMeta: NextMeta
+  ): SchemaType<
+    SchemaInput<this>,
+    SchemaOutput<this>,
+    Merge<SchemaMeta<this>, NextMeta>,
+    SchemaMethods<this>
+  > {
+    return Schema.of(
+      this.perform as any,
+      { ...this.meta, ...nextMeta } as any,
+      this.methods as any,
       this
     );
   }
 
-  withMethods<NextMethods extends AnyMethods>(nextMethods: NextMethods) {
-    return Schema.of<Input, Output, Meta, Merge<Methods, NextMethods>>(
-      this.perform,
-      this.meta,
-      { ...this.methods, ...nextMethods },
+  withMethods<NextMethods extends AnyMethods>(
+    nextMethods: NextMethods
+  ): SchemaType<
+    SchemaInput<this>,
+    SchemaOutput<this>,
+    SchemaMeta<this>,
+    Merge<SchemaMethods<this>, NextMethods>
+  > {
+    return Schema.of(
+      this.perform as any,
+      this.meta as SchemaMeta<this>,
+      { ...this.methods, ...nextMethods } as any,
       this
     );
   }
@@ -127,7 +142,7 @@ export class Schema<
         this.validateMaybeAsync(input, meta).then((output) =>
           nextPerform(output, meta)
         ),
-      this.meta as any,
+      this.meta as SchemaMeta<this>,
       {},
       this
     );
