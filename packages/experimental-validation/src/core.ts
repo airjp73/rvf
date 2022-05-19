@@ -25,10 +25,14 @@ export class BaseSchema<
   Meta extends AnyMeta,
   Methods extends AnyMethods
 > {
-  protected perform: (input: Input, meta: AnyMeta) => PossiblyPromise<Output>;
-  protected methods: Methods;
-  protected meta: Meta;
-  protected parent: AnySchema | undefined;
+  protected _perform: (input: Input, meta: AnyMeta) => PossiblyPromise<Output>;
+  protected _methods: Methods;
+  protected _meta: Meta;
+  protected _parent: AnySchema | undefined;
+
+  get meta() {
+    return this._meta;
+  }
 
   protected constructor(
     perform: (input: Input, meta: AnyMeta) => PossiblyPromise<Output>,
@@ -36,10 +40,10 @@ export class BaseSchema<
     methods: Methods,
     parent?: Schema<Input, Output, Meta, Methods>
   ) {
-    this.meta = meta;
-    this.perform = perform;
-    this.methods = methods;
-    this.parent = parent;
+    this._meta = meta;
+    this._perform = perform;
+    this._methods = methods;
+    this._parent = parent;
   }
 }
 
@@ -85,9 +89,9 @@ export class Schema<
     SchemaMethods<this>
   > {
     return Schema.of(
-      this.perform as any,
+      this._perform as any,
       { ...this.meta, ...nextMeta } as any,
-      this.methods as any,
+      this._methods as any,
       this
     );
   }
@@ -101,9 +105,9 @@ export class Schema<
     Merge<SchemaMethods<this>, NextMethods>
   > {
     return Schema.of(
-      this.perform as any,
+      this._perform as any,
       this.meta as SchemaMeta<this>,
-      { ...this.methods, ...nextMethods } as any,
+      { ...this._methods, ...nextMethods } as any,
       this
     );
   }
@@ -119,7 +123,7 @@ export class Schema<
           throw new Error(makeError(output, meta));
         }),
       this.meta,
-      this.methods,
+      this._methods,
       this
     ) as this;
   }
@@ -157,21 +161,21 @@ export class Schema<
           castTo.validateMaybeAsync(output, meta)
         ),
       { ...this.meta, ...castTo.meta },
-      castTo.methods,
+      castTo._methods,
       this
     );
   }
 
   validateMaybeAsync(input: Input, meta: AnyMeta): MaybePromise<Output> {
-    return MaybePromise.of(() => this.perform(input, meta));
+    return MaybePromise.of(() => this._perform(input, meta));
   }
 
-  validate(input: Input, meta: AnyMeta): Promise<Output> {
-    return this.validateMaybeAsync(input, meta).await();
+  validate(input: Input): Promise<Output> {
+    return this.validateMaybeAsync(input, this.meta).await();
   }
 
-  validateSync(input: Input, meta: AnyMeta): Output {
-    return this.validateMaybeAsync(input, meta).assertSync();
+  validateSync(input: Input): Output {
+    return this.validateMaybeAsync(input, this.meta).assertSync();
   }
 }
 
