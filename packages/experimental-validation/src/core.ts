@@ -30,6 +30,9 @@ export class BaseSchema<
   protected _meta: Meta;
   protected _parent: AnySchema | undefined;
 
+  /**
+   * The metadata of the schema.
+   */
   get meta() {
     return this._meta;
   }
@@ -47,6 +50,9 @@ export class BaseSchema<
   }
 }
 
+/**
+ * A validation schema.
+ */
 export class Schema<
   Input,
   Output,
@@ -80,6 +86,12 @@ export class Schema<
     }
   }
 
+  /**
+   * Add or change schema metadata. This creates a new schema with the updated metadata.
+   *
+   * @param nextMeta - Additonal meta to add to the schema's meta. Can also overwrite existing meta.
+   * @returns A new schema with the updated meta.
+   */
   withMeta<NextMeta extends AnyMeta>(
     nextMeta: NextMeta
   ): SchemaType<
@@ -96,6 +108,12 @@ export class Schema<
     );
   }
 
+  /**
+   * Augment the schema with additional methods. This creates a new schema with the updated methods.
+   *
+   * @param nextMethods - Methods to add to the schema's methods. Can also overwrite existing methods.
+   * @returns A new schema with the updated methods.
+   */
   withMethods<NextMethods extends AnyMethods>(
     nextMethods: NextMethods
   ): SchemaType<
@@ -112,6 +130,15 @@ export class Schema<
     );
   }
 
+  /**
+   * Adds an additional check when validating.
+   * Checks performed this way will not modify the output type.
+   * This creates a new schema with the additional check..
+   *
+   * @param doCheck - A function that returns a boolean indicating whether the value is valid.
+   * @param makeError - A function that returns an error message if the value is invalid.
+   * @returns A new schema that validates the input using the given function.
+   */
   check(
     doCheck: (val: Output, meta: Meta) => PossiblyPromise<boolean>,
     makeError: (val: Output, meta: Meta) => string
@@ -128,6 +155,12 @@ export class Schema<
     ) as this;
   }
 
+  /**
+   * Adds a transformation to the schema. This creates a new schema with the transformation applied.
+   *
+   * @param nextPerform - A function that returns a transformed value.
+   * @returns A new schema that transforms the output of the original schema.
+   */
   transform<NextOutput>(
     nextPerform: (input: Output, meta: Meta) => PossiblyPromise<NextOutput>
   ): SchemaType<
@@ -152,6 +185,20 @@ export class Schema<
     );
   }
 
+  /**
+   * "Casts" the schema to another type of schema.
+   * When validating, the output of the original schema will also be validated with the new schema.
+   * This creates a new schema with all the methods of the provided schema, allowing you to continue chaining.
+   * This is useful after a transform.
+   *
+   * @example The implementation of `toString` on the number schema works like this.
+   * ```tsx
+   * const schema = number().transform(num => String(num)).as(string());
+   * ```
+   *
+   * @param castTo - Another schema to "cast" the value to.
+   * @returns A new schema with all the methods and the output type of the given schema.
+   */
   as<NextOutput, NextMeta extends AnyMeta, NextMethods extends AnyMethods>(
     castTo: Schema<Output, NextOutput, NextMeta, NextMethods>
   ): SchemaType<SchemaInput<this>, NextOutput, NextMeta, NextMethods> {
@@ -166,14 +213,38 @@ export class Schema<
     );
   }
 
-  validateMaybeAsync(input: Input, meta: AnyMeta): MaybePromise<Output> {
+  /**
+   * Validates the input using the schema and returns a `MaybePromise` of the output.
+   * This is primarily used for schemas that call other schemas (e.g. object()).
+   *
+   * @param input - The input to validate.
+   * @param meta - Optionally override the metadata.
+   * @returns A `MaybePromise` that resolves to the output of the schema.
+   */
+  validateMaybeAsync(
+    input: Input,
+    meta: AnyMeta = this.meta
+  ): MaybePromise<Output> {
     return MaybePromise.of(() => this._perform(input, meta));
   }
 
+  /**
+   * Validates the input asynchronously and returns the data.
+   *
+   * @param input - The input to validate.
+   * @returns A Promise that resolves to the output of the schema.
+   */
   validate(input: Input): Promise<Output> {
     return this.validateMaybeAsync(input, this.meta).await();
   }
 
+  /**
+   * Validates the input synchronously and returns the data.
+   * If the schema contains asynchronous validations, this will throw an error.
+   *
+   * @param input - The input to validate.
+   * @returns The output of the schema
+   */
   validateSync(input: Input): Output {
     return this.validateMaybeAsync(input, this.meta).assertSync();
   }
