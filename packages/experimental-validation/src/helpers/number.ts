@@ -1,5 +1,7 @@
 import { makeType, SchemaOf } from "../core";
 import { ErrorMessage, errorMessage } from "../errors";
+import { commonMethods } from "./common";
+import { string } from "./string";
 
 const numberMethods = {
   /**
@@ -54,7 +56,7 @@ const numberMethods = {
    * @returns A new schema that transforms a number to a string.
    */
   toString<Self extends SchemaOf<number>>(this: Self) {
-    return this.transform((val) => String(val));
+    return this.transform((val) => String(val)).as(string());
   },
 };
 
@@ -73,7 +75,7 @@ export const number = (typeError?: ErrorMessage) =>
       (label) => `Expected ${label} to be a number`,
       "Expected a number"
     ),
-    numberMethods
+    { ...commonMethods, ...numberMethods }
   );
 
 /**

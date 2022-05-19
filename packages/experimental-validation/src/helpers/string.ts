@@ -1,6 +1,7 @@
 import { makeType, SchemaOf } from "../core";
 import { ErrorMessage, errorMessage } from "../errors";
 import { commonMethods } from "./common";
+import { number } from "./number";
 
 const stringMethods = {
   /**
@@ -55,7 +56,7 @@ const stringMethods = {
    * @returns A new schema with this transformation added.
    */
   toNumber<Self extends SchemaOf<string>>(this: Self) {
-    return this.transform((val) => Number(val));
+    return this.transform((val) => Number(val)).as(number());
   },
 };
 
