@@ -1,7 +1,6 @@
 import { PlusIcon, XIcon } from "@heroicons/react/outline";
 import { withZod } from "@remix-validated-form/with-zod";
 import { nanoid } from "nanoid";
-import { useState } from "react";
 import {
   json,
   LoaderFunction,
@@ -10,6 +9,7 @@ import {
   ActionFunction,
 } from "remix";
 import {
+  FieldArray,
   ValidatedForm,
   validationError,
   ValidatorData,
@@ -80,9 +80,6 @@ export const loader: LoaderFunction = () => {
 export default function Demo() {
   const { defaultValues } = useLoaderData<LoaderData>();
   const data = useActionData<ActionData>();
-  const [todoIds, setTodoIds] = useState(
-    defaultValues.todos.map((todo) => todo.id)
-  );
 
   return (
     <ValidatedForm
@@ -91,39 +88,41 @@ export default function Demo() {
       defaultValues={defaultValues}
     >
       <FormInput name="name" label="Your name" />
-      {todoIds.map((id, index) => (
-        <div key={id} className="todo-item">
-          <input
-            type="hidden"
-            name={`todos[${index}].id`}
-            value={id}
-          />
-          <FormInput
-            name={`todos[${index}].title`}
-            label="Title"
-          />
-          <FormInput
-            name={`todos[${index}].notes`}
-            label="Notes"
-          />
-          <Button
-            onClick={() => {
-              setTodoIds((prev) =>
-                prev.filter((todoId) => todoId !== id)
-              );
-            }}
-            icon={<XIcon />}
-            label="Delete todo"
-          />
-        </div>
-      ))}
-      <Button
-        onClick={() =>
-          setTodoIds((prev) => [...prev, nanoid()])
+      <FieldArray name="todos">
+        {(itemDefaults, { push, remove }) =>
+          itemDefaults.map((item, index) => (
+            <>
+              <div key={item.id} className="todo-item">
+                <input
+                  type="hidden"
+                  name={`todos[${index}].id`}
+                  value={item.id}
+                />
+                <FormInput
+                  name={`todos[${index}].title`}
+                  label="Title"
+                />
+                <FormInput
+                  name={`todos[${index}].notes`}
+                  label="Notes"
+                />
+                <Button
+                  onClick={() => {
+                    remove(index);
+                  }}
+                  icon={<XIcon />}
+                  label="Delete todo"
+                />
+              </div>
+              <Button
+                onClick={() => push({ id: nanoid() })}
+                icon={<PlusIcon />}
+                label="Add todo"
+              />
+            </>
+          ))
         }
-        icon={<PlusIcon />}
-        label="Add todo"
-      />
+      </FieldArray>
       {data && (
         <Alert
           variant="info"
