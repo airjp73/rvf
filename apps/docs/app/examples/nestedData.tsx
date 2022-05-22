@@ -1,5 +1,6 @@
 import { PlusIcon, XIcon } from "@heroicons/react/outline";
 import { withZod } from "@remix-validated-form/with-zod";
+import { nanoid } from "nanoid";
 import { useState } from "react";
 import {
   json,
@@ -67,7 +68,7 @@ export const loader: LoaderFunction = () => {
       name: "Somebody",
       todos: [
         {
-          id: "0",
+          id: nanoid(),
           title: "Take out the trash",
           notes: "This is an example todo",
         },
@@ -118,10 +119,7 @@ export default function Demo() {
       ))}
       <Button
         onClick={() =>
-          setTodoIds((prev) => [
-            ...prev,
-            String(todoIds.length),
-          ])
+          setTodoIds((prev) => [...prev, nanoid()])
         }
         icon={<PlusIcon />}
         label="Add todo"

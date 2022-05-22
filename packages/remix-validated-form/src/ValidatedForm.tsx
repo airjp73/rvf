@@ -296,33 +296,11 @@ export function ValidatedForm<DataType>({
     endSubmit();
   });
 
-  let clickedButtonRef = React.useRef<any>();
-  useEffect(() => {
-    let form = formRef.current;
-    if (!form) return;
-
-    function handleClick(event: MouseEvent) {
-      if (!(event.target instanceof HTMLElement)) return;
-      let submitButton = event.target.closest<
-        HTMLButtonElement | HTMLInputElement
-      >("button,input[type=submit]");
-
-      if (
-        submitButton &&
-        submitButton.form === form &&
-        submitButton.type === "submit"
-      ) {
-        clickedButtonRef.current = submitButton;
-      }
-    }
-
-    window.addEventListener("click", handleClick, { capture: true });
-    return () => {
-      window.removeEventListener("click", handleClick, { capture: true });
-    };
-  }, []);
-
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (
+    e: FormEvent<HTMLFormElement>,
+    target: typeof e.currentTarget,
+    nativeEvent: HTMLSubmitEvent["nativeEvent"]
+  ) => {
     startSubmit();
     const result = await validator.validate(getDataFromForm(e.currentTarget));
     if (result.error) {
@@ -343,8 +321,7 @@ export function ValidatedForm<DataType>({
         return;
       }
 
-      const submitter = (e as unknown as HTMLSubmitEvent).nativeEvent
-        .submitter as HTMLFormSubmitter | null;
+      const submitter = nativeEvent.submitter as HTMLFormSubmitter | null;
 
       // We deviate from the remix code here a bit because of our async submit.
       // In remix's `FormImpl`, they use `event.currentTarget` to get the form,
@@ -352,9 +329,7 @@ export function ValidatedForm<DataType>({
       // If we use `event.currentTarget` here, it will break because `currentTarget`
       // will have changed since the start of the submission.
       if (fetcher) fetcher.submit(submitter || e.currentTarget);
-      else submit(submitter || e.currentTarget, { method, replace });
-
-      clickedButtonRef.current = null;
+      else submit(submitter || target, { method, replace });
     }
   };
 
@@ -368,7 +343,11 @@ export function ValidatedForm<DataType>({
       replace={replace}
       onSubmit={(e) => {
         e.preventDefault();
-        handleSubmit(e);
+        handleSubmit(
+          e,
+          e.currentTarget,
+          (e as unknown as HTMLSubmitEvent).nativeEvent
+        );
       }}
       onReset={(event) => {
         onReset?.(event);
@@ -378,12 +357,14 @@ export function ValidatedForm<DataType>({
       }}
     >
       <InternalFormContext.Provider value={contextValue}>
-        <FormResetter formRef={formRef} resetAfterSubmit={resetAfterSubmit} />
-        {subaction && (
-          <input type="hidden" value={subaction} name="subaction" />
-        )}
-        {id && <input type="hidden" value={id} name={FORM_ID_FIELD} />}
-        {children}
+        <>
+          <FormResetter formRef={formRef} resetAfterSubmit={resetAfterSubmit} />
+          {subaction && (
+            <input type="hidden" value={subaction} name="subaction" />
+          )}
+          {id && <input type="hidden" value={id} name={FORM_ID_FIELD} />}
+          {children}
+        </>
       </InternalFormContext.Provider>
     </Form>
   );
