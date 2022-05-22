@@ -1,4 +1,4 @@
-describe("Validation", () => {
+describe("Submission", () => {
   it("should show the loading state for the correct submit button", () => {
     cy.visit("/submission");
     cy.findByText("Submit main form").click();
@@ -124,6 +124,12 @@ describe("Validation", () => {
       "Submitted to action prop action from form: In a dialog"
     ).should("exist");
     cy.findByText("Submitted to in-route action.").should("not.exist");
+  });
+
+  it("should submit when calling the submit helper", () => {
+    cy.visit("/submission/helper");
+    cy.findByText("Submit with helper").click();
+    cy.findByText("Submitted!").should("exist");
   });
 
   describe("onSubmit", () => {
