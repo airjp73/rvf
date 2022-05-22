@@ -209,4 +209,21 @@ describe("Validation", () => {
     cy.findByText("Test input").should("exist");
     cy.findByText("Required").should("not.exist");
   });
+
+  it("should return validation result from validate helper and show errors", () => {
+    cy.visit("validation-helper");
+
+    cy.findByText("Submit with helper").click();
+
+    // Form-level message we set manually when validate returns error
+    cy.findByText("Invalid").should("exist");
+
+    // Field-level message should be auto-populated
+    cy.findByText("Must be checked").should("exist");
+
+    cy.findByLabelText("isValid").click();
+    cy.findByText("Submit with helper").click();
+
+    cy.findByText("Submitted!").should("exist");
+  });
 });
