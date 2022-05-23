@@ -114,7 +114,6 @@ const defaultFormState: FormState = {
 };
 
 const createFormState = (
-  formId: InternalFormId,
   set: (setter: (draft: WritableDraft<FormState>) => void) => void,
   get: GetState<FormState>
 ): FormState => ({
@@ -306,7 +305,6 @@ export const useRootFormStore = create<FormStoreState>()(
       if (get().forms[formId]) return;
       set((state) => {
         state.forms[formId] = createFormState(
-          formId,
           (setter) => set((state) => setter(state.forms[formId])),
           () => get().forms[formId]
         ) as WritableDraft<FormState>;
