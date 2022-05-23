@@ -22,6 +22,7 @@
     "@remix-validated-form/with-yup": "*",
     "@remix-validated-form/with-zod": "*",
     "cypress-file-upload": "^5.0.8",
+    "nanoid": "^3.3.4",
     "react": "^18.1.0",
     "react-dom": "^18.1.0",
     "remix": "^1.2.1",
