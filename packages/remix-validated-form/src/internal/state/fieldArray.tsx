@@ -1,29 +1,13 @@
 import { useMemo } from "react";
 import { createContext } from "react";
 import { useCallback } from "react";
+import invariant from "tiny-invariant";
 import { InternalFormContextValue } from "../formContext";
 import { useInternalFormContext } from "../hooks";
 import { useControllableValue } from "./controlledFields";
 
-export type FieldArrayHelpers = {
-  push: (item: any) => void;
-  swap: (indexA: number, indexB: number) => void;
-  move: (from: number, to: number) => void;
-  insert: (index: number, value: any) => void;
-  unshift: () => void;
-  remove: (index: number) => void;
-  pop: () => void;
-  replace: (index: number, value: any) => void;
-};
-
-export const useFieldArray = (
-  context: InternalFormContextValue,
-  field: string
-) => {
-  const [value, setValue, getValue] = useControllableValue(
-    context,
-    `rvf_fieldarray_${field}`
-  );
+const useFieldArray = (context: InternalFormContextValue, field: string) => {
+  const [value, setValue, getValue] = useControllableValue(context, field);
 
   const push = useCallback(
     (item: any) => {
@@ -120,6 +104,17 @@ export const FieldArrayContext = createContext<{
   name: string;
 } | null>(null);
 
+export type FieldArrayHelpers = {
+  push: (item: any) => void;
+  swap: (indexA: number, indexB: number) => void;
+  move: (from: number, to: number) => void;
+  insert: (index: number, value: any) => void;
+  unshift: () => void;
+  remove: (index: number) => void;
+  pop: () => void;
+  replace: (index: number, value: any) => void;
+};
+
 export type FieldArrayProps = {
   name: string;
   children: (
@@ -132,14 +127,20 @@ export type FieldArrayProps = {
 export const FieldArray = ({ name, children, formId }: FieldArrayProps) => {
   const context = useInternalFormContext(formId, "FieldArray");
   const [value, helpers] = useFieldArray(context, name);
+
+  invariant(
+    value === undefined || value === null || Array.isArray(value),
+    `FieldArray: defaultValue value for ${name} must be an array, null, or undefined`
+  );
+
   const contextValue = useMemo(
-    () => ({ defaultValues: value, name }),
+    () => ({ defaultValues: value ?? [], name }),
     [name, value]
   );
 
   return (
     <FieldArrayContext.Provider value={contextValue}>
-      {children(value, helpers)}
+      {children(contextValue.defaultValues, helpers)}
     </FieldArrayContext.Provider>
   );
 };
