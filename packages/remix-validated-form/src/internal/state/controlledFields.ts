@@ -49,20 +49,23 @@ export const useControllableValue = (
     context.formId,
     (state) => state.controlledFields.setValue
   );
-
   const setValue = useCallback(
     (value: unknown) => setControlledFieldValue(field, value),
     [field, setControlledFieldValue]
   );
 
-  const getValue = useFormStore(
+  const getControlledFieldValue = useFormStore(
     context.formId,
     (state) => state.controlledFields.getValue
+  );
+  const getValue = useCallback(
+    () => getControlledFieldValue(field),
+    [field, getControlledFieldValue]
   );
 
   const value = useControlledFieldValue(context, field);
 
-  return [value, setValue, getValue as () => any] as const;
+  return [value, setValue, getValue] as const;
 };
 
 export const useUpdateControllableValue = (formId: InternalFormId) => {

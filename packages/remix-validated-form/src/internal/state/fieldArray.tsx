@@ -7,7 +7,16 @@ import { useInternalFormContext } from "../hooks";
 import { useControllableValue } from "./controlledFields";
 
 const useFieldArray = (context: InternalFormContextValue, field: string) => {
-  const [value, setValue, getValue] = useControllableValue(context, field);
+  const [value, setValue, get] = useControllableValue(context, field);
+
+  const getValue = useCallback(() => {
+    const value = get() ?? [];
+    invariant(
+      Array.isArray(value),
+      `FieldArray: defaultValue value for ${field} must be an array, null, or undefined`
+    );
+    return value;
+  }, [field, get]);
 
   const push = useCallback(
     (item: any) => {
