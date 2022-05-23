@@ -253,15 +253,25 @@ const createFormState = (
     unregister: (fieldName) => {
       set((state) => {
         const current = state.controlledFields.refCounts[fieldName] ?? 0;
-        if (current === 1) {
-          // TODO: check for nested control structures
+        if (current > 1) {
+          state.controlledFields.refCounts[fieldName] = current - 1;
+          return;
+        }
+
+        const isNested = Object.keys(state.controlledFields.refCounts).some(
+          (key) => key.startsWith(fieldName) && key !== fieldName
+        );
+
+        // When nested within a field array, we should leave resetting up to the field array
+        if (!isNested) {
           lodashSet(
             state.controlledFields.values,
             fieldName,
             lodashGet(state.formProps?.defaultValues, fieldName)
           );
         }
-        state.controlledFields.refCounts[fieldName] = current - 1;
+
+        delete state.controlledFields.refCounts[fieldName];
       });
     },
     getValue: (fieldName) =>
