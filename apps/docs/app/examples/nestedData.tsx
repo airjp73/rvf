@@ -89,9 +89,9 @@ export default function Demo() {
     >
       <FormInput name="name" label="Your name" />
       <FieldArray name="todos">
-        {(itemDefaults, { push, remove }) => (
+        {(items, { push, remove }) => (
           <>
-            {itemDefaults.map((item, index) => (
+            {items.map((item, index) => (
               <div key={item.id} className="todo-item">
                 <input
                   type="hidden"
