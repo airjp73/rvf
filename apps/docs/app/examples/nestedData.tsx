@@ -89,9 +89,9 @@ export default function Demo() {
     >
       <FormInput name="name" label="Your name" />
       <FieldArray name="todos">
-        {(itemDefaults, { push, remove }) =>
-          itemDefaults.map((item, index) => (
-            <>
+        {(itemDefaults, { push, remove }) => (
+          <>
+            {itemDefaults.map((item, index) => (
               <div key={item.id} className="todo-item">
                 <input
                   type="hidden"
@@ -114,14 +114,14 @@ export default function Demo() {
                   label="Delete todo"
                 />
               </div>
-              <Button
-                onClick={() => push({ id: nanoid() })}
-                icon={<PlusIcon />}
-                label="Add todo"
-              />
-            </>
-          ))
-        }
+            ))}
+            <Button
+              onClick={() => push({ id: nanoid() })}
+              icon={<PlusIcon />}
+              label="Add todo"
+            />
+          </>
+        )}
       </FieldArray>
       {data && (
         <Alert
