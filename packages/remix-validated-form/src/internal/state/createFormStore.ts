@@ -250,6 +250,9 @@ const createFormState = (
       });
     },
     unregister: (fieldName) => {
+      // For this helper in particular, we may run into a case where state is undefined.
+      // When the whole form unmounts, the form state may be cleaned up before the fields are.
+      if (get() === null || get() === undefined) return;
       set((state) => {
         const current = state.controlledFields.refCounts[fieldName] ?? 0;
         if (current > 1) {
