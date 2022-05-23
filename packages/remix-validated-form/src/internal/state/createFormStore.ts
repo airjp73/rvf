@@ -261,7 +261,7 @@ const createFormState = (
         }
 
         const isNested = Object.keys(state.controlledFields.refCounts).some(
-          (key) => key.startsWith(fieldName) && key !== fieldName
+          (key) => fieldName.startsWith(key) && key !== fieldName
         );
 
         // When nested within a field array, we should leave resetting up to the field array
