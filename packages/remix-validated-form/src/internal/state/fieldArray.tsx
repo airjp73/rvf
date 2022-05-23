@@ -1,15 +1,16 @@
-import React, {
-  useMemo,
-  type ReactNode,
-  createContext,
-  useCallback,
-} from "react";
+import React, { useMemo, createContext, useCallback } from "react";
 import invariant from "tiny-invariant";
 import { InternalFormContextValue } from "../formContext";
 import { useInternalFormContext } from "../hooks";
 import { useControllableValue } from "./controlledFields";
 
 const useFieldArray = (context: InternalFormContextValue, field: string) => {
+  // TODO: Fieldarrays need to handle/update these things, too:
+  // - touchedFields & fieldErrors should be updated when fields are added/removed
+  // - Could probably move some of these callbacks into the store
+  // - There's a bug where adding a new field to the fieldarray validates the new field.
+  //   - For some reason this only happens in the test-app, but not in the docs app.
+
   const [value, setValue, get] = useControllableValue(context, field);
 
   const getValue = useCallback(() => {
