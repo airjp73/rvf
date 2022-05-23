@@ -1,4 +1,6 @@
 import { WritableDraft } from "immer/dist/internal";
+import lodashGet from "lodash/get";
+import lodashSet from "lodash/set";
 import invariant from "tiny-invariant";
 import create, { GetState } from "zustand";
 import { immer } from "zustand/middleware/immer";
@@ -8,7 +10,6 @@ import {
   ValidationResult,
   Validator,
 } from "../../validation/types";
-import { useControlledFieldStore } from "./controlledFieldStore";
 import { InternalFormId } from "./types";
 
 export type SyncedFormProps = {
@@ -45,12 +46,24 @@ export type FormState = {
   clearFieldError: (field: string) => void;
   reset: () => void;
   syncFormProps: (props: SyncedFormProps) => void;
-  setHydrated: () => void;
   setFormElement: (formElement: HTMLFormElement | null) => void;
   validateField: (fieldName: string) => Promise<string | null>;
   validate: () => Promise<ValidationResult<unknown>>;
   resetFormElement: () => void;
   submit: () => void;
+
+  controlledFields: {
+    values: { [fieldName: string]: any };
+    refCounts: { [fieldName: string]: number };
+    valueUpdatePromises: { [fieldName: string]: Promise<void> };
+    valueUpdateResolvers: { [fieldName: string]: () => void };
+
+    register: (fieldName: string) => void;
+    unregister: (fieldName: string) => void;
+    setValue: (fieldName: string, value: unknown) => void;
+    getValue: (fieldName: string) => unknown;
+    awaitValueUpdate: (fieldName: string) => Promise<void>;
+  };
 };
 
 const noOp = () => {};
@@ -71,7 +84,6 @@ const defaultFormState: FormState = {
 
   reset: () => noOp,
   syncFormProps: noOp,
-  setHydrated: noOp,
   setFormElement: noOp,
   validateField: async () => null,
 
@@ -84,6 +96,21 @@ const defaultFormState: FormState = {
   },
 
   resetFormElement: noOp,
+
+  controlledFields: {
+    values: {},
+    refCounts: {},
+    valueUpdatePromises: {},
+    valueUpdateResolvers: {},
+
+    register: noOp,
+    unregister: noOp,
+    setValue: noOp,
+    getValue: noOp,
+    awaitValueUpdate: async () => {
+      throw new Error("AwaitValueUpdate called before form was initialized.");
+    },
+  },
 };
 
 const createFormState = (
@@ -131,14 +158,15 @@ const createFormState = (
       state.fieldErrors = {};
       state.touchedFields = {};
       state.hasBeenSubmitted = false;
+      state.controlledFields.values = {};
     }),
   syncFormProps: (props: SyncedFormProps) =>
     set((state) => {
+      if (!state.isHydrated) {
+        state.controlledFields.values = props.defaultValues;
+      }
+
       state.formProps = props;
-      state.isHydrated = true;
-    }),
-  setHydrated: () =>
-    set((state) => {
       state.isHydrated = true;
     }),
   setFormElement: (formElement: HTMLFormElement | null) => {
@@ -164,7 +192,7 @@ const createFormState = (
       "Cannot validator. This is probably a bug in remix-validated-form."
     );
 
-    await useControlledFieldStore.getState().awaitValueUpdate?.(formId, field);
+    await get().controlledFields.awaitValueUpdate?.(field);
 
     const { error } = await validator.validateField(
       new FormData(formElement),
@@ -209,6 +237,48 @@ const createFormState = (
   },
 
   resetFormElement: () => get().formElement?.reset(),
+
+  controlledFields: {
+    values: {},
+    refCounts: {},
+    valueUpdatePromises: {},
+    valueUpdateResolvers: {},
+
+    register: (fieldName) => {
+      set((state) => {
+        const current = state.controlledFields.refCounts[fieldName] ?? 0;
+        state.controlledFields.refCounts[fieldName] = current + 1;
+      });
+    },
+    unregister: (fieldName) => {
+      set((state) => {
+        const current = state.controlledFields.refCounts[fieldName] ?? 0;
+        if (current === 1) {
+          // TODO: check for nested control structures
+          lodashSet(
+            state.controlledFields.values,
+            fieldName,
+            lodashGet(state.formProps?.defaultValues, fieldName)
+          );
+        }
+        state.controlledFields.refCounts[fieldName] = current - 1;
+      });
+    },
+    getValue: (fieldName) =>
+      lodashGet(get().controlledFields.values, fieldName),
+    setValue: (fieldName, value) => {
+      set((state) => {
+        lodashSet(state.controlledFields.values, fieldName, value);
+        const promise = new Promise<void>((resolve) => {
+          state.controlledFields.valueUpdateResolvers[fieldName] = resolve;
+        });
+        state.controlledFields.valueUpdatePromises[fieldName] = promise;
+      });
+    },
+    awaitValueUpdate: async (fieldName) => {
+      await get().controlledFields.valueUpdatePromises[fieldName];
+    },
+  },
 });
 
 export const useRootFormStore = create<FormStoreState>()(
