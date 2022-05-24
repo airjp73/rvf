@@ -1,8 +1,9 @@
-import React, { useMemo, createContext, useCallback } from "react";
+import React, { useMemo, createContext } from "react";
 import invariant from "tiny-invariant";
 import { InternalFormContextValue } from "../formContext";
 import { useInternalFormContext } from "../hooks";
 import { useControllableValue } from "./controlledFields";
+import { useFormStore } from "./storeHooks";
 
 const useFieldArray = (context: InternalFormContextValue, field: string) => {
   // TODO: Fieldarrays need to handle/update these things, too:
@@ -11,102 +12,41 @@ const useFieldArray = (context: InternalFormContextValue, field: string) => {
   // - There's a bug where adding a new field to the fieldarray validates the new field.
   //   - For some reason this only happens in the test-app, but not in the docs app.
 
-  const [value, setValue, get] = useControllableValue(context, field);
+  const [value] = useControllableValue(context, field);
 
-  const getValue = useCallback(() => {
-    const value = get() ?? [];
-    invariant(
-      Array.isArray(value),
-      `FieldArray: defaultValue value for ${field} must be an array, null, or undefined`
-    );
-    return value;
-  }, [field, get]);
-
-  const push = useCallback(
-    (item: any) => {
-      setValue([...getValue(), item]);
-    },
-    [getValue, setValue]
-  );
-
-  const swap = useCallback(
-    (indexA: number, indexB: number) => {
-      const prev = getValue();
-      const itemA = prev[indexA];
-      const itemB = prev[indexB];
-      const next = [...prev];
-      next.splice(indexA, 1, itemB);
-      next.splice(indexB, 1, itemA);
-      setValue(next);
-    },
-    [getValue, setValue]
-  );
-
-  const move = useCallback(
-    (from: number, to: number) => {
-      const prev = getValue();
-      const next = [...prev];
-      const item = prev[from];
-      next.splice(from, 1);
-      next.splice(to, 0, item);
-      setValue(next);
-    },
-    [getValue, setValue]
-  );
-
-  const insert = useCallback(
-    (index: number, value: any) => {
-      const prev = getValue();
-      const next = [...prev];
-      next.splice(index, 0, value);
-      setValue(next);
-    },
-    [getValue, setValue]
-  );
-
-  const unshift = useCallback(() => {
-    const prev = getValue();
-    const next = [...prev];
-    next.unshift();
-    setValue(next);
-  }, [getValue, setValue]);
-
-  const remove = useCallback(
-    (index: number) => {
-      const next = [...getValue()];
-      next.splice(index, 1);
-      setValue(next);
-    },
-    [getValue, setValue]
-  );
-
-  const pop = useCallback(() => {
-    const next = [...getValue()];
-    next.pop();
-    setValue(next);
-  }, [getValue, setValue]);
-
-  const replace = useCallback(
-    (index: number, value: any) => {
-      const next = [...getValue()];
-      next.splice(index, 1, value);
-      setValue(next);
-    },
-    [getValue, setValue]
+  const arr = useFormStore(
+    context.formId,
+    (state) => state.controlledFields.array
   );
 
   const helpers = useMemo(
     () => ({
-      push,
-      swap,
-      move,
-      insert,
-      unshift,
-      remove,
-      pop,
-      replace,
+      push: (item: any) => {
+        arr.push(field, item);
+      },
+      swap: (indexA: number, indexB: number) => {
+        arr.swap(field, indexA, indexB);
+      },
+      move: (from: number, to: number) => {
+        arr.move(field, from, to);
+      },
+      insert: (index: number, value: any) => {
+        arr.insert(field, index, value);
+      },
+      unshift: () => {
+        arr.unshift(field);
+      },
+      remove: (index: number) => {
+        arr.remove(field, index);
+      },
+      pop: () => {
+        arr.pop(field);
+      },
+      replace: (index: number, value: any) => {
+        arr.replace(field, index, value);
+      },
     }),
-    [insert, move, pop, push, remove, replace, swap, unshift]
+    [arr, field]
   );
 
   return [value, helpers] as const;

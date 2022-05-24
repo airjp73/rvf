@@ -10,6 +10,7 @@ import {
   ValidationResult,
   Validator,
 } from "../../validation/types";
+import * as arrayUtil from "./arrayUtil";
 import { InternalFormId } from "./types";
 
 export type SyncedFormProps = {
@@ -61,8 +62,20 @@ export type FormState = {
     register: (fieldName: string) => void;
     unregister: (fieldName: string) => void;
     setValue: (fieldName: string, value: unknown) => void;
+    kickoffValueUpdate: (fieldName: string) => void;
     getValue: (fieldName: string) => unknown;
     awaitValueUpdate: (fieldName: string) => Promise<void>;
+
+    array: {
+      push: (fieldName: string, value: unknown) => void;
+      swap: (fieldName: string, indexA: number, indexB: number) => void;
+      move: (fieldName: string, fromIndex: number, toIndex: number) => void;
+      insert: (fieldName: string, index: number, value: unknown) => void;
+      unshift: (fieldName: string) => void;
+      remove: (fieldName: string, index: number) => void;
+      pop: (fieldName: string) => void;
+      replace: (fieldName: string, index: number, value: unknown) => void;
+    };
   };
 };
 
@@ -107,8 +120,20 @@ const defaultFormState: FormState = {
     unregister: noOp,
     setValue: noOp,
     getValue: noOp,
+    kickoffValueUpdate: noOp,
     awaitValueUpdate: async () => {
       throw new Error("AwaitValueUpdate called before form was initialized.");
+    },
+
+    array: {
+      push: noOp,
+      swap: noOp,
+      move: noOp,
+      insert: noOp,
+      unshift: noOp,
+      remove: noOp,
+      pop: noOp,
+      replace: noOp,
     },
   },
 };
@@ -281,14 +306,148 @@ const createFormState = (
     setValue: (fieldName, value) => {
       set((state) => {
         lodashSet(state.controlledFields.values, fieldName, value);
+      });
+      get().controlledFields.kickoffValueUpdate(fieldName);
+    },
+    kickoffValueUpdate: (fieldName) => {
+      set((state) => {
         const promise = new Promise<void>((resolve) => {
           state.controlledFields.valueUpdateResolvers[fieldName] = resolve;
         });
         state.controlledFields.valueUpdatePromises[fieldName] = promise;
       });
     },
+
     awaitValueUpdate: async (fieldName) => {
       await get().controlledFields.valueUpdatePromises[fieldName];
+    },
+
+    array: {
+      push: (fieldName, item) => {
+        set((state) => {
+          arrayUtil
+            .getArray(state.controlledFields.values, fieldName)
+            .push(item);
+        });
+        get().controlledFields.kickoffValueUpdate(fieldName);
+      },
+
+      swap: (fieldName, indexA, indexB) => {
+        set((state) => {
+          arrayUtil.swap(
+            arrayUtil.getArray(state.controlledFields.values, fieldName),
+            indexA,
+            indexB
+          );
+        });
+        get().controlledFields.kickoffValueUpdate(fieldName);
+
+        // const nameA = `${fieldName}[${indexA}]`;
+        // const nameB = `${fieldName}[${indexB}]`;
+
+        // set((state) => {
+        //   const swapEntries = (obj: any): any =>
+        //     Object.fromEntries(
+        //       Object.entries(obj).map(([key, value]) => {
+        //         if (key.startsWith(nameA))
+        //           return [key.replace(nameA, nameB), value];
+        //         return [key, value];
+        //       })
+        //     );
+
+        //   state.touchedFields = swapEntries(state.touchedFields);
+        //   state.fieldErrors = swapEntries(state.fieldErrors);
+        // });
+      },
+
+      move: (fieldName, from, to) => {
+        set((state) => {
+          arrayUtil.move(
+            arrayUtil.getArray(state.controlledFields.values, fieldName),
+            from,
+            to
+          );
+        });
+        get().controlledFields.kickoffValueUpdate(fieldName);
+
+        // set((state) => {
+        //   const matcher = new RegExp(`^${fieldName}\\[(\\d+)\\]`);
+        //   const moveEntries = (obj: any): any =>
+        //     Object.fromEntries(
+        //       Object.entries(obj).map(([key, value]) => {
+        //         const match = matcher.exec(key);
+        //         if (!match) return [key, value];
+
+        //         const fullMatch = match[0];
+        //         const index = Number(match[1]);
+
+        //         if (index === from)
+        //           return [key.replace(fullMatch, `${fieldName}[${to}]`), value];
+
+        //         // Moving up in the list, the ones in between get bumped down
+        //         if (index > from && index <= to)
+        //           return [
+        //             key.replace(fullMatch, `${fieldName}[${index - 1}]`),
+        //             value,
+        //           ];
+
+        //         // Moving down in the list, the ones in between get bumped up
+        //         if (index < from && index >= to)
+        //           return [
+        //             key.replace(fullMatch, `${fieldName}[${index + 1}]`),
+        //             value,
+        //           ];
+
+        //         return [key, value];
+        //       })
+        //     );
+
+        //   state.touchedFields = moveEntries(state.touchedFields);
+        //   state.fieldErrors = moveEntries(state.fieldErrors);
+        // });
+      },
+      insert: (fieldName, index, item) => {
+        set((state) => {
+          arrayUtil.insert(
+            arrayUtil.getArray(state.controlledFields.values, fieldName),
+            index,
+            item
+          );
+        });
+        get().controlledFields.kickoffValueUpdate(fieldName);
+      },
+      remove: (fieldName, index) => {
+        set((state) => {
+          arrayUtil.remove(
+            arrayUtil.getArray(state.controlledFields.values, fieldName),
+            index
+          );
+        });
+        get().controlledFields.kickoffValueUpdate(fieldName);
+      },
+      pop: (fieldName) => {
+        set((state) => {
+          arrayUtil.getArray(state.controlledFields.values, fieldName).pop();
+        });
+        get().controlledFields.kickoffValueUpdate(fieldName);
+      },
+      unshift: (fieldName) => {
+        set((state) => {
+          arrayUtil
+            .getArray(state.controlledFields.values, fieldName)
+            .unshift();
+        });
+      },
+      replace: (fieldName, index, item) => {
+        set((state) => {
+          arrayUtil.replace(
+            arrayUtil.getArray(state.controlledFields.values, fieldName),
+            index,
+            item
+          );
+        });
+        get().controlledFields.kickoffValueUpdate(fieldName);
+      },
     },
   },
 });
