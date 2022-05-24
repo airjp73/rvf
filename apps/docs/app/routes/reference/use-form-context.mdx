@@ -50,9 +50,11 @@ Clears all the errors in the form.
 Performs validation on the specified field and populates `fieldErrors` if there is an error.
 Also returns the error message if there is an error.
 
-<PropHeader prop="validate" type="() => void" />
+<PropHeader prop="validate" type="() => ValidationResult" />
 
 Validates the whole form and updates `fieldErrors`.
+Also returns the ValidationResult object.
+This is the same object you get from `validator.validate` when [validating on the server](/server-validation).
 
 <PropHeader prop="action" type="string | undefined" />
 
@@ -107,3 +109,9 @@ and clearing all errors and touched states..
 
 _Note_: This same behavior can be achieved by calling `reset` on the form element itself
 or by clicking a button with `type="reset"`
+
+<PropHeader prop="submit" type="() => void" />
+
+Submits the form, running all validations first.
+
+_Note_: This is equivalent to clicking a button element with `type="submit"` or calling formElement.submit().
