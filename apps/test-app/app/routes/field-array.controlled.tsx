@@ -91,7 +91,9 @@ export default function FrontendValidation() {
                 </button>
               </div>
             ))}
-            <button onClick={() => push({ id: nanoid() })}>Add todo</button>
+            <button type="button" onClick={() => push({ id: nanoid() })}>
+              Add todo
+            </button>
           </>
         )}
       </FieldArray>
