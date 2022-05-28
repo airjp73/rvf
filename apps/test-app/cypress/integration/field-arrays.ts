@@ -278,4 +278,110 @@ describe("Field arrays", () => {
 
     cy.findAllByTestId("todo-id").should("have.length", 4);
   });
+
+  it("should pop the last item", () => {
+    cy.visit("/field-array/swap");
+
+    // Default values
+    cy.findByTestId("todo-0")
+      .findByLabelText("Title")
+      .should("have.value", "Default 1");
+    cy.findByTestId("todo-0")
+      .findByLabelText("Notes")
+      .should("have.value", "Default note 1");
+
+    cy.findByTestId("todo-1")
+      .findByLabelText("Title")
+      .should("have.value", "Default 2");
+    cy.findByTestId("todo-1")
+      .findByLabelText("Notes")
+      .should("have.value", "Default note 2");
+
+    cy.findByTestId("todo-2")
+      .findByLabelText("Title")
+      .should("have.value", "Default 3");
+    cy.findByTestId("todo-2")
+      .findByLabelText("Notes")
+      .should("have.value", "Default note 3");
+
+    cy.findAllByTestId("todo-id").should("have.length", 3);
+
+    // Pop the last item
+    cy.findByText("Pop").click();
+
+    // Check new values
+    cy.findByTestId("todo-0")
+      .findByLabelText("Title")
+      .should("have.value", "Default 1");
+    cy.findByTestId("todo-0")
+      .findByLabelText("Notes")
+      .should("have.value", "Default note 1");
+
+    cy.findByTestId("todo-1")
+      .findByLabelText("Title")
+      .should("have.value", "Default 2");
+    cy.findByTestId("todo-1")
+      .findByLabelText("Notes")
+      .should("have.value", "Default note 2");
+
+    cy.findAllByTestId("todo-id").should("have.length", 2);
+  });
+
+  it("should unshift a new item at the start", () => {
+    cy.visit("/field-array/swap");
+
+    // Default values
+    cy.findByTestId("todo-0")
+      .findByLabelText("Title")
+      .should("have.value", "Default 1");
+    cy.findByTestId("todo-0")
+      .findByLabelText("Notes")
+      .should("have.value", "Default note 1");
+
+    cy.findByTestId("todo-1")
+      .findByLabelText("Title")
+      .should("have.value", "Default 2");
+    cy.findByTestId("todo-1")
+      .findByLabelText("Notes")
+      .should("have.value", "Default note 2");
+
+    cy.findByTestId("todo-2")
+      .findByLabelText("Title")
+      .should("have.value", "Default 3");
+    cy.findByTestId("todo-2")
+      .findByLabelText("Notes")
+      .should("have.value", "Default note 3");
+
+    cy.findAllByTestId("todo-id").should("have.length", 3);
+
+    // Pop the last item
+    cy.findByText("Unshift").click();
+
+    // Check new values
+    cy.findByTestId("todo-0").findByLabelText("Title").should("have.value", "");
+    cy.findByTestId("todo-0").findByLabelText("Notes").should("have.value", "");
+
+    cy.findByTestId("todo-1")
+      .findByLabelText("Title")
+      .should("have.value", "Default 1");
+    cy.findByTestId("todo-1")
+      .findByLabelText("Notes")
+      .should("have.value", "Default note 1");
+
+    cy.findByTestId("todo-2")
+      .findByLabelText("Title")
+      .should("have.value", "Default 2");
+    cy.findByTestId("todo-2")
+      .findByLabelText("Notes")
+      .should("have.value", "Default note 2");
+
+    cy.findByTestId("todo-3")
+      .findByLabelText("Title")
+      .should("have.value", "Default 3");
+    cy.findByTestId("todo-3")
+      .findByLabelText("Notes")
+      .should("have.value", "Default note 3");
+
+    cy.findAllByTestId("todo-id").should("have.length", 4);
+  });
 });

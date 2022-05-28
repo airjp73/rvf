@@ -33,8 +33,8 @@ const useFieldArray = (context: InternalFormContextValue, field: string) => {
       insert: (index: number, value: any) => {
         arr.insert(field, index, value);
       },
-      unshift: () => {
-        arr.unshift(field);
+      unshift: (value: any) => {
+        arr.unshift(field, value);
       },
       remove: (index: number) => {
         arr.remove(field, index);
@@ -62,7 +62,7 @@ export type FieldArrayHelpers = {
   swap: (indexA: number, indexB: number) => void;
   move: (from: number, to: number) => void;
   insert: (index: number, value: any) => void;
-  unshift: () => void;
+  unshift: (value: any) => void;
   remove: (index: number) => void;
   pop: () => void;
   replace: (index: number, value: any) => void;

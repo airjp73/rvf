@@ -71,7 +71,7 @@ export type FormState = {
       swap: (fieldName: string, indexA: number, indexB: number) => void;
       move: (fieldName: string, fromIndex: number, toIndex: number) => void;
       insert: (fieldName: string, index: number, value: unknown) => void;
-      unshift: (fieldName: string) => void;
+      unshift: (fieldName: string, value: unknown) => void;
       remove: (fieldName: string, index: number) => void;
       pop: (fieldName: string) => void;
       replace: (fieldName: string, index: number, value: unknown) => void;
@@ -415,16 +415,16 @@ const createFormState = (
         });
         get().controlledFields.kickoffValueUpdate(fieldName);
       },
-      unshift: (fieldName) => {
+      unshift: (fieldName, value) => {
         set((state) => {
           arrayUtil
             .getArray(state.controlledFields.values, fieldName)
-            .unshift();
+            .unshift(value);
           arrayUtil.mutateAsArray(fieldName, state.touchedFields, (array) =>
-            array.unshift()
+            array.unshift(false)
           );
           arrayUtil.mutateAsArray(fieldName, state.fieldErrors, (array) =>
-            array.unshift()
+            array.unshift(undefined)
           );
         });
       },
