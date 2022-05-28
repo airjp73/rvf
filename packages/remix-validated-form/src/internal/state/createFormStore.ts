@@ -310,10 +310,15 @@ const createFormState = (
       get().controlledFields.kickoffValueUpdate(fieldName);
     },
     kickoffValueUpdate: (fieldName) => {
+      const clear = () =>
+        set((state) => {
+          delete state.controlledFields.valueUpdateResolvers[fieldName];
+          delete state.controlledFields.valueUpdatePromises[fieldName];
+        });
       set((state) => {
         const promise = new Promise<void>((resolve) => {
           state.controlledFields.valueUpdateResolvers[fieldName] = resolve;
-        });
+        }).then(clear);
         state.controlledFields.valueUpdatePromises[fieldName] = promise;
       });
     },
