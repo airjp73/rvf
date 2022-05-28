@@ -328,6 +328,7 @@ const createFormState = (
           arrayUtil
             .getArray(state.controlledFields.values, fieldName)
             .push(item);
+          // New item added to the end, no need to update touched or error
         });
         get().controlledFields.kickoffValueUpdate(fieldName);
       },
@@ -339,25 +340,14 @@ const createFormState = (
             indexA,
             indexB
           );
+          arrayUtil.mutateAsArray(fieldName, state.touchedFields, (array) =>
+            arrayUtil.swap(array, indexA, indexB)
+          );
+          arrayUtil.mutateAsArray(fieldName, state.fieldErrors, (array) =>
+            arrayUtil.swap(array, indexA, indexB)
+          );
         });
         get().controlledFields.kickoffValueUpdate(fieldName);
-
-        // const nameA = `${fieldName}[${indexA}]`;
-        // const nameB = `${fieldName}[${indexB}]`;
-
-        // set((state) => {
-        //   const swapEntries = (obj: any): any =>
-        //     Object.fromEntries(
-        //       Object.entries(obj).map(([key, value]) => {
-        //         if (key.startsWith(nameA))
-        //           return [key.replace(nameA, nameB), value];
-        //         return [key, value];
-        //       })
-        //     );
-
-        //   state.touchedFields = swapEntries(state.touchedFields);
-        //   state.fieldErrors = swapEntries(state.fieldErrors);
-        // });
       },
 
       move: (fieldName, from, to) => {
@@ -367,44 +357,14 @@ const createFormState = (
             from,
             to
           );
+          arrayUtil.mutateAsArray(fieldName, state.touchedFields, (array) =>
+            arrayUtil.move(array, from, to)
+          );
+          arrayUtil.mutateAsArray(fieldName, state.fieldErrors, (array) =>
+            arrayUtil.move(array, from, to)
+          );
         });
         get().controlledFields.kickoffValueUpdate(fieldName);
-
-        // set((state) => {
-        //   const matcher = new RegExp(`^${fieldName}\\[(\\d+)\\]`);
-        //   const moveEntries = (obj: any): any =>
-        //     Object.fromEntries(
-        //       Object.entries(obj).map(([key, value]) => {
-        //         const match = matcher.exec(key);
-        //         if (!match) return [key, value];
-
-        //         const fullMatch = match[0];
-        //         const index = Number(match[1]);
-
-        //         if (index === from)
-        //           return [key.replace(fullMatch, `${fieldName}[${to}]`), value];
-
-        //         // Moving up in the list, the ones in between get bumped down
-        //         if (index > from && index <= to)
-        //           return [
-        //             key.replace(fullMatch, `${fieldName}[${index - 1}]`),
-        //             value,
-        //           ];
-
-        //         // Moving down in the list, the ones in between get bumped up
-        //         if (index < from && index >= to)
-        //           return [
-        //             key.replace(fullMatch, `${fieldName}[${index + 1}]`),
-        //             value,
-        //           ];
-
-        //         return [key, value];
-        //       })
-        //     );
-
-        //   state.touchedFields = moveEntries(state.touchedFields);
-        //   state.fieldErrors = moveEntries(state.fieldErrors);
-        // });
       },
       insert: (fieldName, index, item) => {
         set((state) => {
@@ -412,6 +372,13 @@ const createFormState = (
             arrayUtil.getArray(state.controlledFields.values, fieldName),
             index,
             item
+          );
+          // Even though this is a new item, we need to push around other items.
+          arrayUtil.mutateAsArray(fieldName, state.touchedFields, (array) =>
+            arrayUtil.insert(array, index, false)
+          );
+          arrayUtil.mutateAsArray(fieldName, state.fieldErrors, (array) =>
+            arrayUtil.insert(array, index, undefined)
           );
         });
         get().controlledFields.kickoffValueUpdate(fieldName);
@@ -422,12 +389,24 @@ const createFormState = (
             arrayUtil.getArray(state.controlledFields.values, fieldName),
             index
           );
+          arrayUtil.mutateAsArray(fieldName, state.touchedFields, (array) =>
+            arrayUtil.remove(array, index)
+          );
+          arrayUtil.mutateAsArray(fieldName, state.fieldErrors, (array) =>
+            arrayUtil.remove(array, index)
+          );
         });
         get().controlledFields.kickoffValueUpdate(fieldName);
       },
       pop: (fieldName) => {
         set((state) => {
           arrayUtil.getArray(state.controlledFields.values, fieldName).pop();
+          arrayUtil.mutateAsArray(fieldName, state.touchedFields, (array) =>
+            array.pop()
+          );
+          arrayUtil.mutateAsArray(fieldName, state.fieldErrors, (array) =>
+            array.pop()
+          );
         });
         get().controlledFields.kickoffValueUpdate(fieldName);
       },
@@ -436,6 +415,12 @@ const createFormState = (
           arrayUtil
             .getArray(state.controlledFields.values, fieldName)
             .unshift();
+          arrayUtil.mutateAsArray(fieldName, state.touchedFields, (array) =>
+            array.unshift()
+          );
+          arrayUtil.mutateAsArray(fieldName, state.fieldErrors, (array) =>
+            array.unshift()
+          );
         });
       },
       replace: (fieldName, index, item) => {
@@ -444,6 +429,12 @@ const createFormState = (
             arrayUtil.getArray(state.controlledFields.values, fieldName),
             index,
             item
+          );
+          arrayUtil.mutateAsArray(fieldName, state.touchedFields, (array) =>
+            arrayUtil.replace(array, index, item)
+          );
+          arrayUtil.mutateAsArray(fieldName, state.fieldErrors, (array) =>
+            arrayUtil.replace(array, index, item)
           );
         });
         get().controlledFields.kickoffValueUpdate(fieldName);
