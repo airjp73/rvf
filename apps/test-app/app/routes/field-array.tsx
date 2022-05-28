@@ -11,7 +11,11 @@ const validator = withZod(
     todos: z.array(
       z.object({
         id: z.string(),
-        title: zfd.text(),
+        title: zfd.text(
+          z.string({
+            required_error: "Title is required",
+          })
+        ),
         note: zfd.text().optional(),
       })
     ),

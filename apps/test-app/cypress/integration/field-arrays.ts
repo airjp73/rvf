@@ -28,6 +28,12 @@ describe("Field arrays", () => {
 
     cy.findByTestId("todo-2").findByLabelText("Title").type("Test 1");
 
+    // Clear the first todo's title
+    cy.findByTestId("todo-0").findByLabelText("Title").clear();
+    cy.findByTestId("todo-0")
+      .findByText("Title is required")
+      .should("be.visible");
+
     // Delete the first todo
     cy.findByTestId("todo-0").findByText("Delete todo").click();
 
@@ -44,6 +50,8 @@ describe("Field arrays", () => {
     cy.findByTestId("todo-1").findByLabelText("Notes").should("have.value", "");
 
     cy.findAllByTestId("todo-id").should("have.length", 2);
+
+    cy.findByText("Title is required").should("not.exist");
 
     // Delete the last todo
     cy.findByTestId("todo-1").findByText("Delete todo").click();
