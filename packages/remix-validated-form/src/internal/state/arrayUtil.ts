@@ -1,4 +1,5 @@
 import lodashGet from "lodash/get";
+import has from "lodash/has";
 import lodashSet from "lodash/set";
 import invariant from "tiny-invariant";
 
@@ -43,6 +44,34 @@ export const remove = (array: unknown[], index: number) => {
 
 export const replace = (array: unknown[], index: number, value: unknown) => {
   array.splice(index, 1, value);
+};
+
+export const mutateAsArray = (
+  field: string,
+  obj: Record<string, any>,
+  mutate: (arr: any[]) => void
+) => {
+  const keys = new Set<string>();
+  const arr: any[] = [];
+  for (const [key, value] of Object.entries(obj)) {
+    if (key.startsWith(field)) {
+      keys.add(key);
+    }
+    lodashSet(arr, key.substring(field.length), value);
+  }
+
+  mutate(arr);
+  for (const key of keys) {
+    delete obj[key];
+  }
+
+  for (const key of keys) {
+    const subKey = key.substring(field.length);
+    if (has(arr, subKey)) {
+      const val = lodashGet(arr, subKey);
+      obj[key] = val;
+    }
+  }
 };
 
 if (import.meta.vitest) {
@@ -93,6 +122,20 @@ if (import.meta.vitest) {
       swap(array, 0, 1);
       expect(array).toEqual([2, 1, 3]);
     });
+
+    it("should work for sparse arrays", () => {
+      // A bit of a sanity check for native array behavior
+      const arr = [] as any[];
+      arr[0] = 1;
+      arr[2] = 2;
+      swap(arr, 0, 2);
+
+      let count = 0;
+      arr.forEach(() => count++);
+      expect(count).toEqual(2);
+      expect(arr.length).toEqual(3);
+      expect(arr).toEqual([2, undefined, 1]);
+    });
   });
 
   describe("move", () => {
@@ -124,6 +167,68 @@ if (import.meta.vitest) {
       const array = [1, 2, 3];
       replace(array, 1, 4);
       expect(array).toEqual([1, 4, 3]);
+    });
+  });
+
+  describe("mutateAsArray", () => {
+    it("should handle swap", () => {
+      const values = {
+        myField: "something",
+        "myField[0]": "foo",
+        "myField[2]": "bar",
+        otherField: "baz",
+        "otherField[0]": "something else",
+      };
+      mutateAsArray("myField", values, (arr) => {
+        swap(arr, 0, 2);
+      });
+      expect(values).toEqual({
+        myField: "something",
+        "myField[0]": "bar",
+        "myField[2]": "foo",
+        otherField: "baz",
+        "otherField[0]": "something else",
+      });
+    });
+
+    it("should handle move", () => {
+      const values = {
+        myField: "something",
+        "myField[0]": "foo",
+        "myField[1]": "bar",
+        "myField[2]": "baz",
+        "otherField[0]": "something else",
+      };
+      mutateAsArray("myField", values, (arr) => {
+        move(arr, 0, 2);
+      });
+      expect(values).toEqual({
+        myField: "something",
+        "myField[0]": "bar",
+        "myField[1]": "baz",
+        "myField[2]": "foo",
+        "otherField[0]": "something else",
+      });
+    });
+
+    it("should handle remove", () => {
+      const values = {
+        myField: "something",
+        "myField[0]": "foo",
+        "myField[1]": "bar",
+        "myField[2]": "baz",
+        "otherField[0]": "something else",
+      };
+      mutateAsArray("myField", values, (arr) => {
+        remove(arr, 1);
+      });
+      expect(values).toEqual({
+        myField: "something",
+        "myField[0]": "foo",
+        "myField[1]": "baz",
+        "otherField[0]": "something else",
+      });
+      expect("myField[2]" in values).toBe(false);
     });
   });
 }
