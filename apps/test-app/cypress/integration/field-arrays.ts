@@ -208,4 +208,74 @@ describe("Field arrays", () => {
 
     cy.findAllByTestId("todo-id").should("have.length", 3);
   });
+
+  it("should insert items", () => {
+    cy.visit("/field-array/swap");
+
+    // Default values
+    cy.findByTestId("todo-0")
+      .findByLabelText("Title")
+      .should("have.value", "Default 1");
+    cy.findByTestId("todo-0")
+      .findByLabelText("Notes")
+      .should("have.value", "Default note 1");
+
+    cy.findByTestId("todo-1")
+      .findByLabelText("Title")
+      .should("have.value", "Default 2");
+    cy.findByTestId("todo-1")
+      .findByLabelText("Notes")
+      .should("have.value", "Default note 2");
+
+    cy.findByTestId("todo-2")
+      .findByLabelText("Title")
+      .should("have.value", "Default 3");
+    cy.findByTestId("todo-2")
+      .findByLabelText("Notes")
+      .should("have.value", "Default note 3");
+
+    cy.findAllByTestId("todo-id").should("have.length", 3);
+
+    // Clear the middle todo's title
+    cy.findByTestId("todo-1").findByLabelText("Title").clear().blur();
+    cy.findByTestId("todo-1")
+      .findByText("Title is required")
+      .should("be.visible");
+    cy.findByText("todos[1].title touched").should("be.visible");
+
+    cy.findByText("Insert").click();
+
+    // Check new values
+    cy.findByTestId("todo-0")
+      .findByLabelText("Title")
+      .should("have.value", "Default 1");
+    cy.findByTestId("todo-0")
+      .findByLabelText("Notes")
+      .should("have.value", "Default note 1");
+
+    cy.findByTestId("todo-1").findByLabelText("Title").should("have.value", "");
+    cy.findByTestId("todo-1").findByLabelText("Notes").should("have.value", "");
+    cy.findByTestId("todo-1")
+      .findByText("Title is required")
+      .should("not.exist");
+    cy.findByText("todos[1].title touched").should("not.exist");
+
+    cy.findByTestId("todo-2").findByLabelText("Title").should("have.value", "");
+    cy.findByTestId("todo-2")
+      .findByLabelText("Notes")
+      .should("have.value", "Default note 2");
+    cy.findByTestId("todo-2")
+      .findByText("Title is required")
+      .should("be.visible");
+    cy.findByText("todos[2].title touched").should("be.visible");
+
+    cy.findByTestId("todo-3")
+      .findByLabelText("Title")
+      .should("have.value", "Default 3");
+    cy.findByTestId("todo-3")
+      .findByLabelText("Notes")
+      .should("have.value", "Default note 3");
+
+    cy.findAllByTestId("todo-id").should("have.length", 4);
+  });
 });
