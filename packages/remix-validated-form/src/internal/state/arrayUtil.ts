@@ -1,5 +1,4 @@
 import lodashGet from "lodash/get";
-import has from "lodash/has";
 import lodashSet from "lodash/set";
 import invariant from "tiny-invariant";
 
@@ -25,8 +24,23 @@ export const getArray = (values: any, field: string): unknown[] => {
 export const swap = (array: unknown[], indexA: number, indexB: number) => {
   const itemA = array[indexA];
   const itemB = array[indexB];
-  array[indexA] = itemB;
-  array[indexB] = itemA;
+
+  const hasItemA = indexA in array;
+  const hasItemB = indexB in array;
+
+  // If we're dealing with a sparse array (i.e. one of the indeces doesn't exist),
+  // we should keep it sparse
+  if (hasItemA) {
+    array[indexB] = itemA;
+  } else {
+    delete array[indexB];
+  }
+
+  if (hasItemB) {
+    array[indexA] = itemB;
+  } else {
+    delete array[indexA];
+  }
 };
 
 export const move = (array: unknown[], from: number, to: number) => {
@@ -51,27 +65,45 @@ export const mutateAsArray = (
   obj: Record<string, any>,
   mutate: (arr: any[]) => void
 ) => {
-  const keys = new Set<string>();
+  const beforeKeys = new Set<string>();
   const arr: any[] = [];
+
   for (const [key, value] of Object.entries(obj)) {
-    if (key.startsWith(field)) {
-      keys.add(key);
+    if (key.startsWith(field) && key !== field) {
+      beforeKeys.add(key);
     }
     lodashSet(arr, key.substring(field.length), value);
   }
 
   mutate(arr);
-  for (const key of keys) {
+  for (const key of beforeKeys) {
     delete obj[key];
   }
 
-  for (const key of keys) {
-    const subKey = key.substring(field.length);
-    if (has(arr, subKey)) {
-      const val = lodashGet(arr, subKey);
-      obj[key] = val;
-    }
+  const newKeys = getDeepArrayPaths(arr);
+  for (const key of newKeys) {
+    const val = lodashGet(arr, key);
+    obj[`${field}${key}`] = val;
   }
+};
+
+const getDeepArrayPaths = (obj: any, basePath: string = ""): string[] => {
+  // This only needs to handle arrays and plain objects
+  // and we can assume the first call is always an array.
+
+  if (Array.isArray(obj)) {
+    return obj.flatMap((item, index) =>
+      getDeepArrayPaths(item, `${basePath}[${index}]`)
+    );
+  }
+
+  if (typeof obj === "object") {
+    return Object.keys(obj).flatMap((key) =>
+      getDeepArrayPaths(obj[key], `${basePath}.${key}`)
+    );
+  }
+
+  return [basePath];
 };
 
 if (import.meta.vitest) {
@@ -126,15 +158,16 @@ if (import.meta.vitest) {
     it("should work for sparse arrays", () => {
       // A bit of a sanity check for native array behavior
       const arr = [] as any[];
-      arr[0] = 1;
-      arr[2] = 2;
+      arr[0] = true;
       swap(arr, 0, 2);
 
       let count = 0;
       arr.forEach(() => count++);
-      expect(count).toEqual(2);
-      expect(arr.length).toEqual(3);
-      expect(arr).toEqual([2, undefined, 1]);
+
+      expect(count).toEqual(1);
+      expect(0 in arr).toBe(false);
+      expect(2 in arr).toBe(true);
+      expect(arr[2]).toEqual(true);
     });
   });
 
@@ -191,6 +224,48 @@ if (import.meta.vitest) {
       });
     });
 
+    it("should swap sparse arrays", () => {
+      const values = {
+        myField: "something",
+        "myField[0]": "foo",
+        otherField: "baz",
+        "otherField[0]": "something else",
+      };
+      mutateAsArray("myField", values, (arr) => {
+        swap(arr, 0, 2);
+      });
+      expect(values).toEqual({
+        myField: "something",
+        "myField[2]": "foo",
+        otherField: "baz",
+        "otherField[0]": "something else",
+      });
+    });
+
+    it("should handle arrays with nested values", () => {
+      const values = {
+        myField: "something",
+        "myField[0].title": "foo",
+        "myField[0].note": "bar",
+        "myField[2].title": "other",
+        "myField[2].note": "other",
+        otherField: "baz",
+        "otherField[0]": "something else",
+      };
+      mutateAsArray("myField", values, (arr) => {
+        swap(arr, 0, 2);
+      });
+      expect(values).toEqual({
+        myField: "something",
+        "myField[0].title": "other",
+        "myField[0].note": "other",
+        "myField[2].title": "foo",
+        "myField[2].note": "bar",
+        otherField: "baz",
+        "otherField[0]": "something else",
+      });
+    });
+
     it("should handle move", () => {
       const values = {
         myField: "something",
@@ -229,6 +304,27 @@ if (import.meta.vitest) {
         "otherField[0]": "something else",
       });
       expect("myField[2]" in values).toBe(false);
+    });
+  });
+
+  describe("getDeepArrayPaths", () => {
+    it("should return all paths recursively", () => {
+      const obj = [
+        true,
+        true,
+        [true, true],
+        { foo: true, bar: { baz: true, test: [true] } },
+      ];
+
+      expect(getDeepArrayPaths(obj, "myField")).toEqual([
+        "myField[0]",
+        "myField[1]",
+        "myField[2][0]",
+        "myField[2][1]",
+        "myField[3].foo",
+        "myField[3].bar.baz",
+        "myField[3].bar.test[0]",
+      ]);
     });
   });
 }
