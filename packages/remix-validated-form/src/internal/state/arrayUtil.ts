@@ -60,6 +60,11 @@ export const replace = (array: unknown[], index: number, value: unknown) => {
   array.splice(index, 1, value);
 };
 
+/**
+ * The purpose of this helper is to make it easier to update `fieldErrors` and `touchedFields`.
+ * We key those objects by full paths to the fields.
+ * When we're doing array mutations, that makes it difficult to update those objects.
+ */
 export const mutateAsArray = (
   field: string,
   obj: Record<string, any>,
