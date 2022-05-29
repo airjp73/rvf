@@ -1,18 +1,21 @@
+import lodashGet from "lodash/get";
 import React, { useMemo, createContext } from "react";
 import invariant from "tiny-invariant";
 import { InternalFormContextValue } from "../formContext";
 import { useInternalFormContext } from "../hooks";
-import { useControllableValue } from "./controlledFields";
 import { useFormStore } from "./storeHooks";
 
-const useFieldArray = (context: InternalFormContextValue, field: string) => {
-  // TODO: Fieldarrays need to handle/update these things, too:
-  // - touchedFields & fieldErrors should be updated when fields are added/removed
-  // - Could probably move some of these callbacks into the store
-  // - There's a bug where adding a new field to the fieldarray validates the new field.
-  //   - For some reason this only happens in the test-app, but not in the docs app.
+const useCurrentDefaults = (
+  context: InternalFormContextValue,
+  field: string
+) => {
+  return useFormStore(context.formId, (state) =>
+    lodashGet(state.currentDefaultValues, field)
+  );
+};
 
-  const [value] = useControllableValue(context, field);
+const useFieldArray = (context: InternalFormContextValue, field: string) => {
+  const value = useCurrentDefaults(context, field);
 
   const arr = useFormStore(
     context.formId,

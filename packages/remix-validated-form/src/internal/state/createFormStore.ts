@@ -37,6 +37,7 @@ export type FormState = {
   touchedFields: TouchedFields;
   formProps?: SyncedFormProps;
   formElement: HTMLFormElement | null;
+  currentDefaultValues: Record<string, any>;
 
   isValid: () => boolean;
   startSubmit: () => void;
@@ -94,6 +95,7 @@ const defaultFormState: FormState = {
   setFieldError: noOp,
   setFieldErrors: noOp,
   clearFieldError: noOp,
+  currentDefaultValues: {},
 
   reset: () => noOp,
   syncFormProps: noOp,
@@ -149,6 +151,7 @@ const createFormState = (
   touchedFields: {},
   fieldErrors: {},
   formElement: null,
+  currentDefaultValues: {},
 
   isValid: () => Object.keys(get().fieldErrors).length === 0,
   startSubmit: () =>
@@ -188,6 +191,7 @@ const createFormState = (
     set((state) => {
       if (!state.isHydrated) {
         state.controlledFields.values = props.defaultValues;
+        state.currentDefaultValues = props.defaultValues;
       }
 
       state.formProps = props;
@@ -333,6 +337,7 @@ const createFormState = (
           arrayUtil
             .getArray(state.controlledFields.values, fieldName)
             .push(item);
+          arrayUtil.getArray(state.currentDefaultValues, fieldName).push(item);
           // New item added to the end, no need to update touched or error
         });
         get().controlledFields.kickoffValueUpdate(fieldName);
@@ -342,6 +347,11 @@ const createFormState = (
         set((state) => {
           arrayUtil.swap(
             arrayUtil.getArray(state.controlledFields.values, fieldName),
+            indexA,
+            indexB
+          );
+          arrayUtil.swap(
+            arrayUtil.getArray(state.currentDefaultValues, fieldName),
             indexA,
             indexB
           );
@@ -362,6 +372,11 @@ const createFormState = (
             from,
             to
           );
+          arrayUtil.move(
+            arrayUtil.getArray(state.currentDefaultValues, fieldName),
+            from,
+            to
+          );
           arrayUtil.mutateAsArray(fieldName, state.touchedFields, (array) =>
             arrayUtil.move(array, from, to)
           );
@@ -375,6 +390,11 @@ const createFormState = (
         set((state) => {
           arrayUtil.insert(
             arrayUtil.getArray(state.controlledFields.values, fieldName),
+            index,
+            item
+          );
+          arrayUtil.insert(
+            arrayUtil.getArray(state.currentDefaultValues, fieldName),
             index,
             item
           );
@@ -394,6 +414,10 @@ const createFormState = (
             arrayUtil.getArray(state.controlledFields.values, fieldName),
             index
           );
+          arrayUtil.remove(
+            arrayUtil.getArray(state.currentDefaultValues, fieldName),
+            index
+          );
           arrayUtil.mutateAsArray(fieldName, state.touchedFields, (array) =>
             arrayUtil.remove(array, index)
           );
@@ -406,6 +430,7 @@ const createFormState = (
       pop: (fieldName) => {
         set((state) => {
           arrayUtil.getArray(state.controlledFields.values, fieldName).pop();
+          arrayUtil.getArray(state.currentDefaultValues, fieldName).pop();
           arrayUtil.mutateAsArray(fieldName, state.touchedFields, (array) =>
             array.pop()
           );
@@ -420,6 +445,9 @@ const createFormState = (
           arrayUtil
             .getArray(state.controlledFields.values, fieldName)
             .unshift(value);
+          arrayUtil
+            .getArray(state.currentDefaultValues, fieldName)
+            .unshift(value);
           arrayUtil.mutateAsArray(fieldName, state.touchedFields, (array) =>
             array.unshift(false)
           );
@@ -432,6 +460,11 @@ const createFormState = (
         set((state) => {
           arrayUtil.replace(
             arrayUtil.getArray(state.controlledFields.values, fieldName),
+            index,
+            item
+          );
+          arrayUtil.replace(
+            arrayUtil.getArray(state.currentDefaultValues, fieldName),
             index,
             item
           );
