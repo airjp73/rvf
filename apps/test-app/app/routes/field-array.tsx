@@ -1,6 +1,5 @@
 import { withZod } from "@remix-validated-form/with-zod";
 import { nanoid } from "nanoid";
-import { ActionFunction, json } from "remix";
 import { FieldArray, ValidatedForm } from "remix-validated-form";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
@@ -21,11 +20,6 @@ const validator = withZod(
     ),
   })
 );
-
-export const action: ActionFunction = async () => {
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-  return json({ message: "Submitted!" });
-};
 
 const defaultValues = {
   todos: [

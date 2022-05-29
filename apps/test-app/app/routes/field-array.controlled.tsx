@@ -1,6 +1,5 @@
 import { withZod } from "@remix-validated-form/with-zod";
 import { nanoid } from "nanoid";
-import { ActionFunction, json } from "remix";
 import {
   FieldArray,
   useControlField,
@@ -25,11 +24,6 @@ const validator = withZod(
     ),
   })
 );
-
-export const action: ActionFunction = async () => {
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-  return json({ message: "Submitted!" });
-};
 
 const ControlledInput = ({ label, name }: { label: string; name: string }) => {
   const { error, getInputProps, touched } = useField(name);

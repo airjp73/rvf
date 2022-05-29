@@ -16,6 +16,41 @@ describe("Field arrays", () => {
     cy.findAllByTestId("todo-id").should("have.length", 0);
   });
 
+  it("should sumbit the data correctly", () => {
+    cy.visit("/field-array/no-defaults");
+
+    cy.findByText("Add todo").click();
+    cy.findByTestId("todo-0").findByLabelText("Title").type("Todo 1");
+    cy.findByTestId("todo-0").findByLabelText("Notes").type("Do something");
+
+    cy.findByText("Add todo").click();
+    cy.findByTestId("todo-1").findByLabelText("Title").type("Todo 2");
+    cy.findByTestId("todo-1")
+      .findByLabelText("Notes")
+      .type("Do something else");
+
+    cy.findByText("Add todo").click();
+    cy.findByTestId("todo-2").findByLabelText("Title").type("Todo 3");
+    cy.findByTestId("todo-2")
+      .findByLabelText("Notes")
+      .type("This one gets deleted");
+
+    cy.findByText("Add todo").click();
+    cy.findByTestId("todo-3").findByLabelText("Title").type("Todo 4");
+    cy.findByTestId("todo-3").findByLabelText("Notes").type("With a vengeance");
+
+    cy.findByTestId("todo-2").findByText("Delete todo").click();
+    cy.findByText("Submit").click();
+
+    cy.findByText("Submitted!").should("exist");
+    cy.findByText("Todo 1: Do something").should("exist");
+    cy.findByText("Todo 2: Do something else").should("exist");
+    cy.findByText("Todo 4: With a vengeance").should("exist");
+    cy.findAllByTestId("submitted-todo").should("have.length", 3);
+
+    cy.findByText("Todo 3: This one gets deleted").should("not.exist");
+  });
+
   [
     {
       route: "/field-array",
