@@ -3,14 +3,6 @@ meta:
   title: Arrays and nested data (Remix Validated Form)
 ---
 
-import { CodeExample } from "~/components/CodeExample";
-import Demo, {
-  action,
-  loader,
-} from "~/examples/nestedData";
-
-export { action, loader };
-
 # Arrays and nested data
 
 In additional to handling [regular repeated fields](/repeated-field-names),
@@ -79,15 +71,5 @@ const result = {
 
 ## Dynamic arrays
 
-For dynamic lists (e.g. adding and removing items), you can use the `FieldArray` component.
-
-## Full example
-
-<CodeExample>
-  <Demo />
-
-```tsx file=~/examples/nestedData.tsx
-
-```
-
-</CodeExample>
+For dynamic lists (e.g. adding and removing items), you can use the
+[`FieldArray` component](/reference/field-array) or [`useFieldArray` hook](/reference/use-field-array).

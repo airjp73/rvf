@@ -1,0 +1,112 @@
+---
+meta:
+  title: useFieldArray (Remix Validated Form)
+---
+
+import { CodeExample } from "~/components/CodeExample";
+import { PropHeader } from "~/components/PropHeader";
+import { Alert } from "~/components/Alert";
+import Demo, {
+  action,
+  loader,
+} from "~/examples/fieldArray";
+
+export { action, loader };
+
+<PropHeader
+  variant="h1"
+  prop="<FieldArray />"
+  type="(props: FieldArrayProps) => (value: any, helpers: FieldArrayHelpers<any>) => ReactNode"
+/>
+
+A component version of [`useFieldArray`](/reference/use-field-array).
+
+## Example
+
+<CodeExample>
+  <Demo />
+
+```tsx file=~/examples/fieldArray.tsx
+
+```
+
+</CodeExample>
+
+## FieldArrayProps
+
+<PropHeader variant="h3" prop="name" type="string" />
+
+The name of the "field". If you're using [array syntax](/arrays-and-nested),
+then this is the base name of the field (not include array index specifier).
+
+Example: If you're items named `todos[0]`, `todos[1]`, etc, then the name would be `todos`.
+
+<PropHeader
+  variant="h3"
+  prop="formId"
+  type="string"
+  optional
+/>
+
+Allows you to [use the component outside a form](/use-outside-forms).
+
+## FieldArrayHelpers
+
+Many of these helpers parallel native array helpers, but please note that,
+unlike the native array methods, none of these helpers return anything.
+
+<PropHeader
+  variant="h3"
+  prop="push"
+  type="(item: Item) => void"
+/>
+
+Adds a new item to the end of the array.
+
+<PropHeader
+  variant="h3"
+  prop="swap"
+  type="(indexA: number, indexB: number) => void"
+/>
+
+Swaps the items at the given indices.
+
+<PropHeader
+  variant="h3"
+  prop="move"
+  type="(from: number, to: number) => void"
+/>
+
+Moves the item at the `from` index to the `to` index.
+
+<PropHeader
+  variant="h3"
+  prop="insert"
+  type="(index: number, item: Item) => void"
+/>
+
+Inserts an item at the given index.
+
+<PropHeader variant="h3" prop="unshift" type="() => void" />
+
+Removes the item at the start of the array.
+
+<PropHeader variant="h3" prop="pop" type="() => void" />
+
+Removes the item at the end of the array.
+
+<PropHeader
+  variant="h3"
+  prop="remove"
+  type="(index: number) => void"
+/>
+
+Removes the item at the given index.
+
+<PropHeader
+  variant="h3"
+  prop="replace"
+  type="(index: number, item: Item) => void"
+/>
+
+Replaces the item at the given index.

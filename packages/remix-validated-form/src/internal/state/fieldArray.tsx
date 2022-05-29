@@ -57,24 +57,24 @@ const useInternalFieldArray = (
   return [arrayValue, helpers] as const;
 };
 
-export type FieldArrayHelpers = {
-  push: (item: any) => void;
+export type FieldArrayHelpers<Item = any> = {
+  push: (item: Item) => void;
   swap: (indexA: number, indexB: number) => void;
   move: (from: number, to: number) => void;
-  insert: (index: number, value: any) => void;
-  unshift: (value: any) => void;
+  insert: (index: number, value: Item) => void;
+  unshift: (value: Item) => void;
   remove: (index: number) => void;
   pop: () => void;
-  replace: (index: number, value: any) => void;
+  replace: (index: number, value: Item) => void;
 };
 
-export const useFieldArray = (name: string, formId?: string) => {
+export function useFieldArray<Item = any>(name: string, formId?: string) {
   const context = useInternalFormContext(formId, "FieldArray");
   return useInternalFieldArray(context, name) as [
-    itemDefaults: any[],
+    itemDefaults: Item[],
     helpers: FieldArrayHelpers
   ];
-};
+}
 
 export type FieldArrayProps = {
   name: string;
@@ -88,11 +88,5 @@ export type FieldArrayProps = {
 export const FieldArray = ({ name, children, formId }: FieldArrayProps) => {
   const context = useInternalFormContext(formId, "FieldArray");
   const [value, helpers] = useInternalFieldArray(context, name);
-
-  const contextValue = useMemo(
-    () => ({ defaultValues: value, name }),
-    [name, value]
-  );
-
-  return children(contextValue.defaultValues, helpers);
+  return children(value, helpers);
 };

@@ -86,6 +86,14 @@ const navSections: Section[] = [
         label: "useFormContext",
         to: "/reference/use-form-context",
       },
+      {
+        label: "useFieldArray",
+        to: "/reference/use-field-array",
+      },
+      {
+        label: "FieldArray",
+        to: "/reference/field-array",
+      },
     ],
   },
   {
