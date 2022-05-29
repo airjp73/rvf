@@ -43,21 +43,39 @@ export const swap = (array: unknown[], indexA: number, indexB: number) => {
   }
 };
 
+// A splice that can handle sparse arrays
+function sparseSplice(
+  array: unknown[],
+  start: number,
+  deleteCount: number,
+  item?: unknown
+) {
+  // Inserting an item into an array won't behave as we need it to if the array isn't
+  // at least as long as the start index. We can force the array to be long enough like this.
+  if (array.length < start && item) {
+    array.length = start;
+  }
+
+  // If we just pass item in, it'll be undefined and splice will delete the item.
+  if (arguments.length === 4) return array.splice(start, deleteCount, item);
+  return array.splice(start, deleteCount);
+}
+
 export const move = (array: unknown[], from: number, to: number) => {
-  const [item] = array.splice(from, 1);
-  array.splice(to, 0, item);
+  const [item] = sparseSplice(array, from, 1);
+  sparseSplice(array, to, 0, item);
 };
 
 export const insert = (array: unknown[], index: number, value: unknown) => {
-  array.splice(index, 0, value);
+  sparseSplice(array, index, 0, value);
 };
 
 export const remove = (array: unknown[], index: number) => {
-  array.splice(index, 1);
+  sparseSplice(array, index, 1);
 };
 
 export const replace = (array: unknown[], index: number, value: unknown) => {
-  array.splice(index, 1, value);
+  sparseSplice(array, index, 1, value);
 };
 
 /**
@@ -114,6 +132,15 @@ const getDeepArrayPaths = (obj: any, basePath: string = ""): string[] => {
 if (import.meta.vitest) {
   const { describe, expect, it } = import.meta.vitest;
 
+  // Count the actual number of items in the array
+  // instead of just getting the length.
+  // This is useful for validating that sparse arrays are handled correctly.
+  const countArrayItems = (arr: any[]) => {
+    let count = 0;
+    arr.forEach(() => count++);
+    return count;
+  };
+
   describe("getArray", () => {
     it("shoud get a deeply nested array that can be mutated to update the nested value", () => {
       const values = {
@@ -166,10 +193,7 @@ if (import.meta.vitest) {
       arr[0] = true;
       swap(arr, 0, 2);
 
-      let count = 0;
-      arr.forEach(() => count++);
-
-      expect(count).toEqual(1);
+      expect(countArrayItems(arr)).toEqual(1);
       expect(0 in arr).toBe(false);
       expect(2 in arr).toBe(true);
       expect(arr[2]).toEqual(true);
@@ -182,6 +206,14 @@ if (import.meta.vitest) {
       move(array, 0, 1);
       expect(array).toEqual([2, 1, 3]);
     });
+
+    it("should work with sparse arrays", () => {
+      const array = [1];
+      move(array, 0, 2);
+
+      expect(countArrayItems(array)).toEqual(1);
+      expect(array).toEqual([undefined, undefined, 1]);
+    });
   });
 
   describe("insert", () => {
@@ -189,6 +221,21 @@ if (import.meta.vitest) {
       const array = [1, 2, 3];
       insert(array, 1, 4);
       expect(array).toEqual([1, 4, 2, 3]);
+    });
+
+    it("should be able to insert falsey values", () => {
+      const array = [1, 2, 3];
+      insert(array, 1, null);
+      expect(array).toEqual([1, null, 2, 3]);
+    });
+
+    it("should handle sparse arrays", () => {
+      const array: any[] = [];
+      array[2] = true;
+      insert(array, 0, true);
+
+      expect(countArrayItems(array)).toEqual(2);
+      expect(array).toEqual([true, undefined, undefined, true]);
     });
   });
 
@@ -198,6 +245,15 @@ if (import.meta.vitest) {
       remove(array, 1);
       expect(array).toEqual([1, 3]);
     });
+
+    it("should handle sparse arrays", () => {
+      const array: any[] = [];
+      array[2] = true;
+      remove(array, 0);
+
+      expect(countArrayItems(array)).toEqual(1);
+      expect(array).toEqual([undefined, true]);
+    });
   });
 
   describe("replace", () => {
@@ -205,6 +261,14 @@ if (import.meta.vitest) {
       const array = [1, 2, 3];
       replace(array, 1, 4);
       expect(array).toEqual([1, 4, 3]);
+    });
+
+    it("should handle sparse arrays", () => {
+      const array: any[] = [];
+      array[2] = true;
+      replace(array, 0, true);
+      expect(countArrayItems(array)).toEqual(2);
+      expect(array).toEqual([true, undefined, true]);
     });
   });
 
