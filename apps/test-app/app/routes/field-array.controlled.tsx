@@ -15,7 +15,11 @@ const validator = withZod(
     todos: z.array(
       z.object({
         id: z.string(),
-        title: zfd.text(),
+        title: zfd.text(
+          z.string({
+            required_error: "Title is required",
+          })
+        ),
         note: zfd.text().optional(),
       })
     ),
@@ -28,7 +32,7 @@ export const action: ActionFunction = async () => {
 };
 
 const ControlledInput = ({ label, name }: { label: string; name: string }) => {
-  const { error, getInputProps } = useField(name);
+  const { error, getInputProps, touched } = useField(name);
   const [value, setValue] = useControlField<string>(name);
 
   return (
@@ -42,6 +46,7 @@ const ControlledInput = ({ label, name }: { label: string; name: string }) => {
           })}
         />
       </label>
+      {touched && <span>{name} touched</span>}
       {error && <p data-testid="text-error">{error}</p>}
     </div>
   );
@@ -59,6 +64,11 @@ const defaultValues = {
       title: "Default 2",
       notes: "Default note 2",
     },
+    {
+      id: nanoid(),
+      title: "Default 3",
+      notes: "Default note 3",
+    },
   ],
 };
 
@@ -70,7 +80,10 @@ export default function FrontendValidation() {
       defaultValues={defaultValues}
     >
       <FieldArray name="todos">
-        {(items, { push, remove }) => (
+        {(
+          items,
+          { push, remove, swap, move, insert, pop, unshift, replace }
+        ) => (
           <>
             {items.map((item, index) => (
               <div key={item.id} data-testid={`todo-${index}`}>
@@ -91,8 +104,44 @@ export default function FrontendValidation() {
                 </button>
               </div>
             ))}
-            <button type="button" onClick={() => push({ id: nanoid() })}>
-              Add todo
+            <button type="button" onClick={() => swap(0, 2)}>
+              Swap
+            </button>
+            <button type="button" onClick={() => move(0, 2)}>
+              Move
+            </button>
+            <button type="button" onClick={() => insert(1, { id: nanoid() })}>
+              Insert
+            </button>
+            <button type="button" onClick={() => pop()}>
+              Pop
+            </button>
+            <button type="button" onClick={() => unshift({ id: nanoid() })}>
+              Unshift
+            </button>
+            <button
+              type="button"
+              onClick={() =>
+                replace(1, {
+                  id: nanoid(),
+                  title: "New title",
+                  notes: "New note",
+                })
+              }
+            >
+              Replace
+            </button>
+            <button
+              type="button"
+              onClick={() =>
+                push({
+                  id: nanoid(),
+                  title: "New title",
+                  notes: "New note",
+                })
+              }
+            >
+              Push
             </button>
           </>
         )}
