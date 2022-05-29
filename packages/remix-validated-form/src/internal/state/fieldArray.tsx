@@ -1,4 +1,4 @@
-import React, { useMemo, createContext } from "react";
+import React, { useMemo } from "react";
 import invariant from "tiny-invariant";
 import { InternalFormContextValue } from "../formContext";
 import {
@@ -8,9 +8,17 @@ import {
 import { useRegisterControlledField } from "./controlledFields";
 import { useFormStore } from "./storeHooks";
 
-const useFieldArray = (context: InternalFormContextValue, field: string) => {
+const useInternalFieldArray = (
+  context: InternalFormContextValue,
+  field: string
+) => {
   const value = useCurrentDefaultValueForField(context.formId, field);
   useRegisterControlledField(context, field);
+
+  invariant(
+    value === undefined || value === null || Array.isArray(value),
+    `FieldArray: defaultValue value for ${field} must be an array, null, or undefined`
+  );
 
   const arr = useFormStore(
     context.formId,
@@ -47,13 +55,10 @@ const useFieldArray = (context: InternalFormContextValue, field: string) => {
     [arr, field]
   );
 
-  return [value, helpers] as const;
-};
+  const arrayValue = useMemo(() => value ?? [], [value]);
 
-export const FieldArrayContext = createContext<{
-  defaultValues: any[];
-  name: string;
-} | null>(null);
+  return [arrayValue, helpers] as const;
+};
 
 export type FieldArrayHelpers = {
   push: (item: any) => void;
@@ -64,6 +69,14 @@ export type FieldArrayHelpers = {
   remove: (index: number) => void;
   pop: () => void;
   replace: (index: number, value: any) => void;
+};
+
+export const useFieldArray = (name: string, formId?: string) => {
+  const context = useInternalFormContext(formId, "FieldArray");
+  return useInternalFieldArray(context, name) as [
+    itemDefaults: any[],
+    helpers: FieldArrayHelpers
+  ];
 };
 
 export type FieldArrayProps = {
@@ -77,21 +90,12 @@ export type FieldArrayProps = {
 
 export const FieldArray = ({ name, children, formId }: FieldArrayProps) => {
   const context = useInternalFormContext(formId, "FieldArray");
-  const [value, helpers] = useFieldArray(context, name);
-
-  invariant(
-    value === undefined || value === null || Array.isArray(value),
-    `FieldArray: defaultValue value for ${name} must be an array, null, or undefined`
-  );
+  const [value, helpers] = useInternalFieldArray(context, name);
 
   const contextValue = useMemo(
-    () => ({ defaultValues: value ?? [], name }),
+    () => ({ defaultValues: value, name }),
     [name, value]
   );
 
-  return (
-    <FieldArrayContext.Provider value={contextValue}>
-      {children(contextValue.defaultValues, helpers)}
-    </FieldArrayContext.Provider>
-  );
+  return children(contextValue.defaultValues, helpers);
 };

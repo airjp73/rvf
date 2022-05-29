@@ -60,6 +60,14 @@ describe("Field arrays", () => {
       route: "/field-array/controlled",
       variant: "With controlled inputs",
     },
+    {
+      route: "/field-array/hook",
+      variant: "With hook & uncontrolled inputs",
+    },
+    {
+      route: "/field-array/hook/controlled",
+      variant: "With hook & controlled inputs",
+    },
   ].forEach(({ route, variant }) => {
     describe(variant, () => {
       it("should swap items", () => {
