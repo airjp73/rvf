@@ -54,11 +54,11 @@ describe("Field arrays", () => {
   [
     {
       route: "/field-array",
-      variant: "Uncontrolled",
+      variant: "With uncontrolled inputs",
     },
     {
       route: "/field-array/controlled",
-      variant: "Controlled",
+      variant: "With controlled inputs",
     },
   ].forEach(({ route, variant }) => {
     describe(variant, () => {

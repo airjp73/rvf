@@ -6,7 +6,6 @@ import { FieldErrors, ValidationErrorResponseData } from "..";
 import { formDefaultValuesKey } from "./constants";
 import { InternalFormContext, InternalFormContextValue } from "./formContext";
 import { Hydratable, hydratable } from "./hydratable";
-import { FieldArrayContext } from "./state/fieldArray";
 import { useFormStore } from "./state/storeHooks";
 import { InternalFormId } from "./state/types";
 
@@ -142,25 +141,20 @@ export const useClearError = (context: InternalFormContextValue) => {
   return useFormStore(formId, (state) => state.clearFieldError);
 };
 
+export const useCurrentDefaultValueForField = (
+  formId: InternalFormId,
+  field: string
+) =>
+  useFormStore(formId, (state) => lodashGet(state.currentDefaultValues, field));
+
 export const useFieldDefaultValue = (
   name: string,
   context: InternalFormContextValue
 ) => {
   const defaultValues = useDefaultValuesForForm(context);
-  const state = useSyncedDefaultValues(context.formId);
-  const fieldArray = useContext(FieldArrayContext);
+  const state = useCurrentDefaultValueForField(context.formId, name);
 
-  // If this is part of a field array, we should use the default value from that
-  if (fieldArray && name.startsWith(fieldArray.name)) {
-    return lodashGet(
-      fieldArray.defaultValues,
-      name.substr(fieldArray.name.length + 1)
-    );
-  }
-
-  return defaultValues
-    .map((val) => lodashGet(val, name))
-    .hydrateTo(lodashGet(state, name));
+  return defaultValues.map((val) => lodashGet(val, name)).hydrateTo(state);
 };
 
 export const useInternalIsSubmitting = (formId: InternalFormId) =>

@@ -185,7 +185,9 @@ const createFormState = (
       state.fieldErrors = {};
       state.touchedFields = {};
       state.hasBeenSubmitted = false;
-      state.controlledFields.values = {};
+      const nextDefaults = state.formProps?.defaultValues ?? {};
+      state.controlledFields.values = nextDefaults;
+      state.currentDefaultValues = nextDefaults;
     }),
   syncFormProps: (props: SyncedFormProps) =>
     set((state) => {
@@ -297,6 +299,11 @@ const createFormState = (
         if (!isNested) {
           lodashSet(
             state.controlledFields.values,
+            fieldName,
+            lodashGet(state.formProps?.defaultValues, fieldName)
+          );
+          lodashSet(
+            state.currentDefaultValues,
             fieldName,
             lodashGet(state.formProps?.defaultValues, fieldName)
           );

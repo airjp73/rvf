@@ -1,21 +1,16 @@
-import lodashGet from "lodash/get";
 import React, { useMemo, createContext } from "react";
 import invariant from "tiny-invariant";
 import { InternalFormContextValue } from "../formContext";
-import { useInternalFormContext } from "../hooks";
+import {
+  useCurrentDefaultValueForField,
+  useInternalFormContext,
+} from "../hooks";
+import { useRegisterControlledField } from "./controlledFields";
 import { useFormStore } from "./storeHooks";
 
-const useCurrentDefaults = (
-  context: InternalFormContextValue,
-  field: string
-) => {
-  return useFormStore(context.formId, (state) =>
-    lodashGet(state.currentDefaultValues, field)
-  );
-};
-
 const useFieldArray = (context: InternalFormContextValue, field: string) => {
-  const value = useCurrentDefaults(context, field);
+  const value = useCurrentDefaultValueForField(context.formId, field);
+  useRegisterControlledField(context, field);
 
   const arr = useFormStore(
     context.formId,

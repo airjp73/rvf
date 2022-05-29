@@ -20,18 +20,10 @@ export const useControlledFieldValue = (
   return isFormHydrated ? value : defaultValue;
 };
 
-export const useControllableValue = (
+export const useRegisterControlledField = (
   context: InternalFormContextValue,
   field: string
 ) => {
-  const resolveUpdate = useFormStore(
-    context.formId,
-    (state) => state.controlledFields.valueUpdateResolvers[field]
-  );
-  useEffect(() => {
-    resolveUpdate?.();
-  }, [resolveUpdate]);
-
   const register = useFormStore(
     context.formId,
     (state) => state.controlledFields.register
@@ -44,6 +36,21 @@ export const useControllableValue = (
     register(field);
     return () => unregister(field);
   }, [context.formId, field, register, unregister]);
+};
+
+export const useControllableValue = (
+  context: InternalFormContextValue,
+  field: string
+) => {
+  const resolveUpdate = useFormStore(
+    context.formId,
+    (state) => state.controlledFields.valueUpdateResolvers[field]
+  );
+  useEffect(() => {
+    resolveUpdate?.();
+  }, [resolveUpdate]);
+
+  useRegisterControlledField(context, field);
 
   const setControlledFieldValue = useFormStore(
     context.formId,
