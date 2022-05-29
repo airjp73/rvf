@@ -1,71 +1,4 @@
 describe("Field arrays", () => {
-  it("should add and remove items", () => {
-    cy.visit("/field-array");
-
-    // Default values
-    cy.findByTestId("todo-0")
-      .findByLabelText("Title")
-      .should("have.value", "Default 1");
-    cy.findByTestId("todo-0")
-      .findByLabelText("Notes")
-      .should("have.value", "Default note 1");
-
-    cy.findByTestId("todo-1")
-      .findByLabelText("Title")
-      .should("have.value", "Default 2");
-    cy.findByTestId("todo-1")
-      .findByLabelText("Notes")
-      .should("have.value", "Default note 2");
-
-    cy.findAllByTestId("todo-id").should("have.length", 2);
-
-    // Add a new todo and type
-    cy.findByText("Add todo").click();
-
-    cy.findByTestId("todo-2").findByLabelText("Title").should("have.value", "");
-    cy.findByTestId("todo-2").findByLabelText("Notes").should("have.value", "");
-    cy.findAllByTestId("todo-id").should("have.length", 3);
-
-    cy.findByTestId("todo-2").findByLabelText("Title").type("Test 1");
-
-    // Clear the first todo's title
-    cy.findByTestId("todo-0").findByLabelText("Title").clear();
-    cy.findByTestId("todo-0")
-      .findByText("Title is required")
-      .should("be.visible");
-
-    // Delete the first todo
-    cy.findByTestId("todo-0").findByText("Delete todo").click();
-
-    cy.findByTestId("todo-0")
-      .findByLabelText("Title")
-      .should("have.value", "Default 2");
-    cy.findByTestId("todo-0")
-      .findByLabelText("Notes")
-      .should("have.value", "Default note 2");
-
-    cy.findByTestId("todo-1")
-      .findByLabelText("Title")
-      .should("have.value", "Test 1");
-    cy.findByTestId("todo-1").findByLabelText("Notes").should("have.value", "");
-
-    cy.findAllByTestId("todo-id").should("have.length", 2);
-
-    cy.findByText("Title is required").should("not.exist");
-
-    // Delete the last todo
-    cy.findByTestId("todo-1").findByText("Delete todo").click();
-
-    cy.findByTestId("todo-0")
-      .findByLabelText("Title")
-      .should("have.value", "Default 2");
-    cy.findByTestId("todo-0")
-      .findByLabelText("Notes")
-      .should("have.value", "Default note 2");
-
-    cy.findAllByTestId("todo-id").should("have.length", 1);
-  });
-
   it("should work without any default value", () => {
     cy.visit("/field-array/no-defaults");
 
@@ -143,7 +76,7 @@ describe("Field arrays", () => {
   });
 
   it("should swap items", () => {
-    cy.visit("/field-array/swap");
+    cy.visit("/field-array");
 
     // Default values
     cy.findByTestId("todo-0")
@@ -210,7 +143,7 @@ describe("Field arrays", () => {
   });
 
   it("should insert items", () => {
-    cy.visit("/field-array/swap");
+    cy.visit("/field-array");
 
     // Default values
     cy.findByTestId("todo-0")
@@ -280,7 +213,7 @@ describe("Field arrays", () => {
   });
 
   it("should pop the last item", () => {
-    cy.visit("/field-array/swap");
+    cy.visit("/field-array");
 
     // Default values
     cy.findByTestId("todo-0")
@@ -328,7 +261,7 @@ describe("Field arrays", () => {
   });
 
   it("should unshift a new item at the start", () => {
-    cy.visit("/field-array/swap");
+    cy.visit("/field-array");
 
     // Default values
     cy.findByTestId("todo-0")
@@ -386,7 +319,7 @@ describe("Field arrays", () => {
   });
 
   it("should replace items", () => {
-    cy.visit("/field-array/swap");
+    cy.visit("/field-array");
 
     // Default values
     cy.findByTestId("todo-0")
@@ -441,7 +374,7 @@ describe("Field arrays", () => {
   });
 
   it("should push items at the end", () => {
-    cy.visit("/field-array/swap");
+    cy.visit("/field-array");
 
     // Default values
     cy.findByTestId("todo-0")
@@ -503,7 +436,7 @@ describe("Field arrays", () => {
   });
 
   it("should move items", () => {
-    cy.visit("/field-array/swap");
+    cy.visit("/field-array");
 
     // Default values
     cy.findByTestId("todo-0")
@@ -567,5 +500,61 @@ describe("Field arrays", () => {
     cy.findByText("todos[2].title touched").should("be.visible");
 
     cy.findAllByTestId("todo-id").should("have.length", 3);
+  });
+
+  it("should remove items", () => {
+    cy.visit("/field-array");
+
+    // Default values
+    cy.findByTestId("todo-0")
+      .findByLabelText("Title")
+      .should("have.value", "Default 1");
+    cy.findByTestId("todo-0")
+      .findByLabelText("Notes")
+      .should("have.value", "Default note 1");
+
+    cy.findByTestId("todo-1")
+      .findByLabelText("Title")
+      .should("have.value", "Default 2");
+    cy.findByTestId("todo-1")
+      .findByLabelText("Notes")
+      .should("have.value", "Default note 2");
+
+    cy.findByTestId("todo-2")
+      .findByLabelText("Title")
+      .should("have.value", "Default 3");
+    cy.findByTestId("todo-2")
+      .findByLabelText("Notes")
+      .should("have.value", "Default note 3");
+
+    cy.findAllByTestId("todo-id").should("have.length", 3);
+
+    // Clear the last todo's title
+    cy.findByTestId("todo-2").findByLabelText("Title").clear().blur();
+    cy.findByTestId("todo-2")
+      .findByText("Title is required")
+      .should("be.visible");
+    cy.findByText("todos[2].title touched").should("be.visible");
+
+    cy.findByTestId("todo-1").findByText("Delete todo").click();
+
+    // Check new values
+    cy.findByTestId("todo-0")
+      .findByLabelText("Title")
+      .should("have.value", "Default 1");
+    cy.findByTestId("todo-0")
+      .findByLabelText("Notes")
+      .should("have.value", "Default note 1");
+
+    cy.findByTestId("todo-1").findByLabelText("Title").should("have.value", "");
+    cy.findByTestId("todo-1")
+      .findByLabelText("Notes")
+      .should("have.value", "Default note 3");
+    cy.findByTestId("todo-1")
+      .findByText("Title is required")
+      .should("be.visible");
+    cy.findByText("todos[1].title touched").should("be.visible");
+
+    cy.findAllByTestId("todo-id").should("have.length", 2);
   });
 });
