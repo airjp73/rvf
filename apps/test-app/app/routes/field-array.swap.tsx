@@ -56,7 +56,7 @@ export default function FrontendValidation() {
       id="form"
     >
       <FieldArray name="todos">
-        {(items, { swap, insert, pop, unshift, replace }) => (
+        {(items, { swap, insert, pop, unshift, replace, push }) => (
           <>
             {items.map((item, index) => (
               <div key={item.id} data-testid={`todo-${index}`}>
@@ -99,6 +99,18 @@ export default function FrontendValidation() {
               }
             >
               Replace
+            </button>
+            <button
+              type="button"
+              onClick={() =>
+                push({
+                  id: nanoid(),
+                  title: "New title",
+                  notes: "New note",
+                })
+              }
+            >
+              Push
             </button>
           </>
         )}
