@@ -35,7 +35,6 @@ export default function FrontendValidation() {
     <ValidatedForm validator={validator} method="post">
       {data && (
         <>
-          <pre>{JSON.stringify(data.todos)}</pre>
           <h3>{data.message}</h3>
           <ul>
             {data.todos.map((todo: any, index: number) => (
