@@ -663,6 +663,49 @@ describe("Field arrays", () => {
 
         cy.findAllByTestId("todo-id").should("have.length", 3);
       });
+
+      it("should show errors", () => {
+        cy.visit(route);
+
+        // Default values
+        cy.findByTestId("todo-0")
+          .findByLabelText("Title")
+          .should("have.value", "Default 1");
+        cy.findByTestId("todo-0")
+          .findByLabelText("Notes")
+          .should("have.value", "Default note 1");
+
+        cy.findByTestId("todo-1")
+          .findByLabelText("Title")
+          .should("have.value", "Default 2");
+        cy.findByTestId("todo-1")
+          .findByLabelText("Notes")
+          .should("have.value", "Default note 2");
+
+        cy.findByTestId("todo-2")
+          .findByLabelText("Title")
+          .should("have.value", "Default 3");
+        cy.findByTestId("todo-2")
+          .findByLabelText("Notes")
+          .should("have.value", "Default note 3");
+
+        cy.findAllByTestId("todo-id").should("have.length", 3);
+
+        cy.findByTestId("todo-2").findByText("Delete todo").click();
+        cy.findByTestId("todo-0").findByText("Delete todo").click();
+
+        cy.findAllByTestId("todo-id").should("have.length", 1);
+        cy.findByText("Must have at least two todos").should("not.exist");
+
+        cy.findByText("Submit").click();
+        cy.findByText("Must have at least two todos").should("exist");
+
+        cy.findByText("Push").click();
+        cy.findByText("Must have at least two todos").should("not.exist");
+
+        cy.findByTestId("todo-0").findByText("Delete todo").click();
+        cy.findByText("Must have at least two todos").should("exist");
+      });
     });
   });
 });

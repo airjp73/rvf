@@ -7,17 +7,19 @@ import { InputWithTouched } from "~/components/InputWithTouched";
 
 const validator = withZod(
   z.object({
-    todos: z.array(
-      z.object({
-        id: z.string(),
-        title: zfd.text(
-          z.string({
-            required_error: "Title is required",
-          })
-        ),
-        note: zfd.text().optional(),
-      })
-    ),
+    todos: z
+      .array(
+        z.object({
+          id: z.string(),
+          title: zfd.text(
+            z.string({
+              required_error: "Title is required",
+            })
+          ),
+          note: zfd.text().optional(),
+        })
+      )
+      .refine((arr) => arr.length > 1, "Must have at least two todos"),
   })
 );
 
@@ -52,7 +54,8 @@ export default function FrontendValidation() {
       <FieldArray name="todos">
         {(
           items,
-          { swap, insert, pop, unshift, replace, push, move, remove }
+          { swap, insert, pop, unshift, replace, push, move, remove },
+          error
         ) => (
           <>
             {items.map((item, index) => (
@@ -120,6 +123,8 @@ export default function FrontendValidation() {
               Push
             </button>
             <button type="reset">Reset</button>
+            <button type="submit">Submit</button>
+            {error && <div>{error}</div>}
           </>
         )}
       </FieldArray>

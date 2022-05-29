@@ -24,6 +24,14 @@ export const useRegisterControlledField = (
   context: InternalFormContextValue,
   field: string
 ) => {
+  const resolveUpdate = useFormStore(
+    context.formId,
+    (state) => state.controlledFields.valueUpdateResolvers[field]
+  );
+  useEffect(() => {
+    resolveUpdate?.();
+  }, [resolveUpdate]);
+
   const register = useFormStore(
     context.formId,
     (state) => state.controlledFields.register
@@ -42,14 +50,6 @@ export const useControllableValue = (
   context: InternalFormContextValue,
   field: string
 ) => {
-  const resolveUpdate = useFormStore(
-    context.formId,
-    (state) => state.controlledFields.valueUpdateResolvers[field]
-  );
-  useEffect(() => {
-    resolveUpdate?.();
-  }, [resolveUpdate]);
-
   useRegisterControlledField(context, field);
 
   const setControlledFieldValue = useFormStore(
