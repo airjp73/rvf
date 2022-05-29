@@ -1,10 +1,7 @@
 import React, { useMemo } from "react";
 import invariant from "tiny-invariant";
 import { InternalFormContextValue } from "../formContext";
-import {
-  useCurrentDefaultValueForField,
-  useInternalFormContext,
-} from "../hooks";
+import { useFieldDefaultValue, useInternalFormContext } from "../hooks";
 import { useRegisterControlledField } from "./controlledFields";
 import { useFormStore } from "./storeHooks";
 
@@ -12,7 +9,7 @@ const useInternalFieldArray = (
   context: InternalFormContextValue,
   field: string
 ) => {
-  const value = useCurrentDefaultValueForField(context.formId, field);
+  const value = useFieldDefaultValue(field, context);
   useRegisterControlledField(context, field);
 
   invariant(

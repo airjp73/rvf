@@ -1,4 +1,32 @@
 describe("Field arrays", () => {
+  it("should show default values even without js", () => {
+    cy.visitWithoutJs("/field-array");
+
+    // Default values
+    cy.findByTestId("todo-0")
+      .findByLabelText("Title")
+      .should("have.value", "Default 1");
+    cy.findByTestId("todo-0")
+      .findByLabelText("Notes")
+      .should("have.value", "Default note 1");
+
+    cy.findByTestId("todo-1")
+      .findByLabelText("Title")
+      .should("have.value", "Default 2");
+    cy.findByTestId("todo-1")
+      .findByLabelText("Notes")
+      .should("have.value", "Default note 2");
+
+    cy.findByTestId("todo-2")
+      .findByLabelText("Title")
+      .should("have.value", "Default 3");
+    cy.findByTestId("todo-2")
+      .findByLabelText("Notes")
+      .should("have.value", "Default note 3");
+
+    cy.findAllByTestId("todo-id").should("have.length", 3);
+  });
+
   it("should work without any default value", () => {
     cy.visit("/field-array/no-defaults");
 
