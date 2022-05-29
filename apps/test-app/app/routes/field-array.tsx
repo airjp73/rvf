@@ -119,6 +119,7 @@ export default function FrontendValidation() {
             >
               Push
             </button>
+            <button type="reset">Reset</button>
           </>
         )}
       </FieldArray>

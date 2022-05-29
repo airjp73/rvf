@@ -560,6 +560,73 @@ describe("Field arrays", () => {
 
         cy.findAllByTestId("todo-id").should("have.length", 2);
       });
+
+      it("should reset", () => {
+        cy.visit(route);
+
+        // Default values
+        cy.findByTestId("todo-0")
+          .findByLabelText("Title")
+          .should("have.value", "Default 1");
+        cy.findByTestId("todo-0")
+          .findByLabelText("Notes")
+          .should("have.value", "Default note 1");
+
+        cy.findByTestId("todo-1")
+          .findByLabelText("Title")
+          .should("have.value", "Default 2");
+        cy.findByTestId("todo-1")
+          .findByLabelText("Notes")
+          .should("have.value", "Default note 2");
+
+        cy.findByTestId("todo-2")
+          .findByLabelText("Title")
+          .should("have.value", "Default 3");
+        cy.findByTestId("todo-2")
+          .findByLabelText("Notes")
+          .should("have.value", "Default note 3");
+
+        cy.findAllByTestId("todo-id").should("have.length", 3);
+
+        // Change stuff
+        cy.findByTestId("todo-2")
+          .findByLabelText("Title")
+          .clear()
+          .type("Something else")
+          .blur();
+        cy.findByTestId("todo-1").findByText("Delete todo").click();
+        cy.findByText("Insert").click();
+        cy.findByText("Push").click();
+        cy.findByText("Swap").click();
+        cy.findByText("Move").click();
+
+        // Then reset
+        cy.findByText("Reset").click();
+
+        // Back to default values
+        cy.findByTestId("todo-0")
+          .findByLabelText("Title")
+          .should("have.value", "Default 1");
+        cy.findByTestId("todo-0")
+          .findByLabelText("Notes")
+          .should("have.value", "Default note 1");
+
+        cy.findByTestId("todo-1")
+          .findByLabelText("Title")
+          .should("have.value", "Default 2");
+        cy.findByTestId("todo-1")
+          .findByLabelText("Notes")
+          .should("have.value", "Default note 2");
+
+        cy.findByTestId("todo-2")
+          .findByLabelText("Title")
+          .should("have.value", "Default 3");
+        cy.findByTestId("todo-2")
+          .findByLabelText("Notes")
+          .should("have.value", "Default note 3");
+
+        cy.findAllByTestId("todo-id").should("have.length", 3);
+      });
     });
   });
 });
