@@ -8,7 +8,7 @@ import { PropHeader } from "~/components/PropHeader";
 <PropHeader
   variant="h1"
   prop="validationError"
-  type="(fieldErrors: ValidatorError, submittedData?: unknown) => Response"
+  type="(fieldErrors: ValidatorError, submittedData?: unknown, init?: ResponseInit) => Response"
 />
 
 Accepts the errors returned from `validator.validate` and returns a response.
@@ -107,3 +107,4 @@ Normally, if the server returns a validation error and javascript is disabled on
 the form will be completely reset and the user will have to fill the whole thing out again.
 By providing the submitted data, the `ValidatedForm` will set the `defaultValues` of the form
 to be the data that was submitted. This way, the user doesn't have to fill out the form again.
+ 
