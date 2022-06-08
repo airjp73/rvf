@@ -56,21 +56,21 @@ const validationTestCases: ValidationTestCase[] = [
     name: "zod",
     validator: withZod(
       z.object({
-        firstName: z.string().nonempty(),
-        lastName: z.string().nonempty(),
+        firstName: z.string().min(1),
+        lastName: z.string().min(1),
         age: z.optional(z.number()),
         address: z.preprocess(
           (value) => (value == null ? {} : value),
           z.object({
-            streetAddress: z.string().nonempty(),
-            city: z.string().nonempty(),
-            country: z.string().nonempty(),
+            streetAddress: z.string().min(1),
+            city: z.string().min(1),
+            country: z.string().min(1),
           })
         ),
         pets: z
           .object({
-            animal: z.string().nonempty(),
-            name: z.string().nonempty(),
+            animal: z.string().min(1),
+            name: z.string().min(1),
           })
           .array()
           .optional(),
