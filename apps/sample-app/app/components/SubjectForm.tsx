@@ -16,20 +16,20 @@ import { FormSelect } from "./FormSelect";
 import { SubmitButton } from "./SubmitButton";
 
 const subjectSchema = z.object({
-  name: z.string({ required_error: "Subject Name can't be empty" }).min(1),
+  name: z.string().min(1, { message: "Subject Name can't be empty" }),
   description: z
-    .string({ required_error: "Subject Description can't be empty" })
-    .min(1),
+    .string()
+    .min(1, { message: "Subject Description can't be empty" }),
   teacher: z.object({
-    name: z.string({ required_error: "Teacher Name can't be empty" }).min(1),
+    name: z.string().min(1, { message: "Teacher Name can't be empty" }),
     email: z
-      .string({ required_error: "Teacher Email can't be empty" })
+      .string()
       .email("Teacher Email is invalid")
-      .min(1),
+      .min(1, { message: "Teacher Email can't be empty" }),
   }),
   subjectDays: z
     .object({
-      day: z.string({ required_error: "Day can't be empty" }).min(1),
+      day: z.string().min(1, { message: "Day can't be empty" }),
     })
     .array(),
 });
