@@ -23,14 +23,14 @@ import { SubmitButton } from "~/components/SubmitButton";
 export const validator = withZod(
   z.object({
     name: z
-      .string({ required_error: "First name is required" })
-      .min(1),
+      .string()
+      .min(1, { message: "First name is required" }),
     todos: z.array(
       z.object({
         id: z.string(),
         title: z
-          .string({ required_error: "Title is required" })
-          .min(1),
+          .string()
+          .min(1, { message: "Title is required" }),
         notes: z.string().optional(),
       })
     ),

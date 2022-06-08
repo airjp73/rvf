@@ -9,14 +9,14 @@ import { SubmitButton } from "~/components/SubmitButton";
 export const validator = withZod(
   z.object({
     firstName: z
-      .string({ required_error: "First name is required" })
-      .min(1),
+      .string()
+      .min(1, { message: "First name is required" }),
     lastName: z
-      .string({ required_error: "Last name is required" })
-      .min(1),
+      .string()
+      .min(1, { message: "Last name is required" }),
     email: z
-      .string({ required_error: "Email is required" })
-      .min(1)
+      .string()
+      .min(1, { message: "Email is required" })
       .email("Must be a valid email"),
   })
 );
