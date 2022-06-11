@@ -55,7 +55,7 @@ const numberMethods = {
    *
    * @returns A new schema that transforms a number to a string.
    */
-  toString<Self extends SchemaOf<number>>(this: Self) {
+  castToString<Self extends SchemaOf<number>>(this: Self) {
     return this.transform((val) => String(val)).as(string());
   },
 };
