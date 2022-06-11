@@ -201,13 +201,23 @@ export class Schema<
    */
   as<NextOutput, NextMeta extends AnyMeta, NextMethods extends AnyMethods>(
     castTo: Schema<Output, NextOutput, NextMeta, NextMethods>
-  ): SchemaType<SchemaInput<this>, NextOutput, NextMeta, NextMethods> {
-    return Schema.of<SchemaInput<this>, NextOutput, NextMeta, NextMethods>(
+  ): SchemaType<
+    SchemaInput<this>,
+    NextOutput,
+    Merge<SchemaMeta<this>, NextMeta>,
+    NextMethods
+  > {
+    return Schema.of<
+      SchemaInput<this>,
+      NextOutput,
+      Merge<SchemaMeta<this>, NextMeta>,
+      NextMethods
+    >(
       (input, meta) =>
         this.validateMaybeAsync(input, meta).then((output) =>
           castTo.validateMaybeAsync(output, meta)
         ),
-      { ...this.meta, ...castTo.meta },
+      { ...(this.meta as SchemaMeta<this>), ...castTo.meta },
       castTo._methods,
       this
     );
