@@ -13,17 +13,50 @@ type MaybePromiseResult<T> =
   | { type: "value"; value: T }
   | { type: "error"; error: unknown };
 
+type MaybePromises<T extends any[]> = {
+  [K in keyof T]: MaybePromise<T[K]>;
+};
+
+const wrapArray = <Values extends any[]>(
+  maybes: MaybePromises<Values>
+): MaybePromise<Values> => {
+  let cur = MaybePromise.of(() => [] as any);
+  for (const maybe of maybes) {
+    cur = cur.then((acc) => maybe.then((value: any) => [...acc, value]));
+  }
+  return cur;
+};
+
+type MaybePromiseSettledResult<T = unknown, E = unknown> =
+  | { status: "fulfilled"; value: T }
+  | { status: "rejected"; reason: E };
+
+type SettledResults<T extends any[]> = {
+  [K in keyof T]: MaybePromiseSettledResult<T[K]>;
+};
+
 export class MaybePromise<T> {
-  static all<Values extends unknown[]>(
+  static allSettled<Values extends unknown[]>(
     values: AwaitableArray<Values>
-  ): MaybePromise<Values> {
-    const awaitable = values.map((value) =>
-      value instanceof MaybePromise ? value.await() : value
-    );
-    if (awaitable.some((value) => value instanceof Promise)) {
-      return new MaybePromise(() => Promise.all(awaitable) as Promise<Values>);
-    }
-    return new MaybePromise(() => awaitable as AwaitedArray<Values>);
+  ): MaybePromise<SettledResults<Values>> {
+    const resultMaybes = values
+      .map((val) => MaybePromise.of(() => val))
+      .map((val) =>
+        val
+          .then(
+            (success): MaybePromiseSettledResult => ({
+              status: "fulfilled",
+              value: success,
+            })
+          )
+          .catch(
+            (err): MaybePromiseSettledResult => ({
+              status: "rejected",
+              reason: err,
+            })
+          )
+      );
+    return wrapArray(resultMaybes) as MaybePromise<SettledResults<Values>>;
   }
 
   static of<Value>(func: () => PossiblyPromise<Value>): MaybePromise<Value> {
@@ -86,6 +119,19 @@ export class MaybePromise<T> {
 
     const { error } = this._result;
     return MaybePromise.of(() => onRejected(error));
+  };
+
+  updateError = (makeNewError: (err: unknown) => unknown): MaybePromise<T> => {
+    if (this._result.type === "value") return this;
+
+    if (this._result.type === "promise") {
+      return this;
+    }
+
+    const { error } = this._result;
+    return MaybePromise.of(() => {
+      throw makeNewError(error);
+    });
   };
 
   await = async (): Promise<T> => this.flatten();

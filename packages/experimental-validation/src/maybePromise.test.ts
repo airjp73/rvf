@@ -73,4 +73,28 @@ describe("MaybePromise", () => {
     const result: string = await test.await();
     expect(result).toEqual("49");
   });
+
+  describe("MaybePromise.allSettled", () => {
+    it("should collect errors", () => {
+      const err = (message: string) => {
+        return new MaybePromise(() => {
+          throw new Error(message);
+        });
+      };
+
+      const errs = [
+        err("Err1"),
+        err("Err2"),
+        err("Err3"),
+        MaybePromise.of(() => "Ok"),
+      ];
+
+      expect(MaybePromise.allSettled(errs).assertSync()).toEqual([
+        { status: "rejected", reason: new Error("Err1") },
+        { status: "rejected", reason: new Error("Err2") },
+        { status: "rejected", reason: new Error("Err3") },
+        { status: "fulfilled", value: "Ok" },
+      ]);
+    });
+  });
 });
