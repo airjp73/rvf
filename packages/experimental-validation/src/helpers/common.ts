@@ -1,5 +1,7 @@
 import { AnySchema, makeType } from "../core";
 import { errorMessage, ErrorMessage } from "../errors";
+import { undefinedType } from "./undefined";
+import { union } from "./union";
 
 const required = (typeError?: ErrorMessage) =>
   makeType(
@@ -38,7 +40,14 @@ export const commonMethods = {
     return required(error).as(this);
   },
 
-  // TODO: Optional once there's a union type
+  /**
+   * Makes the schema optional by turning it into a union type.
+   *
+   * @returns A new schema that's a union between this schema and undefined.
+   */
+  optional<Self extends AnySchema>(this: Self) {
+    return union([undefinedType(), this]);
+  },
 };
 
 export const commonMetaKeys = {

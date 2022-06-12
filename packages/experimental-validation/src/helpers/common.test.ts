@@ -1,4 +1,6 @@
 import { describe, expect, it } from "vitest";
+import { SchemaOf } from "../core";
+import { expectType } from "../testHelpers";
 import { commonMetaKeys } from "./common";
 import { string } from "./string";
 
@@ -34,5 +36,21 @@ describe("required", () => {
   it("should pass if value is not undefined", () => {
     const s = string().required();
     expect(s.validateSync("")).toBe("");
+  });
+});
+
+describe("optional", () => {
+  it("should pass if value is undefined", () => {
+    const s = string().optional();
+    expectType<SchemaOf<string | undefined>>(s);
+    expectType<string | undefined>(s.validateSync(undefined));
+
+    expect(s.validateSync(undefined)).toBe(undefined);
+    expect(s.validateSync("hi")).toBe("hi");
+  });
+
+  it("should still fail if invalid type", () => {
+    const s = string().optional();
+    expect(() => s.validateSync(1)).toThrowError("Expected a string");
   });
 });
