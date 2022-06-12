@@ -6,12 +6,14 @@ export type AnyMethods = Record<string, any>;
 export type AnySchema = Schema<any, any, any>;
 export type SchemaOf<T> = Schema<T, any, any>;
 
-type SchemaType<Output, Meta, Methods> = Schema<Output, Meta, Methods> &
+export type SchemaType<Output, Meta, Methods> = Schema<Output, Meta, Methods> &
   Methods;
 
-type SchemaOutput<T> = T extends BaseSchema<infer U, {}, {}> ? U : never;
-type SchemaMeta<T> = T extends BaseSchema<any, infer U, {}> ? U : never;
-type SchemaMethods<T> = T extends BaseSchema<any, {}, infer U> ? U : never;
+export type SchemaOutput<T> = T extends BaseSchema<infer U, {}, {}> ? U : never;
+export type SchemaMeta<T> = T extends BaseSchema<any, infer U, {}> ? U : never;
+export type SchemaMethods<T> = T extends BaseSchema<any, {}, infer U>
+  ? U
+  : never;
 
 export class BaseSchema<
   Output,

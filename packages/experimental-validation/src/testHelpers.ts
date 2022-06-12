@@ -7,3 +7,6 @@ export const expectString = (arg: string) => {
 export const expectNumber = (arg: number) => {
   expect(typeof arg === "number").toBe(true);
 };
+
+// Only tests the types
+export const expectType = <T>(arg: T) => {};
