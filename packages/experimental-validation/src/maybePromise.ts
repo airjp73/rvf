@@ -27,9 +27,11 @@ const wrapArray = <Values extends any[]>(
   return cur;
 };
 
-type MaybePromiseSettledResult<T = unknown, E = unknown> =
-  | { status: "fulfilled"; value: T }
-  | { status: "rejected"; reason: E };
+export type RejectedResult<E = unknown> = { status: "rejected"; reason: E };
+export type FulfilledResult<T = unknown> = { status: "fulfilled"; value: T };
+export type MaybePromiseSettledResult<T = unknown, E = unknown> =
+  | FulfilledResult<T>
+  | RejectedResult<E>;
 
 type SettledResults<T extends any[]> = {
   [K in keyof T]: MaybePromiseSettledResult<T[K]>;

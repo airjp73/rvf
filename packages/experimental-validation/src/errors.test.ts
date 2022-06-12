@@ -23,7 +23,7 @@ describe("ValidationError", () => {
         }),
       ],
     });
-    expect(error.message).toEqual("Something");
+    expect(error.message).toEqual("one.two: Something");
     expect(error.pathSegments).toEqual(["one", "two"]);
 
     const prepended = error.prependPath("zero");
@@ -48,6 +48,12 @@ describe("ValidationError", () => {
       pathSegments: ["one", "two", 2, "bar"],
     });
     expect(error.getPathString()).toEqual("one.two[2].bar");
+    expect(error.message).toEqual("one.two[2].bar: Something");
+  });
+
+  it("should not prepend path to error if there is no path", () => {
+    const error = new ValidationError({ message: "Something" });
+    expect(error.message).toEqual("Something");
   });
 
   // Maybe

@@ -34,7 +34,15 @@ type ValidationErrorInfo = {
   nested?: ValidationError[];
 };
 
+const buildPath = (pathSegments: (string | number)[]) =>
+  pathSegments.reduce((acc: string, segment) => {
+    if (typeof segment === "number") return `${acc}[${segment}]`;
+    if (acc === "") return segment;
+    return `${acc}.${segment}`;
+  }, "");
+
 export class ValidationError extends Error {
+  public readonly baseMessage: string;
   public readonly pathSegments: (string | number)[];
   public readonly nested: ValidationError[];
 
@@ -43,15 +51,20 @@ export class ValidationError extends Error {
     pathSegments = [],
     nested = [],
   }: ValidationErrorInfo) {
-    super(message);
+    super(
+      pathSegments.length ? `${buildPath(pathSegments)}: ${message}` : message
+    );
     this.name = "ValidationError";
     this.pathSegments = pathSegments;
     this.nested = nested;
+    this.baseMessage = message;
   }
 
   copy = (overwriteInfo?: Partial<ValidationErrorInfo>): ValidationError =>
     new ValidationError({
-      ...this,
+      message: this.baseMessage,
+      pathSegments: this.pathSegments,
+      nested: this.nested,
       ...overwriteInfo,
     });
 
@@ -63,10 +76,6 @@ export class ValidationError extends Error {
   }
 
   getPathString(): string {
-    return this.pathSegments.reduce((acc: string, segment) => {
-      if (typeof segment === "number") return `${acc}[${segment}]`;
-      if (acc === "") return segment;
-      return `${acc}.${segment}`;
-    }, "");
+    return buildPath(this.pathSegments);
   }
 }
