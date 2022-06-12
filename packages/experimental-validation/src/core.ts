@@ -1,3 +1,4 @@
+import { ValidationError } from "./errors";
 import { MaybePromise, PossiblyPromise } from "./maybePromise";
 import { Merge } from "./typeHelpers";
 
@@ -142,7 +143,7 @@ export class Schema<
       (input, meta) =>
         this.validateMaybeAsync(input, meta).then((output) => {
           if (doCheck(output, meta)) return output;
-          throw new Error(makeError(output, meta));
+          throw new ValidationError({ message: makeError(output, meta) });
         }),
       this.meta,
       this._methods,
@@ -223,8 +224,13 @@ export class Schema<
    * @param input - The input to validate.
    * @returns A Promise that resolves to the output of the schema.
    */
-  validate(input: unknown): Promise<Output> {
-    return this.validateMaybeAsync(input, this.meta).await();
+  async validate(input: unknown): Promise<Output> {
+    try {
+      return await this.validateMaybeAsync(input, this.meta).await();
+    } catch (err) {
+      if (err instanceof Error) Error.captureStackTrace(err, this.validateSync);
+      throw err;
+    }
   }
 
   /**
@@ -235,7 +241,12 @@ export class Schema<
    * @returns The output of the schema
    */
   validateSync(input: unknown): Output {
-    return this.validateMaybeAsync(input, this.meta).assertSync();
+    try {
+      return this.validateMaybeAsync(input, this.meta).assertSync();
+    } catch (err) {
+      if (err instanceof Error) Error.captureStackTrace(err, this.validateSync);
+      throw err;
+    }
   }
 }
 
@@ -247,7 +258,7 @@ export const makeType = <Output, Methods extends AnyMethods>(
   Schema.of(
     (input: unknown, meta: AnyMeta) => {
       if (doCheck(input, meta)) return input;
-      throw new Error(makeError(input, meta));
+      throw new ValidationError({ message: makeError(input, meta) });
     },
     {},
     methods
