@@ -27,3 +27,36 @@ export const errorMessage =
     // Otherwise, use the fallback
     return fallback;
   };
+
+type ValidationErrorInfo = {
+  message: string;
+  pathSegments?: (string | number)[];
+};
+
+export class ValidationError extends Error {
+  public readonly pathSegments: (string | number)[];
+
+  constructor({ message, pathSegments = [] }: ValidationErrorInfo) {
+    super(message);
+    this.name = "ValidationError";
+    this.pathSegments = pathSegments;
+  }
+
+  copy = (overwriteInfo?: Partial<ValidationErrorInfo>): ValidationErrorInfo =>
+    new ValidationError({
+      ...this,
+      ...overwriteInfo,
+    });
+
+  prependPath(path: string) {
+    return this.copy({ pathSegments: [path, ...this.pathSegments] });
+  }
+
+  getPathString() {
+    return this.pathSegments.reduce((acc, segment) => {
+      if (typeof segment === "number") return `${acc}[${segment}]`;
+      if (acc === "") return segment;
+      return `${acc}.${segment}`;
+    }, "");
+  }
+}
