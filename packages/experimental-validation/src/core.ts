@@ -3,29 +3,25 @@ import { Merge } from "./typeHelpers";
 
 export type AnyMeta = Record<string | number | symbol, any>;
 export type AnyMethods = Record<string, any>;
-export type AnySchema = Schema<any, any, any, any>;
-export type SchemaOf<T> = Schema<any, T, any, any>;
+export type AnySchema = Schema<any, any, any>;
+export type SchemaOf<T> = Schema<T, any, any>;
 
-type SchemaType<Input, Output, Meta, Methods> = Schema<
-  Input,
-  Output,
-  Meta,
-  Methods
-> &
+type SchemaType<Output, Meta, Methods> = Schema<Output, Meta, Methods> &
   Methods;
 
-type SchemaInput<T> = T extends BaseSchema<infer U, any, {}, {}> ? U : never;
-type SchemaOutput<T> = T extends BaseSchema<any, infer U, {}, {}> ? U : never;
-type SchemaMeta<T> = T extends BaseSchema<any, any, infer U, {}> ? U : never;
-type SchemaMethods<T> = T extends BaseSchema<any, any, {}, infer U> ? U : never;
+type SchemaOutput<T> = T extends BaseSchema<infer U, {}, {}> ? U : never;
+type SchemaMeta<T> = T extends BaseSchema<any, infer U, {}> ? U : never;
+type SchemaMethods<T> = T extends BaseSchema<any, {}, infer U> ? U : never;
 
 export class BaseSchema<
-  Input,
   Output,
   Meta extends AnyMeta,
   Methods extends AnyMethods
 > {
-  protected _perform: (input: Input, meta: AnyMeta) => PossiblyPromise<Output>;
+  protected _perform: (
+    input: unknown,
+    meta: AnyMeta
+  ) => PossiblyPromise<Output>;
   protected _methods: Methods;
   protected _meta: Meta;
   protected _parent: AnySchema | undefined;
@@ -38,10 +34,10 @@ export class BaseSchema<
   }
 
   protected constructor(
-    perform: (input: Input, meta: AnyMeta) => PossiblyPromise<Output>,
+    perform: (input: unknown, meta: AnyMeta) => PossiblyPromise<Output>,
     meta: Meta,
     methods: Methods,
-    parent?: Schema<Input, Output, Meta, Methods>
+    parent?: Schema<Output, Meta, Methods>
   ) {
     this._meta = meta;
     this._perform = perform;
@@ -54,27 +50,26 @@ export class BaseSchema<
  * A validation schema.
  */
 export class Schema<
-  Input,
   Output,
   Meta extends AnyMeta,
   Methods extends AnyMethods
-> extends BaseSchema<Input, Output, Meta, Methods> {
-  static of<Input, Output, Meta extends AnyMeta, Methods extends AnyMethods>(
-    perform: (input: Input, meta: AnyMeta) => PossiblyPromise<Output>,
+> extends BaseSchema<Output, Meta, Methods> {
+  static of<Output, Meta extends AnyMeta, Methods extends AnyMethods>(
+    perform: (input: unknown, meta: AnyMeta) => PossiblyPromise<Output>,
     meta: Meta,
     methods: Methods,
     parent?: AnySchema
-  ): Schema<Input, Output, Meta, Methods> & Methods {
+  ): Schema<Output, Meta, Methods> & Methods {
     // There really isn't a way to do this in a truly typesafe way as far as I can tell.
     // Object.keys isn't typesafe, so we have to hand wave a bit here.
     return new Schema(perform, meta, methods, parent) as any;
   }
 
   private constructor(
-    perform: (input: Input, meta: AnyMeta) => PossiblyPromise<Output>,
+    perform: (input: unknown, meta: AnyMeta) => PossiblyPromise<Output>,
     meta: Meta,
     methods: Methods,
-    parent?: Schema<Input, Output, Meta, Methods>
+    parent?: Schema<Output, Meta, Methods>
   ) {
     super(perform, meta, methods, parent);
 
@@ -95,7 +90,6 @@ export class Schema<
   withMeta<NextMeta extends AnyMeta>(
     nextMeta: NextMeta
   ): SchemaType<
-    SchemaInput<this>,
     SchemaOutput<this>,
     Merge<SchemaMeta<this>, NextMeta>,
     SchemaMethods<this>
@@ -117,7 +111,6 @@ export class Schema<
   withMethods<NextMethods extends AnyMethods>(
     nextMethods: NextMethods
   ): SchemaType<
-    SchemaInput<this>,
     SchemaOutput<this>,
     SchemaMeta<this>,
     Merge<SchemaMethods<this>, NextMethods>
@@ -143,7 +136,7 @@ export class Schema<
     doCheck: (val: Output, meta: Meta) => PossiblyPromise<boolean>,
     makeError: (val: Output, meta: Meta) => string
   ): this {
-    return Schema.of<Input, Output, Meta, Methods>(
+    return Schema.of<Output, Meta, Methods>(
       (input, meta) =>
         this.validateMaybeAsync(input, meta).then((output) => {
           if (doCheck(output, meta)) return output;
@@ -163,18 +156,8 @@ export class Schema<
    */
   transform<NextOutput>(
     nextPerform: (input: Output, meta: Meta) => PossiblyPromise<NextOutput>
-  ): SchemaType<
-    SchemaInput<this>,
-    NextOutput,
-    SchemaMeta<this>,
-    Record<string, never>
-  > {
-    return Schema.of<
-      SchemaInput<this>,
-      NextOutput,
-      SchemaMeta<this>,
-      Record<string, never>
-    >(
+  ): SchemaType<NextOutput, SchemaMeta<this>, Record<string, never>> {
+    return Schema.of<NextOutput, SchemaMeta<this>, Record<string, never>>(
       (input, meta) =>
         this.validateMaybeAsync(input, meta).then((output) =>
           nextPerform(output, meta)
@@ -200,15 +183,9 @@ export class Schema<
    * @returns A new schema with all the methods and the output type of the given schema.
    */
   as<NextOutput, NextMeta extends AnyMeta, NextMethods extends AnyMethods>(
-    castTo: Schema<Output, NextOutput, NextMeta, NextMethods>
-  ): SchemaType<
-    SchemaInput<this>,
-    NextOutput,
-    Merge<SchemaMeta<this>, NextMeta>,
-    NextMethods
-  > {
+    castTo: Schema<NextOutput, NextMeta, NextMethods>
+  ): SchemaType<NextOutput, Merge<SchemaMeta<this>, NextMeta>, NextMethods> {
     return Schema.of<
-      SchemaInput<this>,
       NextOutput,
       Merge<SchemaMeta<this>, NextMeta>,
       NextMethods
@@ -232,7 +209,7 @@ export class Schema<
    * @returns A `MaybePromise` that resolves to the output of the schema.
    */
   validateMaybeAsync(
-    input: Input,
+    input: unknown,
     meta: AnyMeta = this.meta
   ): MaybePromise<Output> {
     return MaybePromise.of(() => this._perform(input, meta));
@@ -244,7 +221,7 @@ export class Schema<
    * @param input - The input to validate.
    * @returns A Promise that resolves to the output of the schema.
    */
-  validate(input: Input): Promise<Output> {
+  validate(input: unknown): Promise<Output> {
     return this.validateMaybeAsync(input, this.meta).await();
   }
 
@@ -255,7 +232,7 @@ export class Schema<
    * @param input - The input to validate.
    * @returns The output of the schema
    */
-  validateSync(input: Input): Output {
+  validateSync(input: unknown): Output {
     return this.validateMaybeAsync(input, this.meta).assertSync();
   }
 }
