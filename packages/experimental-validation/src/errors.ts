@@ -31,29 +31,39 @@ export const errorMessage =
 type ValidationErrorInfo = {
   message: string;
   pathSegments?: (string | number)[];
+  nested?: ValidationError[];
 };
 
 export class ValidationError extends Error {
   public readonly pathSegments: (string | number)[];
+  public readonly nested: ValidationError[];
 
-  constructor({ message, pathSegments = [] }: ValidationErrorInfo) {
+  constructor({
+    message,
+    pathSegments = [],
+    nested = [],
+  }: ValidationErrorInfo) {
     super(message);
     this.name = "ValidationError";
     this.pathSegments = pathSegments;
+    this.nested = nested;
   }
 
-  copy = (overwriteInfo?: Partial<ValidationErrorInfo>): ValidationErrorInfo =>
+  copy = (overwriteInfo?: Partial<ValidationErrorInfo>): ValidationError =>
     new ValidationError({
       ...this,
       ...overwriteInfo,
     });
 
-  prependPath(path: string) {
-    return this.copy({ pathSegments: [path, ...this.pathSegments] });
+  prependPath(path: string): ValidationError {
+    return this.copy({
+      pathSegments: [path, ...this.pathSegments],
+      nested: this.nested.map((error) => error.prependPath(path)),
+    });
   }
 
-  getPathString() {
-    return this.pathSegments.reduce((acc, segment) => {
+  getPathString(): string {
+    return this.pathSegments.reduce((acc: string, segment) => {
       if (typeof segment === "number") return `${acc}[${segment}]`;
       if (acc === "") return segment;
       return `${acc}.${segment}`;
