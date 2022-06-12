@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { ValidationError } from "../errors";
+import { expectType } from "../testHelpers";
 import { number } from "./number";
 import { object } from "./object";
 import { string } from "./string";
@@ -34,27 +35,71 @@ describe("object", () => {
       baz: number(),
     });
 
-    expect(
-      s.validateSync({
-        foo: "asdf",
-        baz: 123,
-      })
-    ).toEqual({
+    const r1 = s.validateSync({
+      foo: "asdf",
+      baz: 123,
+    });
+    expectType<{
+      foo: string;
+      bar?: string;
+      baz: number;
+    }>(r1);
+    expect(r1).toEqual({
       foo: "asdf",
       bar: undefined,
       baz: 123,
     });
 
-    expect(
-      s.validateSync({
-        foo: "asdf",
-        bar: "qwer",
-        baz: 123,
-      })
-    ).toEqual({
+    const r2 = s.validateSync({ foo: "asdf", bar: "qwer", baz: 123 });
+    expectType<{
+      foo: string;
+      bar?: string;
+      baz: number;
+    }>(r2);
+    expect(r2).toEqual({
       foo: "asdf",
       bar: "qwer",
       baz: 123,
+    });
+  });
+
+  it("should pass with nested objects", () => {
+    const s = object({
+      foo: string(),
+      bar: object({
+        foo: string(),
+        baz: object({
+          foo: string(),
+        }),
+      }),
+    });
+
+    const res = s.validateSync({
+      foo: "asdf",
+      bar: {
+        foo: "qwer",
+        baz: {
+          foo: "zxcv",
+        },
+      },
+    });
+    expectType<{
+      foo: string;
+      bar: {
+        foo: string;
+        baz: {
+          foo: string;
+        };
+      };
+    }>(res);
+    expect(res).toEqual({
+      foo: "asdf",
+      bar: {
+        foo: "qwer",
+        baz: {
+          foo: "zxcv",
+        },
+      },
     });
   });
 
