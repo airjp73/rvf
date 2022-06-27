@@ -5,6 +5,7 @@ import { z } from "zod";
 import { zfd } from "zod-form-data";
 import { Input } from "~/components/Input";
 import { SubmitButton } from "~/components/SubmitButton";
+import { Textarea } from "~/components/Textarea";
 
 const validator = withZod(
   zfd.formData({
@@ -37,6 +38,9 @@ const validator = withZod(
       })
     ),
     likesPizza: zfd.checkbox(),
+    comment: zfd.text({
+      required_error: "Comment is a required field",
+    }),
   })
 );
 
@@ -59,6 +63,7 @@ export default function FrontendValidation() {
         <Input name="email" label="Email" />
         <Input name="contacts[0].name" label="Name of a contact" />
         <Input name="likesPizza" type="checkbox" label="Likes pizza" />
+        <Textarea name="comment" label="Comment" />
         <SubmitButton />
         <button type="reset">Reset</button>
       </ValidatedForm>

@@ -90,7 +90,14 @@ describe("Validation", () => {
     cy.findByText("Last Name is a required field").should("exist");
     cy.findByText("First Name is a required field").should("exist");
     cy.findByText("Name of a contact is a required field").should("exist");
+    cy.findByText("Comment is a required field").should("exist");
     cy.findByLabelText("First Name").should("be.focused");
+  });
+
+  it("should focus the first invalid textarea if that is the first invalid field", () => {
+    cy.visit("/validation-textarea");
+    cy.findByText("Submit").click();
+    cy.findByLabelText("Long Text").should("be.focused");
   });
 
   it("should focus the selected radio if that is the first invalid field", () => {

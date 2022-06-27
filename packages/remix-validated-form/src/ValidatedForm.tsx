@@ -129,7 +129,7 @@ const focusFirstInvalidInput = (
       }
     }
 
-    if (elem instanceof HTMLOrSVGElement) {
+    if (elem instanceof HTMLElement) {
       if (elem instanceof HTMLInputElement && elem.type === "hidden") {
         continue;
       }
