@@ -38,9 +38,11 @@ const validator = withZod(
       })
     ),
     likesPizza: zfd.checkbox(),
-    comment: zfd.text({
-      required_error: "Comment is a required field",
-    }),
+    comment: zfd.text(
+      z.string({
+        required_error: "Comment is a required field",
+      })
+    ),
   })
 );
 
