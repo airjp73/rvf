@@ -11,16 +11,16 @@ export type TextareaProps = {
 export const Textarea: FC<TextareaProps> = ({
   name,
   label,
-  value,
   "data-testid": dataTestId,
 }) => {
   const { error, getInputProps } = useField(name);
   return (
     <>
-      <label>{label}</label>
-      <textarea {...getInputProps()} data-testid={dataTestId}>
-        {value}
-      </textarea>
+      <label htmlFor={name}>{label}</label>
+      <textarea
+        {...getInputProps({ id: name })}
+        data-testid={dataTestId}
+      ></textarea>
       {error && <p>{error}</p>}
     </>
   );
