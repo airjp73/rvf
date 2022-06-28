@@ -57,4 +57,9 @@ describe("Controlled fields", () => {
     cy.findByText("Expected bob, received some test text").should("exist");
     cy.findByTestId("resolution-count").should("have.text", "14");
   });
+
+  it("should be able to set the value of a controlled field on mount", () => {
+    cy.visit("/occasional-field-tracking");
+    cy.findByTestId("occasional").should("have.text", "set-on-mount");
+  });
 });
