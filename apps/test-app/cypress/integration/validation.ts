@@ -25,6 +25,11 @@ describe("Validation", () => {
     cy.findByLabelText("Email").clear().type("an.email@example.com");
     cy.findByText("Email must be a valid email").should("not.exist");
 
+    cy.findByLabelText("Comment").focus().blur();
+    cy.findByText("Comment is a required field").should("exist");
+    cy.findByLabelText("Comment").type("Some comment");
+    cy.findByText("Comment is a required field").should("not.exist");
+
     cy.findByText("Email is a required field").should("not.exist");
     cy.findByText("Last Name is a required field").should("not.exist");
     cy.findByText("First Name is a required field").should("not.exist");
@@ -43,6 +48,7 @@ describe("Validation", () => {
     cy.findByText("Last Name is a required field").should("exist");
     cy.findByText("First Name is a required field").should("exist");
     cy.findByText("Name of a contact is a required field").should("exist");
+    cy.findByText("Comment is a required field").should("exist");
     cy.findByLabelText("First Name").should("be.focused");
 
     cy.findByLabelText("First Name").type("John");
@@ -59,6 +65,9 @@ describe("Validation", () => {
 
     cy.findByLabelText("Email").type("an.email@example.com");
     cy.findByText("Email is a required field").should("not.exist");
+
+    cy.findByLabelText("Comment").type("Some comment");
+    cy.findByText("Comment is a required field").should("not.exist");
 
     cy.findByText("Submit").click();
     cy.findByLabelText("Name of a contact").should("be.focused");
@@ -141,11 +150,13 @@ describe("Validation", () => {
     cy.findByText("Last Name is a required field").should("exist");
     cy.findByText("First Name is a required field").should("exist");
     cy.findByText("Name of a contact is a required field").should("exist");
+    cy.findByText("Comment is a required field").should("exist");
 
     cy.findByLabelText("First Name").type("John");
     cy.findByLabelText("Last Name").type("Doe");
     cy.findByLabelText("Email").type("an.email@example.com");
     cy.findByLabelText("Name of a contact").type("Someone else");
+    cy.findByLabelText("Comment").type("Some comment");
 
     cy.findByText("Submit").click();
     cy.findByText("Submitted for John Doe!").should("exist");
@@ -170,6 +181,7 @@ describe("Validation", () => {
 
     cy.findByLabelText("Email").type("an.email@example.com");
     cy.findByLabelText("Name of a contact").type("Someone else");
+    cy.findByLabelText("Comment").type("Some comment");
 
     cy.findByText("Submit").click();
     cy.findByText("Submitted for John Doe!").should("exist");
@@ -195,6 +207,7 @@ describe("Validation", () => {
     cy.findByText("Last Name is a required field").should("exist");
     cy.findByText("First Name is a required field").should("exist");
     cy.findByText("Name of a contact is a required field").should("exist");
+    cy.findByText("Comment is a required field").should("exist");
 
     cy.findByText("Reset").click();
 
@@ -202,6 +215,7 @@ describe("Validation", () => {
     cy.findByText("Last Name is a required field").should("not.exist");
     cy.findByText("First Name is a required field").should("not.exist");
     cy.findByText("Name of a contact is a required field").should("not.exist");
+    cy.findByText("Comment is a required field").should("not.exist");
   });
 
   it("should show errors for forms with form ids and clear them upon navigating away", () => {
