@@ -204,3 +204,6 @@ export const useFormActionProp = (formId: InternalFormId) =>
 
 export const useFormSubactionProp = (formId: InternalFormId) =>
   useFormStore(formId, (state) => state.formProps?.subaction);
+
+export const useFormValues = (formId: InternalFormId) =>
+  useFormStore(formId, (state) => state.getValues);
