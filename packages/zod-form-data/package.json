@@ -1,6 +1,6 @@
 {
   "name": "zod-form-data",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "browser": "./dist/zod-form-data.cjs.js",
   "main": "./dist/zod-form-data.umd.js",
   "module": "./dist/zod-form-data.es.js",
