@@ -19,6 +19,7 @@ import {
   useFormActionProp,
   useFormSubactionProp,
   useSubmitForm,
+  useFormValues,
 } from "../internal/hooks";
 import {
   FieldErrors,
@@ -118,6 +119,10 @@ export type FormHelpers = {
    * _Note_: This is equivalent to clicking a button element with `type="submit"` or calling formElement.submit().
    */
   submit: () => void;
+  /**
+   * Returns the current form values as FormData
+   */
+  getValues: () => FormData;
 };
 
 /**
@@ -134,6 +139,7 @@ export const useFormHelpers = (formId?: string): FormHelpers => {
   const setFieldErrors = useSetFieldErrors(formContext.formId);
   const reset = useResetFormElement(formContext.formId);
   const submit = useSubmitForm(formContext.formId);
+  const getValues = useFormValues(formContext.formId);
   return useMemo(
     () => ({
       setTouched,
@@ -143,6 +149,7 @@ export const useFormHelpers = (formId?: string): FormHelpers => {
       clearAllErrors: () => setFieldErrors({}),
       reset,
       submit,
+      getValues,
     }),
     [
       clearError,
@@ -152,6 +159,7 @@ export const useFormHelpers = (formId?: string): FormHelpers => {
       submit,
       validate,
       validateField,
+      getValues,
     ]
   );
 };
