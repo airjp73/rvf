@@ -132,6 +132,17 @@ describe("Submission", () => {
     cy.findByText("Submitted!").should("exist");
   });
 
+  it("should submit using the formMethod of the submitter", () => {
+    cy.visit("submission/submitter");
+    cy.findByText("Submit GET").click();
+    cy.findByText("Submitting...").should("exist");
+    cy.url().should("include", "submitter=viaget");
+    cy.get("code").should(
+      "contain.text",
+      JSON.stringify({ method: "GET", submitter: "viaget" })
+    );
+  });
+
   describe("onSubmit", () => {
     it("should abort submit if preventDefault called on event", () => {
       cy.visit("submission/onsubmit");
