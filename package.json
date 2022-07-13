@@ -43,7 +43,7 @@
     "lint-staged": "^12.1.2",
     "prettier": "^2.5.1",
     "turbo": "latest",
-    "vitest": "^0.9.4"
+    "vitest": "^0.18.0"
   },
   "turbo": {
     "pipeline": {

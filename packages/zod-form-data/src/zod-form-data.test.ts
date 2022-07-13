@@ -264,6 +264,27 @@ describe("zod helpers", () => {
       });
     });
 
+    it("should handle arrays of objects", () => {
+      const s = zfd.formData({
+        todos: zfd.repeatable(
+          z.array(z.object({ title: zfd.text(), description: zfd.text() }))
+        ),
+      });
+
+      const formData = new TestFormData();
+      formData.append("todos[0].title", "title 1");
+      formData.append("todos[0].description", "description 1");
+      formData.append("todos[1].title", "title 2");
+      formData.append("todos[1].description", "description 2");
+
+      expect(s.parse(formData)).toEqual({
+        todos: [
+          { title: "title 1", description: "description 1" },
+          { title: "title 2", description: "description 2" },
+        ],
+      });
+    });
+
     it("should work with object schemas", () => {
       const s = zfd.formData(
         z.object({
