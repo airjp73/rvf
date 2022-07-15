@@ -143,6 +143,13 @@ describe("Submission", () => {
     );
   });
 
+  it("should submit and skip validation if submitter has `noFormValidate`", () => {
+    cy.visit("submission/formnovalidate");
+    cy.findByText("Submit").click();
+    cy.findByText("Submitting...").should("exist");
+    cy.get("code").should("contain.text", JSON.stringify({ method: "POST" }));
+  });
+
   describe("onSubmit", () => {
     it("should abort submit if preventDefault called on event", () => {
       cy.visit("submission/onsubmit");
