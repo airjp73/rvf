@@ -21,7 +21,7 @@
     "framer-motion": "^4.1.17",
     "react": "^18.1.0",
     "react-dom": "^18.1.0",
-    "remix": "^1.2.1",
+    "remix": "^1.6.5",
     "remix-validated-form": "*",
     "zod": "^3.11.6"
   },

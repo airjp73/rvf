@@ -17,7 +17,7 @@
     "@remix-validated-form/with-zod": "*",
     "react": "^18.1.0",
     "react-dom": "^18.1.0",
-    "remix": "^1.2.1",
+    "remix": "^1.6.5",
     "remix-validated-form": "*",
     "yup": "*",
     "zod": "*"
