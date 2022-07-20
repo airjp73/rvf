@@ -26,7 +26,7 @@ export function validationError(
   error: ValidatorError,
   repopulateFields?: unknown,
   init?: ResponseInit
-): Response {
+) {
   return json<ValidationErrorResponseData>(
     {
       fieldErrors: error.fieldErrors,
