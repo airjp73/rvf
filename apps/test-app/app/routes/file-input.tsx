@@ -7,6 +7,7 @@ import {
   ActionFunction,
   useActionData,
   unstable_parseMultipartFormData,
+  UploadHandler,
 } from "remix";
 import { validationError, ValidatedForm } from "remix-validated-form";
 import { z } from "zod";
