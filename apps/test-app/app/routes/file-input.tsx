@@ -1,3 +1,7 @@
+import {
+  unstable_composeUploadHandlers,
+  unstable_createMemoryUploadHandler,
+} from "@remix-run/server-runtime";
 import { withZod } from "@remix-validated-form/with-zod";
 import {
   ActionFunction,
@@ -35,13 +39,13 @@ const serverValidator = withZod(
   )
 );
 
-const testUploadHandler: UploadHandler = async ({ name }) => {
+const testUploadHandler = unstable_composeUploadHandlers(async ({ name }) => {
   if (name !== "myFile") {
     return;
   }
 
   return "testFile";
-};
+}, unstable_createMemoryUploadHandler());
 
 export const action: ActionFunction = async ({ request }) => {
   const result = await serverValidator.validate(
