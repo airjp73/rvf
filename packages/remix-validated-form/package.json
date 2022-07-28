@@ -34,12 +34,10 @@
   ],
   "peerDependencies": {
     "@remix-run/react": "1.x",
-    "@remix-run/server-runtime": "1.x",
     "react": "^17.0.2 || ^18.0.0"
   },
   "devDependencies": {
     "@remix-run/react": "^1.6.5",
-    "@remix-run/server-runtime": "^1.6.5",
     "@types/lodash": "^4.14.178",
     "@types/react": "^18.0.9",
     "fetch-blob": "^3.1.3",

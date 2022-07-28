@@ -1,4 +1,4 @@
-import { json } from "@remix-run/node";
+import { json } from "remix";
 import {
   formDefaultValuesKey,
   FORM_DEFAULTS_FIELD,
