@@ -1,4 +1,4 @@
-import { json } from "@remix-run/server-runtime";
+import { json } from "remix";
 import {
   formDefaultValuesKey,
   FORM_DEFAULTS_FIELD,
@@ -26,7 +26,7 @@ export function validationError(
   error: ValidatorError,
   repopulateFields?: unknown,
   init?: ResponseInit
-): Response {
+) {
   return json<ValidationErrorResponseData>(
     {
       fieldErrors: error.fieldErrors,

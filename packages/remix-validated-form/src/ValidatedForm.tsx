@@ -97,7 +97,8 @@ const focusFirstInvalidInput = (
   const namesInOrder = [...formElement.elements]
     .map((el) => {
       const input = el instanceof RadioNodeList ? el[0] : el;
-      if (input instanceof HTMLInputElement) return input.name;
+      if (input instanceof HTMLElement && "name" in input)
+        return (input as any).name;
       return null;
     })
     .filter(nonNull)
@@ -128,8 +129,8 @@ const focusFirstInvalidInput = (
       }
     }
 
-    if (elem instanceof HTMLInputElement) {
-      if (elem.type === "hidden") {
+    if (elem instanceof HTMLElement) {
+      if (elem instanceof HTMLInputElement && elem.type === "hidden") {
         continue;
       }
 

@@ -83,6 +83,10 @@ export type FormContextValue = {
    * _Note_: This is equivalent to clicking a button element with `type="submit"` or calling formElement.submit().
    */
   submit: () => void;
+  /**
+   * Returns the current form values as FormData
+   */
+  getValues: () => FormData;
 };
 
 /**
@@ -100,6 +104,7 @@ export const useFormContext = (formId?: string): FormContextValue => {
     validate,
     reset,
     submit,
+    getValues,
   } = useFormHelpers(formId);
 
   const registerReceiveFocus = useRegisterReceiveFocus(context.formId);
@@ -124,6 +129,7 @@ export const useFormContext = (formId?: string): FormContextValue => {
       validate,
       reset,
       submit,
+      getValues,
     }),
     [
       clearAllErrors,
@@ -135,6 +141,7 @@ export const useFormContext = (formId?: string): FormContextValue => {
       submit,
       validate,
       validateField,
+      getValues,
     ]
   );
 };

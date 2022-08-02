@@ -25,6 +25,7 @@ const DisplayContext = ({
     fieldErrors,
     defaultValues,
     touchedFields,
+    getValues,
   } = useFormContext(form);
 
   return (
@@ -52,6 +53,11 @@ const DisplayContext = ({
         <dt>touchedFields</dt>
         <dd>
           <pre>{JSON.stringify(touchedFields)}</pre>
+        </dd>
+
+        <dt>getValues</dt>
+        <dd>
+          <pre>{JSON.stringify(Object.fromEntries(getValues()))}</pre>
         </dd>
       </dl>
     </div>

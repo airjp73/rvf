@@ -1,3 +1,4 @@
+import set from "lodash/set";
 import {
   z,
   ZodArray,
@@ -167,8 +168,7 @@ export const formData: FormDataType = <T extends z.ZodRawShape | z.ZodTypeAny>(
           }
 
           return [...map.entries()].reduce((acc, [key, value]) => {
-            acc[key] = value.length === 1 ? value[0] : value;
-            return acc;
+            return set(acc, key, value.length === 1 ? value[0] : value);
           }, {} as Record<string, unknown | unknown[]>);
         })
     ),

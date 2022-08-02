@@ -53,6 +53,7 @@ export type FormState = {
   validate: () => Promise<ValidationResult<unknown>>;
   resetFormElement: () => void;
   submit: () => void;
+  getValues: () => FormData;
 
   controlledFields: {
     values: { [fieldName: string]: any };
@@ -111,6 +112,7 @@ const defaultFormState: FormState = {
   },
 
   resetFormElement: noOp,
+  getValues: () => new FormData(),
 
   controlledFields: {
     values: {},
@@ -179,7 +181,6 @@ const createFormState = (
     set((state) => {
       delete state.fieldErrors[fieldName];
     }),
-
   reset: () =>
     set((state) => {
       state.fieldErrors = {};
@@ -263,8 +264,10 @@ const createFormState = (
       "Cannot find reference to form. This is probably a bug in remix-validated-form."
     );
 
-    formElement.submit();
+    formElement.requestSubmit();
   },
+
+  getValues: () => new FormData(get().formElement ?? undefined),
 
   resetFormElement: () => get().formElement?.reset(),
 
