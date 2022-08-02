@@ -206,7 +206,7 @@ const createFormState = (
       "Cannot find reference to form. This is probably a bug in remix-validated-form."
     );
 
-    formElement.submit();
+    formElement.requestSubmit();
   },
 
   getValues: () => new FormData(get().formElement ?? undefined),
