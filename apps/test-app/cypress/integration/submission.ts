@@ -126,10 +126,17 @@ describe("Submission", () => {
     cy.findByText("Submitted to in-route action.").should("not.exist");
   });
 
-  it("should submit when calling the submit helper", () => {
+  it("should validate and submit when calling the submit helper", () => {
     cy.visit("/submission/helper");
     cy.findByText("Submit with helper").click();
-    cy.findByText("Submitted!").should("exist");
+    cy.findByText(/submitted/i).should("not.exist");
+    cy.findByText(/name is a required field/i).should("exist");
+
+    cy.findByLabelText("Name").type("Someone");
+
+    cy.findByText("Submit with helper").click();
+    cy.findByText(/submitted/i).should("exist");
+    cy.findByText(/submitted by someone/i).should("exist");
   });
 
   it("should submit using the formMethod of the submitter", () => {
