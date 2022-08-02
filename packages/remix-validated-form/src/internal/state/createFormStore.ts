@@ -209,15 +209,7 @@ const createFormState = (
     formElement.submit();
   },
 
-  getValues: () => {
-    const formElement = get().formElement;
-    invariant(
-      formElement,
-      "Cannot find reference to form. This is probably a bug in remix-validated-form."
-    );
-
-    return new FormData(formElement);
-  },
+  getValues: () => new FormData(get().formElement ?? undefined),
 
   resetFormElement: () => get().formElement?.reset(),
 });

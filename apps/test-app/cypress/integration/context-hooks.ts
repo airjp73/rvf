@@ -23,6 +23,10 @@ const expectValues = (id: string, values: any) => {
     .findByText("touchedFields")
     .next()
     .should("contain.text", JSON.stringify(values.touchedFields));
+  cy.findByTestId(id)
+    .findByText("getValues")
+    .next()
+    .should("contain.text", JSON.stringify(values.getValues));
 };
 const expectAllValues = (values: any) => {
   expectValues("external-values", values);
@@ -39,6 +43,10 @@ describe("Context hooks", () => {
       fieldErrors: {},
       touchedFields: {},
       defaultValues: { firstName: "defaultFirstName" },
+      getValues: {
+        __rvfInternalFormId: "test-form",
+        firstName: "defaultFirstName",
+      },
     });
 
     cy.findByLabelText("First Name").clear().blur();
@@ -49,6 +57,7 @@ describe("Context hooks", () => {
       fieldErrors: { firstName: "First Name is a required field" },
       touchedFields: { firstName: true },
       defaultValues: { firstName: "defaultFirstName" },
+      getValues: { __rvfInternalFormId: "test-form", firstName: "" },
     });
 
     cy.findByText("Submit").click();
@@ -59,6 +68,7 @@ describe("Context hooks", () => {
       fieldErrors: { firstName: "First Name is a required field" },
       touchedFields: { firstName: true },
       defaultValues: { firstName: "defaultFirstName" },
+      getValues: { __rvfInternalFormId: "test-form", firstName: "" },
     });
 
     cy.findByLabelText("First Name").type("something");
@@ -69,6 +79,7 @@ describe("Context hooks", () => {
       fieldErrors: {},
       touchedFields: { firstName: true },
       defaultValues: { firstName: "defaultFirstName" },
+      getValues: { __rvfInternalFormId: "test-form", firstName: "s" },
     });
 
     cy.findByText("Submit").click();
@@ -79,6 +90,7 @@ describe("Context hooks", () => {
       fieldErrors: {},
       touchedFields: { firstName: true },
       defaultValues: { firstName: "defaultFirstName" },
+      getValues: { __rvfInternalFormId: "test-form", firstName: "something" },
     });
   });
 });
