@@ -19,12 +19,7 @@ export default function OccasionalFieldTracking() {
 
   return (
     <ValidatedForm id="test-form" validator={validator} method="post">
-      <input
-        data-testid="occasional"
-        type="hidden"
-        name="token"
-        value={value}
-      />
+      <input data-testid="occasional" name="token" value={value} />
     </ValidatedForm>
   );
 }
