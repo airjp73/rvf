@@ -50,6 +50,13 @@ export type FormProps<DataType> = {
     data: DataType,
     event: React.FormEvent<HTMLFormElement>
   ) => void | Promise<void>;
+    /**
+   * A callback that gets called when the form is submitted
+   * before onSubmit validations have been run.
+   */
+  onSubmitBeforeValidation?: (
+    event: React.FormEvent<HTMLFormElement>
+  ) => void | Promise<void>;
   /**
    * Allows you to provide a `fetcher` from remix's `useFetcher` hook.
    * The form will use the fetcher for loading states, action data, etc
@@ -201,6 +208,7 @@ type HTMLFormSubmitter = HTMLButtonElement | HTMLInputElement;
 export function ValidatedForm<DataType>({
   validator,
   onSubmit,
+  onSubmitBeforeValidation,
   children,
   fetcher,
   action,
@@ -303,6 +311,7 @@ export function ValidatedForm<DataType>({
     nativeEvent: HTMLSubmitEvent["nativeEvent"]
   ) => {
     startSubmit();
+    await onSubmitBeforeValidation?.(e);
     const result = await validator.validate(getDataFromForm(e.currentTarget));
     if (result.error) {
       endSubmit();
