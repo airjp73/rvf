@@ -4,5 +4,6 @@ export default defineConfig({
   test: {
     exclude: [...configDefaults.exclude, "./**/*.config.ts", "./**/dist"],
     includeSource: ["./**/*.{ts,tsx}"],
+    environment: "jsdom",
   },
 });
