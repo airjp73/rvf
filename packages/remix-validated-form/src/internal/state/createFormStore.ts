@@ -10,7 +10,9 @@ import {
   ValidationResult,
   Validator,
 } from "../../validation/types";
+import { requestSubmit } from "../logic/requestSubmit";
 import * as arrayUtil from "./arrayUtil";
+import { useControlledFieldStore } from "./controlledFieldStore";
 import { InternalFormId } from "./types";
 
 export type SyncedFormProps = {
@@ -264,7 +266,7 @@ const createFormState = (
       "Cannot find reference to form. This is probably a bug in remix-validated-form."
     );
 
-    formElement.requestSubmit();
+    requestSubmit(formElement);
   },
 
   getValues: () => new FormData(get().formElement ?? undefined),
