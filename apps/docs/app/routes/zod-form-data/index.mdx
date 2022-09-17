@@ -40,7 +40,7 @@ but it will still work correctly if you do.
 
 ```tsx
 const validator = withZod(
-  zfd.object({
+  z.object({
     name: zfd.text(),
     age: zfd.numeric(z.number().min(25).max(50)),
     likesPizza: zfd.checkbox(),
