@@ -64,4 +64,26 @@ describe("withZod", () => {
       error: anyString,
     });
   });
+
+  it("returns custom error message when using a custom error map", async () => {
+    const schema = z.object({
+      type: z.string(),
+    });
+    const obj = {
+      type: "foo",
+    };
+
+    const errorMap: z.ZodErrorMap = () => ({ message: "Custom error" });
+
+    expect(await withZod(schema, { errorMap }).validate(obj)).toEqual({
+      data: undefined,
+      error: {
+        fieldErrors: {
+          type: "Custom error",
+        },
+        subaction: undefined,
+      },
+      submittedData: obj,
+    });
+  });
 });

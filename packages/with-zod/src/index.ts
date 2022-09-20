@@ -23,12 +23,13 @@ function pathToString(array: (string | number)[]): string {
 /**
  * Create a validator using a `zod` schema.
  */
-export function withZod<T, U>(
-  zodSchema: z.Schema<T, U, unknown>
+export function withZod<T, U extends z.ZodTypeDef>(
+  zodSchema: z.Schema<T, U, unknown>,
+  parseParams?: Partial<z.ParseParams>
 ): Validator<T> {
   return createValidator({
     validate: async (value) => {
-      const result = await zodSchema.safeParseAsync(value);
+      const result = await zodSchema.safeParseAsync(value, parseParams);
       if (result.success) return { data: result.data, error: undefined };
 
       const fieldErrors: FieldErrors = {};
@@ -39,7 +40,7 @@ export function withZod<T, U>(
       return { error: fieldErrors, data: undefined };
     },
     validateField: async (data, field) => {
-      const result = await zodSchema.safeParseAsync(data);
+      const result = await zodSchema.safeParseAsync(data, parseParams);
       if (result.success) return { error: undefined };
       return {
         error: getIssuesForError(result.error).find((issue) => {
