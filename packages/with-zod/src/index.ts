@@ -23,7 +23,7 @@ function pathToString(array: (string | number)[]): string {
 /**
  * Create a validator using a `zod` schema.
  */
-export function withZod<T, U>(
+export function withZod<T, U extends z.ZodTypeDef>(
   zodSchema: z.Schema<T, U, unknown>
 ): Validator<T> {
   return createValidator({
