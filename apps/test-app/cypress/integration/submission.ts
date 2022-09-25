@@ -67,6 +67,20 @@ describe("Submission", () => {
     cy.findByLabelText("Another input").should("have.value", "something"); // shouldn't reset this one
   });
 
+  it("should not reset with resetAfterSubmit when the form is invalid", () => {
+    cy.visit("/submission/aftersubmit/invalid");
+
+    cy.findByLabelText("Test input").type("fail");
+    cy.findByText("Submit").click();
+    cy.findByText("Wrong input").should("exist");
+    cy.findByLabelText("Test input").should("have.value", "fail");
+
+    cy.findByLabelText("Test input").clear().type("success");
+    cy.findByText("Submit").click();
+    cy.findByText("Wrong input").should("not.exist");
+    cy.findByLabelText("Test input").should("have.value", "");
+  });
+
   it("should not reset when the form has been successfully submitted when not resetAfterSubmit", () => {
     cy.visit("/submission/notaftersubmit");
 
