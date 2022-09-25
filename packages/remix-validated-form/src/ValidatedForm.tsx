@@ -305,8 +305,8 @@ export function ValidatedForm<DataType>({
     startSubmit();
     const result = await validator.validate(getDataFromForm(e.currentTarget));
     if (result.error) {
-      endSubmit();
       setFieldErrors(result.error.fieldErrors);
+      endSubmit();
       if (!disableFocusOnError) {
         focusFirstInvalidInput(
           result.error.fieldErrors,
