@@ -26,7 +26,6 @@ export default function Demo() {
   return (
     <ValidatedForm
       validator={validator}
-      method="post"
       defaultValues={{
         firstName: "John",
         lastName: "Doe",
