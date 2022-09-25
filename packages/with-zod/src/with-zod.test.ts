@@ -70,7 +70,7 @@ describe("withZod", () => {
       type: z.string(),
     });
     const obj = {
-      type: "foo",
+      type: 123,
     };
 
     const errorMap: z.ZodErrorMap = () => ({ message: "Custom error" });
