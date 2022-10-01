@@ -315,6 +315,7 @@ export function ValidatedForm<DataType>({
         );
       }
     } else {
+      setFieldErrors({});
       const eventProxy = formEventProxy(e);
       await onSubmit?.(result.data, eventProxy);
       if (eventProxy.defaultPrevented) {
