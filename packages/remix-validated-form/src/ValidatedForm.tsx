@@ -1,4 +1,9 @@
-import { Form as RemixForm, useFetcher, useSubmit } from "@remix-run/react";
+import {
+  Form as RemixForm,
+  FormMethod,
+  useFetcher,
+  useSubmit,
+} from "@remix-run/react";
 import uniq from "lodash/uniq";
 import React, {
   ComponentProps,
@@ -335,7 +340,11 @@ export function ValidatedForm<DataType>({
       // If we use `event.currentTarget` here, it will break because `currentTarget`
       // will have changed since the start of the submission.
       if (fetcher) fetcher.submit(submitter || e.currentTarget);
-      else submit(submitter || target, { replace, method });
+      else
+        submit(submitter || target, {
+          replace,
+          method: (submitter?.formMethod as FormMethod) || method,
+        });
     }
   };
 
