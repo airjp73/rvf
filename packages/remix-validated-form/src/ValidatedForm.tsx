@@ -303,7 +303,13 @@ export function ValidatedForm<DataType>({
     nativeEvent: HTMLSubmitEvent["nativeEvent"]
   ) => {
     startSubmit();
-    const result = await validator.validate(getDataFromForm(e.currentTarget));
+    const submitter = nativeEvent.submitter as HTMLFormSubmitter | null;
+    const formDataToValidate = getDataFromForm(e.currentTarget);
+    if (submitter?.name) {
+      formDataToValidate.append(submitter.name, submitter.value);
+    }
+
+    const result = await validator.validate(formDataToValidate);
     if (result.error) {
       setFieldErrors(result.error.fieldErrors);
       endSubmit();
@@ -322,8 +328,6 @@ export function ValidatedForm<DataType>({
         endSubmit();
         return;
       }
-
-      const submitter = nativeEvent.submitter as HTMLFormSubmitter | null;
 
       // We deviate from the remix code here a bit because of our async submit.
       // In remix's `FormImpl`, they use `event.currentTarget` to get the form,
