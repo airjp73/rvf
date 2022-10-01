@@ -1,11 +1,13 @@
 import { anyString, TestFormData } from "@remix-validated-form/test-utils";
 import { withYup } from "@remix-validated-form/with-yup/src";
 import { withZod } from "@remix-validated-form/with-zod";
+import omit from "lodash/omit";
 import { Validator } from "remix-validated-form/src";
 import { objectFromPathEntries } from "remix-validated-form/src/internal/flatten";
 import { describe, it, expect } from "vitest";
 import * as yup from "yup";
 import { z } from "zod";
+import { FORM_ID_FIELD } from "../internal/constants";
 
 // If adding an adapter, write a validator that validates this shape
 type Person = {
@@ -98,6 +100,30 @@ describe("Validation", () => {
           data: person,
           error: undefined,
           submittedData: person,
+        });
+      });
+
+      it("should omit internal fields", async () => {
+        const person: Person = {
+          firstName: "John",
+          lastName: "Doe",
+          age: 30,
+          address: {
+            streetAddress: "123 Main St",
+            city: "Anytown",
+            country: "USA",
+          },
+          pets: [{ animal: "dog", name: "Fido" }],
+
+          // @ts-expect-error
+          // internal filed technically not part of person type
+          [FORM_ID_FIELD]: "something",
+        };
+        expect(await validator.validate(person)).toEqual({
+          data: omit(person, FORM_ID_FIELD),
+          error: undefined,
+          submittedData: person,
+          formId: "something",
         });
       });
 
