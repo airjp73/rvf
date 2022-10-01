@@ -331,7 +331,7 @@ export function ValidatedForm<DataType>({
       // If we use `event.currentTarget` here, it will break because `currentTarget`
       // will have changed since the start of the submission.
       if (fetcher) fetcher.submit(submitter || e.currentTarget);
-      else submit(submitter || target, { replace });
+      else submit(submitter || target, { replace, method });
     }
   };
 
