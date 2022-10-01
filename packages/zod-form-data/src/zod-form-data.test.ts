@@ -353,4 +353,20 @@ describe("zod helpers", () => {
       });
     });
   });
+
+  describe("preprocessFormData", () => {
+    it("should expose the same transformation as formData", () => {
+      const formData = new TestFormData();
+      formData.append("name", "Someone");
+      formData.append("checkboxGroup", "value1");
+      formData.append("checkboxGroup", "value2");
+
+      const result = zfd.preprocessFormData(formData);
+
+      expect(result).toEqual({
+        name: "Someone",
+        checkboxGroup: ["value1", "value2"],
+      });
+    });
+  });
 });

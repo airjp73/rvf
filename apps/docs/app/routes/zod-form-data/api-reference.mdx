@@ -268,3 +268,11 @@ const schema = zfd.formData({
   ),
 });
 ```
+
+<PropHeader
+  prop="preprocessFormData"
+  type="(formData: unknown) => Record<string, string | string[]>"
+/>
+
+The raw preprocessor function that is used by the `formData` helper.
+You usually don't need this and is only supplied for advanced use-cases.
