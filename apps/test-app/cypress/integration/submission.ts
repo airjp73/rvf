@@ -89,6 +89,20 @@ describe("Submission", () => {
     cy.findByLabelText("Test input").should("have.value", "noreset");
   });
 
+  it("should clear form errors on valid submit", () => {
+    cy.visit("/submission/aftersubmit/clear-errors");
+
+    cy.findByLabelText("Test input").type("something");
+    cy.findByLabelText("Dependent input").type("another thing");
+    cy.findByText("Submit").click();
+    cy.findByText("Not a match").should("exist");
+
+    cy.findByLabelText("Test input").clear().type("another thing");
+    cy.findByText("Submit").click();
+    cy.findByText("Not a match").should("not.exist");
+    cy.findByText("Success").should("exist");
+  });
+
   it("should track whether or not submission has been attempted", () => {
     cy.visit("/submission/hasbeensubmitted");
     cy.findByText("Submitted!").should("not.exist");
