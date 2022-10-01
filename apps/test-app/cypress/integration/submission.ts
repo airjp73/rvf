@@ -130,6 +130,12 @@ describe("Submission", () => {
     cy.findByText("Submitted to in-route action.").should("not.exist");
   });
 
+  it("should submit with the correct method", () => {
+    cy.visit("/submission/method");
+    cy.findByText("Submit").click();
+    cy.findByText("Submitted with method PATCH").should("exist");
+  });
+
   it("should submit to the correct action even when inside a dialog", () => {
     cy.visit("/submission/action");
     cy.findByText("Open Dialog").click();
