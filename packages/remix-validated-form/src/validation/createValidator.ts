@@ -1,3 +1,4 @@
+import omit from "lodash/omit";
 import { CreateValidatorArg, GenericObject, Validator } from "..";
 import { FORM_ID_FIELD } from "../internal/constants";
 import { objectFromPathEntries } from "../internal/flatten";
@@ -10,6 +11,9 @@ const preprocessFormData = (data: GenericObject | FormData): GenericObject => {
   return objectFromPathEntries(Object.entries(data));
 };
 
+const omitInternalFields = (data: GenericObject): GenericObject =>
+  omit(data, FORM_ID_FIELD);
+
 /**
  * Used to create a validator for a form.
  * It provides built-in handling for unflattening nested objects and
@@ -21,7 +25,7 @@ export function createValidator<T>(
   return {
     validate: async (value) => {
       const data = preprocessFormData(value);
-      const result = await validator.validate(data);
+      const result = await validator.validate(omitInternalFields(data));
 
       if (result.error) {
         return {

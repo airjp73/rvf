@@ -1,11 +1,15 @@
-import { withYup } from "@remix-validated-form/with-yup";
+import { withZod } from "@remix-validated-form/with-zod";
 import { ActionFunction, json, useActionData } from "remix";
 import { ValidatedForm } from "remix-validated-form";
-import * as yup from "yup";
+import { z } from "zod";
 import { InputWithTouched } from "~/components/InputWithTouched";
 import { SubmitButton } from "~/components/SubmitButton";
 
-const validator = withYup(yup.object({}));
+const validator = withZod(
+  z.object({
+    mySubmit: z.string(),
+  })
+);
 
 export const action: ActionFunction = async ({ request }) => {
   const data = await request.formData();
