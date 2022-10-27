@@ -84,10 +84,9 @@ export const loader: LoaderFunction = () => {
 export default function Demo() {
   const { defaultValues } = useLoaderData<LoaderData>();
   const data = useActionData<ActionData>();
-  const [items, { push, remove }] = useFieldArray(
-    "todos",
-    "usefieldarray-example-form"
-  );
+  const [items, { push, remove }] = useFieldArray("todos", {
+    formId: "usefieldarray-example-form",
+  });
 
   return (
     <ValidatedForm
