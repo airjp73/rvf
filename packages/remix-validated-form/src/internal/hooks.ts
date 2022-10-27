@@ -141,15 +141,20 @@ export const useClearError = (context: InternalFormContextValue) => {
   return useFormStore(formId, (state) => state.clearFieldError);
 };
 
+export const useCurrentDefaultValueForField = (
+  formId: InternalFormId,
+  field: string
+) =>
+  useFormStore(formId, (state) => lodashGet(state.currentDefaultValues, field));
+
 export const useFieldDefaultValue = (
   name: string,
   context: InternalFormContextValue
 ) => {
   const defaultValues = useDefaultValuesForForm(context);
-  const state = useSyncedDefaultValues(context.formId);
-  return defaultValues
-    .map((val) => lodashGet(val, name))
-    .hydrateTo(lodashGet(state, name));
+  const state = useCurrentDefaultValueForField(context.formId, name);
+
+  return defaultValues.map((val) => lodashGet(val, name)).hydrateTo(state);
 };
 
 export const useInternalIsSubmitting = (formId: InternalFormId) =>

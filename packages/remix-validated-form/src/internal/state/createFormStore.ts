@@ -1,4 +1,6 @@
 import { WritableDraft } from "immer/dist/internal";
+import lodashGet from "lodash/get";
+import lodashSet from "lodash/set";
 import invariant from "tiny-invariant";
 import create, { GetState } from "zustand";
 import { immer } from "zustand/middleware/immer";
@@ -9,6 +11,7 @@ import {
   Validator,
 } from "../../validation/types";
 import { requestSubmit } from "../logic/requestSubmit";
+import * as arrayUtil from "./arrayUtil";
 import { useControlledFieldStore } from "./controlledFieldStore";
 import { InternalFormId } from "./types";
 
@@ -36,6 +39,7 @@ export type FormState = {
   touchedFields: TouchedFields;
   formProps?: SyncedFormProps;
   formElement: HTMLFormElement | null;
+  currentDefaultValues: Record<string, any>;
 
   isValid: () => boolean;
   startSubmit: () => void;
@@ -46,13 +50,37 @@ export type FormState = {
   clearFieldError: (field: string) => void;
   reset: () => void;
   syncFormProps: (props: SyncedFormProps) => void;
-  setHydrated: () => void;
   setFormElement: (formElement: HTMLFormElement | null) => void;
   validateField: (fieldName: string) => Promise<string | null>;
   validate: () => Promise<ValidationResult<unknown>>;
   resetFormElement: () => void;
   submit: () => void;
   getValues: () => FormData;
+
+  controlledFields: {
+    values: { [fieldName: string]: any };
+    refCounts: { [fieldName: string]: number };
+    valueUpdatePromises: { [fieldName: string]: Promise<void> };
+    valueUpdateResolvers: { [fieldName: string]: () => void };
+
+    register: (fieldName: string) => void;
+    unregister: (fieldName: string) => void;
+    setValue: (fieldName: string, value: unknown) => void;
+    kickoffValueUpdate: (fieldName: string) => void;
+    getValue: (fieldName: string) => unknown;
+    awaitValueUpdate: (fieldName: string) => Promise<void>;
+
+    array: {
+      push: (fieldName: string, value: unknown) => void;
+      swap: (fieldName: string, indexA: number, indexB: number) => void;
+      move: (fieldName: string, fromIndex: number, toIndex: number) => void;
+      insert: (fieldName: string, index: number, value: unknown) => void;
+      unshift: (fieldName: string, value: unknown) => void;
+      remove: (fieldName: string, index: number) => void;
+      pop: (fieldName: string) => void;
+      replace: (fieldName: string, index: number, value: unknown) => void;
+    };
+  };
 };
 
 const noOp = () => {};
@@ -70,10 +98,10 @@ const defaultFormState: FormState = {
   setFieldError: noOp,
   setFieldErrors: noOp,
   clearFieldError: noOp,
+  currentDefaultValues: {},
 
   reset: () => noOp,
   syncFormProps: noOp,
-  setHydrated: noOp,
   setFormElement: noOp,
   validateField: async () => null,
 
@@ -87,10 +115,36 @@ const defaultFormState: FormState = {
 
   resetFormElement: noOp,
   getValues: () => new FormData(),
+
+  controlledFields: {
+    values: {},
+    refCounts: {},
+    valueUpdatePromises: {},
+    valueUpdateResolvers: {},
+
+    register: noOp,
+    unregister: noOp,
+    setValue: noOp,
+    getValue: noOp,
+    kickoffValueUpdate: noOp,
+    awaitValueUpdate: async () => {
+      throw new Error("AwaitValueUpdate called before form was initialized.");
+    },
+
+    array: {
+      push: noOp,
+      swap: noOp,
+      move: noOp,
+      insert: noOp,
+      unshift: noOp,
+      remove: noOp,
+      pop: noOp,
+      replace: noOp,
+    },
+  },
 };
 
 const createFormState = (
-  formId: InternalFormId,
   set: (setter: (draft: WritableDraft<FormState>) => void) => void,
   get: GetState<FormState>
 ): FormState => ({
@@ -101,6 +155,7 @@ const createFormState = (
   touchedFields: {},
   fieldErrors: {},
   formElement: null,
+  currentDefaultValues: {},
 
   isValid: () => Object.keys(get().fieldErrors).length === 0,
   startSubmit: () =>
@@ -133,14 +188,18 @@ const createFormState = (
       state.fieldErrors = {};
       state.touchedFields = {};
       state.hasBeenSubmitted = false;
+      const nextDefaults = state.formProps?.defaultValues ?? {};
+      state.controlledFields.values = nextDefaults;
+      state.currentDefaultValues = nextDefaults;
     }),
   syncFormProps: (props: SyncedFormProps) =>
     set((state) => {
+      if (!state.isHydrated) {
+        state.controlledFields.values = props.defaultValues;
+        state.currentDefaultValues = props.defaultValues;
+      }
+
       state.formProps = props;
-      state.isHydrated = true;
-    }),
-  setHydrated: () =>
-    set((state) => {
       state.isHydrated = true;
     }),
   setFormElement: (formElement: HTMLFormElement | null) => {
@@ -166,7 +225,7 @@ const createFormState = (
       "Cannot validator. This is probably a bug in remix-validated-form."
     );
 
-    await useControlledFieldStore.getState().awaitValueUpdate?.(formId, field);
+    await get().controlledFields.awaitValueUpdate?.(field);
 
     const { error } = await validator.validateField(
       new FormData(formElement),
@@ -213,6 +272,225 @@ const createFormState = (
   getValues: () => new FormData(get().formElement ?? undefined),
 
   resetFormElement: () => get().formElement?.reset(),
+
+  controlledFields: {
+    values: {},
+    refCounts: {},
+    valueUpdatePromises: {},
+    valueUpdateResolvers: {},
+
+    register: (fieldName) => {
+      set((state) => {
+        const current = state.controlledFields.refCounts[fieldName] ?? 0;
+        state.controlledFields.refCounts[fieldName] = current + 1;
+      });
+    },
+    unregister: (fieldName) => {
+      // For this helper in particular, we may run into a case where state is undefined.
+      // When the whole form unmounts, the form state may be cleaned up before the fields are.
+      if (get() === null || get() === undefined) return;
+      set((state) => {
+        const current = state.controlledFields.refCounts[fieldName] ?? 0;
+        if (current > 1) {
+          state.controlledFields.refCounts[fieldName] = current - 1;
+          return;
+        }
+
+        const isNested = Object.keys(state.controlledFields.refCounts).some(
+          (key) => fieldName.startsWith(key) && key !== fieldName
+        );
+
+        // When nested within a field array, we should leave resetting up to the field array
+        if (!isNested) {
+          lodashSet(
+            state.controlledFields.values,
+            fieldName,
+            lodashGet(state.formProps?.defaultValues, fieldName)
+          );
+          lodashSet(
+            state.currentDefaultValues,
+            fieldName,
+            lodashGet(state.formProps?.defaultValues, fieldName)
+          );
+        }
+
+        delete state.controlledFields.refCounts[fieldName];
+      });
+    },
+    getValue: (fieldName) =>
+      lodashGet(get().controlledFields.values, fieldName),
+    setValue: (fieldName, value) => {
+      set((state) => {
+        lodashSet(state.controlledFields.values, fieldName, value);
+      });
+      get().controlledFields.kickoffValueUpdate(fieldName);
+    },
+    kickoffValueUpdate: (fieldName) => {
+      const clear = () =>
+        set((state) => {
+          delete state.controlledFields.valueUpdateResolvers[fieldName];
+          delete state.controlledFields.valueUpdatePromises[fieldName];
+        });
+      set((state) => {
+        const promise = new Promise<void>((resolve) => {
+          state.controlledFields.valueUpdateResolvers[fieldName] = resolve;
+        }).then(clear);
+        state.controlledFields.valueUpdatePromises[fieldName] = promise;
+      });
+    },
+
+    awaitValueUpdate: async (fieldName) => {
+      await get().controlledFields.valueUpdatePromises[fieldName];
+    },
+
+    array: {
+      push: (fieldName, item) => {
+        set((state) => {
+          arrayUtil
+            .getArray(state.controlledFields.values, fieldName)
+            .push(item);
+          arrayUtil.getArray(state.currentDefaultValues, fieldName).push(item);
+          // New item added to the end, no need to update touched or error
+        });
+        get().controlledFields.kickoffValueUpdate(fieldName);
+      },
+
+      swap: (fieldName, indexA, indexB) => {
+        set((state) => {
+          arrayUtil.swap(
+            arrayUtil.getArray(state.controlledFields.values, fieldName),
+            indexA,
+            indexB
+          );
+          arrayUtil.swap(
+            arrayUtil.getArray(state.currentDefaultValues, fieldName),
+            indexA,
+            indexB
+          );
+          arrayUtil.mutateAsArray(fieldName, state.touchedFields, (array) =>
+            arrayUtil.swap(array, indexA, indexB)
+          );
+          arrayUtil.mutateAsArray(fieldName, state.fieldErrors, (array) =>
+            arrayUtil.swap(array, indexA, indexB)
+          );
+        });
+        get().controlledFields.kickoffValueUpdate(fieldName);
+      },
+
+      move: (fieldName, from, to) => {
+        set((state) => {
+          arrayUtil.move(
+            arrayUtil.getArray(state.controlledFields.values, fieldName),
+            from,
+            to
+          );
+          arrayUtil.move(
+            arrayUtil.getArray(state.currentDefaultValues, fieldName),
+            from,
+            to
+          );
+          arrayUtil.mutateAsArray(fieldName, state.touchedFields, (array) =>
+            arrayUtil.move(array, from, to)
+          );
+          arrayUtil.mutateAsArray(fieldName, state.fieldErrors, (array) =>
+            arrayUtil.move(array, from, to)
+          );
+        });
+        get().controlledFields.kickoffValueUpdate(fieldName);
+      },
+      insert: (fieldName, index, item) => {
+        set((state) => {
+          arrayUtil.insert(
+            arrayUtil.getArray(state.controlledFields.values, fieldName),
+            index,
+            item
+          );
+          arrayUtil.insert(
+            arrayUtil.getArray(state.currentDefaultValues, fieldName),
+            index,
+            item
+          );
+          // Even though this is a new item, we need to push around other items.
+          arrayUtil.mutateAsArray(fieldName, state.touchedFields, (array) =>
+            arrayUtil.insert(array, index, false)
+          );
+          arrayUtil.mutateAsArray(fieldName, state.fieldErrors, (array) =>
+            arrayUtil.insert(array, index, undefined)
+          );
+        });
+        get().controlledFields.kickoffValueUpdate(fieldName);
+      },
+      remove: (fieldName, index) => {
+        set((state) => {
+          arrayUtil.remove(
+            arrayUtil.getArray(state.controlledFields.values, fieldName),
+            index
+          );
+          arrayUtil.remove(
+            arrayUtil.getArray(state.currentDefaultValues, fieldName),
+            index
+          );
+          arrayUtil.mutateAsArray(fieldName, state.touchedFields, (array) =>
+            arrayUtil.remove(array, index)
+          );
+          arrayUtil.mutateAsArray(fieldName, state.fieldErrors, (array) =>
+            arrayUtil.remove(array, index)
+          );
+        });
+        get().controlledFields.kickoffValueUpdate(fieldName);
+      },
+      pop: (fieldName) => {
+        set((state) => {
+          arrayUtil.getArray(state.controlledFields.values, fieldName).pop();
+          arrayUtil.getArray(state.currentDefaultValues, fieldName).pop();
+          arrayUtil.mutateAsArray(fieldName, state.touchedFields, (array) =>
+            array.pop()
+          );
+          arrayUtil.mutateAsArray(fieldName, state.fieldErrors, (array) =>
+            array.pop()
+          );
+        });
+        get().controlledFields.kickoffValueUpdate(fieldName);
+      },
+      unshift: (fieldName, value) => {
+        set((state) => {
+          arrayUtil
+            .getArray(state.controlledFields.values, fieldName)
+            .unshift(value);
+          arrayUtil
+            .getArray(state.currentDefaultValues, fieldName)
+            .unshift(value);
+          arrayUtil.mutateAsArray(fieldName, state.touchedFields, (array) =>
+            array.unshift(false)
+          );
+          arrayUtil.mutateAsArray(fieldName, state.fieldErrors, (array) =>
+            array.unshift(undefined)
+          );
+        });
+      },
+      replace: (fieldName, index, item) => {
+        set((state) => {
+          arrayUtil.replace(
+            arrayUtil.getArray(state.controlledFields.values, fieldName),
+            index,
+            item
+          );
+          arrayUtil.replace(
+            arrayUtil.getArray(state.currentDefaultValues, fieldName),
+            index,
+            item
+          );
+          arrayUtil.mutateAsArray(fieldName, state.touchedFields, (array) =>
+            arrayUtil.replace(array, index, item)
+          );
+          arrayUtil.mutateAsArray(fieldName, state.fieldErrors, (array) =>
+            arrayUtil.replace(array, index, item)
+          );
+        });
+        get().controlledFields.kickoffValueUpdate(fieldName);
+      },
+    },
+  },
 });
 
 export const useRootFormStore = create<FormStoreState>()(
@@ -230,7 +508,6 @@ export const useRootFormStore = create<FormStoreState>()(
       if (get().forms[formId]) return;
       set((state) => {
         state.forms[formId] = createFormState(
-          formId,
           (setter) => set((state) => setter(state.forms[formId])),
           () => get().forms[formId]
         ) as WritableDraft<FormState>;
