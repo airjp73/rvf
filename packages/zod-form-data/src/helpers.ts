@@ -135,6 +135,36 @@ export const json = <T extends ZodTypeAny>(schema: T): ZodEffects<T> =>
     schema
   );
 
+const processFormData = preprocessIfValid(
+  // We're avoiding using `instanceof` here because different environments
+  // won't necessarily have `FormData` or `URLSearchParams`
+  z
+    .any()
+    .refine((val) => Symbol.iterator in val)
+    .transform((val) => [...val])
+    .refine(
+      (val): val is z.infer<typeof entries> => entries.safeParse(val).success
+    )
+    .transform((data): Record<string, unknown | unknown[]> => {
+      const map: Map<string, unknown[]> = new Map();
+      for (const [key, value] of data) {
+        if (map.has(key)) {
+          map.get(key)!.push(value);
+        } else {
+          map.set(key, [value]);
+        }
+      }
+
+      return [...map.entries()].reduce((acc, [key, value]) => {
+        return set(acc, key, value.length === 1 ? value[0] : value);
+      }, {} as Record<string, unknown | unknown[]>);
+    })
+);
+
+export const preprocessFormData = processFormData as (
+  formData: unknown
+) => Record<string, unknown>;
+
 /**
  * This helper takes the place of the `z.object` at the root of your schema.
  * It wraps your schema in a `z.preprocess` that extracts all the data out of a `FormData`
@@ -146,31 +176,6 @@ export const formData: FormDataType = <T extends z.ZodRawShape | z.ZodTypeAny>(
   shapeOrSchema: T
 ) =>
   z.preprocess(
-    preprocessIfValid(
-      // We're avoiding using `instanceof` here because different environments
-      // won't necessarily have `FormData` or `URLSearchParams`
-      z
-        .any()
-        .refine((val) => Symbol.iterator in val)
-        .transform((val) => [...val])
-        .refine(
-          (val): val is z.infer<typeof entries> =>
-            entries.safeParse(val).success
-        )
-        .transform((data): Record<string, unknown | unknown[]> => {
-          const map: Map<string, unknown[]> = new Map();
-          for (const [key, value] of data) {
-            if (map.has(key)) {
-              map.get(key)!.push(value);
-            } else {
-              map.set(key, [value]);
-            }
-          }
-
-          return [...map.entries()].reduce((acc, [key, value]) => {
-            return set(acc, key, value.length === 1 ? value[0] : value);
-          }, {} as Record<string, unknown | unknown[]>);
-        })
-    ),
+    processFormData,
     shapeOrSchema instanceof ZodType ? shapeOrSchema : z.object(shapeOrSchema)
   );

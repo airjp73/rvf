@@ -1,4 +1,9 @@
-import { Form as RemixForm, useFetcher, useSubmit } from "@remix-run/react";
+import {
+  Form as RemixForm,
+  FormMethod,
+  useFetcher,
+  useSubmit,
+} from "@remix-run/react";
 import uniq from "lodash/uniq";
 import React, {
   ComponentProps,
@@ -301,10 +306,16 @@ export function ValidatedForm<DataType>({
     nativeEvent: HTMLSubmitEvent["nativeEvent"]
   ) => {
     startSubmit();
-    const result = await validator.validate(getDataFromForm(e.currentTarget));
+    const submitter = nativeEvent.submitter as HTMLFormSubmitter | null;
+    const formDataToValidate = getDataFromForm(e.currentTarget);
+    if (submitter?.name) {
+      formDataToValidate.append(submitter.name, submitter.value);
+    }
+
+    const result = await validator.validate(formDataToValidate);
     if (result.error) {
-      endSubmit();
       setFieldErrors(result.error.fieldErrors);
+      endSubmit();
       if (!disableFocusOnError) {
         focusFirstInvalidInput(
           result.error.fieldErrors,
@@ -313,6 +324,7 @@ export function ValidatedForm<DataType>({
         );
       }
     } else {
+      setFieldErrors({});
       const eventProxy = formEventProxy(e);
       await onSubmit?.(result.data, eventProxy);
       if (eventProxy.defaultPrevented) {
@@ -320,15 +332,17 @@ export function ValidatedForm<DataType>({
         return;
       }
 
-      const submitter = nativeEvent.submitter as HTMLFormSubmitter | null;
-
       // We deviate from the remix code here a bit because of our async submit.
       // In remix's `FormImpl`, they use `event.currentTarget` to get the form,
       // but we already have the form in `formRef.current` so we can just use that.
       // If we use `event.currentTarget` here, it will break because `currentTarget`
       // will have changed since the start of the submission.
       if (fetcher) fetcher.submit(submitter || e.currentTarget);
-      else submit(submitter || target, { replace });
+      else
+        submit(submitter || target, {
+          replace,
+          method: (submitter?.formMethod as FormMethod) || method,
+        });
     }
   };
 

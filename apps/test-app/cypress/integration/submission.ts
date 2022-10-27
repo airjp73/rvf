@@ -67,12 +67,40 @@ describe("Submission", () => {
     cy.findByLabelText("Another input").should("have.value", "something"); // shouldn't reset this one
   });
 
+  it("should not reset with resetAfterSubmit when the form is invalid", () => {
+    cy.visit("/submission/aftersubmit/invalid");
+
+    cy.findByLabelText("Test input").type("fail");
+    cy.findByText("Submit").click();
+    cy.findByText("Wrong input").should("exist");
+    cy.findByLabelText("Test input").should("have.value", "fail");
+
+    cy.findByLabelText("Test input").clear().type("success");
+    cy.findByText("Submit").click();
+    cy.findByText("Wrong input").should("not.exist");
+    cy.findByLabelText("Test input").should("have.value", "");
+  });
+
   it("should not reset when the form has been successfully submitted when not resetAfterSubmit", () => {
     cy.visit("/submission/notaftersubmit");
 
     cy.findByLabelText("Test input").type("noreset");
     cy.findByText("Submit").click();
     cy.findByLabelText("Test input").should("have.value", "noreset");
+  });
+
+  it("should clear form errors on valid submit", () => {
+    cy.visit("/submission/aftersubmit/clear-errors");
+
+    cy.findByLabelText("Test input").type("something");
+    cy.findByLabelText("Dependent input").type("another thing");
+    cy.findByText("Submit").click();
+    cy.findByText("Not a match").should("exist");
+
+    cy.findByLabelText("Test input").clear().type("another thing");
+    cy.findByText("Submit").click();
+    cy.findByText("Not a match").should("not.exist");
+    cy.findByText("Success").should("exist");
   });
 
   it("should track whether or not submission has been attempted", () => {
@@ -114,6 +142,12 @@ describe("Submission", () => {
       "Submitted to action prop action from form: Not in a dialog"
     ).should("exist");
     cy.findByText("Submitted to in-route action.").should("not.exist");
+  });
+
+  it("should submit with the correct method", () => {
+    cy.visit("/submission/method");
+    cy.findByText("Submit").click();
+    cy.findByText("Submitted with method PATCH").should("exist");
   });
 
   it("should submit to the correct action even when inside a dialog", () => {
