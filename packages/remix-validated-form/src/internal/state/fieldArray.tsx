@@ -151,5 +151,5 @@ export const FieldArray = ({
     name,
     validationBehavior
   );
-  return children(value, helpers, error);
+  return <>{children(value, helpers, error)}</>;
 };
