@@ -5,6 +5,7 @@
   "main": "./dist/zod-form-data.umd.js",
   "module": "./dist/zod-form-data.es.js",
   "types": "./dist/types/index.d.ts",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/airjp73/remix-validated-form"
