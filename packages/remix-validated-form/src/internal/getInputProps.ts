@@ -1,4 +1,4 @@
-import omitBy from "lodash/omitBy";
+import * as R from "remeda";
 import { getCheckboxChecked } from "./logic/getCheckboxChecked";
 import { getRadioChecked } from "./logic/getRadioChecked";
 
@@ -89,6 +89,6 @@ export const createGetInputProps = ({
       inputProps.defaultValue = defaultValue;
     }
 
-    return omitBy(inputProps, (value) => value === undefined) as T;
+    return R.omitBy(inputProps, (value) => value === undefined) as T;
   };
 };

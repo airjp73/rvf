@@ -4,7 +4,6 @@ import {
   useFetcher,
   useSubmit,
 } from "@remix-run/react";
-import uniq from "lodash/uniq";
 import React, {
   ComponentProps,
   FormEvent,
@@ -15,6 +14,7 @@ import React, {
   useRef,
   useState,
 } from "react";
+import * as R from "remeda";
 import { useIsSubmitting, useIsValid } from "./hooks";
 import { FORM_ID_FIELD } from "./internal/constants";
 import {
@@ -108,7 +108,7 @@ const focusFirstInvalidInput = (
     })
     .filter(nonNull)
     .filter((name) => name in fieldErrors);
-  const uniqueNamesInOrder = uniq(namesInOrder);
+  const uniqueNamesInOrder = R.uniq(namesInOrder);
 
   for (const fieldName of uniqueNamesInOrder) {
     if (customFocusHandlers.has(fieldName)) {

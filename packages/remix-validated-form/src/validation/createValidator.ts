@@ -1,4 +1,4 @@
-import omit from "lodash/omit";
+import * as R from "remeda";
 import { CreateValidatorArg, GenericObject, Validator } from "..";
 import { FORM_ID_FIELD } from "../internal/constants";
 import { objectFromPathEntries } from "../internal/flatten";
@@ -12,7 +12,7 @@ const preprocessFormData = (data: GenericObject | FormData): GenericObject => {
 };
 
 const omitInternalFields = (data: GenericObject): GenericObject =>
-  omit(data, FORM_ID_FIELD);
+  R.omit(data, [FORM_ID_FIELD]);
 
 /**
  * Used to create a validator for a form.
