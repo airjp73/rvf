@@ -1,4 +1,5 @@
 const path = require("path");
+const { visualizer } = require("rollup-plugin-visualizer");
 const { defineConfig } = require("vite");
 const dts = require("vite-plugin-dts");
 
@@ -23,5 +24,6 @@ exports.makeConfig = ({ lib, external, dir }) =>
         outputDir: path.join(dir, "./dist/types"),
         entryRoot: path.join(dir, "./src"),
       }),
+      visualizer(),
     ],
   });

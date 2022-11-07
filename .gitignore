@@ -13,3 +13,4 @@ apps/test-app/cypress/videos
 apps/test-app/cypress/screenshots
 .vercel
 dist
+stats.html

@@ -6,5 +6,8 @@
   "dependencies": {
     "vite": "^2.9.5",
     "vite-plugin-dts": "^1.1.0"
+  },
+  "devDependencies": {
+    "rollup-plugin-visualizer": "^5.8.3"
   }
 }
