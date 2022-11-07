@@ -13,7 +13,7 @@ module.exports = {
     "sample-app/remix-validated-form",
   ],
   extends: ["react-app"],
-  plugins: ["prettier", "lodash"],
+  plugins: ["prettier"],
   rules: {
     "import/no-anonymous-default-export": "off",
     "import/order": [
@@ -36,7 +36,6 @@ module.exports = {
       },
     ],
     "prettier/prettier": "error",
-    "lodash/import-scope": "error",
   },
   overrides: [
     {
