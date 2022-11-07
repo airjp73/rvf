@@ -43,10 +43,9 @@ export function withZod<T, U extends z.ZodTypeDef>(
       const result = await zodSchema.safeParseAsync(data, parseParams);
       if (result.success) return { error: undefined };
       return {
-        error: getIssuesForError(result.error).find((issue) => {
-          const allPathsAsString = issue.path.map((p) => `${p}`);
-          return R.equals(allPathsAsString, stringToPathArray(field));
-        })?.message,
+        error: getIssuesForError(result.error).find((issue) =>
+          R.equals(issue.path, stringToPathArray(field))
+        )?.message,
       };
     },
   });
