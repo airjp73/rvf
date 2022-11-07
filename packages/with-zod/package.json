@@ -22,7 +22,7 @@
   "devDependencies": {
     "remix-validated-form": "*",
     "tsconfig": "*",
-    "typescript": "^4.5.4",
+    "typescript": "^4.8.4",
     "vite-config": "*",
     "zod": "^3.11.6"
   }
