@@ -1,6 +1,5 @@
 import { WritableDraft } from "immer/dist/internal";
-import lodashGet from "lodash/get";
-import lodashSet from "lodash/set";
+import { getPath, setPath } from "setGet";
 import invariant from "tiny-invariant";
 import create, { GetState } from "zustand";
 import { immer } from "zustand/middleware/immer";
@@ -12,7 +11,6 @@ import {
 } from "../../validation/types";
 import { requestSubmit } from "../logic/requestSubmit";
 import * as arrayUtil from "./arrayUtil";
-import { useControlledFieldStore } from "./controlledFieldStore";
 import { InternalFormId } from "./types";
 
 export type SyncedFormProps = {
@@ -302,26 +300,25 @@ const createFormState = (
 
         // When nested within a field array, we should leave resetting up to the field array
         if (!isNested) {
-          lodashSet(
+          setPath(
             state.controlledFields.values,
             fieldName,
-            lodashGet(state.formProps?.defaultValues, fieldName)
+            getPath(state.formProps?.defaultValues, fieldName)
           );
-          lodashSet(
+          setPath(
             state.currentDefaultValues,
             fieldName,
-            lodashGet(state.formProps?.defaultValues, fieldName)
+            getPath(state.formProps?.defaultValues, fieldName)
           );
         }
 
         delete state.controlledFields.refCounts[fieldName];
       });
     },
-    getValue: (fieldName) =>
-      lodashGet(get().controlledFields.values, fieldName),
+    getValue: (fieldName) => getPath(get().controlledFields.values, fieldName),
     setValue: (fieldName, value) => {
       set((state) => {
-        lodashSet(state.controlledFields.values, fieldName, value);
+        setPath(state.controlledFields.values, fieldName, value);
       });
       get().controlledFields.kickoffValueUpdate(fieldName);
     },

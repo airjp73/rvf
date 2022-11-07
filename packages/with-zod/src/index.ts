@@ -1,6 +1,6 @@
-import isEqual from "lodash/isEqual";
-import toPath from "lodash/toPath";
+import * as R from "remeda";
 import { createValidator, FieldErrors, Validator } from "remix-validated-form";
+import { stringToPathArray } from "setGet";
 import type { z } from "zod";
 
 const getIssuesForError = (err: z.ZodError<any>): z.ZodIssue[] => {
@@ -15,7 +15,7 @@ const getIssuesForError = (err: z.ZodError<any>): z.ZodIssue[] => {
 
 function pathToString(array: (string | number)[]): string {
   return array.reduce(function (string: string, item: string | number) {
-    var prefix = string === "" ? "" : ".";
+    const prefix = string === "" ? "" : ".";
     return string + (isNaN(Number(item)) ? prefix + item : "[" + item + "]");
   }, "");
 }
@@ -45,7 +45,7 @@ export function withZod<T, U extends z.ZodTypeDef>(
       return {
         error: getIssuesForError(result.error).find((issue) => {
           const allPathsAsString = issue.path.map((p) => `${p}`);
-          return isEqual(allPathsAsString, toPath(field));
+          return R.equals(allPathsAsString, stringToPathArray(field));
         })?.message,
       };
     },

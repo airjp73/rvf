@@ -1,4 +1,4 @@
-import set from "lodash/set";
+import { setPath } from "setGet";
 import {
   z,
   ZodArray,
@@ -156,7 +156,7 @@ const processFormData = preprocessIfValid(
       }
 
       return [...map.entries()].reduce((acc, [key, value]) => {
-        return set(acc, key, value.length === 1 ? value[0] : value);
+        return setPath(acc, key, value.length === 1 ? value[0] : value);
       }, {} as Record<string, unknown | unknown[]>);
     })
 );

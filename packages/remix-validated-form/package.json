@@ -52,6 +52,7 @@
     "immer": "^9.0.12",
     "lodash": "^4.17.21",
     "remeda": "^1.2.0",
+    "setGet": "*",
     "tiny-invariant": "^1.2.0",
     "zustand": "^4.0.0-rc.1"
   }
