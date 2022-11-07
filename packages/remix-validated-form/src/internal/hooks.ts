@@ -1,6 +1,6 @@
 import { useActionData, useMatches, useTransition } from "@remix-run/react";
-import lodashGet from "lodash/get";
 import { useCallback, useContext } from "react";
+import { getPath } from "setGet";
 import invariant from "tiny-invariant";
 import { FieldErrors, ValidationErrorResponseData } from "..";
 import { formDefaultValuesKey } from "./constants";
@@ -145,7 +145,7 @@ export const useCurrentDefaultValueForField = (
   formId: InternalFormId,
   field: string
 ) =>
-  useFormStore(formId, (state) => lodashGet(state.currentDefaultValues, field));
+  useFormStore(formId, (state) => getPath(state.currentDefaultValues, field));
 
 export const useFieldDefaultValue = (
   name: string,
@@ -154,7 +154,7 @@ export const useFieldDefaultValue = (
   const defaultValues = useDefaultValuesForForm(context);
   const state = useCurrentDefaultValueForField(context.formId, name);
 
-  return defaultValues.map((val) => lodashGet(val, name)).hydrateTo(state);
+  return defaultValues.map((val) => getPath(val, name)).hydrateTo(state);
 };
 
 export const useInternalIsSubmitting = (formId: InternalFormId) =>

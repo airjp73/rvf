@@ -1,5 +1,4 @@
-import lodashGet from "lodash/get";
-import lodashSet from "lodash/set";
+import { getPath, setPath } from "setGet";
 import invariant from "tiny-invariant";
 
 ////
@@ -8,10 +7,10 @@ import invariant from "tiny-invariant";
 ////
 
 export const getArray = (values: any, field: string): unknown[] => {
-  const value = lodashGet(values, field);
+  const value = getPath(values, field);
   if (value === undefined || value === null) {
     const newValue: unknown[] = [];
-    lodashSet(values, field, newValue);
+    setPath(values, field, newValue);
     return newValue;
   }
   invariant(
@@ -94,8 +93,8 @@ export const mutateAsArray = (
   for (const [key, value] of Object.entries(obj)) {
     if (key.startsWith(field) && key !== field) {
       beforeKeys.add(key);
+      setPath(arr, key.substring(field.length), value);
     }
-    lodashSet(arr, key.substring(field.length), value);
   }
 
   mutate(arr);
@@ -105,7 +104,7 @@ export const mutateAsArray = (
 
   const newKeys = getDeepArrayPaths(arr);
   for (const key of newKeys) {
-    const val = lodashGet(arr, key);
+    const val = getPath(arr, key);
     obj[`${field}${key}`] = val;
   }
 };

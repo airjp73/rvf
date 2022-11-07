@@ -1,7 +1,7 @@
 import { anyString, TestFormData } from "@remix-validated-form/test-utils";
 import { withYup } from "@remix-validated-form/with-yup/src";
 import { withZod } from "@remix-validated-form/with-zod";
-import omit from "lodash/omit";
+import * as R from "remeda";
 import { Validator } from "remix-validated-form/src";
 import { objectFromPathEntries } from "remix-validated-form/src/internal/flatten";
 import { describe, it, expect } from "vitest";
@@ -120,7 +120,7 @@ describe("Validation", () => {
           [FORM_ID_FIELD]: "something",
         };
         expect(await validator.validate(person)).toEqual({
-          data: omit(person, FORM_ID_FIELD),
+          data: R.omit(person as any, [FORM_ID_FIELD]),
           error: undefined,
           submittedData: person,
           formId: "something",

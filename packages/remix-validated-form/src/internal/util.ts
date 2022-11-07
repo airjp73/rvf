@@ -1,6 +1,6 @@
-import isEqual from "lodash/isEqual";
 import type React from "react";
 import { useEffect, useLayoutEffect, useRef } from "react";
+import * as R from "remeda";
 
 export const omit = (obj: any, ...keys: string[]) => {
   const result = { ...obj };
@@ -29,7 +29,7 @@ export const useIsomorphicLayoutEffect =
 
 export const useDeepEqualsMemo = <T>(item: T): T => {
   const ref = useRef<T>(item);
-  const areEqual = ref.current === item || isEqual(ref.current, item);
+  const areEqual = ref.current === item || R.equals(ref.current, item);
   useEffect(() => {
     if (!areEqual) {
       ref.current = item;
