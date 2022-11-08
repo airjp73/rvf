@@ -15,6 +15,9 @@
     "build": "vite build",
     "prepublishOnly": "npm run build"
   },
+  "dependencies": {
+    "set-get": "*"
+  },
   "peerDependencies": {
     "zod": "^3.11.x"
   },
