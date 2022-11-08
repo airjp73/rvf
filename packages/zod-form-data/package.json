@@ -15,13 +15,11 @@
     "build": "vite build",
     "prepublishOnly": "npm run build"
   },
-  "dependencies": {
-    "set-get": "*"
-  },
   "peerDependencies": {
     "zod": "^3.11.x"
   },
   "devDependencies": {
+    "set-get": "*",
     "tsconfig": "*",
     "typescript": "^4.8.4",
     "zod": "^3.11.6"

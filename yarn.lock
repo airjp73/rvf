@@ -2522,6 +2522,11 @@
   dependencies:
     web-streams-polyfill "^3.1.1"
 
+"@remix-validated-form/with-zod@*":
+  version "2.0.4"
+  resolved "https://registry.yarnpkg.com/@remix-validated-form/with-zod/-/with-zod-2.0.4.tgz#e13255bef419dabda85a0a66c6432ddb55d65fcc"
+  integrity sha512-OlRKr+FARHsvk0u3BpU1R/f8MPvaelMIzO1JY6vNs63y6wbIyemaFJP/DTkoYeBeLzQpL11Yz2id3n85Yy0eSQ==
+
 "@rollup/plugin-commonjs@^21.0.1":
   version "21.0.1"
   resolved "https://registry.yarnpkg.com/@rollup/plugin-commonjs/-/plugin-commonjs-21.0.1.tgz#1e57c81ae1518e4df0954d681c642e7d94588fee"

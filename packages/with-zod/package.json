@@ -15,15 +15,13 @@
     "build": "vite build",
     "prepublishOnly": "npm run build"
   },
-  "dependencies": {
-    "set-get": "*"
-  },
   "peerDependencies": {
     "remix-validated-form": "^4.x",
     "zod": "^3.11.x"
   },
   "devDependencies": {
     "remix-validated-form": "*",
+    "set-get": "*",
     "tsconfig": "*",
     "typescript": "^4.8.4",
     "vite-config": "*",
