@@ -50,7 +50,7 @@
   "dependencies": {
     "immer": "^9.0.12",
     "remeda": "^1.2.0",
-    "setGet": "*",
+    "set-get": "*",
     "tiny-invariant": "^1.2.0",
     "zustand": "^4.0.0-rc.1"
   }

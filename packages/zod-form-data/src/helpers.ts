@@ -1,4 +1,4 @@
-import { setPath } from "setGet";
+import { setPath } from "set-get";
 import {
   z,
   ZodArray,

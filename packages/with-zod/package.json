@@ -16,7 +16,7 @@
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "setGet": "*"
+    "set-get": "*"
   },
   "peerDependencies": {
     "remix-validated-form": "^4.x",

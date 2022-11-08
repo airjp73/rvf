@@ -1,4 +1,4 @@
-import { getPath, setPath } from "setGet";
+import { getPath, setPath } from "set-get";
 import invariant from "tiny-invariant";
 
 ////

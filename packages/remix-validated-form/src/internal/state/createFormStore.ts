@@ -1,5 +1,5 @@
 import { WritableDraft } from "immer/dist/internal";
-import { getPath, setPath } from "setGet";
+import { getPath, setPath } from "set-get";
 import invariant from "tiny-invariant";
 import create, { GetState } from "zustand";
 import { immer } from "zustand/middleware/immer";

@@ -1,6 +1,6 @@
 import * as R from "remeda";
 import { createValidator, FieldErrors, Validator } from "remix-validated-form";
-import { stringToPathArray } from "setGet";
+import { stringToPathArray } from "set-get";
 import type { z } from "zod";
 
 const getIssuesForError = (err: z.ZodError<any>): z.ZodIssue[] => {

@@ -1,0 +1,8 @@
+{
+  "name": "set-get",
+  "version": "1.0.0",
+  "license": "MIT",
+  "dependencies": {
+    "remeda": "^1.2.0"
+  }
+}
