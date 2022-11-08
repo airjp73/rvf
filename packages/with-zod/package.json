@@ -1,6 +1,6 @@
 {
   "name": "@remix-validated-form/with-zod",
-  "version": "2.0.3",
+  "version": "2.0.5",
   "browser": "./dist/remix-validated-form__with-zod.cjs.js",
   "main": "./dist/remix-validated-form__with-zod.umd.js",
   "module": "./dist/remix-validated-form__with-zod.es.js",
