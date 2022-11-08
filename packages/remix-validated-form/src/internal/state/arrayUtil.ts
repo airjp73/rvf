@@ -105,7 +105,9 @@ export const mutateAsArray = (
   const newKeys = getDeepArrayPaths(arr);
   for (const key of newKeys) {
     const val = getPath(arr, key);
-    obj[`${field}${key}`] = val;
+    if (val !== undefined) {
+      obj[`${field}${key}`] = val;
+    }
   }
 };
 
@@ -351,6 +353,19 @@ if (import.meta.vitest) {
         "myField[1]": "baz",
         "myField[2]": "foo",
         "otherField[0]": "something else",
+      });
+    });
+
+    it("should not create keys for `undefined`", () => {
+      const values = {
+        "myField[0]": "foo",
+      };
+      mutateAsArray("myField", values, (arr) => {
+        arr.unshift(undefined);
+      });
+      expect(Object.keys(values)).toHaveLength(1);
+      expect(values).toEqual({
+        "myField[1]": "foo",
       });
     });
 
