@@ -294,7 +294,20 @@ export function ValidatedForm<DataType>({
 
   useEffect(() => {
     setFieldErrors(backendError?.fieldErrors ?? {});
-  }, [backendError?.fieldErrors, setFieldErrors, setFieldError]);
+    if (!disableFocusOnError && backendError?.fieldErrors) {
+      focusFirstInvalidInput(
+        backendError.fieldErrors,
+        customFocusHandlers(),
+        formRef.current!
+      );
+    }
+  }, [
+    backendError?.fieldErrors,
+    customFocusHandlers,
+    disableFocusOnError,
+    setFieldErrors,
+    setFieldError,
+  ]);
 
   useSubmitComplete(hasActiveSubmission, () => {
     endSubmit();
