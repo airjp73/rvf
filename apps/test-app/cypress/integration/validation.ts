@@ -249,7 +249,7 @@ describe("Validation", () => {
   });
 
   it("should focus the first invalid field from custom validation", () => {
-    cy.visit("/custom-server-validation-focus-invalid-field");
+    cy.visit("/custom-server-validation-focus-invalid-field").waitForJs();
 
     cy.findByText("Submit").click();
 
@@ -259,7 +259,9 @@ describe("Validation", () => {
   });
 
   it("should not focus the first invalid field from custom validation if disableFocusOnError is true", () => {
-    cy.visit("/custom-server-validation-disable-focus-invalid-field");
+    cy.visit(
+      "/custom-server-validation-disable-focus-invalid-field"
+    ).waitForJs();
 
     cy.findByText("Submit").click();
 
