@@ -14,3 +14,4 @@ apps/test-app/cypress/screenshots
 .vercel
 dist
 stats.html
+.idea

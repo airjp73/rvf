@@ -247,4 +247,26 @@ describe("Validation", () => {
 
     cy.findByText("Submitted!").should("exist");
   });
+
+  it("should focus the first invalid field from custom validation", () => {
+    cy.visit("/custom-server-validation-focus-invalid-field").waitForJs();
+
+    cy.findByText("Submit").click();
+
+    cy.findByText("Error").should("exist");
+    cy.findByLabelText("First Name").should("not.be.focused");
+    cy.findByLabelText("Last Name").should("be.focused");
+  });
+
+  it("should not focus the first invalid field from custom validation if disableFocusOnError is true", () => {
+    cy.visit(
+      "/custom-server-validation-disable-focus-invalid-field"
+    ).waitForJs();
+
+    cy.findByText("Submit").click();
+
+    cy.findByText("Error").should("exist");
+    cy.findByLabelText("First Name").should("not.be.focused");
+    cy.findByLabelText("Last Name").should("not.be.focused");
+  });
 });
