@@ -28,7 +28,7 @@ describe("Field arrays", () => {
   });
 
   it("should work without any default value", () => {
-    cy.visit("/field-array/no-defaults");
+    cy.visit("/field-array/no-defaults").waitForJs();
 
     // Initially empty
     cy.findAllByTestId("todo-id").should("have.length", 0);
@@ -45,7 +45,7 @@ describe("Field arrays", () => {
   });
 
   it("should sumbit the data correctly", () => {
-    cy.visit("/field-array/no-defaults");
+    cy.visit("/field-array/no-defaults").waitForJs();
 
     cy.findByText("Add todo").click();
     cy.findByTestId("todo-0").findByLabelText("Title").type("Todo 1");
@@ -99,7 +99,7 @@ describe("Field arrays", () => {
   ].forEach(({ route, variant }) => {
     describe(variant, () => {
       it("should swap items", () => {
-        cy.visit(route);
+        cy.visit(route).waitForJs();
 
         // Default values
         cy.findByTestId("todo-0")
@@ -168,7 +168,7 @@ describe("Field arrays", () => {
       });
 
       it("should insert items", () => {
-        cy.visit(route);
+        cy.visit(route).waitForJs();
 
         // Default values
         cy.findByTestId("todo-0")
@@ -244,7 +244,7 @@ describe("Field arrays", () => {
       });
 
       it("should pop the last item", () => {
-        cy.visit(route);
+        cy.visit(route).waitForJs();
 
         // Default values
         cy.findByTestId("todo-0")
@@ -292,7 +292,7 @@ describe("Field arrays", () => {
       });
 
       it("should unshift a new item at the start", () => {
-        cy.visit(route);
+        cy.visit(route).waitForJs();
 
         // Default values
         cy.findByTestId("todo-0")
@@ -354,7 +354,7 @@ describe("Field arrays", () => {
       });
 
       it("should replace items", () => {
-        cy.visit(route);
+        cy.visit(route).waitForJs();
 
         // Default values
         cy.findByTestId("todo-0")
@@ -409,7 +409,7 @@ describe("Field arrays", () => {
       });
 
       it("should push items at the end", () => {
-        cy.visit(route);
+        cy.visit(route).waitForJs();
 
         // Default values
         cy.findByTestId("todo-0")
@@ -471,7 +471,7 @@ describe("Field arrays", () => {
       });
 
       it("should move items", () => {
-        cy.visit(route);
+        cy.visit(route).waitForJs();
 
         // Default values
         cy.findByTestId("todo-0")
@@ -540,7 +540,7 @@ describe("Field arrays", () => {
       });
 
       it("should remove items", () => {
-        cy.visit(route);
+        cy.visit(route).waitForJs();
 
         // Default values
         cy.findByTestId("todo-0")
@@ -598,7 +598,7 @@ describe("Field arrays", () => {
       });
 
       it("should reset", () => {
-        cy.visit(route);
+        cy.visit(route).waitForJs();
 
         // Default values
         cy.findByTestId("todo-0")
@@ -665,7 +665,7 @@ describe("Field arrays", () => {
       });
 
       it("should show errors", () => {
-        cy.visit(route);
+        cy.visit(route).waitForJs();
 
         // Default values
         cy.findByTestId("todo-0")

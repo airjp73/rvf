@@ -1,6 +1,6 @@
 describe("Validation", () => {
   it("should support validating individual fields", () => {
-    cy.visit("/validation");
+    cy.visit("/validation").waitForJs();
 
     cy.findByLabelText("First Name").focus().blur();
     cy.findByText("First Name is a required field").should("exist");
@@ -40,7 +40,7 @@ describe("Validation", () => {
   });
 
   it("should validate the whole form at once when submit clicked", () => {
-    cy.visit("/validation");
+    cy.visit("/validation").waitForJs();
 
     cy.findByText("Submit").click();
 
@@ -80,7 +80,7 @@ describe("Validation", () => {
   });
 
   it("should reset isValid to true when errors resolved", () => {
-    cy.visit("/validation-isvalid");
+    cy.visit("/validation-isvalid").waitForJs();
 
     cy.findByText("Submit").click();
 
@@ -91,7 +91,7 @@ describe("Validation", () => {
   });
 
   it("should focus the first invalid field", () => {
-    cy.visit("/validation");
+    cy.visit("/validation").waitForJs();
 
     cy.findByText("Submit").click();
 
@@ -104,19 +104,19 @@ describe("Validation", () => {
   });
 
   it("should focus the first invalid textarea if that is the first invalid field", () => {
-    cy.visit("/validation-textarea");
+    cy.visit("/validation-textarea").waitForJs();
     cy.findByText("Submit").click();
     cy.findByLabelText("Long Text").should("be.focused");
   });
 
   it("should focus the selected radio if that is the first invalid field", () => {
-    cy.visit("/validation-radio");
+    cy.visit("/validation-radio").waitForJs();
     cy.findByText("Submit").click();
     cy.findByTestId("expected").should("be.focused");
   });
 
   it("should not focus the first invalid field if disableFocusOnError is true", () => {
-    cy.visit("/validation-nofocus");
+    cy.visit("/validation-nofocus").waitForJs();
 
     cy.findByText("Submit").click();
 
@@ -131,7 +131,7 @@ describe("Validation", () => {
   });
 
   it("should support custom recieveFocus handlers", () => {
-    cy.visit("/validation-focus-custom");
+    cy.visit("/validation-focus-custom").waitForJs();
 
     cy.findByText("Submit").click();
     cy.findByLabelText("Something").should("be.focused");
@@ -199,7 +199,7 @@ describe("Validation", () => {
   });
 
   it("should reset validation errors when resetting the form", () => {
-    cy.visit("/validation");
+    cy.visit("/validation").waitForJs();
 
     cy.findByText("Submit").click();
 
@@ -219,7 +219,7 @@ describe("Validation", () => {
   });
 
   it("should show errors for forms with form ids and clear them upon navigating away", () => {
-    cy.visit("form-id-validation");
+    cy.visit("form-id-validation").waitForJs();
 
     cy.findByText("Submit").click();
     cy.findByText("Required").should("exist");
@@ -232,7 +232,7 @@ describe("Validation", () => {
   });
 
   it("should return validation result from validate helper and show errors", () => {
-    cy.visit("validation-helper");
+    cy.visit("validation-helper").waitForJs();
 
     cy.findByText("Submit with helper").click();
 

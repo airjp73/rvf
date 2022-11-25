@@ -1,6 +1,6 @@
 describe("zod-form-data", () => {
   it("should work correctly full stack", () => {
-    cy.visit("/zod-form-data?name=Jimbob&count=4");
+    cy.visit("/zod-form-data?name=Jimbob&count=4").waitForJs();
 
     cy.findByText("Welcome, Jimbob. You're visitor number 4!").should("exist");
 

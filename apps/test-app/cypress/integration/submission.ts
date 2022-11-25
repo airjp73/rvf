@@ -1,6 +1,6 @@
 describe("Submission", () => {
   it("should show the loading state for the correct submit button", () => {
-    cy.visit("/submission");
+    cy.visit("/submission").waitForJs();
     cy.findByText("Submit main form").click();
     cy.findByText("Submitting alt form").should("not.exist");
     cy.findByText("Submitting fetcher form").should("not.exist");
@@ -25,7 +25,7 @@ describe("Submission", () => {
   });
 
   it("should show the loading state for the correct submit button when using subactions", () => {
-    cy.visit("/submission/subactions");
+    cy.visit("/submission/subactions").waitForJs();
     cy.findByText("Submit form 1").click();
     cy.findByText("Submitting form 2").should("not.exist");
     cy.findByText("Submitting form 3").should("not.exist");
@@ -53,7 +53,7 @@ describe("Submission", () => {
   });
 
   it("should reset when the form has been successfully submitted when resetAfterSubmit", () => {
-    cy.visit("/submission/aftersubmit");
+    cy.visit("/submission/aftersubmit").waitForJs();
 
     cy.findByLabelText("Test input").type("fail");
     cy.findByText("Submit").click();
@@ -67,22 +67,22 @@ describe("Submission", () => {
     cy.findByLabelText("Another input").should("have.value", "something"); // shouldn't reset this one
   });
 
-  it("should not reset with resetAfterSubmit when the form is invalid", () => {
-    cy.visit("/submission/aftersubmit/invalid");
+  it.only("should not reset with resetAfterSubmit when the form is invalid", () => {
+    cy.visit("/submission/aftersubmit/invalid").waitForJs();
 
     cy.findByLabelText("Test input").type("fail");
     cy.findByText("Submit").click();
-    cy.findByText("Wrong input").should("exist");
+    cy.findByText(/invalid literal value/i).should("exist");
     cy.findByLabelText("Test input").should("have.value", "fail");
 
     cy.findByLabelText("Test input").clear().type("success");
     cy.findByText("Submit").click();
-    cy.findByText("Wrong input").should("not.exist");
+    cy.findByText(/invalid literal value/i).should("not.exist");
     cy.findByLabelText("Test input").should("have.value", "");
   });
 
   it("should not reset when the form has been successfully submitted when not resetAfterSubmit", () => {
-    cy.visit("/submission/notaftersubmit");
+    cy.visit("/submission/notaftersubmit").waitForJs();
 
     cy.findByLabelText("Test input").type("noreset");
     cy.findByText("Submit").click();
@@ -90,7 +90,7 @@ describe("Submission", () => {
   });
 
   it("should clear form errors on valid submit", () => {
-    cy.visit("/submission/aftersubmit/clear-errors");
+    cy.visit("/submission/aftersubmit/clear-errors").waitForJs();
 
     cy.findByLabelText("Test input").type("something");
     cy.findByLabelText("Dependent input").type("another thing");
@@ -104,7 +104,7 @@ describe("Submission", () => {
   });
 
   it("should track whether or not submission has been attempted", () => {
-    cy.visit("/submission/hasbeensubmitted");
+    cy.visit("/submission/hasbeensubmitted").waitForJs();
     cy.findByText("Submitted!").should("not.exist");
 
     cy.findByText("Submit").click();
@@ -116,7 +116,7 @@ describe("Submission", () => {
   });
 
   it("should include submit button value when external", () => {
-    cy.visit("/submission/external");
+    cy.visit("/submission/external").waitForJs();
     cy.findByText("Submitted submitVal").should("not.exist");
 
     cy.findByText("Submit").click();
@@ -126,7 +126,7 @@ describe("Submission", () => {
   });
 
   it("should include submit button value when internal", () => {
-    cy.visit("/submission/external");
+    cy.visit("/submission/external").waitForJs();
     cy.findByText("Submitted internalVal").should("not.exist");
 
     cy.findByText("Submit 2").click();
@@ -136,7 +136,7 @@ describe("Submission", () => {
   });
 
   it("should submit to the correct action", () => {
-    cy.visit("/submission/action");
+    cy.visit("/submission/action").waitForJs();
     cy.findByText("Submit").click();
     cy.findByText(
       "Submitted to action prop action from form: Not in a dialog"
@@ -145,13 +145,13 @@ describe("Submission", () => {
   });
 
   it("should submit with the correct method", () => {
-    cy.visit("/submission/method");
+    cy.visit("/submission/method").waitForJs();
     cy.findByText("Submit").click();
     cy.findByText("Submitted with method PATCH").should("exist");
   });
 
   it("should submit to the correct action even when inside a dialog", () => {
-    cy.visit("/submission/action");
+    cy.visit("/submission/action").waitForJs();
     cy.findByText("Open Dialog").click();
     cy.findByTestId("dialog-submit").click();
     cy.findByText(
@@ -161,7 +161,7 @@ describe("Submission", () => {
   });
 
   it("should validate and submit when calling the submit helper", () => {
-    cy.visit("/submission/helper");
+    cy.visit("/submission/helper").waitForJs();
     cy.findByText("Submit with helper").click();
     cy.findByText(/submitted/i).should("not.exist");
     cy.findByText(/name is a required field/i).should("exist");
@@ -174,7 +174,7 @@ describe("Submission", () => {
   });
 
   it("should submit using the formMethod of the submitter", () => {
-    cy.visit("submission/submitter");
+    cy.visit("submission/submitter").waitForJs();
     cy.findByText("Submit GET").click();
     cy.findByText("Submitting...").should("exist");
     cy.url().should("include", "submitter=viaget");
@@ -185,7 +185,7 @@ describe("Submission", () => {
   });
 
   it("should submit using the formMethod of the submitter", () => {
-    cy.visit("submission/submitter");
+    cy.visit("submission/submitter").waitForJs();
     cy.findByText("Submit GET").click();
     cy.findByText("Submitting...").should("exist");
     cy.url().should("include", "submitter=viaget");
@@ -197,7 +197,7 @@ describe("Submission", () => {
 
   describe("onSubmit", () => {
     it("should abort submit if preventDefault called on event", () => {
-      cy.visit("submission/onsubmit");
+      cy.visit("submission/onsubmit").waitForJs();
       cy.findByText("shouldPreventDefault").click();
       cy.findByText("Submit").click();
       cy.findByText("Submitting...").should("exist");
@@ -206,7 +206,7 @@ describe("Submission", () => {
     });
 
     it("should continue with submit as normal if default not prevented", () => {
-      cy.visit("submission/onsubmit");
+      cy.visit("submission/onsubmit").waitForJs();
       cy.findByText("Submit").click();
       cy.findByText("Submitting...").should("exist");
       cy.findByText("Submit").should("exist");
@@ -215,7 +215,7 @@ describe("Submission", () => {
   });
 
   it("should clean up isSubmitting state even when action redirects", () => {
-    cy.visit("submission/redirect");
+    cy.visit("submission/redirect").waitForJs();
     cy.findByText("Submit").click();
     cy.findByText("Submitting...").should("exist");
 

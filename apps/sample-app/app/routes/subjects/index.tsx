@@ -12,18 +12,10 @@ import {
   Thead,
   Tr,
 } from "@chakra-ui/react";
-import { Subject, SubjectDays, Teacher } from "@prisma/client";
-import {
-  json,
-  Link,
-  LoaderFunction,
-  useCatch,
-  useLoaderData,
-  useParams,
-} from "remix";
+import { json, Link, useCatch, useLoaderData, useParams } from "remix";
 import { db } from "~/services/db.server";
 
-export const loader: LoaderFunction = async () => {
+export const loader = async () => {
   const subjects = await db.subject.findMany({
     include: { teacher: true, subjectDays: true },
   });
@@ -31,10 +23,7 @@ export const loader: LoaderFunction = async () => {
 };
 
 export default function Subjects() {
-  const subjects =
-    useLoaderData<
-      (Subject & { teacher: Teacher; subjectDays: SubjectDays[] })[]
-    >();
+  const subjects = useLoaderData<typeof loader>();
   return (
     <>
       <Box bg="white" pt="4" pb="4" shadow="sm">
@@ -71,7 +60,7 @@ export default function Subjects() {
                   <Tr key={subject.id}>
                     <Td whiteSpace="nowrap">{subject.name}</Td>
                     <Td>
-                      {subject.teacher.name} ({subject.teacher.email})
+                      {subject.teacher?.name} ({subject.teacher?.email})
                     </Td>
                     <Td textAlign="right">
                       <Link to={`${subject.id}/edit`}>

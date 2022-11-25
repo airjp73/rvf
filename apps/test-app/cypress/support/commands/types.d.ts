@@ -7,5 +7,11 @@ declare namespace Cypress {
      * @example cy.visitWithoutJs("/teacher")
      */
     visitWithoutJs(url: string): void;
+
+    /**
+     * Custom command to ensure JS is loaded before continuing..
+     * @example cy.visit("/teacher").waitForJs()
+     */
+    waitForJs(): void;
   }
 }

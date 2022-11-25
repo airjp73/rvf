@@ -5,7 +5,7 @@
 describe("Sanity", () => {
   describe("Visiting without JS", () => {
     it("should not show a noscript message when javascript enabled", () => {
-      cy.visit("/noscript");
+      cy.visit("/noscript").waitForJs();
       cy.findByText("Is JS turned on?").should("exist");
       cy.findByText("JS is turned off").should("not.exist");
     });
@@ -17,7 +17,7 @@ describe("Sanity", () => {
     });
 
     it("should work with js even after a non-js test has been run", () => {
-      cy.visit("/noscript");
+      cy.visit("/noscript").waitForJs();
       cy.findByText("Is JS turned on?").should("exist");
       cy.findByText("JS is turned off").should("not.exist");
     });

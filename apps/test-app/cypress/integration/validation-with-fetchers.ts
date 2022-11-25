@@ -1,6 +1,6 @@
 describe("Validation with fetchers", () => {
   it("should support validating individual fields", () => {
-    cy.visit("/validation-fetcher");
+    cy.visit("/validation-fetcher").waitForJs();
 
     cy.findByLabelText("First Name").focus().blur();
     cy.findByText("First Name is a required field").should("exist");
@@ -29,7 +29,7 @@ describe("Validation with fetchers", () => {
   });
 
   it("should validate the whole form at once when submit clicked", () => {
-    cy.visit("/validation-fetcher");
+    cy.visit("/validation-fetcher").waitForJs();
 
     cy.findByText("Submit").click();
 

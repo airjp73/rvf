@@ -1,4 +1,4 @@
-import { useFetcher } from "@remix-run/react";
+import { FetcherWithComponents } from "@remix-run/react";
 import { createContext } from "react";
 
 export type InternalFormContextValue = {
@@ -6,7 +6,7 @@ export type InternalFormContextValue = {
   action?: string;
   subaction?: string;
   defaultValuesProp?: { [fieldName: string]: any };
-  fetcher?: ReturnType<typeof useFetcher>;
+  fetcher?: FetcherWithComponents<unknown>;
 };
 
 export const InternalFormContext =

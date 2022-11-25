@@ -2,6 +2,7 @@ import { MenuAlt2Icon } from "@heroicons/react/outline";
 import React, {
   FC,
   Fragment,
+  PropsWithChildren,
   useEffect,
   useState,
 } from "react";
@@ -125,7 +126,8 @@ const navSections: Section[] = [
   },
 ];
 
-export const Layout: FC = ({ children }) => {
+export type LayoutProps = PropsWithChildren<{}>;
+export const Layout = ({ children }: LayoutProps) => {
   const location = useLocation();
   const focusedProp = location.hash.replace("#", "");
   useEffect(() => {

@@ -1,6 +1,6 @@
 describe("Async Validation", () => {
   it("should support async validation", () => {
-    cy.visit("/validation-async");
+    cy.visit("/validation-async").waitForJs();
 
     cy.findByLabelText("First Name").focus().blur();
     cy.findByText("First Name is a required field").should("exist");

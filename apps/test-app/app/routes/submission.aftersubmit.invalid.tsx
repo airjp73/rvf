@@ -6,9 +6,7 @@ import { SubmitButton } from "~/components/SubmitButton";
 
 const validator = withZod(
   z.object({
-    testinput: z.literal("success", {
-      invalid_type_error: "Wrong input",
-    }),
+    testinput: z.literal("success"),
   })
 );
 

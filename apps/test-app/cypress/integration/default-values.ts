@@ -1,6 +1,6 @@
 describe("Validation", () => {
   it("should propagate default values to inputs", () => {
-    cy.visit("/default-values");
+    cy.visit("/default-values").waitForJs();
     cy.findByLabelText("First Name").should("have.value", "Jane");
     cy.findByLabelText("Last Name").should("have.value", "Doe");
     cy.findByLabelText("Email").should("have.value", "jane.doe@example.com");
@@ -87,7 +87,7 @@ describe("Validation", () => {
   });
 
   it("should maintain default value after the first render for nested values", () => {
-    cy.visit("/nested-defaults");
+    cy.visit("/nested-defaults").waitForJs();
     cy.findByTestId("check").should("contain", '"defaultChecked": true');
     cy.findByTestId("nestedCheckTrue").should(
       "contain",

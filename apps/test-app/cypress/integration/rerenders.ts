@@ -5,7 +5,7 @@
  */
 describe("Rerenders", () => {
   it("should only update when the validation state is different, not on every validate call", () => {
-    cy.visit("/rerenders");
+    cy.visit("/rerenders").waitForJs();
 
     // Put ourselves in onChange mode and reset the render count
     cy.findByLabelText("First Name").focus().blur();

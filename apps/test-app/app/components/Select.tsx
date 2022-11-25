@@ -1,12 +1,12 @@
-import { FC } from "react";
+import { FC, PropsWithChildren } from "react";
 import { useField } from "remix-validated-form";
 
-export type SelectProps = {
+export type SelectProps = PropsWithChildren<{
   name: string;
   label: string;
   multiple?: boolean;
   "data-testid"?: string;
-};
+}>;
 
 export const Select: FC<SelectProps> = ({
   name,

@@ -1,4 +1,5 @@
 import {
+  FetcherWithComponents,
   Form as RemixForm,
   FormMethod,
   useFetcher,
@@ -59,7 +60,7 @@ export type FormProps<DataType> = {
    * The form will use the fetcher for loading states, action data, etc
    * instead of the default form action.
    */
-  fetcher?: ReturnType<typeof useFetcher>;
+  fetcher?: FetcherWithComponents<any>;
   /**
    * Accepts an object of default values for the form
    * that will automatically be propagated to the form fields via `useField`.
