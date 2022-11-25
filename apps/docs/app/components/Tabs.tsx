@@ -1,14 +1,16 @@
 import { Tab } from "@headlessui/react";
 import classNames from "classnames";
-import React, { FC } from "react";
+import { ComponentType, FC } from "react";
 
-type TabsType = FC<
-  React.ComponentProps<typeof Tab.Group>
-> & {
-  List: FC<React.ComponentProps<typeof Tab.List>>;
-  Item: FC<React.ComponentProps<typeof Tab>>;
-  Panels: FC<React.ComponentProps<typeof Tab.Panels>>;
-  Panel: FC<React.ComponentProps<typeof Tab.Panel>>;
+type ExtractProps<T> = T extends ComponentType<infer P>
+  ? P
+  : T;
+
+type TabsType = FC<ExtractProps<typeof Tab.Group>> & {
+  List: FC<ExtractProps<typeof Tab.List>>;
+  Item: FC<ExtractProps<typeof Tab>>;
+  Panels: FC<ExtractProps<typeof Tab.Panels>>;
+  Panel: FC<ExtractProps<typeof Tab.Panel>>;
 };
 
 export const Tabs: TabsType = (props) => (
@@ -20,7 +22,7 @@ const TabItem: TabsType["Item"] = ({
   ...rest
 }) => (
   <Tab
-    className={({ selected }) =>
+    className={({ selected }: any) =>
       classNames(
         selected
           ? "bg-indigo-100 text-indigo-700"

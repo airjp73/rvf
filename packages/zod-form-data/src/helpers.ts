@@ -11,10 +11,12 @@ import {
 } from "zod";
 
 type InputType<DefaultType extends ZodTypeAny> = {
-  (): ZodEffects<DefaultType>;
-  <ProvidedType extends ZodTypeAny>(
-    schema: ProvidedType
-  ): ZodEffects<ProvidedType>;
+  (): ZodEffects<DefaultType, DefaultType["_output"], unknown>;
+  <ProvidedType extends ZodTypeAny>(schema: ProvidedType): ZodEffects<
+    ProvidedType,
+    ProvidedType["_output"],
+    unknown
+  >;
 };
 
 const stripEmpty = z.literal("").transform(() => undefined);
@@ -110,13 +112,18 @@ export const repeatable: InputType<ZodArray<any>> = (
  */
 export const repeatableOfType = <T extends ZodTypeAny>(
   schema: T
-): ZodEffects<ZodArray<T>> => repeatable(z.array(schema));
+): ZodEffects<ZodArray<T>, T["_output"], unknown> =>
+  repeatable(z.array(schema));
 
 const entries = z.array(z.tuple([z.string(), z.any()]));
 
 type FormDataType = {
-  <T extends z.ZodRawShape>(shape: T): ZodEffects<ZodObject<T>>;
-  <T extends z.ZodTypeAny>(schema: T): ZodEffects<T>;
+  <T extends z.ZodRawShape>(shape: T): ZodEffects<
+    ZodObject<T>,
+    ZodObject<T>["_output"],
+    unknown
+  >;
+  <T extends z.ZodTypeAny>(schema: T): ZodEffects<T, T["_output"], unknown>;
 };
 
 const safeParseJson = (jsonString: string) => {

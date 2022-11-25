@@ -15,6 +15,7 @@ import { Alert } from "~/components/Alert";
 import { FormInput } from "~/components/FormInput";
 import { SubmitButton } from "~/components/SubmitButton";
 import { db } from "~/examples/usernameExists/db";
+import type { loader as usernameExistsLoader } from "~/routes/username-exists";
 
 /**
  * The base schema for our form.
@@ -73,10 +74,8 @@ export const action: ActionFunction = async ({
  * An input component that checks if a username is taken.
  */
 const UsernameInput = () => {
-  const usernameCheckFetcher = useFetcher<{
-    usernameTaken: boolean;
-    suggestions: string[];
-  }>();
+  const usernameCheckFetcher =
+    useFetcher<typeof usernameExistsLoader>();
 
   const getUsernameMessage = () => {
     if (usernameCheckFetcher.state === "loading")

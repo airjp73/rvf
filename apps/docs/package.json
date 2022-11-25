@@ -16,7 +16,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@headlessui/react": "^1.4.2",
+    "@headlessui/react": "^1.7.4",
     "@heroicons/react": "^1.0.5",
     "@remix-run/react": "^1.7.6",
     "@remix-run/serve": "^1.7.6",
@@ -25,7 +25,7 @@
     "@rollup/plugin-commonjs": "^21.0.1",
     "@rollup/plugin-json": "^4.1.0",
     "classnames": "^2.3.1",
-    "framer-motion": "^5.5.5",
+    "framer-motion": "^7.6.12",
     "highlight.js": "^11.3.1",
     "nanoid": "^3.3.4",
     "outdent": "^0.8.0",

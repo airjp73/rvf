@@ -1,7 +1,11 @@
-import { Children, FC } from "react";
+import { Children, PropsWithChildren } from "react";
 import { Tabs } from "./Tabs";
 
-export const CodeExample: FC = ({ children }) => {
+export type CodeExampleProps = PropsWithChildren<{}>;
+
+export const CodeExample = ({
+  children,
+}: CodeExampleProps) => {
   if (Children.count(children) !== 2)
     throw new Error("Need example and code");
   const [example, code] = Children.toArray(children);

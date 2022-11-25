@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import {
   ComponentProps,
   FC,
+  PropsWithChildren,
   ReactElement,
   useEffect,
 } from "react";
@@ -23,11 +24,11 @@ export type SidebarNavItemProps = {
   className?: string;
 };
 
-export type SlideOutProps = {
+export type SlideOutProps = PropsWithChildren<{
   onClose: () => void;
   open: boolean;
   bottomContent?: ReactElement;
-};
+}>;
 
 export type SidebarType = FC<
   SidebarProps & ComponentProps<typeof motion.div>

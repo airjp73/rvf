@@ -2,16 +2,14 @@
  * Endpoint used for asyncValidation example
  */
 
-import { json, LoaderFunction } from "remix";
+import { json, LoaderArgs } from "remix";
 import { zfd } from "zod-form-data";
 
 const schema = zfd.formData({
   username: zfd.text(),
 });
 
-export const loader: LoaderFunction = async ({
-  request,
-}) => {
+export const loader = async ({ request }: LoaderArgs) => {
   const params = new URL(request.url).searchParams;
   const { username } = schema.parse(params);
 

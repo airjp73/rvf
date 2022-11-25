@@ -23,6 +23,7 @@
     "prepare": "husky install"
   },
   "dependencies": {
+    "@headlessui/react": "^1.7.4",
     "@remix-run/vercel": "^1.2.1",
     "vite": "^2.9.5"
   },

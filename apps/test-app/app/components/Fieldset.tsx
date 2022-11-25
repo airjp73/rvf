@@ -1,11 +1,11 @@
-import { FC } from "react";
+import { FC, PropsWithChildren } from "react";
 import { useField } from "remix-validated-form";
 
-type FieldsetProps = {
+type FieldsetProps = PropsWithChildren<{
   label: string;
   name: string;
   form?: string;
-};
+}>;
 
 export const Fieldset: FC<FieldsetProps> = ({
   children,
