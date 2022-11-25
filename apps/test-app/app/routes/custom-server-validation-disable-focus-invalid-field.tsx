@@ -22,7 +22,7 @@ export const action: ActionFunction = async () => {
   );
 };
 
-export default function CustomServerValidationFocusInvalidField() {
+export default function CustomServerValidationDisableFocusInvalidField() {
   return (
     <ValidatedForm
       validator={validator}
