@@ -57,6 +57,9 @@ function Document({
   children: React.ReactNode;
   title?: string;
 }) {
+  const [hydrated, setHydrated] = React.useState(false);
+  React.useEffect(() => setHydrated(true), []);
+
   return (
     <html lang="en">
       <head>
@@ -65,6 +68,13 @@ function Document({
         {title ? <title>{title}</title> : null}
         <Meta />
         <Links />
+        {hydrated ? (
+          <meta
+            data-testid="hydrated"
+            name="hydrated"
+            content={hydrated ? "true" : "false"}
+          />
+        ) : null}
       </head>
       <body>
         {children}

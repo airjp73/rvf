@@ -18,3 +18,7 @@ Cypress.Commands.add("visitWithoutJs", (url) => {
   iframe.sandbox = "allow-forms";
   return cy.visit(url);
 });
+
+Cypress.Commands.add("waitForJs", () => {
+  return cy.findByTestId("hydrated");
+});

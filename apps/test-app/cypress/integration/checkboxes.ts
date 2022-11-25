@@ -1,6 +1,6 @@
 describe("Checkboxes", () => {
   it("should handle multiple checkboxes with the same name", () => {
-    cy.visit("/checkboxes");
+    cy.visit("/checkboxes").waitForJs();
 
     cy.findByText("Submit").click();
     cy.findByText("Please choose at least one");

@@ -35,7 +35,7 @@ const expectAllValues = (values: any) => {
 
 describe("Context hooks", () => {
   it("should return the correct values", () => {
-    cy.visit("/context-hooks");
+    cy.visit("/context-hooks").waitForJs();
     expectAllValues({
       isValid: true,
       hasBeenSubmitted: false,
