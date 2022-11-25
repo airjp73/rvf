@@ -8,8 +8,10 @@
   ],
   "scripts": {
     "build-docs": "turbo run build --scope=docs --include-dependencies --no-deps --force",
+    "typecheck": "turbo run typecheck",
     "sample-app": "yarn dev --scope=sample-app",
     "test-app": "yarn dev --scope=test-app",
+    "postinstall": "turbo run setup-remix",
     "docs": "yarn dev --scope=docs --include-dependencies",
     "dev": "turbo run dev --parallel --include-dependencies --no-cache",
     "test": "turbo run test",
@@ -56,6 +58,12 @@
         ]
       },
       "lint": {
+        "outputs": []
+      },
+      "typecheck": {
+        "outputs": []
+      },
+      "setup-remix": {
         "outputs": []
       },
       "test": {

@@ -10,8 +10,9 @@
     "dev:remix": "remix dev",
     "cy:open": "cypress open",
     "cy:run": "cypress run",
-    "postinstall": "remix setup node",
-    "start": "remix-serve build"
+    "setup-remix": "remix setup node",
+    "start": "remix-serve build",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@headlessui/react": "^1.5.0",

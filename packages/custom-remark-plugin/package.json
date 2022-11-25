@@ -3,7 +3,8 @@
   "version": "0.0.1",
   "main": "dist/index.js",
   "scripts": {
-    "build": "rollup -c"
+    "build": "rollup -c",
+    "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
     "@rollup/plugin-node-resolve": "^13.1.1",

@@ -12,14 +12,15 @@
     "dev": "concurrently \"yarn dev:remix\" \"yarn dev:css\"",
     "dev:remix": "remix dev",
     "dev:css": "TAILWIND_MODE=watch postcss ./styles/index.css --output app/styles/index.css --watch",
-    "postinstall": "remix setup node"
+    "setup-remix": "remix setup node",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@headlessui/react": "^1.4.2",
     "@heroicons/react": "^1.0.5",
-    "@remix-run/react": "^1.6.5",
-    "@remix-run/serve": "^1.6.5",
-    "@remix-run/vercel": "^1.6.5",
+    "@remix-run/react": "^1.7.6",
+    "@remix-run/serve": "^1.7.6",
+    "@remix-run/vercel": "^1.7.6",
     "@remix-validated-form/with-zod": "*",
     "@rollup/plugin-commonjs": "^21.0.1",
     "@rollup/plugin-json": "^4.1.0",
@@ -37,7 +38,7 @@
     "zod-form-data": "*"
   },
   "devDependencies": {
-    "@remix-run/dev": "^1.6.5",
+    "@remix-run/dev": "^1.7.6",
     "@rollup/plugin-node-resolve": "^13.1.3",
     "@tailwindcss/typography": "^0.5.0",
     "@types/react": "^18.0.9",
