@@ -7,7 +7,7 @@
   "scripts": {
     "build": "remix build",
     "dev": "remix dev",
-    "setup-remix": "remix setup node",
+    "postinstall": "remix setup node",
     "start": "remix-serve build",
     "typecheck": "tsc --noEmit"
   },
