@@ -60,9 +60,9 @@ This adds a hidden input to the form with the value of the subaction.
 The purpose of this is to allow you to handle multiple forms in the same action function.
 
 ```tsx
-export const action: ActionFunction = async ({
+export const action = async ({
   request,
-}) => {
+}: DataFunctionArgs) => {
   const data = await request.formData();
 
   // This will be `form1` or `form2`
@@ -133,7 +133,7 @@ A ref to the underlying form element.
 
 <PropHeader prop="fetcher" type="Fetcher" optional />
 
-Allows you to provide a `fetcher` from remix's `useFetcher` hook.
+Allows you to provide a `fetcher` from Remix's `useFetcher` hook.
 The form will use the fetcher for loading states, action data, etc
 instead of the default form action. This can be useful for when you need to
 submit the form programatically but still have validation errors show up.

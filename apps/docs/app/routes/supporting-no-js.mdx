@@ -5,7 +5,7 @@ meta:
 
 # Supporting users without JS
 
-This library will support the no-JS use case as long as `remix` does.
+This library will support the no-JS use case as long as Remix does.
 However, the way you go about doing this may vary depending on how important this is to you.
 
 ## If supporting users without JS is important for you
@@ -33,7 +33,7 @@ This does come with some caveats, which you can read more about in the [validati
 Most of the time your code will look like this:
 
 ```tsx
-const action: ActionFunction = async ({ request }) => {
+const action = async ({ request }: DataFunctionArgs) => {
   const result = await validator.validate(
     await request.formData()
   );

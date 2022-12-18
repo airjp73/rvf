@@ -12,7 +12,8 @@ import {
   Thead,
   Tr,
 } from "@chakra-ui/react";
-import { json, Link, useCatch, useLoaderData, useParams } from "remix";
+import { json } from "@remix-run/node";
+import { Link, useCatch, useLoaderData, useParams } from "@remix-run/react";
 import { db } from "~/services/db.server";
 
 export const loader = async () => {

@@ -1,6 +1,6 @@
 # Remix Validated Form
 
-A form library built for [remix](https://remix.run) to make validation easy.
+A form library built for [Remix](https://remix.run) to make validation easy.
 
 - Client-side, field-by-field and form-level validation
 - Re-use validation on the server
@@ -107,7 +107,8 @@ export const MySubmitButton = () => {
 Now that we have our components, making a form is easy!
 
 ```tsx
-import { ActionFunction, LoaderFunction, redirect, useLoaderData } from "remix";
+import { DataFunctionArgs, json, redirect } from "@remix-run/node";
+import { useLoaderData } from "@remix-run/react";
 import * as yup from "yup";
 import { validationError, ValidatedForm, withYup } from "remix-validated-form";
 import { MyInput, MySubmitButton } from "~/components/Input";
@@ -121,7 +122,7 @@ const validator = withYup(
   })
 );
 
-export const action: ActionFunction = async ({ request }) => {
+export const action = async ({ request }: DataFunctionArgs) => {
   const fieldValues = await validator.validate(await request.formData());
   if (fieldValues.error) return validationError(fieldValues.error);
   const { firstName, lastName, email } = fieldValues.data;
@@ -131,18 +132,18 @@ export const action: ActionFunction = async ({ request }) => {
   return redirect("/");
 };
 
-export const loader: LoaderFunction = () => {
-  return {
+export const loader = async (args: DataFunctionArgs) => {
+  return json({
     defaultValues: {
       firstName: "Jane",
       lastName: "Doe",
       email: "jane.doe@example.com",
     },
-  };
+  });
 };
 
 export default function MyForm() {
-  const { defaultValues } = useLoaderData();
+  const { defaultValues } = useLoaderData<typeof loader>();
   return (
     <ValidatedForm
       validator={validator}
@@ -164,7 +165,7 @@ You can use nested objects and arrays by using a period (`.`) or brackets (`[]`)
 
 ```tsx
 export default function MyForm() {
-  const { defaultValues } = useLoaderData();
+  const { defaultValues } = useLoaderData<typeof loader>();
   return (
     <ValidatedForm
       validator={validator}
@@ -257,7 +258,7 @@ We recommend this approach since the validation will still work even if JS is di
 ## How do we trigger toast messages on success?
 
 Problem: how do we trigger a toast message on success if the action redirects away from the form route? The Remix solution is to flash a message in the session and pick this up in a loader function, probably in root.tsx
-See the [Remix](https://remix.run/docs/en/v1/api/remix#sessionflashkey-value) documentation for more information.
+See the [Remix](https://remix.run/docs/en/v1/utils/sessions#sessionflashkey-value) documentation for more information.
 
 ## Why is my cancel button triggering form submission?
 

@@ -1,5 +1,5 @@
+import { useActionData } from "@remix-run/react";
 import { withYup } from "@remix-validated-form/with-yup";
-import { useActionData } from "remix";
 import { ValidatedForm } from "remix-validated-form";
 import * as yup from "yup";
 import { Input } from "~/components/Input";

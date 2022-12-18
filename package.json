@@ -11,21 +11,20 @@
     "typecheck": "turbo run typecheck",
     "sample-app": "yarn dev --scope=sample-app",
     "test-app": "yarn dev --scope=test-app",
-    "postinstall": "turbo run setup-remix",
     "docs": "yarn dev --scope=docs --include-dependencies",
     "dev": "turbo run dev --parallel --include-dependencies --no-cache",
     "test": "turbo run test",
     "vitest": "vitest",
     "vitest:run": "vitest run",
-    "lint": "eslint .",
-    "prettier": "prettier . --write",
+    "lint": "eslint --cache .",
+    "prettier": "prettier --cache --check .",
     "build": "turbo run build",
     "prepare": "husky install"
   },
   "dependencies": {
     "@headlessui/react": "^1.7.4",
-    "@remix-run/vercel": "^1.2.1",
-    "vite": "^2.9.5"
+    "@remix-run/vercel": "^1.9.0",
+    "vite": "^4.0.2"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.42.0",
@@ -45,41 +44,7 @@
     "lint-staged": "^12.1.2",
     "prettier": "^2.7.1",
     "turbo": "latest",
-    "vitest": "^0.21.0"
-  },
-  "turbo": {
-    "pipeline": {
-      "build": {
-        "dependsOn": [
-          "^build"
-        ],
-        "outputs": [
-          "build/**",
-          "browser/**"
-        ]
-      },
-      "lint": {
-        "outputs": []
-      },
-      "typecheck": {
-        "outputs": []
-      },
-      "setup-remix": {
-        "outputs": []
-      },
-      "test": {
-        "dependsOn": [
-          "^build"
-        ],
-        "outputs": []
-      },
-      "dev": {
-        "dependsOn": [
-          "^build"
-        ],
-        "cache": false
-      }
-    }
+    "vitest": "^0.25.8"
   },
   "engines": {
     "npm": ">=7.0.0",
@@ -87,7 +52,7 @@
   },
   "lint-staged": {
     "**/*.{ts,tsx,js,jsx}": [
-      "prettier --write",
+      "prettier --cache --write",
       "eslint --cache --fix"
     ]
   }

@@ -1,6 +1,6 @@
+import { DataFunctionArgs, json } from "@remix-run/node";
 import { withYup } from "@remix-validated-form/with-yup";
 import { useRef } from "react";
-import { ActionFunction, json } from "remix";
 import { ValidatedForm } from "remix-validated-form";
 import * as yup from "yup";
 import { Input } from "~/components/Input";
@@ -9,7 +9,7 @@ import { SubmitButton } from "~/components/SubmitButton";
 const schema = yup.object({});
 const validator = withYup(schema);
 
-export const action: ActionFunction = async () => {
+export const action = async (args: DataFunctionArgs) => {
   return json({ message: "Submitted!" });
 };
 

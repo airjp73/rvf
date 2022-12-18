@@ -2,7 +2,7 @@
  * Endpoint used for asyncValidation example
  */
 
-import { json, LoaderArgs } from "remix";
+import { json, LoaderArgs } from "@remix-run/node";
 import { zfd } from "zod-form-data";
 
 const schema = zfd.formData({

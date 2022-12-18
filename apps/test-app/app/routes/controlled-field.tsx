@@ -1,6 +1,7 @@
+import { DataFunctionArgs, json } from "@remix-run/node";
+import { useActionData } from "@remix-run/react";
 import { withZod } from "@remix-validated-form/with-zod";
 import { useState } from "react";
-import { ActionFunction, useActionData } from "remix";
 import {
   ValidatedForm,
   useControlField,
@@ -19,10 +20,10 @@ const validator = withZod(
   })
 );
 
-export const action: ActionFunction = async ({ request }) => {
+export const action = async ({ request }: DataFunctionArgs) => {
   const result = await validator.validate(await request.formData());
   if (result.error) return validationError(result.error);
-  return { message: `Color chosen is ${result.data.myField}` };
+  return json({ message: `Color chosen is ${result.data.myField}` });
 };
 
 const Controlled = () => {
@@ -90,7 +91,7 @@ function* range(min: number, max: number) {
 }
 
 export default function ControlledField() {
-  const data = useActionData();
+  const data = useActionData<typeof action>();
   const [count, setCount] = useState(1);
   const update = useUpdateControlledField("test-form");
   return (
@@ -100,7 +101,7 @@ export default function ControlledField() {
       method="post"
       defaultValues={{ myField: "green" as any, text: "" as any }}
     >
-      {data?.message && <div>{data.message}</div>}
+      {data && "message" in data && <div>{data.message}</div>}
       <div style={{ margin: "1rem" }}>
         <button type="button" onClick={() => setCount((prev) => prev + 1)}>
           +

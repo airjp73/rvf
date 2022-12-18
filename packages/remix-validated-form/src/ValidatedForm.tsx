@@ -2,7 +2,6 @@ import {
   FetcherWithComponents,
   Form as RemixForm,
   FormMethod,
-  useFetcher,
   useSubmit,
 } from "@remix-run/react";
 import React, {
@@ -56,7 +55,7 @@ export type FormProps<DataType> = {
     event: React.FormEvent<HTMLFormElement>
   ) => void | Promise<void>;
   /**
-   * Allows you to provide a `fetcher` from remix's `useFetcher` hook.
+   * Allows you to provide a `fetcher` from Remix's `useFetcher` hook.
    * The form will use the fetcher for loading states, action data, etc
    * instead of the default form action.
    */
@@ -346,8 +345,8 @@ export function ValidatedForm<DataType>({
         return;
       }
 
-      // We deviate from the remix code here a bit because of our async submit.
-      // In remix's `FormImpl`, they use `event.currentTarget` to get the form,
+      // We deviate from the Remix code here a bit because of our async submit.
+      // In Remix's `FormImpl`, they use `event.currentTarget` to get the form,
       // but we already have the form in `formRef.current` so we can just use that.
       // If we use `event.currentTarget` here, it will break because `currentTarget`
       // will have changed since the start of the submission.

@@ -1,5 +1,6 @@
+import { DataFunctionArgs, json } from "@remix-run/node";
+import { useActionData } from "@remix-run/react";
 import { withZod } from "@remix-validated-form/with-zod";
-import { ActionFunction, json, useActionData } from "remix";
 import {
   ValidatedForm,
   validationError,
@@ -24,9 +25,9 @@ export const validator = withZod(
   })
 );
 
-export const action: ActionFunction = async ({
+export const action = async ({
   request,
-}) => {
+}: DataFunctionArgs) => {
   const data = await validator.validate(
     await request.formData()
   );

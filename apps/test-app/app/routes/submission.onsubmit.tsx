@@ -1,5 +1,6 @@
+import { DataFunctionArgs, json } from "@remix-run/node";
+import { useActionData } from "@remix-run/react";
 import { withZod } from "@remix-validated-form/with-zod";
-import { ActionFunction, json, useActionData } from "remix";
 import { ValidatedForm } from "remix-validated-form";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
@@ -12,13 +13,13 @@ const validator = withZod(
   })
 );
 
-export const action: ActionFunction = async () => {
+export const action = async (args: DataFunctionArgs) => {
   await new Promise((resolve) => setTimeout(resolve, 500));
   return json({ message: "Submitted!" });
 };
 
 export default function FrontendValidation() {
-  const actionData = useActionData();
+  const actionData = useActionData<typeof action>();
   return (
     <>
       {actionData?.message && <h1>{actionData.message}</h1>}

@@ -1,12 +1,11 @@
 import { MenuAlt2Icon } from "@heroicons/react/outline";
+import { useLocation, useMatches } from "@remix-run/react";
 import React, {
-  FC,
   Fragment,
   PropsWithChildren,
   useEffect,
   useState,
 } from "react";
-import { useLocation, useMatches } from "remix";
 import { Sidebar } from "../components/Sidebar";
 import { Footer } from "./Footer";
 import { GithubIcon } from "./GithubIcon";

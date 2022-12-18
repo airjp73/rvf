@@ -1,4 +1,4 @@
-import * as React from "react";
+import type { LinksFunction } from "@remix-run/node";
 import {
   Link,
   Links,
@@ -9,8 +9,8 @@ import {
   ScrollRestoration,
   useCatch,
   useLocation,
-} from "remix";
-import type { LinksFunction } from "remix";
+} from "@remix-run/react";
+import * as React from "react";
 import darkStylesUrl from "~/styles/dark.css";
 import deleteMeRemixStyles from "~/styles/demos/remix.css";
 import globalStylesUrl from "~/styles/global.css";
@@ -81,7 +81,7 @@ function Document({
         <RouteChangeAnnouncement />
         <ScrollRestoration />
         <Scripts />
-        {process.env.NODE_ENV === "development" && <LiveReload />}
+        <LiveReload />
       </body>
     </html>
   );

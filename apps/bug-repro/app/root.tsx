@@ -1,3 +1,4 @@
+import type { MetaFunction } from "@remix-run/node";
 import {
   Links,
   LiveReload,
@@ -5,8 +6,7 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
-} from "remix";
-import type { MetaFunction } from "remix";
+} from "@remix-run/react";
 
 export const meta: MetaFunction = () => {
   return { title: "New Remix App" };
@@ -25,7 +25,7 @@ export default function App() {
         <Outlet />
         <ScrollRestoration />
         <Scripts />
-        {process.env.NODE_ENV === "development" && <LiveReload />}
+        <LiveReload />
       </body>
     </html>
   );

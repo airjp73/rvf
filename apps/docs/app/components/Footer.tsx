@@ -2,8 +2,8 @@ import {
   ArrowLeftIcon,
   ArrowRightIcon,
 } from "@heroicons/react/outline";
+import { Link } from "@remix-run/react";
 import classNames from "classnames";
-import { Link } from "remix";
 
 type FooterProps = {
   next?: {

@@ -1,5 +1,6 @@
 import { Dialog } from "@headlessui/react";
 import { XIcon } from "@heroicons/react/solid";
+import { useTransition, NavLink } from "@remix-run/react";
 import classNames from "classnames";
 import { AnimatePresence, motion } from "framer-motion";
 import {
@@ -9,7 +10,6 @@ import {
   ReactElement,
   useEffect,
 } from "react";
-import { useTransition, NavLink } from "remix";
 
 export type SidebarProps = {
   className?: string;

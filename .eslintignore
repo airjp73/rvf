@@ -2,3 +2,6 @@
 _build
 build
 dist
+node_modules
+.turbo
+.cache

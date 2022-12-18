@@ -1,11 +1,12 @@
+import { DataFunctionArgs, json } from "@remix-run/node";
+import { useActionData } from "@remix-run/react";
 import { withYup } from "@remix-validated-form/with-yup";
-import { ActionFunction, json, useActionData } from "remix";
 import { useFormContext, ValidatedForm } from "remix-validated-form";
 import * as yup from "yup";
 import { Input } from "~/components/Input";
 import { SubmitButton } from "~/components/SubmitButton";
 
-export const action: ActionFunction = async ({ request }) => {
+export const action = async ({ request }: DataFunctionArgs) => {
   const data = await request.formData();
   await new Promise((resolve) => setTimeout(resolve, 500));
   return json({ message: `Submitted ${data.get("mySubmit")}` });
@@ -65,7 +66,7 @@ const DisplayContext = ({
 };
 
 export default function FrontendValidation() {
-  const actionData = useActionData();
+  const actionData = useActionData<typeof action>();
 
   // Verify we don't get an infinite loop
   useFormContext("test-form");

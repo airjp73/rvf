@@ -1,7 +1,8 @@
 import { Dialog } from "@headlessui/react";
+import { DataFunctionArgs, json } from "@remix-run/node";
+import { useActionData } from "@remix-run/react";
 import { withYup } from "@remix-validated-form/with-yup";
 import { useState } from "react";
-import { ActionFunction, json, useActionData } from "remix";
 import { ValidatedForm } from "remix-validated-form";
 import * as yup from "yup";
 import { SubmitButton } from "~/components/SubmitButton";
@@ -9,11 +10,11 @@ import { SubmitButton } from "~/components/SubmitButton";
 const schema = yup.object({});
 const validator = withYup(schema);
 
-export const action: ActionFunction = async () =>
+export const action = async (args: DataFunctionArgs) =>
   json({ message: "Submitted to in-route action." });
 
 export default function FrontendValidation() {
-  const data = useActionData();
+  const data = useActionData<typeof action>();
   const [isOpen, setIsOpen] = useState(false);
 
   return (

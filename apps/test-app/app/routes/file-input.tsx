@@ -1,13 +1,14 @@
 import {
+  DataFunctionArgs,
+  unstable_parseMultipartFormData,
+  json,
+} from "@remix-run/node";
+import { useActionData } from "@remix-run/react";
+import {
   unstable_composeUploadHandlers,
   unstable_createMemoryUploadHandler,
 } from "@remix-run/server-runtime";
 import { withZod } from "@remix-validated-form/with-zod";
-import {
-  ActionFunction,
-  useActionData,
-  unstable_parseMultipartFormData,
-} from "remix";
 import { validationError, ValidatedForm } from "remix-validated-form";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
@@ -46,25 +47,27 @@ const testUploadHandler = unstable_composeUploadHandlers(async ({ name }) => {
   return "testFile";
 }, unstable_createMemoryUploadHandler());
 
-export const action: ActionFunction = async ({ request }) => {
+export const action = async ({ request }: DataFunctionArgs) => {
   const result = await serverValidator.validate(
     await unstable_parseMultipartFormData(request, testUploadHandler)
   );
   if (result.error) return validationError(result.error);
   const { myFile, description } = result.data;
 
-  return { message: `Uploaded ${myFile} with description ${description}` };
+  return json({
+    message: `Uploaded ${myFile} with description ${description}`,
+  });
 };
 
 export default function FrontendValidation() {
-  const actionData = useActionData();
+  const actionData = useActionData<typeof action>();
   return (
     <ValidatedForm
       validator={clientValidator}
       method="post"
       encType="multipart/form-data"
     >
-      {actionData && <h1>{actionData.message}</h1>}
+      {actionData && "message" in actionData && <h1>{actionData.message}</h1>}
       <Input name="myFile" label="My File" type="file" />
       <Input name="description" label="Description" />
       <SubmitButton />
