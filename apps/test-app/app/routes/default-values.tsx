@@ -10,8 +10,10 @@ import { SubmitButton } from "~/components/SubmitButton";
 
 const validator = withZod(
   z.object({
-    firstName: zfd.text(),
-    lastName: zfd.text(),
+    name: z.object({
+      first: zfd.text(),
+      last: zfd.text(),
+    }),
     email: zfd.text(z.string().email()),
     age: zfd.numeric(),
     likesPizza: zfd.checkbox(),
@@ -27,7 +29,8 @@ type LoaderData = {
 export const loader = (args: DataFunctionArgs) => {
   return json<LoaderData>({
     defaultValues: {
-      firstName: "Jane",
+      "name.first": "Jane",
+      name: { last: "Doe" },
       lastName: "Doe",
       email: "jane.doe@example.com",
       age: 26,
@@ -46,8 +49,8 @@ export default function DefaultValues() {
       method="post"
       defaultValues={defaultValues}
     >
-      <Input name="firstName" label="First Name" />
-      <Input name="lastName" label="Last Name" />
+      <Input name="name.first" label="First Name" />
+      <Input name="name.last" label="Last Name" />
       <Input name="email" label="Email" />
       <Input name="age" type="number" label="Age" />
       <Input
