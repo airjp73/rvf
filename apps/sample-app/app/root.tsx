@@ -7,11 +7,10 @@ import {
   Scripts,
   ScrollRestoration,
   useCatch,
-} from "remix";
+} from "@remix-run/react";
 import { ErrorBox } from "./components/ErrorBox";
 
-// https://remix.run/api/conventions#default-export
-// https://remix.run/api/conventions#route-filenames
+// https://remix.run/docs/en/v1/route/component
 export default function App() {
   return (
     <Document>
@@ -20,7 +19,7 @@ export default function App() {
   );
 }
 
-// https://remix.run/docs/en/v1/api/conventions#errorboundary
+// https://remix.run/docs/en/v1/route/error-boundary
 export function ErrorBoundary({ error }: { error: Error }) {
   console.error(error);
   return (
@@ -30,7 +29,7 @@ export function ErrorBoundary({ error }: { error: Error }) {
   );
 }
 
-// https://remix.run/docs/en/v1/api/conventions#catchboundary
+// https://remix.run/docs/en/v1/route/catch-boundary
 export function CatchBoundary() {
   let caught = useCatch();
 
@@ -85,7 +84,7 @@ function Document({
 
         <ScrollRestoration />
         <Scripts />
-        {process.env.NODE_ENV === "development" && <LiveReload />}
+        <LiveReload />
       </body>
     </html>
   );

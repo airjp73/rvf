@@ -1,5 +1,5 @@
 // Copied from here: https://github.com/kevin940726/remark-code-import/blob/master/index.js
-// This is a workaround for remix not working with this for some reason
+// This is a workaround for Remix not working with this for some reason
 import fs from "fs";
 import { EOL } from "os";
 import path from "path";

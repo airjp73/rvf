@@ -2,7 +2,7 @@
 
 Validation helpers for [zod](https://github.com/colinhacks/zod)
 specifically for parsing `FormData` or `URLSearchParams`.
-This is particularly useful when using [remix](https://github.com/remix-run/remix)
+This is particularly useful when using [Remix](https://github.com/remix-run/remix)
 and combos well with [remix-validated-form](https://github.com/airjp73/remix-validated-form).
 
 The main goal of this library is deal with the pain point that everything in `FormData` is a string.
@@ -20,7 +20,7 @@ const schema = zfd.formData({
   likesPizza: zfd.checkbox(),
 });
 
-// This example is using `remix`, but it will work
+// This example is using Remix, but it will work
 // with any `FormData` or `URLSearchParams` no matter where you get it from.
 export const action = async ({ request }) => {
   const { name, age, likesPizza } = schema.parse(await request.formData());

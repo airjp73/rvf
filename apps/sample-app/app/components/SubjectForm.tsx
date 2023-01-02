@@ -6,11 +6,11 @@ import {
   Container,
   VStack,
 } from "@chakra-ui/react";
+import { useNavigate } from "@remix-run/react";
 import { withZod } from "@remix-validated-form/with-zod";
 import { useState } from "react";
-import { useNavigate } from "remix";
 import { ValidatedForm } from "remix-validated-form";
-import * as z from "zod";
+import { z } from "zod";
 import { FormInput } from "./FormInput";
 import { FormSelect } from "./FormSelect";
 import { SubmitButton } from "./SubmitButton";

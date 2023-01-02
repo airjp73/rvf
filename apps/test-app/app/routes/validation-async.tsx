@@ -1,5 +1,6 @@
+import { DataFunctionArgs, json } from "@remix-run/node";
+import { useActionData } from "@remix-run/react";
 import { withZod } from "@remix-validated-form/with-zod";
-import { ActionFunction, useActionData } from "remix";
 import { validationError, ValidatedForm } from "remix-validated-form";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
@@ -29,19 +30,19 @@ const validator = withZod(
     })
 );
 
-export const action: ActionFunction = async ({ request }) => {
+export const action = async ({ request }: DataFunctionArgs) => {
   const result = await validator.validate(await request.formData());
   if (result.error) return validationError(result.error);
   const { firstName, lastName } = result.data;
 
-  return { message: `Submitted for ${firstName} ${lastName}!` };
+  return json({ message: `Submitted for ${firstName} ${lastName}!` });
 };
 
 export default function FrontendValidation() {
-  const actionData = useActionData();
+  const actionData = useActionData<typeof action>();
   return (
     <ValidatedForm validator={validator} method="post">
-      {actionData && <h1>{actionData.message}</h1>}
+      {actionData && "message" in actionData && <h1>{actionData.message}</h1>}
       <Input name="firstName" label="First Name" />
       <Input name="lastName" label="Last Name" />
       <SubmitButton />

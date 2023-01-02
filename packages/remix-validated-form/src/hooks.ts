@@ -23,7 +23,7 @@ import {
 
 /**
  * Returns whether or not the parent form is currently being submitted.
- * This is different from remix's `useTransition().submission` in that it
+ * This is different from Remix's `useTransition().submission` in that it
  * is aware of what form it's in and when _that_ form is being submitted.
  *
  * @param formId

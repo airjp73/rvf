@@ -1,13 +1,6 @@
 import { Box, Container, Heading } from "@chakra-ui/react";
-import {
-  ActionFunction,
-  json,
-  LoaderFunction,
-  redirect,
-  useCatch,
-  useLoaderData,
-  useParams,
-} from "remix";
+import { DataFunctionArgs, json, redirect } from "@remix-run/node";
+import { useCatch, useLoaderData, useParams } from "@remix-run/react";
 import { validationError } from "remix-validated-form";
 import { z } from "zod";
 import { ErrorBox } from "~/components/ErrorBox";
@@ -15,7 +8,7 @@ import { SubjectForm, subjectFormValidator } from "~/components/SubjectForm";
 import { db } from "~/services/db.server";
 import { SubjectComplete } from "~/types";
 
-export const loader: LoaderFunction = async ({ params }) => {
+export const loader = async ({ params }: DataFunctionArgs) => {
   const { id } = z.object({ id: z.string() }).parse(params);
 
   const subject = await db.subject.findUnique({
@@ -35,7 +28,7 @@ export const loader: LoaderFunction = async ({ params }) => {
   return json(subject);
 };
 
-export const action: ActionFunction = async ({ request, params }) => {
+export const action = async ({ request, params }: DataFunctionArgs) => {
   const { id } = z.object({ id: z.string() }).parse(params);
 
   const fieldValues = await subjectFormValidator.validate(

@@ -1,5 +1,6 @@
+import { json, DataFunctionArgs } from "@remix-run/node";
+import { useLoaderData } from "@remix-run/react";
 import { withZod } from "@remix-validated-form/with-zod";
-import { json, LoaderFunction, useLoaderData } from "remix";
 import { ValidatedForm, ValidatorData } from "remix-validated-form";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
@@ -23,7 +24,7 @@ type LoaderData = {
   defaultValues: ValidatorData<typeof validator>;
 };
 
-export const loader: LoaderFunction = () => {
+export const loader = (args: DataFunctionArgs) => {
   return json<LoaderData>({
     defaultValues: {
       firstName: "Jane",

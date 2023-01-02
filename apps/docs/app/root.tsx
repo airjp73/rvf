@@ -1,14 +1,16 @@
-import codeExampleTheme from "highlight.js/styles/atom-one-dark.css";
+import type {
+  MetaFunction,
+  LinksFunction,
+} from "@remix-run/node";
 import {
   Links,
-  LinksFunction,
   LiveReload,
   Meta,
   Outlet,
   Scripts,
   ScrollRestoration,
-} from "remix";
-import type { MetaFunction } from "remix";
+} from "@remix-run/react";
+import codeExampleTheme from "highlight.js/styles/atom-one-dark.css";
 import { Layout } from "./components/Layout";
 import stylesUrl from "./styles/index.css";
 
@@ -39,9 +41,7 @@ export default function App() {
         </Layout>
         <ScrollRestoration />
         <Scripts />
-        {process.env.NODE_ENV === "development" && (
-          <LiveReload />
-        )}
+        <LiveReload />
       </body>
     </html>
   );

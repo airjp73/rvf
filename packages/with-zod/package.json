@@ -1,18 +1,17 @@
 {
   "name": "@remix-validated-form/with-zod",
   "version": "2.0.5",
-  "browser": "./dist/remix-validated-form__with-zod.cjs.js",
-  "main": "./dist/remix-validated-form__with-zod.umd.js",
-  "module": "./dist/remix-validated-form__with-zod.es.js",
-  "types": "./dist/types/index.d.ts",
+  "main": "./dist/index.cjs.js",
+  "module": "./dist/index.esm.js",
+  "types": "./dist/index.d.ts",
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/airjp73/remix-validated-form"
   },
   "scripts": {
-    "dev": "tsc --module ESNext --outDir ./browser --watch",
-    "build": "vite build",
+    "dev": "tsup --watch",
+    "build": "tsup",
     "prepublishOnly": "npm run build",
     "typecheck": "tsc --noEmit"
   },
@@ -24,8 +23,8 @@
     "remix-validated-form": "*",
     "set-get": "*",
     "tsconfig": "*",
+    "tsup-config": "*",
     "typescript": "^4.8.4",
-    "vite-config": "*",
     "zod": "^3.11.6"
   }
 }

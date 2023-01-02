@@ -15,3 +15,5 @@ apps/test-app/cypress/screenshots
 dist
 stats.html
 .idea
+apps/docs/api/index.js
+apps/docs/api/index.js.map

@@ -1,6 +1,6 @@
 import { expect } from "vitest";
 
-// Copied from remix to use in tests
+// Copied from Remix to use in tests
 // https://github.com/remix-run/remix/blob/a69a631cb5add72d5fb24211ab2a0be367b6f2fd/packages/remix-node/form-data.ts
 export class TestFormData implements FormData {
   private _params: URLSearchParams;

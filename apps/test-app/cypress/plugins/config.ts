@@ -1,4 +1,4 @@
-// Plugin taken from Kent C Dodds' remix app
+// Plugin taken from Kent C Dodds' Remix app
 export default (
   on: Cypress.PluginEvents,
   config: Cypress.PluginConfigOptions

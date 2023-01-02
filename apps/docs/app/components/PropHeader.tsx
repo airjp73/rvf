@@ -1,6 +1,6 @@
 import { LinkIcon } from "@heroicons/react/outline";
+import { useLocation } from "@remix-run/react";
 import classNames from "classnames";
-import { useLocation } from "remix";
 
 type PropHeaderProps = {
   variant?: "h1" | "h3";

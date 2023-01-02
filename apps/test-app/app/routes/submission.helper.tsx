@@ -1,5 +1,6 @@
+import { DataFunctionArgs, json } from "@remix-run/node";
+import { useActionData } from "@remix-run/react";
 import { withYup } from "@remix-validated-form/with-yup";
-import { ActionFunction, json, useActionData } from "remix";
 import {
   useFormContext,
   ValidatedForm,
@@ -13,7 +14,7 @@ const schema = yup.object({
 });
 const validator = withYup(schema);
 
-export const action: ActionFunction = async ({ request }) => {
+export const action = async ({ request }: DataFunctionArgs) => {
   const result = await validator.validate(await request.formData());
   if (result.error)
     return validationError({ fieldErrors: { name: "Submitted invalid form" } });
@@ -24,10 +25,10 @@ export const action: ActionFunction = async ({ request }) => {
 
 export default function FrontendValidation() {
   const { submit } = useFormContext("test-form");
-  const data = useActionData();
+  const data = useActionData<typeof action>();
   return (
     <>
-      {data && <h1>{data.message}</h1>}
+      {data && "message" in data && <h1>{data.message}</h1>}
       <ValidatedForm validator={validator} method="post" id="test-form">
         <Input name="name" label="Name" />
         <button

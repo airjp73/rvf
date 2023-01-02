@@ -34,9 +34,9 @@ export const validator = withZod(
 We can re-use this validator in our action like this.
 
 ```tsx
-export const action: ActionFunction = async ({
+export const action = async ({
   request,
-}) => {
+}: DataFunctionArgs) => {
   const result = await validator.validate(
     await request.formData()
   );

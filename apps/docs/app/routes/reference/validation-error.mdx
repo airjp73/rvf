@@ -17,7 +17,7 @@ The `ValidatedForm` on the page will automatically receive these errors and disp
 Most of the time, your code will look like this:
 
 ```tsx
-const action: ActionFunction = async ({ request }) => {
+const action = async ({ request }: DataFunctionArgs) => {
   const result = await validator.validate(
     await request.formData()
   );
@@ -67,7 +67,7 @@ in the database before allowing the user to be created.
 In those cases, you can manually construct a `ValidatorError` object.
 
 ```tsx
-const action: ActionFunction = async ({ request }) => {
+const action = async ({ request }: DataFunctionArgs) => {
   // We should check the correctness of the data first,
   // before doing our custom check
   const result = await validator.validate(
@@ -107,4 +107,3 @@ Normally, if the server returns a validation error and javascript is disabled on
 the form will be completely reset and the user will have to fill the whole thing out again.
 By providing the submitted data, the `ValidatedForm` will set the `defaultValues` of the form
 to be the data that was submitted. This way, the user doesn't have to fill out the form again.
- 

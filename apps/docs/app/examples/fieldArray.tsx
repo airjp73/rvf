@@ -1,13 +1,11 @@
 import { PlusIcon, XIcon } from "@heroicons/react/outline";
-import { withZod } from "@remix-validated-form/with-zod";
-import { nanoid } from "nanoid";
+import { json, DataFunctionArgs } from "@remix-run/node";
 import {
-  json,
-  LoaderFunction,
   useActionData,
   useLoaderData,
-  ActionFunction,
-} from "remix";
+} from "@remix-run/react";
+import { withZod } from "@remix-validated-form/with-zod";
+import { nanoid } from "nanoid";
 import {
   FieldArray,
   ValidatedForm,
@@ -38,9 +36,9 @@ type ActionData = {
   todoTitles: string[];
 };
 
-export const action: ActionFunction = async ({
+export const action = async ({
   request,
-}) => {
+}: DataFunctionArgs) => {
   const result = await validator.validate(
     await request.formData()
   );
@@ -62,7 +60,7 @@ type LoaderData = {
   defaultValues: ValidatorData<typeof validator>;
 };
 
-export const loader: LoaderFunction = () => {
+export const loader = async (args: DataFunctionArgs) => {
   return json<LoaderData>({
     defaultValues: {
       name: "Somebody",

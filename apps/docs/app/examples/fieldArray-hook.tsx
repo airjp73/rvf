@@ -1,13 +1,11 @@
 import { PlusIcon, XIcon } from "@heroicons/react/outline";
-import { withZod } from "@remix-validated-form/with-zod";
-import { nanoid } from "nanoid";
+import { json, DataFunctionArgs } from "@remix-run/node";
 import {
-  json,
-  LoaderFunction,
   useActionData,
   useLoaderData,
-  ActionFunction,
-} from "remix";
+} from "@remix-run/react";
+import { withZod } from "@remix-validated-form/with-zod";
+import { nanoid } from "nanoid";
 import {
   useFieldArray,
   ValidatedForm,
@@ -37,14 +35,9 @@ export const validator = withZod(
   })
 );
 
-type ActionData = {
-  submittedName: string;
-  todoTitles: string[];
-};
-
-export const action: ActionFunction = async ({
+export const action = async ({
   request,
-}) => {
+}: DataFunctionArgs) => {
   const result = await validator.validate(
     await request.formData()
   );
@@ -56,7 +49,7 @@ export const action: ActionFunction = async ({
 
   // For the sake of this example, we're just going to return
   // some data and display an alert in the UI
-  return json<ActionData>({
+  return json({
     submittedName: name,
     todoTitles,
   });
@@ -66,7 +59,7 @@ type LoaderData = {
   defaultValues: ValidatorData<typeof validator>;
 };
 
-export const loader: LoaderFunction = () => {
+export const loader = async (args: DataFunctionArgs) => {
   return json<LoaderData>({
     defaultValues: {
       name: "Somebody",
@@ -82,8 +75,8 @@ export const loader: LoaderFunction = () => {
 };
 
 export default function Demo() {
-  const { defaultValues } = useLoaderData<LoaderData>();
-  const data = useActionData<ActionData>();
+  const { defaultValues } = useLoaderData<typeof loader>();
+  const data = useActionData<typeof action>();
   const [items, { push, remove }] = useFieldArray("todos", {
     formId: "usefieldarray-example-form",
   });
@@ -125,7 +118,7 @@ export default function Demo() {
         icon={<PlusIcon />}
         label="Add todo"
       />
-      {data && (
+      {data && "todoTitles" in data && (
         <Alert
           variant="info"
           title={`Hello, ${data.submittedName}!`}

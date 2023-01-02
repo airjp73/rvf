@@ -1,10 +1,9 @@
-import { withZod } from "@remix-validated-form/with-zod";
+import { DataFunctionArgs, json } from "@remix-run/node";
 import {
-  ActionFunction,
-  json,
   useActionData,
   useFetcher,
-} from "remix";
+} from "@remix-run/react";
+import { withZod } from "@remix-validated-form/with-zod";
 import {
   ValidatedForm,
   validationError,
@@ -44,9 +43,9 @@ const clientValidator = withZod(schema);
  * In our action we create a second, server-side validation that checks if the
  * username exists in the database already.
  */
-export const action: ActionFunction = async ({
+export const action = async ({
   request,
-}) => {
+}: DataFunctionArgs) => {
   const serverValidator = withZod(
     schema.refine(
       async (data) => {

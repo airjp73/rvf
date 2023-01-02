@@ -1,6 +1,6 @@
+import { DataFunctionArgs, json } from "@remix-run/node";
 import { withYup } from "@remix-validated-form/with-yup";
 import { useRef } from "react";
-import { ActionFunction, json } from "remix";
 import { ValidatedForm, validationError } from "remix-validated-form";
 import * as yup from "yup";
 import { Input } from "~/components/Input";
@@ -12,7 +12,7 @@ const schema = yup.object({
 });
 const validator = withYup(schema);
 
-export const action: ActionFunction = async ({ request }) => {
+export const action = async ({ request }: DataFunctionArgs) => {
   const formData = await request.formData();
 
   // Perform this check without the validator

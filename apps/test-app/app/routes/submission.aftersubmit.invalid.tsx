@@ -1,5 +1,5 @@
+import { DataFunctionArgs, json } from "@remix-run/node";
 import { withZod } from "@remix-validated-form/with-zod";
-import { ActionFunction, json } from "remix";
 import { ValidatedForm, validationError, useField } from "remix-validated-form";
 import { z } from "zod";
 import { SubmitButton } from "~/components/SubmitButton";
@@ -10,7 +10,7 @@ const validator = withZod(
   })
 );
 
-export const action: ActionFunction = async ({ request }) => {
+export const action = async ({ request }: DataFunctionArgs) => {
   const formData = await request.formData();
 
   // Perform this check without the validator
