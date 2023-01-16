@@ -57,6 +57,6 @@
     "lodash.get": "^4.4.2",
     "remeda": "^1.2.0",
     "tiny-invariant": "^1.2.0",
-    "zustand": "^4.0.0-rc.1"
+    "zustand": "^4.3.0"
   }
 }
