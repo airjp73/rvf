@@ -2,8 +2,8 @@
   "name": "remix-validated-form",
   "version": "4.6.7",
   "description": "Form component and utils for easy form validation in remix",
-  "main": "./dist/index.cjs.js",
-  "module": "./dist/index.esm.js",
+  "main": "./dist/index.js",
+  "exports": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "repository": {
     "type": "git",

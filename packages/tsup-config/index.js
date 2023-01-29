@@ -10,7 +10,4 @@ exports.config = defineConfig({
   define: {
     "import.meta.vitest": undefined,
   },
-  outExtension({ format }) {
-    return { js: `.${format}.js` };
-  },
 });
