@@ -11,12 +11,10 @@ import {
 } from "zod";
 
 type InputType<DefaultType extends ZodTypeAny> = {
-  (): ZodEffects<DefaultType, DefaultType["_output"], unknown>;
-  <ProvidedType extends ZodTypeAny>(schema: ProvidedType): ZodEffects<
-    ProvidedType,
-    ProvidedType["_output"],
-    unknown
-  >;
+  (): ZodEffects<DefaultType>;
+  <ProvidedType extends ZodTypeAny>(
+    schema: ProvidedType
+  ): ZodEffects<ProvidedType>;
 };
 
 const stripEmpty = z.literal("").transform(() => undefined);
@@ -35,7 +33,7 @@ const preprocessIfValid = (schema: ZodTypeAny) => (val: unknown) => {
  * If you want to customize the schema, you can pass that as an argument.
  */
 export const text: InputType<ZodString> = (schema = z.string()) =>
-  z.preprocess(preprocessIfValid(stripEmpty), schema);
+  z.preprocess(preprocessIfValid(stripEmpty), schema) as any;
 
 /**
  * Coerces numerical strings to numbers transforms empty strings to `undefined` before validating.
@@ -55,7 +53,7 @@ export const numeric: InputType<ZodNumber> = (schema = z.number()) =>
       ])
     ),
     schema
-  );
+  ) as any;
 
 type CheckboxOpts = {
   trueValue?: string;
@@ -88,7 +86,7 @@ export const file: InputType<z.ZodType<File>> = (schema = z.instanceof(File)) =>
   z.preprocess((val) => {
     //Empty File object on no user input, so convert to undefined
     return val instanceof File && val.size === 0 ? undefined : val;
-  }, schema);
+  }, schema) as any;
 
 /**
  * Preprocesses a field where you expect multiple values could be present for the same field name
@@ -103,7 +101,7 @@ export const repeatable: InputType<ZodArray<any>> = (
     if (Array.isArray(val)) return val;
     if (val === undefined) return [];
     return [val];
-  }, schema);
+  }, schema) as any;
 };
 
 /**
@@ -112,18 +110,13 @@ export const repeatable: InputType<ZodArray<any>> = (
  */
 export const repeatableOfType = <T extends ZodTypeAny>(
   schema: T
-): ZodEffects<ZodArray<T>, T["_output"], unknown> =>
-  repeatable(z.array(schema));
+): ZodEffects<ZodArray<T>> => repeatable(z.array(schema));
 
 const entries = z.array(z.tuple([z.string(), z.any()]));
 
 type FormDataType = {
-  <T extends z.ZodRawShape>(shape: T): ZodEffects<
-    ZodObject<T>,
-    ZodObject<T>["_output"],
-    unknown
-  >;
-  <T extends z.ZodTypeAny>(schema: T): ZodEffects<T, T["_output"], unknown>;
+  <T extends z.ZodRawShape>(shape: T): ZodEffects<ZodObject<T>>;
+  <T extends z.ZodTypeAny>(schema: T): ZodEffects<T>;
 };
 
 const safeParseJson = (jsonString: string) => {
@@ -179,9 +172,7 @@ export const preprocessFormData = processFormData as (
  * If the `FormData` contains multiple entries with the same field name,
  * it will automatically turn that field into an array.
  */
-export const formData: FormDataType = <T extends z.ZodRawShape | z.ZodTypeAny>(
-  shapeOrSchema: T
-) =>
+export const formData: FormDataType = (shapeOrSchema: any): any =>
   z.preprocess(
     processFormData,
     shapeOrSchema instanceof ZodType ? shapeOrSchema : z.object(shapeOrSchema)
