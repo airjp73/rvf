@@ -115,8 +115,12 @@ export const repeatableOfType = <T extends ZodTypeAny>(
 const entries = z.array(z.tuple([z.string(), z.any()]));
 
 type FormDataType = {
-  <T extends z.ZodRawShape>(shape: T): ZodEffects<ZodObject<T>>;
-  <T extends z.ZodTypeAny>(schema: T): ZodEffects<T>;
+  <T extends z.ZodRawShape>(shape: T): ZodEffects<
+    ZodObject<T>,
+    z.output<ZodObject<T>>,
+    FormData
+  >;
+  <T extends z.ZodTypeAny>(schema: T): ZodEffects<T, z.output<T>, FormData>;
 };
 
 const safeParseJson = (jsonString: string) => {
