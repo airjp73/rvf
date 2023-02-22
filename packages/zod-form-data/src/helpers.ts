@@ -118,7 +118,10 @@ type FormDataType = {
   <T extends z.ZodRawShape>(shape: T): ZodEffects<
     ZodObject<T>,
     z.output<ZodObject<T>>,
-    FormData
+    {
+      [Symbol.iterator](): IterableIterator<[string, FormDataEntryValue]>;
+      entries(): IterableIterator<[string, FormDataEntryValue]>;
+    }
   >;
   <T extends z.ZodTypeAny>(schema: T): ZodEffects<T, z.output<T>, FormData>;
 };
