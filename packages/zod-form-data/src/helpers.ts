@@ -114,16 +114,22 @@ export const repeatableOfType = <T extends ZodTypeAny>(
 
 const entries = z.array(z.tuple([z.string(), z.any()]));
 
+type FormDataLikeInput = {
+  [Symbol.iterator](): IterableIterator<[string, FormDataEntryValue]>;
+  entries(): IterableIterator<[string, FormDataEntryValue]>;
+};
+
 type FormDataType = {
   <T extends z.ZodRawShape>(shape: T): ZodEffects<
     ZodObject<T>,
     z.output<ZodObject<T>>,
-    {
-      [Symbol.iterator](): IterableIterator<[string, FormDataEntryValue]>;
-      entries(): IterableIterator<[string, FormDataEntryValue]>;
-    }
+    FormDataLikeInput
   >;
-  <T extends z.ZodTypeAny>(schema: T): ZodEffects<T, z.output<T>, FormData>;
+  <T extends z.ZodTypeAny>(schema: T): ZodEffects<
+    T,
+    z.output<T>,
+    FormDataLikeInput
+  >;
 };
 
 const safeParseJson = (jsonString: string) => {
