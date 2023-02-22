@@ -1,5 +1,5 @@
 import { DataFunctionArgs, json } from "@remix-run/node";
-import { useActionData } from "@remix-run/react";
+import { useActionData, useFetcher } from "@remix-run/react";
 import { withYup } from "@remix-validated-form/with-yup";
 import { ValidatedForm } from "remix-validated-form";
 import * as yup from "yup";
@@ -13,11 +13,18 @@ export const action = ({ request }: DataFunctionArgs) =>
 
 export default function FrontendValidation() {
   const data = useActionData<typeof action>();
+  const fetcher = useFetcher();
 
   return (
-    <ValidatedForm validator={validator} method="patch">
-      {data?.message && <p>{data.message}</p>}
-      <SubmitButton />
-    </ValidatedForm>
+    <>
+      <ValidatedForm validator={validator} method="patch">
+        {data?.message && <p>{data.message}</p>}
+        <SubmitButton label="Submit html form" />
+      </ValidatedForm>
+      <ValidatedForm fetcher={fetcher} validator={validator} method="patch">
+        {data?.message && <p>{data.message}</p>}
+        <SubmitButton label="Submit fetcher form" />
+      </ValidatedForm>
+    </>
   );
 }

@@ -146,7 +146,9 @@ describe("Submission", () => {
 
   it("should submit with the correct method", () => {
     cy.visit("/submission/method").waitForJs();
-    cy.findByText("Submit").click();
+    cy.findByText("Submit html form").click();
+    cy.findByText("Submitted with method PATCH").should("exist");
+    cy.findByText("Submit fetcher form").click();
     cy.findByText("Submitted with method PATCH").should("exist");
   });
 
