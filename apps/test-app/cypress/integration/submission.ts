@@ -67,7 +67,7 @@ describe("Submission", () => {
     cy.findByLabelText("Another input").should("have.value", "something"); // shouldn't reset this one
   });
 
-  it.only("should not reset with resetAfterSubmit when the form is invalid", () => {
+  it("should not reset with resetAfterSubmit when the form is invalid", () => {
     cy.visit("/submission/aftersubmit/invalid").waitForJs();
 
     cy.findByLabelText("Test input").type("fail");
@@ -149,7 +149,7 @@ describe("Submission", () => {
     cy.findByText("Submit html form").click();
     cy.findByText("Submitted with method PATCH").should("exist");
     cy.findByText("Submit fetcher form").click();
-    cy.findByText("Submitted with method PATCH").should("exist");
+    cy.findAllByText("Submitted with method PATCH").should("have.length", 2);
   });
 
   it("should submit to the correct action even when inside a dialog", () => {

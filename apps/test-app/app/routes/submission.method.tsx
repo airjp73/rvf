@@ -22,7 +22,7 @@ export default function FrontendValidation() {
         <SubmitButton label="Submit html form" />
       </ValidatedForm>
       <ValidatedForm fetcher={fetcher} validator={validator} method="patch">
-        {data?.message && <p>{data.message}</p>}
+        {fetcher.data?.message && <p>{fetcher.data.message}</p>}
         <SubmitButton label="Submit fetcher form" />
       </ValidatedForm>
     </>
