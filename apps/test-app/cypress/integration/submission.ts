@@ -175,6 +175,30 @@ describe("Submission", () => {
     cy.findByText(/submitted by someone/i).should("exist");
   });
 
+  it("should submit to the correct action when using the submit helper", () => {
+    cy.visit("/submission/helper-with-action").waitForJs();
+    cy.findByText("Submit with helper").click();
+    cy.findByText(/submitted/i).should("not.exist");
+    cy.findByText(/name is a required field/i).should("exist");
+
+    cy.findByLabelText("Name").type("Someone");
+
+    cy.findByText("Submit with helper").click();
+    cy.findByText(/submitted by someone/i).should("exist");
+  });
+
+  it("should submit to the correct action when using the submit helper and a fetcher", () => {
+    cy.visit("/submission/helper-with-fetcher").waitForJs();
+    cy.findByText("Submit with helper").click();
+    cy.findByText(/submitted/i).should("not.exist");
+    cy.findByText(/name is a required field/i).should("exist");
+
+    cy.findByLabelText("Name").type("Someone");
+
+    cy.findByText("Submit with helper").click();
+    cy.findByText(/from fetcher: submitted by someone/i).should("exist");
+  });
+
   it("should submit using the formMethod of the submitter", () => {
     cy.visit("submission/submitter").waitForJs();
     cy.findByText("Submit GET").click();
