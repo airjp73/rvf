@@ -321,7 +321,7 @@ export function ValidatedForm<DataType>({
     startSubmit();
     const submitter = nativeEvent.submitter as HTMLFormSubmitter | null;
     const formMethod = (submitter?.formMethod as FormMethod) || method;
-    const formDataToValidate = getDataFromForm(e.currentTarget);
+    const formDataToValidate = getDataFromForm(target);
     if (submitter?.name) {
       formDataToValidate.append(submitter.name, submitter.value);
     }
@@ -351,8 +351,7 @@ export function ValidatedForm<DataType>({
       // but we already have the form in `formRef.current` so we can just use that.
       // If we use `event.currentTarget` here, it will break because `currentTarget`
       // will have changed since the start of the submission.
-      if (fetcher)
-        fetcher.submit(submitter || e.currentTarget, { method: formMethod });
+      if (fetcher) fetcher.submit(submitter || target, { method: formMethod });
       else
         submit(submitter || target, {
           replace,
