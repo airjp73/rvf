@@ -24,6 +24,12 @@ describe("Submission", () => {
     cy.findByText("Submitting fetcher form").should("not.exist");
   });
 
+  it("should submit to the correct action when using a fetcher", () => {
+    cy.visit("/submission/fetcher/form").waitForJs();
+    cy.findByText("Submit fetcher form").click();
+    cy.findByText("done").should("exist");
+  });
+
   it("should show the loading state for the correct submit button when using subactions", () => {
     cy.visit("/submission/subactions").waitForJs();
     cy.findByText("Submit form 1").click();
