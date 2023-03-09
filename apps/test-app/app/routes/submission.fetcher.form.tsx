@@ -14,7 +14,7 @@ export default function FrontendValidation() {
       validator={validator}
       method="post"
       action="/submission/fetcher"
-      fetcher={fetcher as any}
+      fetcher={fetcher}
     >
       {fetcher.data?.done && <p>{fetcher.data?.done}</p>}
       <SubmitButton
