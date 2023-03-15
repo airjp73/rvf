@@ -17,7 +17,8 @@ type InputType<DefaultType extends ZodTypeAny> = {
   ): ZodEffects<ProvidedType>;
 };
 
-const stripEmpty = z.literal("").transform(() => undefined);
+const stripEmpty = (emptyVal = undefined) =>
+  z.literal("").transform(() => emptyVal);
 
 const preprocessIfValid = (schema: ZodTypeAny) => (val: unknown) => {
   const result = schema.safeParse(val);
@@ -32,8 +33,10 @@ const preprocessIfValid = (schema: ZodTypeAny) => (val: unknown) => {
  * If you call `zfd.text` with no arguments, it will assume the field is a required string by default.
  * If you want to customize the schema, you can pass that as an argument.
  */
-export const text: InputType<ZodString> = (schema = z.string()) =>
-  z.preprocess(preprocessIfValid(stripEmpty), schema) as any;
+export const text: InputType<ZodString> = (
+  schema = z.string(),
+  emptyVal = undefined
+) => z.preprocess(preprocessIfValid(stripEmpty(emptyVal)), schema) as any;
 
 /**
  * Coerces numerical strings to numbers transforms empty strings to `undefined` before validating.
@@ -41,11 +44,14 @@ export const text: InputType<ZodString> = (schema = z.string()) =>
  * it will assume the field is a required number by default.
  * If you want to customize the schema, you can pass that as an argument.
  */
-export const numeric: InputType<ZodNumber> = (schema = z.number()) =>
+export const numeric: InputType<ZodNumber> = (
+  schema = z.number(),
+  emptyVal = undefined
+) =>
   z.preprocess(
     preprocessIfValid(
       z.union([
-        stripEmpty,
+        stripEmpty(emptyVal),
         z
           .string()
           .transform((val) => Number(val))
@@ -82,10 +88,13 @@ export const checkbox = ({ trueValue = "on" }: CheckboxOpts = {}) =>
     z.literal(undefined).transform(() => false),
   ]);
 
-export const file: InputType<z.ZodType<File>> = (schema = z.instanceof(File)) =>
+export const file: InputType<z.ZodType<File>> = (
+  schema = z.instanceof(File),
+  emptyVal = undefined
+) =>
   z.preprocess((val) => {
     //Empty File object on no user input, so convert to undefined
-    return val instanceof File && val.size === 0 ? undefined : val;
+    return val instanceof File && val.size === 0 ? emptyVal : val;
   }, schema) as any;
 
 /**
@@ -140,10 +149,16 @@ const safeParseJson = (jsonString: string) => {
   }
 };
 
-export const json = <T extends ZodTypeAny>(schema: T): ZodEffects<T> =>
+export const json = <T extends ZodTypeAny>(
+  schema: T,
+  emptyVal = undefined
+): ZodEffects<T> =>
   z.preprocess(
     preprocessIfValid(
-      z.union([stripEmpty, z.string().transform((val) => safeParseJson(val))])
+      z.union([
+        stripEmpty(emptyVal),
+        z.string().transform((val) => safeParseJson(val)),
+      ])
     ),
     schema
   );
