@@ -123,12 +123,12 @@ type FormDataType = {
   <T extends z.ZodRawShape>(shape: T): ZodEffects<
     ZodObject<T>,
     z.output<ZodObject<T>>,
-    FormDataLikeInput
+    FormData | FormDataLikeInput
   >;
   <T extends z.ZodTypeAny>(schema: T): ZodEffects<
     T,
     z.output<T>,
-    FormDataLikeInput
+    FormData | FormDataLikeInput
   >;
 };
 
