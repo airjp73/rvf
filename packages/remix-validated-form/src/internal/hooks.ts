@@ -67,7 +67,10 @@ export const useDefaultValuesFromLoader = ({
     // we should use the data from the deepest route.
     const match = matches
       .reverse()
-      .find((match) => match.data && dataKey in match.data);
+      .find(
+        (match) =>
+          match.data && typeof match.data === "object" && dataKey in match.data
+      );
     return match?.data[dataKey];
   }
 
