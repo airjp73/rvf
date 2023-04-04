@@ -114,7 +114,7 @@ can still be used to abort the submission.
 const validator = withZod(z.object({ name: z.string() }));
 
 <ValidatedForm
-  validator={vaidator}
+  validator={validator}
   onSubmit={async (data) => {
     // Data is an object with a `name` property
     // of type `string` because of the validator above.
