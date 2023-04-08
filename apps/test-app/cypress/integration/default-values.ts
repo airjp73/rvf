@@ -98,4 +98,9 @@ describe("Validation", () => {
       '"defaultChecked": false'
     );
   });
+
+  it("should not fail when encountering non-object loader data", () => {
+    cy.visit("/non-object-loader-data").waitForJs();
+    cy.findByLabelText("Text").should("have.value", "");
+  });
 });
