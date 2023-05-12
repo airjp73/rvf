@@ -25,12 +25,12 @@ type HandledProps = "name" | "defaultValue" | "defaultChecked";
 type Callbacks = "onChange" | "onBlur";
 
 type MinimalInputProps = {
-  onChange?: (...args: any[]) => void;
-  onBlur?: (...args: any[]) => void;
+  onChange?: ((...args: any[]) => void) | undefined;
+  onBlur?: ((...args: any[]) => void) | undefined;
   defaultValue?: any;
-  defaultChecked?: boolean;
-  name?: string;
-  type?: string;
+  defaultChecked?: boolean | undefined;
+  name?: string | undefined;
+  type?: string | undefined;
 };
 
 export type GetInputProps = <T extends MinimalInputProps>(
