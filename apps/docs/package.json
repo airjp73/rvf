@@ -16,9 +16,9 @@
   "dependencies": {
     "@headlessui/react": "^1.7.4",
     "@heroicons/react": "^1.0.5",
-    "@remix-run/node": "^1.9.0",
-    "@remix-run/react": "^1.9.0",
-    "@remix-run/vercel": "^1.9.0",
+    "@remix-run/node": "^1.15.0",
+    "@remix-run/react": "^1.15.0",
+    "@remix-run/vercel": "^1.15.0",
     "@remix-validated-form/with-zod": "*",
     "@vercel/node": "^2.8.1",
     "classnames": "^2.3.1",
@@ -34,8 +34,8 @@
     "zod-form-data": "*"
   },
   "devDependencies": {
-    "@remix-run/dev": "^1.9.0",
-    "@remix-run/serve": "^1.9.0",
+    "@remix-run/dev": "^1.15.0",
+    "@remix-run/serve": "^1.15.0",
     "@tailwindcss/typography": "^0.5.0",
     "@types/react": "^18.0.9",
     "@types/react-dom": "^18.0.3",

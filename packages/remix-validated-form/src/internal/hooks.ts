@@ -1,4 +1,4 @@
-import { useActionData, useMatches, useTransition } from "@remix-run/react";
+import { useActionData, useMatches, useNavigation } from "@remix-run/react";
 import { useCallback, useContext } from "react";
 import { getPath } from "set-get";
 import invariant from "tiny-invariant";
@@ -107,10 +107,10 @@ export const useDefaultValuesForForm = (
 export const useHasActiveFormSubmit = ({
   fetcher,
 }: InternalFormContextValue): boolean => {
-  const transition = useTransition();
+  let navigation = useNavigation();
   const hasActiveSubmission = fetcher
     ? fetcher.state === "submitting"
-    : !!transition.submission;
+    : !!navigation;
   return hasActiveSubmission;
 };
 
