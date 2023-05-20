@@ -217,6 +217,7 @@ export function ValidatedForm<DataType>({
   method,
   replace,
   id,
+  reloadDocument,
   ...rest
 }: FormProps<DataType>) {
   const formId = useFormId(id);
@@ -364,18 +365,23 @@ export function ValidatedForm<DataType>({
     <Form
       ref={mergeRefs([formRef, formRefProp])}
       {...rest}
+      reloadDocument={reloadDocument}
       id={id}
       action={action}
       method={method}
       replace={replace}
-      onSubmit={(e) => {
-        e.preventDefault();
-        handleSubmit(
-          e,
-          e.currentTarget,
-          (e as unknown as HTMLSubmitEvent).nativeEvent
-        );
-      }}
+      onSubmit={
+        reloadDocument
+          ? undefined
+          : (e) => {
+              e.preventDefault();
+              handleSubmit(
+                e,
+                e.currentTarget,
+                (e as unknown as HTMLSubmitEvent).nativeEvent
+              );
+            }
+      }
       onReset={(event) => {
         onReset?.(event);
         if (event.defaultPrevented) return;

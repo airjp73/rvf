@@ -256,4 +256,20 @@ describe("Submission", () => {
 
     cy.findByText("Submit").should("exist");
   });
+
+  describe("reloadDocument", () => {
+    it("should perform a full page submission when true", () => {
+      cy.visit("submission/reload-document").waitForJs();
+      cy.findByText("Submit reloadDocument form").click();
+      cy.findByText(
+        "Browser was properly redirected to a page outside of remix"
+      );
+    });
+
+    it("should perform an ajax submission when false", () => {
+      cy.visit("submission/reload-document").waitForJs();
+      cy.findByText("Submit standard form").click();
+      cy.findByText("404: Not Found");
+    });
+  });
 });
