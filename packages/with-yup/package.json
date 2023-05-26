@@ -24,6 +24,6 @@
     "tsconfig": "*",
     "tsup-config": "*",
     "typescript": "^4.8.4",
-    "yup": "^0.32.0"
+    "yup": "^1.0.0"
   }
 }
