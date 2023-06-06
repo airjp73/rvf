@@ -43,7 +43,24 @@ import {
 } from "./internal/util";
 import { FieldErrors, Validator } from "./validation/types";
 
-export type FormProps<DataType> = {
+type SubactionData<
+  DataType,
+  Subaction extends string | undefined
+> = DataType & { subaction: Subaction };
+
+// Not all validation libraries support encoding a literal value in the schema type (e.g. yup).
+// This condition here allows us to provide strictness for users who are using a validation library that does support it,
+// but also allows us to support users who are using a validation library that doesn't support it.
+type DefaultValuesForSubaction<
+  DataType,
+  Subaction extends string | undefined
+> = Subaction extends string // Not all validation libraries support encoding a literal value in the schema type.
+  ? SubactionData<DataType, Subaction> extends undefined
+    ? DataType
+    : SubactionData<DataType, Subaction>
+  : DataType;
+
+export type FormProps<DataType, Subaction extends string | undefined> = {
   /**
    * A `Validator` object that describes how to validate the form.
    */
@@ -66,7 +83,7 @@ export type FormProps<DataType> = {
    * Accepts an object of default values for the form
    * that will automatically be propagated to the form fields via `useField`.
    */
-  defaultValues?: Partial<DataType>;
+  defaultValues?: Partial<DefaultValuesForSubaction<DataType, Subaction>>;
   /**
    * A ref to the form element.
    */
@@ -76,7 +93,7 @@ export type FormProps<DataType> = {
    * Setting a value here will cause the form to be submitted with an extra `subaction` value.
    * This can be useful when there are multiple forms on the screen handled by the same action.
    */
-  subaction?: string;
+  subaction?: Subaction;
   /**
    * Reset the form to the default values after the form has been successfully submitted.
    * This is useful if you want to submit the same form multiple times,
@@ -204,7 +221,7 @@ type HTMLFormSubmitter = HTMLButtonElement | HTMLInputElement;
 /**
  * The primary form component of `remix-validated-form`.
  */
-export function ValidatedForm<DataType>({
+export function ValidatedForm<DataType, Subaction extends string | undefined>({
   validator,
   onSubmit,
   children,
@@ -223,7 +240,7 @@ export function ValidatedForm<DataType>({
   relative,
   encType,
   ...rest
-}: FormProps<DataType>) {
+}: FormProps<DataType, Subaction>) {
   const formId = useFormId(id);
   const providedDefaultValues = useDeepEqualsMemo(unMemoizedDefaults);
   const contextValue = useMemo<InternalFormContextValue>(
