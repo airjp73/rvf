@@ -25,7 +25,7 @@
     "react": "^18.1.0",
     "react-dom": "^18.1.0",
     "remix-validated-form": "*",
-    "yup": "^0.32.11",
+    "yup": "^1.0.0",
     "zod": "^3.11.6",
     "zod-form-data": "*"
   },
