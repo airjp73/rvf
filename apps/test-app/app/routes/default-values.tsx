@@ -30,6 +30,7 @@ export const loader = (args: DataFunctionArgs) => {
   return json<LoaderData>({
     defaultValues: {
       "name.first": "Jane",
+      // @ts-expect-error
       name: { last: "Doe" },
       lastName: "Doe",
       email: "jane.doe@example.com",

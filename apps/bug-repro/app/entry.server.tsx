@@ -1,5 +1,5 @@
 import { RemixServer } from "@remix-run/react";
-import type { EntryContext } from "@remix-run/react";
+import type { EntryContext } from "@remix-run/server-runtime";
 import { renderToString } from "react-dom/server";
 
 export default function handleRequest(
