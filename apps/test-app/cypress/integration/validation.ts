@@ -269,4 +269,20 @@ describe("Validation", () => {
     cy.findByLabelText("First Name").should("not.be.focused");
     cy.findByLabelText("Last Name").should("not.be.focused");
   });
+
+  it("should support dependant validation", () => {
+    cy.visit("validation-dependant").waitForJs();
+
+    cy.findByLabelText("Is required").click();
+    cy.findByText("First name is a required field").should("not.exist");
+
+    cy.findByLabelText("First name").type("John").clear().blur();
+    cy.findByText("First name is a required field").should("exist");
+
+    cy.findByLabelText("Is required").click();
+    cy.findByText("First name is a required field").should("not.exist");
+
+    cy.findByLabelText("Is required").click();
+    cy.findByText("First name is a required field").should("exist");
+  });
 });
