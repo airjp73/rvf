@@ -1,6 +1,6 @@
 import { Dialog } from "@headlessui/react";
 import { XIcon } from "@heroicons/react/solid";
-import { useTransition, NavLink } from "@remix-run/react";
+import { useNavigation, NavLink } from "@remix-run/react";
 import classNames from "classnames";
 import { AnimatePresence, motion } from "framer-motion";
 import {
@@ -154,11 +154,11 @@ const SlideOut: SidebarType["SlideOut"] = ({
   onClose,
   bottomContent,
 }) => {
-  const transition = useTransition();
+  const navigation = useNavigation();
 
   useEffect(() => {
-    if (transition.state === "loading") onClose();
-  }, [onClose, transition.state]);
+    if (navigation.state === "loading") onClose();
+  }, [onClose, navigation.state]);
 
   return (
     <AnimatePresence>

@@ -8,7 +8,7 @@ export default defineConfig({
   dts: true,
   format: ["esm", "cjs"],
   define: {
-    "import.meta.vitest": undefined,
+    "import.meta.vitest": "undefined",
   } as any,
   outExtension({ format }) {
     switch (format) {
