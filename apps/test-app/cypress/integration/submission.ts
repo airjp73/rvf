@@ -256,4 +256,19 @@ describe("Submission", () => {
 
     cy.findByText("Submit").should("exist");
   });
+
+  it("should not let data get out of sync if form is changed after clicking submit", () => {
+    cy.visit("submission/sync").waitForJs();
+    cy.findByLabelText("Will be changed").type("Original");
+    cy.findByLabelText("Will be disabled").type("Should be submitted");
+
+    cy.findByRole("button", { name: /submit/i }).click();
+    cy.findByLabelText("Will be changed").clear().type("Changed");
+
+    cy.findByTestId("willBeChangedResult").should("contain.text", "Original");
+    cy.findByTestId("willBeDisabledResult").should(
+      "contain.text",
+      "Should be submitted"
+    );
+  });
 });

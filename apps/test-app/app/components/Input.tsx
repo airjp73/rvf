@@ -9,6 +9,7 @@ type InputProps = {
   hideErrors?: boolean;
   "data-testid"?: string;
   form?: string;
+  disabled?: boolean;
 };
 
 export const Input = forwardRef(
@@ -21,6 +22,7 @@ export const Input = forwardRef(
       hideErrors: noErrors,
       "data-testid": dataTestId,
       form,
+      disabled,
     }: InputProps,
     ref: React.ForwardedRef<HTMLInputElement>
   ) => {
@@ -39,6 +41,7 @@ export const Input = forwardRef(
             ref,
             id: name,
             value: actualValue,
+            disabled,
           })}
         />
         {error && !noErrors && <span style={{ color: "red" }}>{error}</span>}
