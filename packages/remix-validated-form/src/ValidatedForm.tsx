@@ -3,6 +3,7 @@ import {
   Form as RemixForm,
   FormMethod,
   useSubmit,
+  SubmitOptions,
 } from "@remix-run/react";
 import React, {
   ComponentProps,
@@ -217,6 +218,8 @@ export function ValidatedForm<DataType>({
   method,
   replace,
   id,
+  preventScrollReset,
+  relative,
   ...rest
 }: FormProps<DataType>) {
   const formId = useFormId(id);
@@ -346,17 +349,20 @@ export function ValidatedForm<DataType>({
         return;
       }
 
+      const opts: SubmitOptions = {
+        method: formMethod,
+        replace,
+        preventScrollReset,
+        relative,
+      };
+
       // We deviate from the Remix code here a bit because of our async submit.
       // In Remix's `FormImpl`, they use `event.currentTarget` to get the form,
       // but we already have the form in `formRef.current` so we can just use that.
       // If we use `event.currentTarget` here, it will break because `currentTarget`
       // will have changed since the start of the submission.
-      if (fetcher) fetcher.submit(submitter || target, { method: formMethod });
-      else
-        submit(submitter || target, {
-          replace,
-          method: formMethod,
-        });
+      if (fetcher) fetcher.submit(submitter || target, opts);
+      else submit(submitter || target, opts);
     }
   };
 
@@ -368,6 +374,8 @@ export function ValidatedForm<DataType>({
       action={action}
       method={method}
       replace={replace}
+      preventScrollReset={preventScrollReset}
+      relative={relative}
       onSubmit={(e) => {
         e.preventDefault();
         handleSubmit(
