@@ -4,6 +4,7 @@ import {
   FormMethod,
   useSubmit,
   SubmitOptions,
+  FormEncType,
 } from "@remix-run/react";
 import React, {
   ComponentProps,
@@ -220,6 +221,7 @@ export function ValidatedForm<DataType>({
   id,
   preventScrollReset,
   relative,
+  encType,
   ...rest
 }: FormProps<DataType>) {
   const formId = useFormId(id);
@@ -324,12 +326,12 @@ export function ValidatedForm<DataType>({
     startSubmit();
     const submitter = nativeEvent.submitter as HTMLFormSubmitter | null;
     const formMethod = (submitter?.formMethod as FormMethod) || method;
-    const formDataToValidate = getDataFromForm(target);
+    const formData = getDataFromForm(target);
     if (submitter?.name) {
-      formDataToValidate.append(submitter.name, submitter.value);
+      formData.append(submitter.name, submitter.value);
     }
 
-    const result = await validator.validate(formDataToValidate);
+    const result = await validator.validate(formData);
     if (result.error) {
       setFieldErrors(result.error.fieldErrors);
       endSubmit();
@@ -354,6 +356,8 @@ export function ValidatedForm<DataType>({
         replace,
         preventScrollReset,
         relative,
+        action,
+        encType: encType as FormEncType | undefined,
       };
 
       // We deviate from the Remix code here a bit because of our async submit.
@@ -361,8 +365,8 @@ export function ValidatedForm<DataType>({
       // but we already have the form in `formRef.current` so we can just use that.
       // If we use `event.currentTarget` here, it will break because `currentTarget`
       // will have changed since the start of the submission.
-      if (fetcher) fetcher.submit(submitter || target, opts);
-      else submit(submitter || target, opts);
+      if (fetcher) fetcher.submit(formData, opts);
+      else submit(formData, opts);
     }
   };
 
@@ -373,6 +377,7 @@ export function ValidatedForm<DataType>({
       id={id}
       action={action}
       method={method}
+      encType={encType}
       replace={replace}
       preventScrollReset={preventScrollReset}
       relative={relative}
