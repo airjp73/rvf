@@ -18,13 +18,16 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 16
-          cache: 'yarn'
+          cache: "yarn"
 
       - name: Install Deps
         run: yarn install --frozen-lockfile
 
       - name: Lint
         run: yarn run lint
+
+      - name: Typecheck
+        run: yarn run typecheck
 
       - name: Build
         run: yarn run build
