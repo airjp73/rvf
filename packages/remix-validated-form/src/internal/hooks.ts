@@ -110,7 +110,7 @@ export const useHasActiveFormSubmit = ({
   let navigation = useNavigation();
   const hasActiveSubmission = fetcher
     ? fetcher.state === "submitting"
-    : !!navigation;
+    : navigation.state === "submitting";
   return hasActiveSubmission;
 };
 
