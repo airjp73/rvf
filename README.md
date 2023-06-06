@@ -2,25 +2,27 @@
 
 A form library built for [Remix](https://remix.run) to make validation easy.
 
+## Features
+
 - Client-side, field-by-field and form-level validation
 - Re-use validation on the server
 - Set default values for the entire form in one place
 - Supports nested objects and arrays
-- Easily detect if a specific form is being sumitted
+- Easily detect if a specific form is being submitted
 - Validation library agnostic
 - Can work without JS
 
-# Docs
+## Docs
 
 The docs are located a [remix-validated-form.io](https://www.remix-validated-form.io).
 
-# Demo
+## Demo
 
 https://user-images.githubusercontent.com/2811287/145734901-700a5085-a10b-4d89-88e1-5de9142b1e85.mov
 
 To run `sample-app`:
 
-```
+```bash
 git clone https://github.com/airjp73/remix-validated-form
 cd ./remix-validated-form
 yarn install
@@ -28,21 +30,20 @@ yarn build
 yarn sample-app
 ```
 
-# Getting started
+## Getting started
 
-## Install
+### Install
 
-### Base package
+#### Base package
 
 ```bash
 npm install remix-validated-form
 ```
 
-### Validation library adapter
+#### Validation library adapter
 
 There are official adapters available for `zod` and `yup`.
-If you're using a different library,
-see the [Validation library support](#validation-library-support) section below.
+If you're using a different library, see the [Validation library support](#validation-library-support) section below.
 
 - @remix-validated-form/with-zod
 - @remix-validated-form/with-yup
@@ -53,10 +54,9 @@ npm install @remix-validated-form/with-zod
 
 If you're using zod, you might also find `zod-form-data` helpful.
 
-## Create an input component
+### Create an input component
 
-In order to display field errors or do field-by-field validation,
-it's recommended to incorporate this library into an input component using `useField`.
+In order to display field errors or do field-by-field validation, it's recommended to incorporate this library into an input component using `useField`.
 
 ```tsx
 import { useField } from "remix-validated-form";
@@ -78,7 +78,7 @@ export const MyInput = ({ name, label }: MyInputProps) => {
 };
 ```
 
-## Create a submit button component
+### Create a submit button component
 
 To best take advantage of the per-form submission detection, we can create a submit button component.
 
@@ -102,9 +102,9 @@ export const MySubmitButton = () => {
 };
 ```
 
-## Use the form!
+### Using the form
 
-Now that we have our components, making a form is easy!
+Now that we have our components, making a form is easy.
 
 ```tsx
 import { DataFunctionArgs, json, redirect } from "@remix-run/node";
@@ -159,7 +159,7 @@ export default function MyForm() {
 }
 ```
 
-## Nested objects and arrays
+### Nested objects and arrays
 
 You can use nested objects and arrays by using a period (`.`) or brackets (`[]`) for the field names.
 
@@ -186,14 +186,13 @@ export default function MyForm() {
 }
 ```
 
-# Validation Library Support
+## Validation Library Support
 
-There are official adapters available for `zod` and `yup` ,
-but you can easily support whatever library you want by creating your own adapter.
+There are official adapters available for `zod` and `yup` , but you can easily support whatever library you want by creating your own adapter.
 
 And if you create an adapter for a library, feel free to make a PR on this repository 😊
 
-## Creating an adapter
+### Creating an adapter
 
 Any object that conforms to the `Validator` type can be passed into the the `ValidatedForm`'s `validator` prop.
 
@@ -215,15 +214,13 @@ type Validator<DataType> = {
 };
 ```
 
-In order to make an adapter for your validation library of choice,
-you can create a function that accepts a schema from the validation library and turns it into a validator.
+In order to make an adapter for your validation library of choice, you can create a function that accepts a schema from the validation library and turns it into a validator.
 
 Note the use of `createValidator`.
-It takes care of unflattening the data for nested objects and arrays
-since the form doesn't know anything about object and arrays and this should be handled by the adapter.
+It takes care of unflattening the data for nested objects and arrays since the form doesn't know anything about object and arrays and this should be handled by the adapter.
 For more on this you can check the implementations for `withZod` and `withYup`.
 
-The out-of-the-box support for `yup` in this library works like this:
+The out-of-the-box support for `yup` in this library works as the following:
 
 ```ts
 export const withYup = <Schema extends AnyObjectSchema>(
@@ -246,21 +243,21 @@ export const withYup = <Schema extends AnyObjectSchema>(
   });
 ```
 
-# Frequenty Asked Questions
+## Frequenty Asked Questions
 
-## Why are my fields triggering the native HTML validations before `remix-validated-form` ones?
+### Why are my fields triggering the native HTML validations before `remix-validated-form` ones?
 
 This is happening because you or the library you are using is passing the `required` attribute to the fields.
 This library doesn't take care of eliminating them and it's up to the user how they want to manage the validation errors.
 If you wan't to disable all native HTML validations you can add `noValidate` to `<ValidatedForm>`.
 We recommend this approach since the validation will still work even if JS is disabled.
 
-## How do we trigger toast messages on success?
+### How do we trigger toast messages on success?
 
 Problem: how do we trigger a toast message on success if the action redirects away from the form route? The Remix solution is to flash a message in the session and pick this up in a loader function, probably in root.tsx
 See the [Remix](https://remix.run/docs/en/v1/utils/sessions#sessionflashkey-value) documentation for more information.
 
-## Why is my cancel button triggering form submission?
+### Why is my cancel button triggering form submission?
 
 Problem: the cancel button has an onClick handler to navigate away from the form route but instead it is submitting the form.
 A button defaults to `type="submit"` in a form which will submit the form by default. If you want to prevent this you can add `type="reset"` or `type="button"` to the cancel button.
