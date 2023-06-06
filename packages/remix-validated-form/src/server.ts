@@ -42,6 +42,9 @@ export type FormDefaults = {
   [formDefaultsKey: `${typeof FORM_DEFAULTS_FIELD}_${string}`]: any;
 };
 
+// FIXME: Remove after https://github.com/egoist/tsup/issues/813 is fixed
+export type internal_FORM_DEFAULTS_FIELD = typeof FORM_DEFAULTS_FIELD;
+
 export const setFormDefaults = <DataType = any>(
   formId: string,
   defaultValues: Partial<DataType>
