@@ -79,6 +79,47 @@ describe("Field arrays", () => {
     cy.findByText("Todo 3: This one gets deleted").should("not.exist");
   });
 
+  it("should maintain state correctly", () => {
+    cy.visit("/field-array/state");
+
+    cy.findByText("Push").click();
+    cy.findByText("Push").click();
+
+    cy.findByTestId("counter-0").findByTestId("value").should("have.text", "0");
+    cy.findByTestId("counter-1").findByTestId("value").should("have.text", "0");
+
+    cy.findByTestId("counter-1").findByText("Increment").click();
+    cy.findByTestId("counter-1").findByText("Increment").click();
+    cy.findByTestId("counter-1").findByText("Increment").click();
+    cy.findByTestId("counter-1").findByTestId("value").should("have.text", "3");
+
+    cy.findByTestId("counter-0").findByText("Decrement").click();
+    cy.findByTestId("counter-0").findByText("Decrement").click();
+    cy.findByTestId("counter-0")
+      .findByTestId("value")
+      .should("have.text", "-2");
+
+    cy.findByText("Swap").click();
+    cy.findByTestId("counter-0").findByTestId("value").should("have.text", "3");
+    cy.findByTestId("counter-1")
+      .findByTestId("value")
+      .should("have.text", "-2");
+
+    cy.findByText("Unshift").click();
+    cy.findByTestId("counter-0").findByTestId("value").should("have.text", "0");
+    cy.findByTestId("counter-1").findByTestId("value").should("have.text", "3");
+    cy.findByTestId("counter-2")
+      .findByTestId("value")
+      .should("have.text", "-2");
+
+    cy.findByText("Replace").click();
+    cy.findByTestId("counter-0").findByTestId("value").should("have.text", "0");
+    cy.findByTestId("counter-1").findByTestId("value").should("have.text", "0");
+    cy.findByTestId("counter-2")
+      .findByTestId("value")
+      .should("have.text", "-2");
+  });
+
   [
     {
       route: "/field-array",
