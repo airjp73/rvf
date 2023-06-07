@@ -1,5 +1,5 @@
 import { withYup } from "@remix-validated-form/with-yup";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useFormContext, ValidatedForm } from "remix-validated-form";
 import * as yup from "yup";
 import { Input } from "~/components/Input";
@@ -21,11 +21,17 @@ const RenderCounter = () => {
   // this component will update when validation errors change
   useFormContext();
   const renderCount = useRef(0);
-  renderCount.current++;
+
+  let renderUpdated = false;
+  useEffect(() => {
+    if (renderUpdated) return;
+    renderUpdated = true;
+    renderCount.current++;
+  });
 
   return (
     <>
-      <p data-testid="render-count">{renderCount.current}</p>
+      <p data-testid="render-count">{renderCount.current + 1}</p>
       <button
         type="button"
         onClick={() => {

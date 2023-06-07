@@ -17,14 +17,14 @@ describe("Rerenders", () => {
     // Error gone -> error back -> error gone -> error back
     cy.findByLabelText("First Name").type("a{backspace}a{backspace}");
 
-    cy.findByTestId("render-count").should("have.text", "8");
+    cy.findByTestId("render-count").should("have.text", "4");
     cy.findByText("Reset render count").click();
 
     // Change to valid after 1 keystroke, then back to invalid after 9 more keystrokes
     cy.findByLabelText("First Name").type(
       "hello{backspace}{backspace}{backspace}{backspace}{backspace}"
     );
-    cy.findByTestId("render-count").should("have.text", "4");
+    cy.findByTestId("render-count").should("have.text", "2");
     cy.findByText("Reset render count").click();
 
     // Email will spend some time invalid even while typing
