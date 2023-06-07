@@ -22,6 +22,10 @@ export type SyncedFormProps = {
   validator: Validator<unknown>;
 };
 
+export type SmartValidateOpts = {
+  alwaysIncludeErrorsFromFields?: string[];
+};
+
 export type FormStoreState = {
   forms: { [formId: InternalFormId]: FormState };
   form: (formId: InternalFormId) => FormState;
@@ -51,6 +55,9 @@ export type FormState = {
   setFormElement: (formElement: HTMLFormElement | null) => void;
   validateField: (fieldName: string) => Promise<string | null>;
   validate: () => Promise<ValidationResult<unknown>>;
+  smartValidate: (
+    opts?: SmartValidateOpts
+  ) => Promise<ValidationResult<unknown>>;
   resetFormElement: () => void;
   submit: () => void;
   getValues: () => FormData;
@@ -104,6 +111,10 @@ const defaultFormState: FormState = {
   validateField: async () => null,
 
   validate: async () => {
+    throw new Error("Validate called before form was initialized.");
+  },
+
+  smartValidate: async () => {
     throw new Error("Validate called before form was initialized.");
   },
 
@@ -249,12 +260,86 @@ const createFormState = (
     const validator = get().formProps?.validator;
     invariant(
       validator,
-      "Cannot validator. This is probably a bug in remix-validated-form."
+      "Cannot find validator. This is probably a bug in remix-validated-form."
     );
 
     const result = await validator.validate(new FormData(formElement));
     if (result.error) get().setFieldErrors(result.error.fieldErrors);
     return result;
+  },
+
+  smartValidate: async ({ alwaysIncludeErrorsFromFields = [] } = {}) => {
+    const formElement = get().formElement;
+    invariant(
+      formElement,
+      "Cannot find reference to form. This is probably a bug in remix-validated-form."
+    );
+
+    const validator = get().formProps?.validator;
+    invariant(
+      validator,
+      "Cannot find validator. This is probably a bug in remix-validated-form."
+    );
+
+    const validationResult = await validator.validate(
+      new FormData(formElement)
+    );
+    if (!validationResult.error) {
+      get().setFieldErrors({});
+      return validationResult;
+    }
+
+    const {
+      error: { fieldErrors },
+    } = validationResult;
+    const errorFields = new Set<string>();
+    const incomingErrors = new Set<string>();
+    const prevErrors = new Set<string>();
+
+    Object.keys(fieldErrors).forEach((field) => {
+      errorFields.add(field);
+      incomingErrors.add(field);
+    });
+
+    Object.keys(get().fieldErrors).forEach((field) => {
+      errorFields.add(field);
+      prevErrors.add(field);
+    });
+
+    const nextFieldErrors = { ...get().fieldErrors };
+
+    errorFields.forEach((field) => {
+      // If an error has been cleared, remove it.
+      if (!incomingErrors.has(field)) {
+        delete nextFieldErrors[field];
+        return;
+      }
+
+      // If an error has changed, we should update it.
+      if (prevErrors.has(field) && incomingErrors.has(field)) {
+        nextFieldErrors[field] = fieldErrors[field];
+        return;
+      }
+
+      // If the error is always included, then we should update it.
+      if (alwaysIncludeErrorsFromFields.includes(field)) {
+        nextFieldErrors[field] = fieldErrors[field];
+        return;
+      }
+
+      // If the error is new, then only update if the field has been touched
+      // or if the form has been submitted
+      if (!prevErrors.has(field)) {
+        const fieldTouched = get().touchedFields[field];
+        const formHasBeenSubmitted = get().hasBeenSubmitted;
+        if (fieldTouched || formHasBeenSubmitted)
+          nextFieldErrors[field] = fieldErrors[field];
+        return;
+      }
+    });
+
+    get().setFieldErrors(nextFieldErrors);
+    return { ...validationResult, error: { fieldErrors: nextFieldErrors } };
   },
 
   submit: () => {

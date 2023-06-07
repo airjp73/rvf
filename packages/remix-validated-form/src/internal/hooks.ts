@@ -172,6 +172,9 @@ export const useInternalHasBeenSubmitted = (formId: InternalFormId) =>
 export const useValidateField = (formId: InternalFormId) =>
   useFormStore(formId, (state) => state.validateField);
 
+export const useSmartValidate = (formId: InternalFormId) =>
+  useFormStore(formId, (state) => state.smartValidate);
+
 export const useValidate = (formId: InternalFormId) =>
   useFormStore(formId, (state) => state.validate);
 

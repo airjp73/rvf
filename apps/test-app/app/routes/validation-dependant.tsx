@@ -12,7 +12,7 @@ const validator = withYup(
     firstName: yup
       .string()
       .label("First name")
-      .when("isRequired", { is: (v) => !!v, then: (s) => s.required() }),
+      .when("isRequired", { is: (v: any) => !!v, then: (s) => s.required() }),
   })
 );
 

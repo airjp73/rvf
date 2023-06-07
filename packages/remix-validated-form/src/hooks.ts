@@ -13,8 +13,8 @@ import {
   useInternalIsSubmitting,
   useInternalIsValid,
   useInternalHasBeenSubmitted,
-  useValidateField,
   useRegisterReceiveFocus,
+  useSmartValidate,
 } from "./internal/hooks";
 import {
   useControllableValue,
@@ -106,7 +106,7 @@ export const useField = (
   const clearError = useClearError(formContext);
 
   const hasBeenSubmitted = useInternalHasBeenSubmitted(formContext.formId);
-  const validateField = useValidateField(formContext.formId);
+  const smartValidate = useSmartValidate(formContext.formId);
   const registerReceiveFocus = useRegisterReceiveFocus(formContext.formId);
 
   useEffect(() => {
@@ -118,9 +118,7 @@ export const useField = (
     const helpers = {
       error,
       clearError: () => clearError(name),
-      validate: () => {
-        validateField(name);
-      },
+      validate: () => smartValidate({ alwaysIncludeErrorsFromFields: [name] }),
       defaultValue,
       touched,
       setTouched,
@@ -144,7 +142,7 @@ export const useField = (
     name,
     hasBeenSubmitted,
     options?.validationBehavior,
-    validateField,
+    smartValidate,
   ]);
 
   return field;
