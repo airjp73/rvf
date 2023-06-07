@@ -67,6 +67,7 @@ export default function FrontendValidation() {
           <InputWithTouched name={`todos[${index}].title`} label="Title" />
           <InputWithTouched name={`todos[${index}].notes`} label="Notes" />
           <button
+            type="button"
             onClick={() => {
               remove(index);
             }}

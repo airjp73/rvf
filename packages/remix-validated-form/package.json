@@ -55,7 +55,7 @@
   "dependencies": {
     "immer": "^9.0.12",
     "lodash.get": "^4.4.2",
-    "nanoid": "^4.0.2",
+    "nanoid": "3.3.6",
     "remeda": "^1.2.0",
     "tiny-invariant": "^1.2.0",
     "zustand": "^4.3.0"

@@ -1,5 +1,5 @@
 import { nanoid } from "nanoid";
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import { useCallback } from "react";
 import invariant from "tiny-invariant";
 import { InternalFormContextValue } from "../formContext";
@@ -71,83 +71,56 @@ const useInternalFieldArray = (
     (state) => state.controlledFields.array
   );
 
-  const arrayValue = useMemo(() => value ?? [], [value]);
-  const [keys, setKeys] = useState<string[]>(() =>
-    arrayValue.map(() => nanoid())
-  );
+  const arrayValue = useMemo<unknown[]>(() => value ?? [], [value]);
+  const keyRef = useRef<string[]>([]);
+
+  // If the lengths don't match up it means one of two things
+  // 1. The array has been modified outside of this hook
+  // 2. We're initializing the array
+  if (keyRef.current.length !== arrayValue.length) {
+    keyRef.current = arrayValue.map(() => nanoid());
+  }
 
   const helpers = useMemo(
     () => ({
       push: (item: any) => {
         arr.push(field, item);
-        setKeys((keys) => {
-          const newKeys = arrayUtil.sparseCopy(keys);
-          newKeys.push(nanoid());
-          return newKeys;
-        });
+        keyRef.current.push(nanoid());
         maybeValidate();
       },
       swap: (indexA: number, indexB: number) => {
         arr.swap(field, indexA, indexB);
-        setKeys((keys) => {
-          const newKeys = arrayUtil.sparseCopy(keys);
-          arrayUtil.swap(newKeys, indexA, indexB);
-          return newKeys;
-        });
+        arrayUtil.swap(keyRef.current, indexA, indexB);
         maybeValidate();
       },
       move: (from: number, to: number) => {
         arr.move(field, from, to);
-        setKeys((keys) => {
-          const newKeys = arrayUtil.sparseCopy(keys);
-          arrayUtil.move(newKeys, from, to);
-          return newKeys;
-        });
+        arrayUtil.move(keyRef.current, from, to);
         maybeValidate();
       },
       insert: (index: number, value: any) => {
         arr.insert(field, index, value);
-        setKeys((keys) => {
-          const newKeys = arrayUtil.sparseCopy(keys);
-          arrayUtil.insert(newKeys, index, nanoid());
-          return newKeys;
-        });
+        arrayUtil.insert(keyRef.current, index, nanoid());
         maybeValidate();
       },
       unshift: (value: any) => {
         arr.unshift(field, value);
-        setKeys((keys) => {
-          const newKeys = arrayUtil.sparseCopy(keys);
-          newKeys.unshift();
-          return newKeys;
-        });
+        keyRef.current.unshift(nanoid());
         maybeValidate();
       },
       remove: (index: number) => {
         arr.remove(field, index);
-        setKeys((keys) => {
-          const newKeys = arrayUtil.sparseCopy(keys);
-          arrayUtil.remove(newKeys, index);
-          return newKeys;
-        });
+        arrayUtil.remove(keyRef.current, index);
         maybeValidate();
       },
       pop: () => {
         arr.pop(field);
-        setKeys((keys) => {
-          const newKeys = arrayUtil.sparseCopy(keys);
-          newKeys.pop();
-          return newKeys;
-        });
+        keyRef.current.pop();
         maybeValidate();
       },
       replace: (index: number, value: any) => {
         arr.replace(field, index, value);
-        setKeys((keys) => {
-          const newKeys = arrayUtil.sparseCopy(keys);
-          arrayUtil.replace(newKeys, index, nanoid());
-          return newKeys;
-        });
+        keyRef.current[index] = nanoid();
         maybeValidate();
       },
     }),
@@ -156,14 +129,14 @@ const useInternalFieldArray = (
 
   const valueWithKeys = useMemo(() => {
     const result: { defaultValue: any; key: string }[] = [];
-    result.forEach((item, index) => {
+    arrayValue.forEach((item, index) => {
       result[index] = {
-        key: keys[index],
-        defaultValue: arrayValue[index],
+        key: keyRef.current[index],
+        defaultValue: item,
       };
     });
     return result;
-  }, [arrayValue, keys]);
+  }, [arrayValue]);
 
   return [valueWithKeys, helpers, error] as const;
 };

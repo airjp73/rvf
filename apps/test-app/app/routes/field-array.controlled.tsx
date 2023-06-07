@@ -93,6 +93,7 @@ export default function FrontendValidation() {
                 <ControlledInput name={`todos[${index}].title`} label="Title" />
                 <ControlledInput name={`todos[${index}].notes`} label="Notes" />
                 <button
+                  type="button"
                   onClick={() => {
                     remove(index);
                   }}

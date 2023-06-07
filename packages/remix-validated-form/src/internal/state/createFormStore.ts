@@ -250,6 +250,12 @@ const createFormState = (
       "Cannot find validator. This is probably a bug in remix-validated-form."
     );
 
+    await Promise.all(
+      alwaysIncludeErrorsFromFields.map((field) =>
+        get().controlledFields.awaitValueUpdate?.(field)
+      )
+    );
+
     const validationResult = await validator.validate(
       new FormData(formElement)
     );
