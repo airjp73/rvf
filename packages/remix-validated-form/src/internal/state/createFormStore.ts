@@ -254,7 +254,9 @@ const createFormState = (
       new FormData(formElement)
     );
     if (!validationResult.error) {
-      get().setFieldErrors({});
+      // Only update the field errors if it hasn't changed
+      const hadErrors = Object.keys(get().fieldErrors).length > 0;
+      if (hadErrors) get().setFieldErrors({});
       return validationResult;
     }
 
@@ -275,24 +277,27 @@ const createFormState = (
       prevErrors.add(field);
     });
 
-    const nextFieldErrors = { ...get().fieldErrors };
+    const fieldsToUpdate = new Set<string>();
+    const fieldsToDelete = new Set<string>();
 
     errorFields.forEach((field) => {
       // If an error has been cleared, remove it.
       if (!incomingErrors.has(field)) {
-        delete nextFieldErrors[field];
+        fieldsToDelete.add(field);
         return;
       }
 
       // If an error has changed, we should update it.
       if (prevErrors.has(field) && incomingErrors.has(field)) {
-        nextFieldErrors[field] = fieldErrors[field];
+        // Only update if the error has changed to avoid unnecessary rerenders
+        if (fieldErrors[field] !== get().fieldErrors[field])
+          fieldsToUpdate.add(field);
         return;
       }
 
       // If the error is always included, then we should update it.
       if (alwaysIncludeErrorsFromFields.includes(field)) {
-        nextFieldErrors[field] = fieldErrors[field];
+        fieldsToUpdate.add(field);
         return;
       }
 
@@ -301,14 +306,26 @@ const createFormState = (
       if (!prevErrors.has(field)) {
         const fieldTouched = get().touchedFields[field];
         const formHasBeenSubmitted = get().hasBeenSubmitted;
-        if (fieldTouched || formHasBeenSubmitted)
-          nextFieldErrors[field] = fieldErrors[field];
+        if (fieldTouched || formHasBeenSubmitted) fieldsToUpdate.add(field);
         return;
       }
     });
 
-    get().setFieldErrors(nextFieldErrors);
-    return { ...validationResult, error: { fieldErrors: nextFieldErrors } };
+    if (fieldsToDelete.size === 0 && fieldsToUpdate.size === 0) {
+      return { ...validationResult, error: { fieldErrors: get().fieldErrors } };
+    }
+
+    set((state) => {
+      fieldsToDelete.forEach((field) => {
+        delete state.fieldErrors[field];
+      });
+
+      fieldsToUpdate.forEach((field) => {
+        state.fieldErrors[field] = fieldErrors[field];
+      });
+    });
+
+    return { ...validationResult, error: { fieldErrors: get().fieldErrors } };
   },
 
   submit: () => {

@@ -79,6 +79,8 @@ describe("Context hooks", () => {
       fieldErrors: {},
       touchedFields: { firstName: true },
       defaultValues: { firstName: "defaultFirstName" },
+      // This is only `s` because only the first keystroke should result in an update.
+      // i.e. this hook shouldn't rerender on every change, just when the errors change
       getValues: { __rvfInternalFormId: "test-form", firstName: "s" },
     });
 
