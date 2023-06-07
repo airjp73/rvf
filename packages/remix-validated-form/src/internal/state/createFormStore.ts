@@ -53,7 +53,6 @@ export type FormState = {
   reset: () => void;
   syncFormProps: (props: SyncedFormProps) => void;
   setFormElement: (formElement: HTMLFormElement | null) => void;
-  validateField: (fieldName: string) => Promise<string | null>;
   validate: () => Promise<ValidationResult<unknown>>;
   smartValidate: (
     opts?: SmartValidateOpts
@@ -108,7 +107,6 @@ const defaultFormState: FormState = {
   reset: () => noOp,
   syncFormProps: noOp,
   setFormElement: noOp,
-  validateField: async () => null,
 
   validate: async () => {
     throw new Error("Validate called before form was initialized.");
@@ -221,35 +219,6 @@ const createFormState = (
       state.formElement = formElement as any;
     });
   },
-  validateField: async (field: string) => {
-    const formElement = get().formElement;
-    invariant(
-      formElement,
-      "Cannot find reference to form. This is probably a bug in remix-validated-form."
-    );
-
-    const validator = get().formProps?.validator;
-    invariant(
-      validator,
-      "Cannot validator. This is probably a bug in remix-validated-form."
-    );
-
-    await get().controlledFields.awaitValueUpdate?.(field);
-
-    const { error } = await validator.validateField(
-      new FormData(formElement),
-      field
-    );
-
-    if (error) {
-      get().setFieldError(field, error);
-      return error;
-    } else {
-      get().clearFieldError(field);
-      return null;
-    }
-  },
-
   validate: async () => {
     const formElement = get().formElement;
     invariant(

@@ -169,9 +169,6 @@ export const useInternalIsValid = (formId: InternalFormId) =>
 export const useInternalHasBeenSubmitted = (formId: InternalFormId) =>
   useFormStore(formId, (state) => state.hasBeenSubmitted);
 
-export const useValidateField = (formId: InternalFormId) =>
-  useFormStore(formId, (state) => state.validateField);
-
 export const useSmartValidate = (formId: InternalFormId) =>
   useFormStore(formId, (state) => state.smartValidate);
 

@@ -7,7 +7,7 @@ import {
   useFieldError,
   useInternalFormContext,
   useInternalHasBeenSubmitted,
-  useValidateField,
+  useSmartValidate,
 } from "../hooks";
 import { useRegisterControlledField } from "./controlledFields";
 import { useFormStore } from "./storeHooks";
@@ -27,7 +27,7 @@ const useInternalFieldArray = (
   const value = useFieldDefaultValue(field, context);
   useRegisterControlledField(context, field);
   const hasBeenSubmitted = useInternalHasBeenSubmitted(context.formId);
-  const validateField = useValidateField(context.formId);
+  const validateField = useSmartValidate(context.formId);
   const error = useFieldError(field, context);
 
   const resolvedValidationBehavior: FieldArrayValidationBehaviorOptions = {
@@ -42,7 +42,7 @@ const useInternalFieldArray = (
 
   const maybeValidate = useCallback(() => {
     if (behavior === "onChange") {
-      validateField(field);
+      validateField({ alwaysIncludeErrorsFromFields: [field] });
     }
   }, [behavior, field, validateField]);
 

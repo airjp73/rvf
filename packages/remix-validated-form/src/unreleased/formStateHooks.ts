@@ -11,7 +11,6 @@ import {
   useTouchedFields,
   useInternalIsValid,
   useFieldErrors,
-  useValidateField,
   useValidate,
   useSetFieldErrors,
   useResetFormElement,
@@ -20,6 +19,7 @@ import {
   useFormSubactionProp,
   useSubmitForm,
   useFormValues,
+  useSmartValidate,
 } from "../internal/hooks";
 import {
   FieldErrors,
@@ -133,7 +133,7 @@ export type FormHelpers = {
 export const useFormHelpers = (formId?: string): FormHelpers => {
   const formContext = useInternalFormContext(formId, "useFormHelpers");
   const setTouched = useSetTouched(formContext);
-  const validateField = useValidateField(formContext.formId);
+  const validateField = useSmartValidate(formContext.formId);
   const validate = useValidate(formContext.formId);
   const clearError = useClearError(formContext);
   const setFieldErrors = useSetFieldErrors(formContext.formId);
@@ -143,7 +143,12 @@ export const useFormHelpers = (formId?: string): FormHelpers => {
   return useMemo(
     () => ({
       setTouched,
-      validateField,
+      validateField: async (fieldName: string) => {
+        const res = await validateField({
+          alwaysIncludeErrorsFromFields: [fieldName],
+        });
+        return res.error?.fieldErrors[fieldName] ?? null;
+      },
       clearError,
       validate,
       clearAllErrors: () => setFieldErrors({}),
