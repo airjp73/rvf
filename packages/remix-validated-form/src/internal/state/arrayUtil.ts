@@ -20,6 +20,8 @@ export const getArray = (values: any, field: string): unknown[] => {
   return value;
 };
 
+export const sparseCopy = <T>(array: T[]): T[] => array.slice();
+
 export const swap = (array: unknown[], indexA: number, indexB: number) => {
   const itemA = array[indexA];
   const itemB = array[indexB];

@@ -89,12 +89,12 @@ export default function Demo() {
       id="usefieldarray-example-form"
     >
       <FormInput name="name" label="Your name" />
-      {items.map((item, index) => (
-        <div key={item.id} className="todo-item">
+      {items.map(({ defaultValue, key }, index) => (
+        <div key={key} className="todo-item">
           <input
             type="hidden"
             name={`todos[${index}].id`}
-            value={item.id}
+            value={defaultValue.id}
           />
           <FormInput
             name={`todos[${index}].title`}

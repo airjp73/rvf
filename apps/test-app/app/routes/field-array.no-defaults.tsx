@@ -49,12 +49,12 @@ export default function FrontendValidation() {
       <FieldArray name="todos">
         {(items, { push, remove }) => (
           <>
-            {items.map((item, index) => (
-              <div key={item.id} data-testid={`todo-${index}`}>
+            {items.map(({ defaultValue, key }, index) => (
+              <div key={key} data-testid={`todo-${index}`}>
                 <input
                   type="hidden"
                   name={`todos[${index}].id`}
-                  value={item.id}
+                  value={defaultValue.id}
                   data-testid="todo-id"
                 />
                 <Input name={`todos[${index}].title`} label="Title" />
