@@ -48,7 +48,7 @@ export const swap = (array: unknown[], indexA: number, indexB: number) => {
 function sparseSplice(
   array: unknown[],
   start: number,
-  deleteCount: number,
+  deleteCount?: number,
   item?: unknown
 ) {
   // Inserting an item into an array won't behave as we need it to if the array isn't
@@ -58,8 +58,9 @@ function sparseSplice(
   }
 
   // If we just pass item in, it'll be undefined and splice will delete the item.
-  if (arguments.length === 4) return array.splice(start, deleteCount, item);
-  return array.splice(start, deleteCount);
+  if (arguments.length === 4) return array.splice(start, deleteCount!, item);
+  else if (arguments.length === 3) return array.splice(start, deleteCount);
+  return array.splice(start);
 }
 
 export const move = (array: unknown[], from: number, to: number) => {
@@ -69,6 +70,13 @@ export const move = (array: unknown[], from: number, to: number) => {
 
 export const insert = (array: unknown[], index: number, value: unknown) => {
   sparseSplice(array, index, 0, value);
+};
+
+export const insertEmpty = (array: unknown[], index: number) => {
+  const tail = sparseSplice(array, index);
+  tail.forEach((item, i) => {
+    sparseSplice(array, index + i + 1, 0, item);
+  });
 };
 
 export const remove = (array: unknown[], index: number) => {
@@ -239,6 +247,34 @@ if (import.meta.vitest) {
 
       expect(countArrayItems(array)).toEqual(2);
       expect(array).toEqual([true, undefined, undefined, true]);
+    });
+  });
+
+  describe("insertEmpty", () => {
+    it("should insert an empty item at a given index", () => {
+      const array = [1, 2, 3];
+      insertEmpty(array, 1);
+      // eslint-disable-next-line no-sparse-arrays
+      expect(array).toStrictEqual([1, , 2, 3]);
+      expect(array).not.toStrictEqual([1, undefined, 2, 3]);
+    });
+
+    it("should work with already sparse arrays", () => {
+      // eslint-disable-next-line no-sparse-arrays
+      const array = [, , 1, , 2, , 3];
+      insertEmpty(array, 3);
+      // eslint-disable-next-line no-sparse-arrays
+      expect(array).toStrictEqual([, , 1, , , 2, , 3]);
+      expect(array).not.toStrictEqual([
+        undefined,
+        undefined,
+        1,
+        undefined,
+        undefined,
+        2,
+        undefined,
+        3,
+      ]);
     });
   });
 

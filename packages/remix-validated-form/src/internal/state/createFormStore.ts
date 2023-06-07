@@ -486,10 +486,10 @@ const createFormState = (
           );
           // Even though this is a new item, we need to push around other items.
           arrayUtil.mutateAsArray(fieldName, state.touchedFields, (array) =>
-            arrayUtil.insert(array, index, false)
+            arrayUtil.insertEmpty(array, index)
           );
           arrayUtil.mutateAsArray(fieldName, state.fieldErrors, (array) =>
-            arrayUtil.insert(array, index, undefined)
+            arrayUtil.insertEmpty(array, index)
           );
         });
         get().controlledFields.kickoffValueUpdate(fieldName);
@@ -535,10 +535,10 @@ const createFormState = (
             .getArray(state.currentDefaultValues, fieldName)
             .unshift(value);
           arrayUtil.mutateAsArray(fieldName, state.touchedFields, (array) =>
-            array.unshift(false)
+            arrayUtil.insertEmpty(array, 0)
           );
           arrayUtil.mutateAsArray(fieldName, state.fieldErrors, (array) =>
-            array.unshift(undefined)
+            arrayUtil.insertEmpty(array, 0)
           );
         });
       },

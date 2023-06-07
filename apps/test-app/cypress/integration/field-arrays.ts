@@ -351,6 +351,10 @@ describe("Field arrays", () => {
           .should("have.value", "Default note 3");
 
         cy.findAllByTestId("todo-id").should("have.length", 4);
+
+        cy.findByTestId("todo-0").findByLabelText("Title").type("New 1").blur();
+        cy.findByText("Unshift").click();
+        cy.findAllByTestId("todo-id").should("have.length", 5);
       });
 
       it("should replace items", () => {
