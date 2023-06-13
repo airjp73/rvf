@@ -120,6 +120,57 @@ describe("Field arrays", () => {
       .should("have.text", "-2");
   });
 
+  it("should handle nested field arrays", () => {
+    cy.visit("/field-array/nested");
+
+    cy.findByTestId("todo-0")
+      .findByLabelText("Note 0")
+      .should("have.value", "Default note 1");
+    cy.findByTestId("todo-0")
+      .findByLabelText("Note 1")
+      .should("have.value", "Default note 2");
+    cy.findByTestId("todo-1")
+      .findByLabelText("Note 0")
+      .should("have.value", "Default note 3");
+    cy.findAllByTestId("note").should("have.length", 3);
+
+    cy.findByText("Swap").click();
+
+    cy.findByTestId("todo-2")
+      .findByLabelText("Note 0")
+      .should("have.value", "Default note 1");
+    cy.findByTestId("todo-2")
+      .findByLabelText("Note 1")
+      .should("have.value", "Default note 2");
+    cy.findByTestId("todo-1")
+      .findByLabelText("Note 0")
+      .should("have.value", "Default note 3");
+    cy.findAllByTestId("note").should("have.length", 3);
+
+    cy.findByTestId("todo-2")
+      .findByLabelText("Note 1")
+      .clear()
+      .type("Something else");
+    cy.findByTestId("todo-2").findByText("Delete note 0").click();
+
+    cy.findByTestId("todo-2")
+      .findByLabelText("Note 0")
+      .should("have.value", "Something else");
+    cy.findByTestId("todo-1")
+      .findByLabelText("Note 0")
+      .should("have.value", "Default note 3");
+    cy.findAllByTestId("note").should("have.length", 2);
+
+    cy.findByText("Submit").click();
+    cy.findByText("Must have at least one note").should("exist");
+
+    cy.findByTestId("todo-0").findByText("Add note").click();
+    cy.findByTestId("todo-0")
+      .findByLabelText("Note 0")
+      .should("have.value", "New note");
+    cy.findByText("Must have at least one note").should("not.exist");
+  });
+
   [
     {
       route: "/field-array",
