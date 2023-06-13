@@ -49,6 +49,12 @@ Clears all the errors in the form.
 Performs validation on the specified field and populates `fieldErrors` if there is an error.
 Also returns the error message if there is an error.
 
+This helper will also update errors for other fields in the form depending on the touched state of those fields.
+
+- If another field no longer has an error, it will be cleared automatically.
+- If another field's error has changed, it will be updated automatically.
+- If another field has a new error, it will only add the error if the field has been touched or the form has already been submitted unsuccessfully.
+
 <PropHeader prop="validate" type="() => ValidationResult" />
 
 Validates the whole form and updates `fieldErrors`.
