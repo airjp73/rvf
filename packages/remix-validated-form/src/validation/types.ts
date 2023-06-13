@@ -44,7 +44,10 @@ export type Validator<DataType> = {
   validate: (
     unvalidatedData: GenericObject
   ) => Promise<ValidationResult<DataType>>;
-  validateField: (
+  /**
+   * @deprecated Will be removed in a future version of remix-validated-form
+   */
+  validateField?: (
     unvalidatedData: GenericObject,
     field: string
   ) => Promise<ValidateFieldResult>;
