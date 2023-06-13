@@ -33,7 +33,7 @@
     "validation"
   ],
   "peerDependencies": {
-    "@remix-run/react": "1.x",
+    "@remix-run/react": ">= 1.15.0",
     "@remix-run/server-runtime": "1.x",
     "react": "^17.0.2 || ^18.0.0"
   },
