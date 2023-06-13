@@ -170,23 +170,23 @@ export function useFieldArray<Item = any>(
   ];
 }
 
-export type FieldArrayProps = {
+export type FieldArrayProps<Item> = {
   name: string;
   children: (
-    items: FieldArrayItem<any>[],
-    helpers: FieldArrayHelpers,
+    items: FieldArrayItem<Item>[],
+    helpers: FieldArrayHelpers<Item>,
     error: string | undefined
   ) => React.ReactNode;
   formId?: string;
   validationBehavior?: FieldArrayValidationBehaviorOptions;
 };
 
-export const FieldArray = ({
+export function FieldArray<Item = any>({
   name,
   children,
   formId,
   validationBehavior,
-}: FieldArrayProps) => {
+}: FieldArrayProps<Item>) {
   const context = useInternalFormContext(formId, "FieldArray");
   const [value, helpers, error] = useInternalFieldArray(
     context,
@@ -194,4 +194,4 @@ export const FieldArray = ({
     validationBehavior
   );
   return <>{children(value, helpers, error)}</>;
-};
+}
