@@ -5,7 +5,7 @@ import classNames from "classnames";
 type PropHeaderProps = {
   variant?: "h1" | "h3";
   prop: string;
-  type: string;
+  type?: string;
   optional?: boolean;
   noAnchor?: boolean;
 };
@@ -48,15 +48,17 @@ export const PropHeader = ({
           </a>
         )}
       </div>
-      <div
-        className={classNames(
-          "text-zinc-500",
-          "whitespace-pre-wrap",
-          variantTypeSizes[Variant]
-        )}
-      >
-        {type}
-      </div>
+      {type && (
+        <div
+          className={classNames(
+            "text-zinc-500",
+            "whitespace-pre-wrap",
+            variantTypeSizes[Variant]
+          )}
+        >
+          {type}
+        </div>
+      )}
       {optional && (
         <div className="text-zinc-500 text-sm italic mt-1">
           Optional
