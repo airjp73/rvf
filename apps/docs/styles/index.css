@@ -21,4 +21,11 @@
       @apply mt-4;
     }
   }
+
+  .overrides {
+    code.hljs {
+      margin: -11px -15px;
+      border-radius: .375rem;
+    }
+  }
 }
