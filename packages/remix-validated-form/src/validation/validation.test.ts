@@ -254,7 +254,7 @@ describe("Validation", () => {
           firstName: "John",
           lastName: {}, // invalid, but we should only be validating firstName
         };
-        expect(await validator.validateField(person, "firstName")).toEqual({
+        expect(await validator.validateField!(person, "firstName")).toEqual({
           error: undefined,
         });
       });
@@ -270,24 +270,24 @@ describe("Validation", () => {
           pets: [{ animal: "dog", name: "Fido" }],
         };
         expect(
-          await validator.validateField(person, "address.streetAddress")
+          await validator.validateField!(person, "address.streetAddress")
         ).toEqual({
           error: undefined,
         });
-        expect(await validator.validateField(person, "address.city")).toEqual({
+        expect(await validator.validateField!(person, "address.city")).toEqual({
           error: undefined,
         });
         expect(
-          await validator.validateField(person, "address.country")
+          await validator.validateField!(person, "address.country")
         ).toEqual({
           error: undefined,
         });
-        expect(await validator.validateField(person, "pets[0].animal")).toEqual(
-          {
-            error: undefined,
-          }
-        );
-        expect(await validator.validateField(person, "pets[0].name")).toEqual({
+        expect(
+          await validator.validateField!(person, "pets[0].animal")
+        ).toEqual({
+          error: undefined,
+        });
+        expect(await validator.validateField!(person, "pets[0].name")).toEqual({
           error: undefined,
         });
       });
@@ -301,7 +301,7 @@ describe("Validation", () => {
             city: 1234,
           },
         };
-        expect(await validator.validateField(person, "lastName")).toEqual({
+        expect(await validator.validateField!(person, "lastName")).toEqual({
           error: anyString,
         });
       });
@@ -317,11 +317,11 @@ describe("Validation", () => {
           pets: [{ animal: "dog" }],
         };
         expect(
-          await validator.validateField(person, "address.country")
+          await validator.validateField!(person, "address.country")
         ).toEqual({
           error: anyString,
         });
-        expect(await validator.validateField(person, "pets[0].name")).toEqual({
+        expect(await validator.validateField!(person, "pets[0].name")).toEqual({
           error: anyString,
         });
       });

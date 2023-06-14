@@ -11,6 +11,5 @@
     "jsx": "react-jsx",
     "types": ["vitest/importMeta"],
     "module": "esnext"
-  },
-  "exclude": ["**/*.test.ts", "**/*.test.tsx"]
+  }
 }

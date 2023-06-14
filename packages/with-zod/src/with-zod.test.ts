@@ -57,10 +57,10 @@ describe("withZod", () => {
       },
       submittedData: obj,
     });
-    expect(await validator.validateField(obj, "field1")).toEqual({
+    expect(await validator.validateField!(obj, "field1")).toEqual({
       error: anyString,
     });
-    expect(await validator.validateField(obj, "field2")).toEqual({
+    expect(await validator.validateField!(obj, "field2")).toEqual({
       error: anyString,
     });
   });
