@@ -1,13 +1,13 @@
 import { anyString, TestFormData } from "@remix-validated-form/test-utils";
 import { withYup } from "@remix-validated-form/with-yup/src";
-import { withZod } from "@remix-validated-form/with-zod";
 import * as R from "remeda";
 import { Validator } from "remix-validated-form/src";
+import { FORM_ID_FIELD } from "remix-validated-form/src/internal/constants";
 import { objectFromPathEntries } from "remix-validated-form/src/internal/flatten";
 import { describe, it, expect } from "vitest";
 import * as yup from "yup";
 import { z } from "zod";
-import { FORM_ID_FIELD } from "../internal/constants";
+import { withZod } from ".";
 
 // If adding an adapter, write a validator that validates this shape
 type Person = {
