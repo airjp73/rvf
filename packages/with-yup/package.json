@@ -1,6 +1,6 @@
 {
   "name": "@remix-validated-form/with-yup",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "main": "./dist/index.cjs.js",
   "module": "./dist/index.esm.js",
   "types": "./dist/index.d.ts",
