@@ -51,7 +51,7 @@ type SubactionData<
 // Not all validation libraries support encoding a literal value in the schema type (e.g. yup).
 // This condition here allows us to provide strictness for users who are using a validation library that does support it,
 // but also allows us to support users who are using a validation library that doesn't support it.
-type DefaultValuesForSubaction<
+type DataForSubaction<
   DataType,
   Subaction extends string | undefined
 > = Subaction extends string // Not all validation libraries support encoding a literal value in the schema type.
@@ -70,7 +70,7 @@ export type FormProps<DataType, Subaction extends string | undefined> = {
    * after all validations have been run.
    */
   onSubmit?: (
-    data: DataType,
+    data: DataForSubaction<DataType, Subaction>,
     event: React.FormEvent<HTMLFormElement>
   ) => void | Promise<void>;
   /**
@@ -83,7 +83,7 @@ export type FormProps<DataType, Subaction extends string | undefined> = {
    * Accepts an object of default values for the form
    * that will automatically be propagated to the form fields via `useField`.
    */
-  defaultValues?: Partial<DefaultValuesForSubaction<DataType, Subaction>>;
+  defaultValues?: Partial<DataForSubaction<DataType, Subaction>>;
   /**
    * A ref to the form element.
    */
@@ -362,7 +362,7 @@ export function ValidatedForm<DataType, Subaction extends string | undefined>({
     } else {
       setFieldErrors({});
       const eventProxy = formEventProxy(e);
-      await onSubmit?.(result.data, eventProxy);
+      await onSubmit?.(result.data as any, eventProxy);
       if (eventProxy.defaultPrevented) {
         endSubmit();
         return;
