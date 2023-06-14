@@ -16,11 +16,13 @@
     "typecheck": "tsc --noEmit"
   },
   "peerDependencies": {
-    "remix-validated-form": "^4.x",
+    "remix-validated-form": "^4.x || ^5.x",
     "zod": "^3.11.x"
   },
   "devDependencies": {
+    "@types/semver": "^7.5.0",
     "remix-validated-form": "*",
+    "semver": "^7.5.1",
     "set-get": "*",
     "tsconfig": "*",
     "tsup-config": "*",

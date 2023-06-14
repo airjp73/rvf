@@ -16,7 +16,7 @@
     "typecheck": "tsc --noEmit"
   },
   "peerDependencies": {
-    "remix-validated-form": "^4.x",
+    "remix-validated-form": "^4.x || ^5.x",
     "yup": "^1.0.0"
   },
   "devDependencies": {
