@@ -257,6 +257,14 @@ describe("Submission", () => {
     cy.findByText("Submit").should("exist");
   });
 
+  it("should reset isSubmitting state even in GET requests", () => {
+    cy.visit("submission/get").waitForJs();
+    cy.findByText("Submit").click();
+    cy.findByText("Submitting...").should("exist");
+    cy.findByText("Submitted!").should("exist");
+    cy.findByText("Submitting...").should("not.exist");
+  });
+
   it("should not let data get out of sync if form is changed after clicking submit", () => {
     cy.visit("submission/sync").waitForJs();
     cy.findByLabelText("Will be changed").type("Original");
