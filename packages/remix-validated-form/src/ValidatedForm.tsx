@@ -43,6 +43,12 @@ import {
 } from "./internal/util";
 import { FieldErrors, Validator } from "./validation/types";
 
+type DeepPartial<T> = T extends object
+  ? {
+      [P in keyof T]?: DeepPartial<T[P]>;
+    }
+  : T;
+
 type SubactionData<
   DataType,
   Subaction extends string | undefined
@@ -83,7 +89,7 @@ export type FormProps<DataType, Subaction extends string | undefined> = {
    * Accepts an object of default values for the form
    * that will automatically be propagated to the form fields via `useField`.
    */
-  defaultValues?: Partial<DataForSubaction<DataType, Subaction>>;
+  defaultValues?: DeepPartial<DataForSubaction<DataType, Subaction>>;
   /**
    * A ref to the form element.
    */
@@ -221,7 +227,10 @@ type HTMLFormSubmitter = HTMLButtonElement | HTMLInputElement;
 /**
  * The primary form component of `remix-validated-form`.
  */
-export function ValidatedForm<DataType, Subaction extends string | undefined>({
+export function ValidatedForm<
+  DataType extends { [fieldName: string]: any },
+  Subaction extends string | undefined
+>({
   validator,
   onSubmit,
   children,
