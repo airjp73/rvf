@@ -1,11 +1,11 @@
 import { TestFormData } from "@remix-validated-form/test-utils";
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { z } from "zod";
+import { z, ZodError } from "zod";
 import { zfd } from "./";
 
-const expectError = (schema: z.Schema<any>, val: any) => {
+const expectError = (schema: z.Schema<any>, val: any, error?: ZodError) => {
   expect(schema.safeParse(val)).toMatchObject({
-    // error: expect.any(z.ZodError),
+    error: error ? error : expect.any(z.ZodError),
     success: false,
   });
 };
@@ -153,6 +153,31 @@ describe("zod helpers", () => {
     it("should accept schema for item type", () => {
       const s = zfd.repeatableOfType(zfd.numeric(z.number().min(13)));
       expectError(s, "12");
+      expect(s.parse("13")).toEqual([13]);
+    });
+    it("should fail on multiple items with correct error", () => {
+      const s = zfd.repeatableOfType(zfd.numeric(z.number().positive()));
+      expectError(
+        s,
+        ["adsf", -123],
+        new ZodError([
+          {
+            code: "invalid_type",
+            expected: "number",
+            received: "string",
+            path: [0],
+            message: "Expected number, received string",
+          },
+          {
+            code: "too_small",
+            minimum: 0,
+            type: "number",
+            inclusive: false,
+            message: "Number must be greater than 0",
+            path: [1],
+          },
+        ])
+      );
       expect(s.parse("13")).toEqual([13]);
     });
   });
