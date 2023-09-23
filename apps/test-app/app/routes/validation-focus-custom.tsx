@@ -36,7 +36,7 @@ const ControlledInput = ({ name, label }: { name: string; label: string }) => {
 };
 
 export default function FrontendValidation() {
-  const actionData = useActionData();
+  const actionData = useActionData() as any;
   return (
     <ValidatedForm validator={validator} method="post">
       {actionData && <h1>{actionData.message}</h1>}

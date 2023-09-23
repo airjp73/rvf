@@ -21,7 +21,7 @@ const schema = yup.object({
 const validator = withYup(schema);
 
 export default function FrontendValidation() {
-  const actionData = useActionData();
+  const actionData = useActionData() as any;
   return (
     <ValidatedForm validator={validator} method="post" disableFocusOnError>
       {actionData && <h1>{actionData.message}</h1>}

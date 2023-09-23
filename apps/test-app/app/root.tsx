@@ -7,8 +7,9 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
-  useCatch,
+  isRouteErrorResponse,
   useLocation,
+  useRouteError,
 } from "@remix-run/react";
 import * as React from "react";
 import darkStylesUrl from "~/styles/dark.css";
@@ -122,49 +123,48 @@ function Layout({ children }: React.PropsWithChildren<{}>) {
   );
 }
 
-export function CatchBoundary() {
-  let caught = useCatch();
+export function ErrorBoundary() {
+  const error = useRouteError();
 
-  let message;
-  switch (caught.status) {
-    case 401:
-      message = (
-        <p>
-          Oops! Looks like you tried to visit a page that you do not have access
-          to.
-        </p>
-      );
-      break;
-    case 404:
-      message = (
-        <p>Oops! Looks like you tried to visit a page that does not exist.</p>
-      );
-      break;
+  if (isRouteErrorResponse(error)) {
+    let message;
+    switch (error.status) {
+      case 401:
+        message = (
+          <p>
+            Oops! Looks like you tried to visit a page that you do not have
+            access to.
+          </p>
+        );
+        break;
+      case 404:
+        message = (
+          <p>Oops! Looks like you tried to visit a page that does not exist.</p>
+        );
+        break;
 
-    default:
-      throw new Error(caught.data || caught.statusText);
+      default:
+        throw new Error(error.data || error.statusText);
+    }
+
+    return (
+      <Document title={`${error.status} ${error.statusText}`}>
+        <Layout>
+          <h1>
+            {error.status}: {error.statusText}
+          </h1>
+          {message}
+        </Layout>
+      </Document>
+    );
   }
 
-  return (
-    <Document title={`${caught.status} ${caught.statusText}`}>
-      <Layout>
-        <h1>
-          {caught.status}: {caught.statusText}
-        </h1>
-        {message}
-      </Layout>
-    </Document>
-  );
-}
-
-export function ErrorBoundary({ error }: { error: Error }) {
-  console.error(error);
   return (
     <Document title="Error!">
       <Layout>
         <div>
           <h1>There was an error</h1>
-          <p>{error.message}</p>
+          <p>{(error as any).message ?? "Unknown error"}</p>
           <hr />
           <p>
             Hey, developer, you should replace this with what you want your

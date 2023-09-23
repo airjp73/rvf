@@ -11,10 +11,15 @@ const validator = withYup(schema);
 
 export default function FrontendValidation() {
   const { submit } = useFormContext("test-form");
-  const fetcher = useFetcher();
+  const fetcher =
+    useFetcher<
+      typeof import("./submission.helper-with-action.action")["action"]
+    >();
   return (
     <>
-      {fetcher.data?.message && <p>From fetcher: {fetcher.data.message}</p>}
+      {fetcher.data && "message" in fetcher.data && fetcher.data?.message && (
+        <p>From fetcher: {fetcher.data.message}</p>
+      )}
       <ValidatedForm
         validator={validator}
         method="post"

@@ -48,10 +48,13 @@ export let loader = (args: DataFunctionArgs) => {
 
 // https://remix.run/docs/en/v1/route/meta
 export let meta: MetaFunction = () => {
-  return {
-    title: "Remix Starter",
-    description: "Welcome to remix!",
-  };
+  return [
+    { title: "Remix Starter" },
+    {
+      name: "description",
+      content: "Welcome to remix!",
+    },
+  ];
 };
 
 // https://remix.run/docs/en/v1/guides/routing#index-routes

@@ -23,10 +23,12 @@ export const action = async ({ request }: DataFunctionArgs) => {
 };
 
 export default function FrontendValidation() {
-  const fetcher = useFetcher();
+  const fetcher = useFetcher<typeof action>();
   return (
     <>
-      {fetcher.data?.message && <h1>{fetcher.data.message}</h1>}
+      {fetcher.data && "message" in fetcher.data && fetcher.data?.message && (
+        <h1>{fetcher.data.message}</h1>
+      )}
       <Input name="firstName" label="First Name" form="test-form" />
       <ValidatedForm
         validator={validator}

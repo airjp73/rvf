@@ -13,7 +13,7 @@ export const action = ({ request }: DataFunctionArgs) =>
 
 export default function FrontendValidation() {
   const data = useActionData<typeof action>();
-  const fetcher = useFetcher();
+  const fetcher = useFetcher<typeof action>();
 
   return (
     <>

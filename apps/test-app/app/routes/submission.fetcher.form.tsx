@@ -8,7 +8,7 @@ const schema = yup.object({});
 const validator = withYup(schema);
 
 export default function FrontendValidation() {
-  const fetcher = useFetcher();
+  const fetcher = useFetcher<typeof import("./submission.fetcher")["action"]>();
   return (
     <ValidatedForm
       validator={validator}
