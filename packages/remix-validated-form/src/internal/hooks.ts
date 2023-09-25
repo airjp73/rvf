@@ -71,7 +71,7 @@ export const useDefaultValuesFromLoader = ({
         (match) =>
           match.data && typeof match.data === "object" && dataKey in match.data
       );
-    return (match?.data as any)[dataKey];
+    return (match as any)?.data[dataKey];
   }
 
   return null;
