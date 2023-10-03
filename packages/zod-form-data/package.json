@@ -23,7 +23,7 @@
     "typecheck": "tsc --noEmit"
   },
   "peerDependencies": {
-    "zod": "^3.11.x"
+    "zod": "^3.22.3"
   },
   "devDependencies": {
     "set-get": "*",
