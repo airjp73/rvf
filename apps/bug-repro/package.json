@@ -20,7 +20,7 @@
     "react-dom": "^18.1.0",
     "remix-validated-form": "*",
     "yup": "*",
-    "zod": "*"
+    "zod": "~3.20.0"
   },
   "devDependencies": {
     "@remix-run/dev": "^1.16.1",

@@ -31,7 +31,7 @@
     "react-dom": "^18.1.0",
     "rehype-highlight": "^5.0.1",
     "remix-validated-form": "*",
-    "zod": "^3.11.6",
+    "zod": "~3.20.0",
     "zod-form-data": "*"
   },
   "devDependencies": {

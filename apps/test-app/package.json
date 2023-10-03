@@ -26,7 +26,7 @@
     "react-dom": "^18.1.0",
     "remix-validated-form": "*",
     "yup": "^1.0.0",
-    "zod": "^3.11.6",
+    "zod": "~3.20.0",
     "zod-form-data": "*"
   },
   "devDependencies": {

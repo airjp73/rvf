@@ -173,6 +173,7 @@ describe("zod helpers", () => {
             minimum: 0,
             type: "number",
             inclusive: false,
+            exact: false,
             message: "Number must be greater than 0",
             path: [1],
           },
