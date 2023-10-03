@@ -1,6 +1,6 @@
 {
   "name": "@remix-validated-form/with-zod",
-  "version": "2.0.6",
+  "version": "2.0.7",
   "main": "./dist/index.cjs.js",
   "module": "./dist/index.esm.js",
   "types": "./dist/index.d.ts",
