@@ -23,13 +23,13 @@
     "typecheck": "tsc --noEmit"
   },
   "peerDependencies": {
-    "zod": "^3.11.x"
+    "zod": ">= 3.11.0"
   },
   "devDependencies": {
     "set-get": "*",
     "tsconfig": "*",
     "tsup-config": "*",
     "typescript": "^4.8.4",
-    "zod": "^3.11.6"
+    "zod": "~3.20.0"
   }
 }
