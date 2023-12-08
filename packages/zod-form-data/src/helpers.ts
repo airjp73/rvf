@@ -26,6 +26,21 @@ const preprocessIfValid = (schema: ZodTypeAny) => (val: unknown) => {
 };
 
 /**
+ * Provides a version of `z.preprocess` that does not broaden the allowable input type of the
+ * returned ZodEffects from `input<T>` to `unknown`. This is important for preserving type input
+ * information for e.g. default values, or for the input types of `parse()` functions.
+ *
+ * This should be used when the preprocess function is not intended to broaden the allowable input
+ * types from those of the provided schema.
+ *
+ * See: https://github.com/colinhacks/zod/pull/1752
+ */
+const preprocessWithoutUnknown = <T extends ZodTypeAny>(
+  preprocessFn: Parameters<typeof z.preprocess>[0],
+  schema: T
+): ZodEffects<T> => z.preprocess(preprocessFn, schema);
+
+/**
  * Transforms any empty strings to `undefined` before validating.
  * This makes it so empty strings will fail required checks,
  * allowing you to use `optional` for optional fields instead of `nonempty` for required fields.
@@ -33,7 +48,7 @@ const preprocessIfValid = (schema: ZodTypeAny) => (val: unknown) => {
  * If you want to customize the schema, you can pass that as an argument.
  */
 export const text: InputType<ZodString> = (schema = z.string()) =>
-  z.preprocess(preprocessIfValid(stripEmpty), schema) as any;
+  preprocessWithoutUnknown(preprocessIfValid(stripEmpty), schema);
 
 /**
  * Coerces numerical strings to numbers transforms empty strings to `undefined` before validating.
@@ -42,7 +57,7 @@ export const text: InputType<ZodString> = (schema = z.string()) =>
  * If you want to customize the schema, you can pass that as an argument.
  */
 export const numeric: InputType<ZodNumber> = (schema = z.number()) =>
-  z.preprocess(
+  preprocessWithoutUnknown(
     preprocessIfValid(
       z.union([
         stripEmpty,
@@ -53,7 +68,7 @@ export const numeric: InputType<ZodNumber> = (schema = z.number()) =>
       ])
     ),
     schema
-  ) as any;
+  );
 
 type CheckboxOpts = {
   trueValue?: string;
@@ -83,10 +98,10 @@ export const checkbox = ({ trueValue = "on" }: CheckboxOpts = {}) =>
   ]);
 
 export const file: InputType<z.ZodType<File>> = (schema = z.instanceof(File)) =>
-  z.preprocess((val) => {
+  preprocessWithoutUnknown((val) => {
     //Empty File object on no user input, so convert to undefined
     return val instanceof File && val.size === 0 ? undefined : val;
-  }, schema) as any;
+  }, schema);
 
 /**
  * Preprocesses a field where you expect multiple values could be present for the same field name
@@ -97,11 +112,11 @@ export const file: InputType<z.ZodType<File>> = (schema = z.instanceof(File)) =>
 export const repeatable: InputType<ZodArray<any>> = (
   schema = z.array(text())
 ) => {
-  return z.preprocess((val) => {
+  return preprocessWithoutUnknown((val) => {
     if (Array.isArray(val)) return val;
     if (val === undefined) return [];
     return [val];
-  }, schema) as any;
+  }, schema);
 };
 
 /**
