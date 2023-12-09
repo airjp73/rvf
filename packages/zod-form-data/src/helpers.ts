@@ -1,5 +1,6 @@
 import { setPath } from "set-get";
 import {
+  input,
   z,
   ZodArray,
   ZodEffects,
@@ -10,10 +11,23 @@ import {
   ZodTypeAny,
 } from "zod";
 
+type ExtendsDefaultType<
+  DefaultType extends ZodTypeAny,
+  ProvidedType extends ZodTypeAny
+> = (
+  ProvidedType extends ZodType<any, any, infer Input>
+    ? Input extends input<DefaultType>
+      ? ProvidedType
+      : never
+    : never
+) extends never
+  ? never
+  : ProvidedType;
+
 type InputType<DefaultType extends ZodTypeAny> = {
   (): ZodEffects<DefaultType>;
   <ProvidedType extends ZodTypeAny>(
-    schema: ProvidedType
+    schema: ProvidedType & ExtendsDefaultType<DefaultType, ProvidedType>
   ): ZodEffects<ProvidedType>;
 };
 
