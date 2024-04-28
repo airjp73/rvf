@@ -29,4 +29,37 @@ describe("getPath", () => {
     expect(getPath(obj, "a.b.c")).toBe(1);
     expect(getPath(obj, "a.e[0].f")).toEqual({ g: 1 });
   });
+
+  test("should get a deeply nested value", () => {
+    const state = {
+      a: {
+        b: {
+          c: 1,
+        },
+      },
+    };
+    expect(getPath(state, "a.b.c")).toBe(1);
+  });
+
+  test("should return undefined if the path is not found", () => {
+    const state = {
+      a: {
+        b: {
+          c: 1,
+        },
+      },
+    };
+    expect(getPath(state, "a.b.d.f.g")).toBeUndefined();
+  });
+
+  test("should work with arrays", () => {
+    const state = {
+      a: {
+        b: [1, 2, { c: 3 }],
+      },
+    };
+    expect(getPath(state, "a.b.1")).toBe(2);
+    expect(getPath(state, "a.b.2.c")).toBe(3);
+    expect(getPath(state, "a.b.3.e")).toBeUndefined();
+  });
 });
