@@ -100,9 +100,8 @@ describe("ValidStringPaths type", () => {
         };
       };
     };
-    expectTypeOf<ValidStringPaths<state>>().toEqualTypeOf<
-      "a" | "a.b" | "a.b.c"
-    >();
+    type result = ValidStringPaths<state>;
+    expectTypeOf<result>().toEqualTypeOf<"a" | "a.b" | "a.b.c">();
   });
 
   it("should work with arrays", () => {
@@ -116,7 +115,7 @@ describe("ValidStringPaths type", () => {
       };
     };
     expectTypeOf<ValidStringPaths<state>>().toEqualTypeOf<
-      "a" | "a.b" | `a.b.${number}` | `a.b.${number}.c`
+      "a" | "a.b" | `a.b[${number}]` | `a.b[${number}].c`
     >();
   });
 });
@@ -134,7 +133,7 @@ describe("ValidStringPathsToArrays type", () => {
 
     type result = ValidStringPathsToArrays<state>;
     expectTypeOf<result>().toEqualTypeOf<
-      "a.b" | "a.c" | `a.c.${number}.d` | "e" | "f"
+      "a.b" | "a.c" | `a.c[${number}].d` | "e" | "f"
     >();
   });
 });

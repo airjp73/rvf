@@ -11,22 +11,29 @@ type PathKey = string | number;
  */
 export type IsAny<T> = 0 extends 1 & T ? true : false;
 
-export type ValidStringPaths<Obj> = PeriodDelimitedString<
-  PathsOfObject<Obj, []>
+export type ValidStringPaths<Obj> = StringPaths<PathsOfObject<Obj, []>, true>;
+
+export type ValidStringPathsToArrays<Obj> = StringPaths<
+  PathsOfObject<Obj, [], Array<any>>,
+  true
 >;
 
-export type ValidStringPathsToArrays<Obj> = PeriodDelimitedString<
-  PathsOfObject<Obj, [], Array<any>>
->;
+type PathSegment<
+  Segment extends PathKey,
+  Root extends boolean
+> = Root extends true
+  ? Segment
+  : Segment extends number
+  ? `[${Segment}]`
+  : `.${Segment}`;
 
-type PeriodDelimitedString<Tuple extends PathKey[]> = Tuple extends [
-  infer Item extends PathKey
-]
-  ? Item extends string
-    ? Item
-    : `${Item}`
+type StringPaths<
+  Tuple extends PathKey[],
+  Root extends boolean = false
+> = Tuple extends [infer Item extends PathKey]
+  ? PathSegment<Item, Root>
   : Tuple extends [infer Head extends PathKey, ...infer Rest extends PathKey[]]
-  ? `${Head}.${PeriodDelimitedString<Rest>}`
+  ? `${PathSegment<Head, Root>}${StringPaths<Rest>}`
   : never;
 
 type CoerceNumbers<Str extends string> =
