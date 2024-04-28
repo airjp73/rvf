@@ -1,26 +1,23 @@
 import { stringToPathArray } from "./stringToPathArray";
 
-export function setPath<T>(object: T, path: string, defaultValue: any) {
-  return _setPathNormalized(object, stringToPathArray(path), defaultValue);
-}
+export function setPath<T>(object: T, path: string, value: any) {
+  // deeply mutate the data
+  const parts = stringToPathArray(path);
+  let obj: any = object;
 
-function _setPathNormalized(
-  object: any,
-  path: (string | number)[],
-  value: any
-): any {
-  const leadingSegments = path.slice(0, -1);
-  const lastSegment = path[path.length - 1];
-
-  let obj = object;
-  for (let i = 0; i < leadingSegments.length; i++) {
-    const segment = leadingSegments[i];
-    if (obj[segment] === undefined) {
-      const nextSegment = leadingSegments[i + 1] ?? lastSegment;
-      obj[segment] = typeof nextSegment === "number" ? [] : {};
+  for (let i = 0; i < parts.length - 1; i++) {
+    const part = parts[i];
+    const nextPart = parts[i + 1];
+    if (obj[part] === undefined) {
+      if (typeof nextPart === "number") {
+        obj[part] = [];
+      } else {
+        obj[part] = {};
+      }
     }
-    obj = obj[segment];
+    obj = obj[part];
   }
-  obj[lastSegment] = value;
+
+  obj[parts[parts.length - 1]] = value;
   return object;
 }

@@ -96,4 +96,54 @@ describe("string path", () => {
       },
     });
   });
+
+  test("should set a deeply nested value", () => {
+    const state = {
+      a: {
+        b: {
+          c: 1,
+        },
+      },
+      d: 2,
+    };
+    setPath(state, "a.b.c", 3);
+    expect(state).toEqual({
+      a: {
+        b: {
+          c: 3,
+        },
+      },
+      d: 2,
+    });
+  });
+
+  test("should create missing objects", () => {
+    const state = {
+      d: 2,
+    };
+    setPath(state, "a.b.c", 3);
+    expect(state).toEqual({
+      a: {
+        b: {
+          c: 3,
+        },
+      },
+      d: 2,
+    });
+  });
+
+  test("should create missing arrays", () => {
+    const state = {
+      d: 2,
+    };
+    setPath(state, "a.b.c.0", 3);
+    expect(state).toEqual({
+      a: {
+        b: {
+          c: [3],
+        },
+      },
+      d: 2,
+    });
+  });
 });

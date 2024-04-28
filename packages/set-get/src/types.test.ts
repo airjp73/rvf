@@ -1,63 +1,10 @@
-import { describe, expect, expectTypeOf, it } from "vitest";
+import { describe, expectTypeOf, it } from "vitest";
 import {
   StringToPathTuple,
   ValidStringPaths,
   ValidStringPathsToArrays,
   ValueAtPath,
-  simpleSet,
 } from "./types";
-
-describe("set", () => {
-  it("should set a deeply nested value", () => {
-    const state = {
-      a: {
-        b: {
-          c: 1,
-        },
-      },
-      d: 2,
-    };
-    simpleSet("a.b.c", 3, state);
-    expect(state).toEqual({
-      a: {
-        b: {
-          c: 3,
-        },
-      },
-      d: 2,
-    });
-  });
-
-  it("should create missing objects", () => {
-    const state = {
-      d: 2,
-    };
-    simpleSet("a.b.c", 3, state);
-    expect(state).toEqual({
-      a: {
-        b: {
-          c: 3,
-        },
-      },
-      d: 2,
-    });
-  });
-
-  it("should create missing arrays", () => {
-    const state = {
-      d: 2,
-    };
-    simpleSet("a.b.c.0", 3, state);
-    expect(state).toEqual({
-      a: {
-        b: {
-          c: [3],
-        },
-      },
-      d: 2,
-    });
-  });
-});
 
 describe("ValueAtPath type", () => {
   it("should get a deeply nested value", () => {
