@@ -3,6 +3,7 @@ import { useRvf } from "../react";
 import { RenderCounter } from "./util/RenderCounter";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { successValidator } from "./util/successValidator";
 
 it("should be able to isloate rerenders on the fly with `form.isolate(iso => iso.stuff)`", async () => {
   const submit = vi.fn();

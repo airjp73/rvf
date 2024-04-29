@@ -2,6 +2,7 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { useRvf } from "../react";
 import userEvent from "@testing-library/user-event";
 import { RenderCounter } from "./util/RenderCounter";
+import { FieldErrors } from "@rvf/core";
 
 it("should validate on submit, then on change after that", async () => {
   const submit = vi.fn();
@@ -12,12 +13,12 @@ it("should validate on submit, then on change after that", async () => {
         baz: { a: "" },
       },
       validator: (data) => {
-        const errors: Record<string, string> = {};
+        const errors: FieldErrors = {};
         if (data.foo.length < 3) errors.foo = "too short";
         if (data.baz.a.length > 3) errors["baz.a"] = "too long";
         if (Object.keys(errors).length > 0)
-          return { data: undefined, error: errors };
-        return { data, error: undefined };
+          return Promise.resolve({ data: undefined, error: errors });
+        return Promise.resolve({ data, error: undefined });
       },
       onSubmit: submit,
     });
@@ -37,9 +38,9 @@ it("should validate on submit, then on change after that", async () => {
 
   render(<TestComp />);
   expect(screen.getByTestId("foo")).toHaveValue("");
-  expect(screen.getByTestId("foo-error")).toHaveTextContent("");
+  expect(screen.getByTestId("foo-error")).toBeEmptyDOMElement();
   expect(screen.getByTestId("baz.a")).toHaveValue("");
-  expect(screen.getByTestId("baz.a-error")).toHaveTextContent("");
+  expect(screen.getByTestId("baz.a-error")).toBeEmptyDOMElement();
   expect(screen.getByTestId("render-count")).toHaveTextContent("1");
 
   await userEvent.type(screen.getByTestId("foo"), "bo");
@@ -47,8 +48,8 @@ it("should validate on submit, then on change after that", async () => {
   await userEvent.click(screen.getByTestId("form")); // blur
 
   // Invalid, but still don't show
-  expect(screen.getByTestId("foo-error")).toHaveTextContent("");
-  expect(screen.getByTestId("baz.a-error")).toHaveTextContent("");
+  expect(screen.getByTestId("foo-error")).toBeEmptyDOMElement();
+  expect(screen.getByTestId("baz.a-error")).toBeEmptyDOMElement();
   expect(screen.getByTestId("render-count").textContent).toMatchInlineSnapshot(
     `"3"`,
   );
@@ -63,8 +64,8 @@ it("should validate on submit, then on change after that", async () => {
   await userEvent.type(screen.getByTestId("foo"), "b");
   await userEvent.type(screen.getByTestId("baz.a"), "{Backspace}");
 
-  expect(screen.getByTestId("foo-error")).toHaveTextContent("");
-  expect(screen.getByTestId("baz.a-error")).toHaveTextContent("");
+  expect(screen.getByTestId("foo-error")).toBeEmptyDOMElement();
+  expect(screen.getByTestId("baz.a-error")).toBeEmptyDOMElement();
 
   fireEvent.submit(screen.getByTestId("form"));
 
@@ -73,8 +74,8 @@ it("should validate on submit, then on change after that", async () => {
     baz: { a: "tes" },
   });
 
-  expect(screen.getByTestId("foo-error")).toHaveTextContent("");
-  expect(screen.getByTestId("baz.a-error")).toHaveTextContent("");
+  expect(screen.getByTestId("foo-error")).toBeEmptyDOMElement();
+  expect(screen.getByTestId("baz.a-error")).toBeEmptyDOMElement();
   await waitFor(() => {
     expect(submit).toBeCalledTimes(1);
   });
@@ -93,8 +94,11 @@ it("should handle dependant validations", async () => {
       },
       validator: (data) => {
         if (data.password !== data.confirmPassword)
-          return { type: "error", error: { confirmPassword: "not equal" } };
-        return { type: "success", data };
+          return Promise.resolve({
+            data: undefined,
+            error: { confirmPassword: "not equal" },
+          });
+        return Promise.resolve({ data, error: undefined });
       },
       onSubmit: submit,
     });
@@ -116,7 +120,7 @@ it("should handle dependant validations", async () => {
   render(<TestComp />);
 
   await userEvent.type(screen.getByTestId("password"), "test");
-  expect(screen.getByTestId("error")).toHaveTextContent("");
+  expect(screen.getByTestId("error")).toBeEmptyDOMElement();
 
   fireEvent.submit(screen.getByTestId("form"));
   await waitFor(() =>
@@ -130,7 +134,7 @@ it("should handle dependant validations", async () => {
   expect(screen.getByTestId("error")).toHaveTextContent("not equal");
 
   await userEvent.type(screen.getByTestId("password"), "{Backspace}");
-  expect(screen.getByTestId("error")).toHaveTextContent("");
+  expect(screen.getByTestId("error")).toBeEmptyDOMElement();
 
   fireEvent.submit(screen.getByTestId("form"));
   await waitFor(() => {
@@ -150,11 +154,11 @@ it("should be possible to customize validation behavior", async () => {
         foo: "",
       },
       validator: (data) => {
-        const errors: Record<string, string> = {};
+        const errors: FieldErrors = {};
         if (data.foo.length < 3) errors.foo = "too short";
         if (Object.keys(errors).length > 0)
-          return { type: "error", error: errors };
-        return { type: "success", data };
+          return Promise.resolve({ data: undefined, error: errors });
+        return Promise.resolve({ data, error: undefined });
       },
       onSubmit: submit,
       validationBehaviorConfig: {
@@ -176,16 +180,20 @@ it("should be possible to customize validation behavior", async () => {
   render(<TestComp />);
 
   await userEvent.type(screen.getByTestId("foo"), "12");
-  expect(screen.getByTestId("foo-error")).toHaveTextContent("");
+  expect(screen.getByTestId("foo-error")).toBeEmptyDOMElement();
 
-  await userEvent.click(screen.getByTestId("form")); // blur
-  expect(screen.getByTestId("foo-error")).toHaveTextContent("too short");
+  await userEvent.click(screen.getByTestId("form"));
+  await waitFor(() => {
+    expect(screen.getByTestId("foo-error")).toHaveTextContent("too short");
+  });
 
   await userEvent.type(screen.getByTestId("foo"), "12");
-  expect(screen.getByTestId("foo-error")).toHaveTextContent("");
+  expect(screen.getByTestId("foo-error")).toBeEmptyDOMElement();
 
   await userEvent.type(screen.getByTestId("foo"), "{Backspace}{Backspace}");
-  expect(screen.getByTestId("foo-error")).toHaveTextContent("too short");
+  await waitFor(() => {
+    expect(screen.getByTestId("foo-error")).toHaveTextContent("too short");
+  });
 });
 
 // it("should use validation adapters", async () => {
