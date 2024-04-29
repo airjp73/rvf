@@ -1,18 +1,73 @@
-import { describe, expect, it } from "vitest";
-import { createFormStateStore, createRefStore } from "./store";
+import { describe, expect, it, vi } from "vitest";
+import { FormStoreInit, createFormStateStore, createRefStore } from "./store";
 
-const testStore = () =>
+const testStore = (init?: Partial<FormStoreInit>) =>
   createFormStateStore({
     initialValues: {},
     controlledFieldRefs: createRefStore(),
     transientFieldRefs: createRefStore(),
     mutableImplStore: {
-      validator: () => ({ type: "success", data: null }),
+      validator: () => Promise.resolve({ data: null, error: undefined }),
       onSubmit: () => Promise.resolve(),
     },
+    ...init,
   });
 
-describe("createFormStateStore", () => {
+describe("validation", () => {
+  it("should validate using the provided validator at the right time", async () => {
+    const onSubmit = vi.fn();
+    const store = testStore({
+      mutableImplStore: {
+        validator: (data) => {
+          if (data.firstName === "Jane")
+            return Promise.resolve({
+              error: { firstName: "Invalid" },
+              data: undefined,
+            });
+          return Promise.resolve({
+            data: { transformed: "data" },
+            error: undefined,
+          });
+        },
+        onSubmit,
+      },
+    });
+    store.setState({
+      values: {
+        firstName: "John",
+        lastName: "Doe",
+      },
+    });
+    expect(store.getState().validationErrors).toEqual({});
+
+    store.getState().onFieldChange("firstName", "Jane");
+    expect(store.getState().touchedFields).toEqual({});
+    expect(store.getState().dirtyFields).toEqual({ firstName: true });
+    expect(store.getState().validationErrors).toEqual({});
+
+    await new Promise((resolve) => setTimeout(resolve, 100));
+    expect(store.getState().validationErrors).toEqual({});
+
+    store.getState().onSubmit();
+    await new Promise((resolve) => setTimeout(resolve, 100));
+    expect(store.getState().validationErrors).toEqual({
+      firstName: "Invalid",
+    });
+    expect(onSubmit).not.toHaveBeenCalled();
+
+    store.getState().onFieldChange("firstName", "John again");
+    await new Promise((resolve) => setTimeout(resolve, 100));
+    expect(store.getState().validationErrors).toEqual({});
+
+    store.getState().onSubmit();
+    await new Promise((resolve) => setTimeout(resolve, 100));
+    expect(store.getState().validationErrors).toEqual({});
+    expect(onSubmit).toHaveBeenCalledTimes(1);
+    expect(onSubmit).toHaveBeenCalledWith({ transformed: "data" });
+  });
+});
+
+describe("arrays", () => {
   it("should push into arrays", () => {
     const store = testStore();
     store.setState({

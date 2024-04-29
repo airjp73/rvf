@@ -8,7 +8,7 @@ import {
   ValidationBehavior,
   ValidationBehaviorConfig,
   Validator,
-} from "./public-types";
+} from "./types";
 
 export const createRefStore = () => {
   const elementRefs = new Map<string, HTMLElement | null>();
@@ -53,8 +53,10 @@ type StoreActions = {
   setAllErrors: (data: Record<string, string>) => void;
 
   shouldValidate: (eventType: ValidationBehavior, fieldName: string) => boolean;
-  getValidationErrors: (nextValues?: FieldValues) => Record<string, string>;
-  validate: () => Record<string, string>;
+  getValidationErrors: (
+    nextValues?: FieldValues
+  ) => Promise<Record<string, string>>;
+  validate: () => Promise<Record<string, string>>;
 
   reset: (nextValues?: FieldValues) => void;
   resetField: (fieldName: string, nextValue?: unknown) => void;
@@ -84,7 +86,7 @@ const defaultValidationBehaviorConfig: ValidationBehaviorConfig = {
   whenSubmitted: "onChange",
 };
 
-type FormStoreInit = {
+export type FormStoreInit = {
   initialValues: Record<PropertyKey, unknown>;
   transientFieldRefs: RefStore;
   controlledFieldRefs: RefStore;
@@ -180,14 +182,14 @@ export const createFormStateStore = ({
         return currentValidationBehavior === "onChange";
       },
 
-      getValidationErrors: (nextValues = get().values) => {
-        const result = mutableImplStore.validator(nextValues);
-        if (result.type === "error") return result.error;
+      getValidationErrors: async (nextValues = get().values) => {
+        const result = await mutableImplStore.validator(nextValues);
+        if (result.error) return result.error;
         return {};
       },
 
-      validate: () => {
-        const errors = get().getValidationErrors();
+      validate: async () => {
+        const errors = await get().getValidationErrors();
         set((state) => {
           state.validationErrors = errors;
         });
@@ -199,21 +201,33 @@ export const createFormStateStore = ({
         set((state) => {
           setPath(state.values, fieldName, value);
           state.dirtyFields[fieldName] = true;
-
-          if (get().shouldValidate("onChange", fieldName)) {
-            state.validationErrors = get().getValidationErrors(state.values);
-          }
         });
+
+        if (get().shouldValidate("onChange", fieldName)) {
+          get()
+            .getValidationErrors(get().values)
+            .then((res) => {
+              set((state) => {
+                state.validationErrors = res;
+              });
+            });
+        }
       },
 
       onFieldBlur: (fieldName) => {
         set((state) => {
           state.touchedFields[fieldName] = true;
-
-          if (get().shouldValidate("onBlur", fieldName)) {
-            state.validationErrors = get().getValidationErrors(state.values);
-          }
         });
+
+        if (get().shouldValidate("onBlur", fieldName)) {
+          get()
+            .getValidationErrors(get().values)
+            .then((res) => {
+              set((state) => {
+                state.validationErrors = res;
+              });
+            });
+        }
       },
 
       onSubmit: async () => {
@@ -221,9 +235,9 @@ export const createFormStateStore = ({
           state.submitStatus = "loading";
         });
 
-        const result = mutableImplStore.validator(get().values);
+        const result = await mutableImplStore.validator(get().values);
 
-        if (result.type === "error") {
+        if (result.error) {
           set((state) => {
             state.submitStatus = "error";
             state.validationErrors = result.error;
