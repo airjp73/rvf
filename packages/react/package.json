@@ -29,6 +29,7 @@
     "typescript": "^5.4.5"
   },
   "dependencies": {
-    "@rvf/core": "*"
+    "@rvf/core": "*",
+    "set-get": "*"
   }
 }

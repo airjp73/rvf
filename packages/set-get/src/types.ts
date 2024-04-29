@@ -20,21 +20,21 @@ export type ValidStringPathsToArrays<Obj> = StringPaths<
 
 type PathSegment<
   Segment extends PathKey,
-  Root extends boolean
+  Root extends boolean,
 > = Root extends true
-  ? Segment
+  ? `${Segment}`
   : Segment extends number
-  ? `[${Segment}]`
-  : `.${Segment}`;
+    ? `[${Segment}]`
+    : `.${Segment}`;
 
 type StringPaths<
   Tuple extends PathKey[],
-  Root extends boolean = false
+  Root extends boolean = false,
 > = Tuple extends [infer Item extends PathKey]
   ? PathSegment<Item, Root>
   : Tuple extends [infer Head extends PathKey, ...infer Rest extends PathKey[]]
-  ? `${PathSegment<Head, Root>}${StringPaths<Rest>}`
-  : never;
+    ? `${PathSegment<Head, Root>}${StringPaths<Rest>}`
+    : never;
 
 type CoerceNumbers<Str extends string> =
   Str extends `${infer Num extends number}` ? Num : Str;
@@ -43,8 +43,8 @@ type NormalizePath<Str extends string> =
   Str extends `${infer Head}[${infer Prop extends number}]`
     ? `${Head}.${Prop}`
     : Str extends `${infer Head}[${infer Prop extends number}]${infer Tail}`
-    ? `${Head}.${Prop}${NormalizePath<Tail>}`
-    : Str;
+      ? `${Head}.${Prop}${NormalizePath<Tail>}`
+      : Str;
 
 type StringToPathTupleImpl<S extends string> =
   S extends `${infer Head}.${infer Tail}`
@@ -60,10 +60,10 @@ type Path<Obj, Prefix extends Array<PathKey> = [], AssignableTo = any> =
   | (Obj extends Primitive
       ? never
       : IsAny<Obj> extends true // prevent infinite recursion when using `any` (usually for generic base types)
-      ? never
-      : Obj extends Array<infer Item>
-      ? Path<Item, [...Prefix, number], AssignableTo>
-      : PathsOfObject<Obj, Prefix, AssignableTo>);
+        ? never
+        : Obj extends Array<infer Item>
+          ? Path<Item, [...Prefix, number], AssignableTo>
+          : PathsOfObject<Obj, Prefix, AssignableTo>);
 
 type PathsOfObject<Obj, Prefix extends Array<PathKey>, AssignableTo = any> = {
   [K in keyof Obj]: K extends PathKey
@@ -73,21 +73,18 @@ type PathsOfObject<Obj, Prefix extends Array<PathKey>, AssignableTo = any> = {
 
 export type ValueAtPath<
   Obj,
-  ObjPath extends Array<PathKey> = []
+  ObjPath extends Array<PathKey> = [],
 > = ObjPath extends []
   ? Obj
   : ObjPath extends [infer Head, ...infer Tail]
-  ? Tail extends Array<PathKey>
-    ? Head extends keyof Obj
-      ? ValueAtPath<Obj[Head], Tail>
+    ? Tail extends Array<PathKey>
+      ? Head extends keyof Obj
+        ? ValueAtPath<Obj[Head], Tail>
+        : never
       : never
-    : never
-  : never;
+    : never;
 
-export type SupportsValueAtPath<
-  Obj,
-  P extends Array<PathKey>,
-  Value
-> = Value extends ValueAtPath<Obj, P> ? Obj : never;
+export type SupportsValueAtPath<Obj, P extends Array<PathKey>, Value> =
+  Value extends ValueAtPath<Obj, P> ? Obj : never;
 
 type Primitive = boolean | number | string | symbol | null | undefined;

@@ -1,4 +1,4 @@
-import { describe, expectTypeOf, it } from "vitest";
+import { describe, expect, expectTypeOf, it } from "vitest";
 import {
   StringToPathTuple,
   ValidStringPaths,
@@ -110,13 +110,21 @@ describe("ValidStringPaths type", () => {
         b: [
           {
             c: 1;
-          }
+          },
         ];
       };
     };
     expectTypeOf<ValidStringPaths<state>>().toEqualTypeOf<
       "a" | "a.b" | `a.b[${number}]` | `a.b[${number}].c`
     >();
+  });
+
+  it("should work if an array is the base type", () => {
+    type state = [{ a: "foo" }];
+    expectTypeOf<ValidStringPaths<state>>().toEqualTypeOf<"0" | "0.a">();
+
+    type res = ValidStringPaths<Record<string, any>[]>;
+    expectTypeOf<res>().toEqualTypeOf<`${number}` | `${number}.${string}`>();
   });
 });
 

@@ -18,7 +18,7 @@ export const createRefStore = () => {
       elementRefs.set(fieldName, ref),
     forEach: (callback: (fieldName: string, ref: HTMLElement | null) => void) =>
       [...elementRefs.entries()].forEach(([fieldName, ref]) =>
-        callback(fieldName, ref)
+        callback(fieldName, ref),
       ),
   };
 };
@@ -54,7 +54,7 @@ type StoreActions = {
 
   shouldValidate: (eventType: ValidationBehavior, fieldName: string) => boolean;
   getValidationErrors: (
-    nextValues?: FieldValues
+    nextValues?: FieldValues,
   ) => Promise<Record<string, string>>;
   validate: () => Promise<Record<string, string>>;
 
@@ -99,7 +99,7 @@ const genKey = () => `${Math.round(Math.random() * 10_000)}-${Date.now()}`;
 export const renameFlatFieldStateKeys = <Obj extends Record<string, any>>(
   obj: Obj,
   path: string,
-  updater: (key: string) => string
+  updater: (key: string) => string,
 ) => {
   const newObj: Record<string, any> = {};
   const removeKeys: string[] = [];
@@ -117,7 +117,7 @@ export const renameFlatFieldStateKeys = <Obj extends Record<string, any>>(
 
 export const deleteFieldsWithPrefix = (
   prefixObjects: Record<string, any>[],
-  path: string
+  path: string,
 ) => {
   for (const obj of prefixObjects) {
     for (const [key, value] of Object.entries(obj)) {
@@ -131,7 +131,7 @@ export const deleteFieldsWithPrefix = (
 export const moveFieldArrayKeys = (
   objs: Record<string, any>[],
   fieldName: string,
-  updater: (index: number) => number
+  updater: (index: number) => number,
 ) => {
   objs.forEach((obj) => {
     renameFlatFieldStateKeys(obj, fieldName, (key) => {
@@ -174,8 +174,8 @@ export const createFormStateStore = ({
           get().submitStatus !== "idle"
             ? validationBehaviorConfig.whenSubmitted
             : get().touchedFields[fieldName]
-            ? validationBehaviorConfig.whenTouched
-            : validationBehaviorConfig.initial;
+              ? validationBehaviorConfig.whenTouched
+              : validationBehaviorConfig.initial;
 
         if (eventType === "onBlur")
           return currentValidationBehavior === "onBlur";
@@ -246,7 +246,7 @@ export const createFormStateStore = ({
             .map(
               (fieldName) =>
                 transientFieldRefs.getRef(fieldName) ??
-                controlledFieldRefs.getRef(fieldName)
+                controlledFieldRefs.getRef(fieldName),
             )
             .filter((val): val is NonNullable<typeof val> => val != null);
           focusFirst(elementsWithErrors);
@@ -344,7 +344,7 @@ export const createFormStateStore = ({
 
       resetField: (
         fieldName,
-        nextValue = getPath(get().initialValues, fieldName)
+        nextValue = getPath(get().initialValues, fieldName),
       ) => {
         set((state) => {
           setPath(state.values, fieldName, nextValue);
@@ -355,7 +355,7 @@ export const createFormStateStore = ({
               state.dirtyFields,
               state.fieldArrayKeys,
             ],
-            fieldName
+            fieldName,
           );
         });
 
@@ -373,7 +373,7 @@ export const createFormStateStore = ({
         const value = getPath(get().values, fieldName) as unknown;
         if (!Array.isArray(value)) {
           console.warn(
-            "Tried to treat a non-array as an array. Make sure you used the correct field name and set a default value."
+            "Tried to treat a non-array as an array. Make sure you used the correct field name and set a default value.",
           );
           return [];
         }
@@ -406,7 +406,7 @@ export const createFormStateStore = ({
           state.fieldArrayKeys[fieldName]?.pop();
           deleteFieldsWithPrefix(
             [state.touchedFields, state.validationErrors, state.dirtyFields],
-            `${fieldName}.${numItems - 1}`
+            `${fieldName}.${numItems - 1}`,
           );
         });
       },
@@ -421,12 +421,12 @@ export const createFormStateStore = ({
           // TODO: need to adjust touched, dirty, and validationErrors
           deleteFieldsWithPrefix(
             [state.touchedFields, state.validationErrors, state.dirtyFields],
-            `${fieldName}.0`
+            `${fieldName}.0`,
           );
           moveFieldArrayKeys(
             [state.touchedFields, state.validationErrors, state.dirtyFields],
             fieldName,
-            (index) => index - 1
+            (index) => index - 1,
           );
         });
       },
@@ -441,7 +441,7 @@ export const createFormStateStore = ({
           moveFieldArrayKeys(
             [state.touchedFields, state.validationErrors, state.dirtyFields],
             fieldName,
-            (index) => index + 1
+            (index) => index + 1,
           );
         });
       },
@@ -456,7 +456,7 @@ export const createFormStateStore = ({
           moveFieldArrayKeys(
             [state.touchedFields, state.validationErrors, state.dirtyFields],
             fieldName,
-            (index) => (index >= insertAtIndex ? index + 1 : index)
+            (index) => (index >= insertAtIndex ? index + 1 : index),
           );
         });
       },
@@ -472,7 +472,7 @@ export const createFormStateStore = ({
           if (state.fieldArrayKeys[fieldName]) {
             const [fromKey] = state.fieldArrayKeys[fieldName].splice(
               fromIndex,
-              1
+              1,
             );
             state.fieldArrayKeys[fieldName].splice(toIndex, 0, fromKey);
           }
@@ -486,7 +486,7 @@ export const createFormStateStore = ({
               if (index > fromIndex) res--;
               if (index >= toIndex) res++;
               return res;
-            }
+            },
           );
         });
       },
@@ -501,12 +501,12 @@ export const createFormStateStore = ({
 
           deleteFieldsWithPrefix(
             [state.touchedFields, state.validationErrors, state.dirtyFields],
-            `${fieldName}.${removeIndex}`
+            `${fieldName}.${removeIndex}`,
           );
           moveFieldArrayKeys(
             [state.touchedFields, state.validationErrors, state.dirtyFields],
             fieldName,
-            (index) => (index > removeIndex ? index - 1 : index)
+            (index) => (index > removeIndex ? index - 1 : index),
           );
         });
       },
@@ -534,7 +534,7 @@ export const createFormStateStore = ({
               if (index === fromIndex) return toIndex;
               if (index === toIndex) return fromIndex;
               return index;
-            }
+            },
           );
         });
       },
@@ -549,9 +549,9 @@ export const createFormStateStore = ({
           // Treat a replacement as a reset / new field at the same index.
           deleteFieldsWithPrefix(
             [state.touchedFields, state.validationErrors, state.dirtyFields],
-            `${fieldName}.${index}`
+            `${fieldName}.${index}`,
           );
         });
       },
-    }))
+    })),
   );
