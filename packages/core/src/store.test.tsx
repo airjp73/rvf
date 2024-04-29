@@ -45,22 +45,22 @@ describe("validation", () => {
     expect(store.getState().dirtyFields).toEqual({ firstName: true });
     expect(store.getState().validationErrors).toEqual({});
 
-    await new Promise((resolve) => setTimeout(resolve, 100));
+    await new Promise((resolve) => setTimeout(resolve, 0));
     expect(store.getState().validationErrors).toEqual({});
 
     store.getState().onSubmit();
-    await new Promise((resolve) => setTimeout(resolve, 100));
+    await new Promise((resolve) => setTimeout(resolve, 0));
     expect(store.getState().validationErrors).toEqual({
       firstName: "Invalid",
     });
     expect(onSubmit).not.toHaveBeenCalled();
 
     store.getState().onFieldChange("firstName", "John again");
-    await new Promise((resolve) => setTimeout(resolve, 100));
+    await new Promise((resolve) => setTimeout(resolve, 0));
     expect(store.getState().validationErrors).toEqual({});
 
     store.getState().onSubmit();
-    await new Promise((resolve) => setTimeout(resolve, 100));
+    await new Promise((resolve) => setTimeout(resolve, 0));
     expect(store.getState().validationErrors).toEqual({});
     expect(onSubmit).toHaveBeenCalledTimes(1);
     expect(onSubmit).toHaveBeenCalledWith({ transformed: "data" });

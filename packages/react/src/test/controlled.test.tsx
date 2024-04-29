@@ -137,9 +137,10 @@ it("should work with custom components", async () => {
       onSubmit: submit,
     });
 
+    const { ref, ...control } = form.control("foo");
     return (
       <form onSubmit={form.handleSubmit} data-testid="form">
-        <Input {...form.control("foo")} />
+        <Input {...control} />
         <button
           type="button"
           data-testid="set-foo"

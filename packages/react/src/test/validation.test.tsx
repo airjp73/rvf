@@ -69,6 +69,9 @@ it("should validate on submit, then on change after that", async () => {
 
   fireEvent.submit(screen.getByTestId("form"));
 
+  await waitFor(() => {
+    expect(submit).toHaveBeenCalledTimes(1);
+  });
   expect(submit).toHaveBeenCalledWith({
     foo: "bob",
     baz: { a: "tes" },
@@ -80,7 +83,7 @@ it("should validate on submit, then on change after that", async () => {
     expect(submit).toBeCalledTimes(1);
   });
   expect(screen.getByTestId("render-count").textContent).toMatchInlineSnapshot(
-    `"8"`,
+    `"9"`,
   );
 });
 
@@ -128,7 +131,7 @@ it("should handle dependant validations", async () => {
   );
 
   await userEvent.type(screen.getByTestId("confirmPassword"), "test");
-  expect(screen.getByTestId("error")).toHaveTextContent("");
+  expect(screen.getByTestId("error")).toBeEmptyDOMElement();
 
   await userEvent.type(screen.getByTestId("password"), "A");
   expect(screen.getByTestId("error")).toHaveTextContent("not equal");
@@ -236,14 +239,14 @@ it("should be possible to customize validation behavior", async () => {
 //   await userEvent.type(screen.getByTestId("foo"), "12");
 //   expect(screen.getByTestId("foo-error")).toHaveTextContent("too short");
 //   await userEvent.type(screen.getByTestId("foo"), "12");
-//   expect(screen.getByTestId("foo-error")).toHaveTextContent("");
+//   expect(screen.getByTestId("foo-error")).toBeEmptyDOMElement();
 //   await userEvent.type(screen.getByTestId("foo"), "{Backspace}{Backspace}");
 //   expect(screen.getByTestId("foo-error")).toHaveTextContent("too short");
 
 //   await userEvent.type(screen.getByTestId("bar.a"), "12");
 //   expect(screen.getByTestId("bar.a-error")).toHaveTextContent("too short");
 //   await userEvent.type(screen.getByTestId("bar.a"), "12");
-//   expect(screen.getByTestId("bar.a-error")).toHaveTextContent("");
+//   expect(screen.getByTestId("bar.a-error")).toBeEmptyDOMElement();
 //   await userEvent.type(screen.getByTestId("bar.a"), "{Backspace}{Backspace}");
 //   expect(screen.getByTestId("bar.a-error")).toHaveTextContent("too short");
 // });

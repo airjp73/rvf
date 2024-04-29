@@ -225,7 +225,7 @@ it("should be possible to set a value using a value returned from the value help
   };
 
   render(<TestComp />);
-  expect(screen.getByTestId("value")).toHaveTextContent("");
+  expect(screen.getByTestId("value")).toBeEmptyDOMElement();
   expect(screen.getByTestId("render-count")).toHaveTextContent("1");
   await userEvent.click(screen.getByTestId("set-bar"));
   expect(screen.getByTestId("value")).toHaveTextContent("bar");

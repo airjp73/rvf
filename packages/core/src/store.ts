@@ -178,7 +178,11 @@ export const createFormStateStore = ({
               : validationBehaviorConfig.initial;
 
         if (eventType === "onBlur")
-          return currentValidationBehavior === "onBlur";
+          return (
+            currentValidationBehavior === "onBlur" ||
+            currentValidationBehavior === "onChange"
+          );
+
         return currentValidationBehavior === "onChange";
       },
 
@@ -201,33 +205,21 @@ export const createFormStateStore = ({
         set((state) => {
           setPath(state.values, fieldName, value);
           state.dirtyFields[fieldName] = true;
-
-          if (get().shouldValidate("onChange", fieldName)) {
-            get()
-              .getValidationErrors(get().values)
-              .then((res) => {
-                set((state) => {
-                  state.validationErrors = res;
-                });
-              });
-          }
         });
+
+        if (get().shouldValidate("onChange", fieldName)) {
+          get().validate();
+        }
       },
 
       onFieldBlur: (fieldName) => {
         set((state) => {
           state.touchedFields[fieldName] = true;
-
-          if (get().shouldValidate("onBlur", fieldName)) {
-            get()
-              .getValidationErrors(get().values)
-              .then((res) => {
-                set((state) => {
-                  state.validationErrors = res;
-                });
-              });
-          }
         });
+
+        if (get().shouldValidate("onBlur", fieldName)) {
+          get().validate();
+        }
       },
 
       onSubmit: async () => {
