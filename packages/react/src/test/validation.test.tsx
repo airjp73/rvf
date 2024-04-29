@@ -199,6 +199,7 @@ it("should be possible to customize validation behavior", async () => {
   });
 });
 
+it.todo("should use validation adapters");
 // it("should use validation adapters", async () => {
 //   const submit = vi.fn();
 //   const TestComp = () => {

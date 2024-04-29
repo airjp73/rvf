@@ -280,7 +280,7 @@ interface BaseRvfReact<FormInputData> {
   ) => void;
 
   /**
-   * Creates a `Rvf` scoped to the specified field.
+   * Creates an `Rvf` scoped to the specified field.
    * This is useful for creating subforms.
    * In order to use this, you can pass it to `useRvf`.
    *
@@ -321,7 +321,7 @@ interface BaseRvfReact<FormInputData> {
   ): Rvf<ValueAtPath<FormInputData, StringToPathTuple<Field>>>;
 
   /**
-   * Returns a `Rvf` without scoping any further.
+   * Returns an `Rvf` without scoping any further.
    */
   scope(): Rvf<FormInputData>;
 }
@@ -660,14 +660,14 @@ const isRvf = (form: any): form is Rvf<any> =>
   "__brand__" in form && form.__brand__ === "rvf";
 
 /**
- * Create and use a `Rvf`.
+ * Create and use an `Rvf`.
  */
 export function useRvf<FormInputData extends FieldValues, FormOutputData>(
   options: RvfOpts<FormInputData, FormOutputData>,
 ): RvfReact<FormInputData>;
 
 /**
- * Interprets a `Rvf` created via `form.scope`, for use in a subcomponent.
+ * Interprets an `Rvf` created via `form.scope`, for use in a subcomponent.
  */
 export function useRvf<FormInputData>(
   form: Rvf<FormInputData>,
