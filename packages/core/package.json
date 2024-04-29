@@ -1,0 +1,37 @@
+{
+  "name": "@rvf/core",
+  "version": "0.0.1",
+  "description": "Form component and utils for easy form validation in remix",
+  "main": "./dist/index.cjs.js",
+  "module": "./dist/index.esm.js",
+  "types": "./dist/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/airjp73/remix-validated-form"
+  },
+  "sideEffects": false,
+  "scripts": {
+    "dev": "tsup --watch",
+    "build": "tsup",
+    "prepublishOnly": "cp ../../README.md ./README.md && npm run build",
+    "postpublish": "rm ./README.md",
+    "typecheck": "tsc --noEmit"
+  },
+  "author": {
+    "name": "Aaron Pettengill",
+    "email": "pettengill.aaron@gmail.com",
+    "url": "https://github.com/airjp73"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "set-get": "*",
+    "tsconfig": "*",
+    "tsup-config": "*",
+    "typescript": "^5.4.5"
+  },
+  "dependencies": {
+    "immer": "^10.0.4",
+    "react-tracked": "^1.7.14",
+    "zustand": "^4.5.2"
+  }
+}
