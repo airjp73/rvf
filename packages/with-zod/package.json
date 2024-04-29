@@ -27,7 +27,7 @@
     "set-get": "*",
     "tsconfig": "*",
     "tsup-config": "*",
-    "typescript": "^4.8.4",
+    "typescript": "^5.4.5",
     "zod": "~3.20.0"
   }
 }

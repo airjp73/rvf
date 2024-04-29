@@ -40,7 +40,7 @@ export class TestFormData implements FormData {
     ) => void,
     thisArg?: any
   ): void {
-    this._params.forEach(callbackfn, thisArg);
+    this._params.forEach(callbackfn as any, thisArg);
   }
   entries(): IterableIterator<[string, FormDataEntryValue]> {
     return this._params.entries();

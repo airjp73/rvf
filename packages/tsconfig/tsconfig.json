@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "allowJs": true,
-    "lib": ["DOM", "DOM.Iterable", "ES2019"],
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
     "esModuleInterop": true,
     "moduleResolution": "Node",
     "target": "ES2019",

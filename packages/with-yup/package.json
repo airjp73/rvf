@@ -23,7 +23,7 @@
     "remix-validated-form": "*",
     "tsconfig": "*",
     "tsup-config": "*",
-    "typescript": "^4.8.4",
+    "typescript": "^5.4.5",
     "yup": "^1.0.0"
   }
 }
