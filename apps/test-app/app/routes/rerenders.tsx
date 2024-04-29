@@ -25,6 +25,7 @@ const RenderCounter = () => {
   let renderUpdated = false;
   useEffect(() => {
     if (renderUpdated) return;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     renderUpdated = true;
     renderCount.current++;
   });

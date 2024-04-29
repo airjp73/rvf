@@ -125,7 +125,7 @@ const navSections: Section[] = [
   },
 ];
 
-export type LayoutProps = PropsWithChildren<{}>;
+export type LayoutProps = PropsWithChildren;
 export const Layout = ({ children }: LayoutProps) => {
   const location = useLocation();
   const focusedProp = location.hash.replace("#", "");
@@ -138,11 +138,11 @@ export const Layout = ({ children }: LayoutProps) => {
 
   const matches = useMatches();
   const flatNavItems = navSections.flatMap(
-    (section) => section.navItems
+    (section) => section.navItems,
   );
   const activeNavIndex = flatNavItems.findIndex(
     (item) =>
-      matches[matches.length - 1].pathname === item.to
+      matches[matches.length - 1].pathname === item.to,
   );
   const prev =
     activeNavIndex > 0

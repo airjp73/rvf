@@ -19,7 +19,7 @@ const noReplaceValidator = withYup(
       .string()
       .label("noReplaceNameValidation")
       .required(),
-  })
+  }),
 );
 
 export const action = async ({ request }: DataFunctionArgs) =>

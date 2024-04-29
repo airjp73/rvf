@@ -1,57 +1,56 @@
 import pluginJs from "@eslint/js";
 import pluginReactConfig from "eslint-plugin-react/configs/recommended.js";
+import reactRuntimeconfig from "eslint-plugin-react/configs/jsx-runtime.js";
+import reactHooks from "eslint-plugin-react-hooks";
 import globals from "globals";
 import tseslint from "typescript-eslint";
 
 export default [
+  {
+    ignores: [
+      "**/node_modules/",
+      "**/.cache/",
+      "**/browser/",
+      "**/build/",
+      "**/dist/",
+      "**/api/",
+      //   "test-app/remix-validated-form",
+      //   "sample-app/build",
+      //   "sample-app/remix-validated-form",
+    ],
+  },
   { languageOptions: { globals: globals.browser } },
   pluginJs.configs.recommended,
   ...tseslint.configs.recommended,
-  pluginReactConfig,
   {
-    // ignorePatterns: [
-    //   "node_modules/",
-    //   ".cache/",
-    //   "browser/",
-    //   "build/",
-    //   "test-app/build",
-    //   "test-app/remix-validated-form",
-    //   "sample-app/build",
-    //   "sample-app/remix-validated-form",
-    // ],
-    // extends: ["react-app"],
-    plugins: ["prettier", "no-only-tests"],
+    plugins: { "react-hooks": reactHooks },
     rules: {
-      "import/no-anonymous-default-export": "off",
-      "import/order": [
-        "warn",
+      "react-hooks/exhaustive-deps": "error",
+      "react-hooks/rules-of-hooks": "error",
+    },
+  },
+  pluginReactConfig,
+  reactRuntimeconfig,
+  {
+    rules: {
+      "@typescript-eslint/no-explicit-any": "off",
+      "no-useless-escape": "off",
+      "no-undef": "off",
+      "@typescript-eslint/no-unused-vars": [
+        "off",
         {
-          groups: [
-            "builtin",
-            "external",
-            "internal",
-            "unknown",
-            "parent",
-            "sibling",
-            "index",
-          ],
-          alphabetize: {
-            order: "asc",
-            caseInsensitive: true,
-          },
-          "newlines-between": "never",
+          argsIgnorePattern: "^_",
         },
       ],
-      "prettier/prettier": "error",
-      "no-only-tests/no-only-tests": "error",
+      "@typescript-eslint/no-var-requires": "off",
+      "react/no-unescaped-entities": "off",
+
+      // Turn this on eventually
+      "@typescript-eslint/ban-ts-comment": "off",
+      "prefer-const": "off",
+      "react/no-deprecated": "off",
+      "react/display-name": "off",
+      "react/prop-types": "off",
     },
-    overrides: [
-      {
-        files: ["./cypress/**"],
-        rules: {
-          "@typescript-eslint/no-unused-expressions": "off",
-        },
-      },
-    ],
   },
 ];

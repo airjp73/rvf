@@ -88,7 +88,7 @@ function Document({
   );
 }
 
-function Layout({ children }: React.PropsWithChildren<{}>) {
+function Layout({ children }: React.PropsWithChildren) {
   return (
     <div className="remix-app">
       <header className="remix-app__header">

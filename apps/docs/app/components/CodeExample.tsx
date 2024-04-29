@@ -1,7 +1,7 @@
 import { Children, PropsWithChildren } from "react";
 import { Tabs } from "./Tabs";
 
-export type CodeExampleProps = PropsWithChildren<{}>;
+export type CodeExampleProps = PropsWithChildren;
 
 export const CodeExample = ({
   children,
