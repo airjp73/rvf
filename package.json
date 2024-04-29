@@ -24,12 +24,15 @@
   "dependencies": {
     "@headlessui/react": "^1.7.4",
     "@remix-run/vercel": "^1.16.1",
+    "@testing-library/jest-dom": "^6.4.2",
     "eslint-plugin-no-only-tests": "^3.1.0",
     "eslint-plugin-react-hooks": "^4.6.2",
     "vite": "^5.2.10"
   },
   "devDependencies": {
     "@eslint/js": "^9.1.1",
+    "@testing-library/react": "^15.0.5",
+    "@testing-library/user-event": "^14.5.2",
     "eslint": "8.57.0",
     "eslint-plugin-react": "^7.34.1",
     "globals": "^15.1.0",

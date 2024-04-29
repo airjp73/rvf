@@ -9,7 +9,7 @@
     "skipLibCheck": true,
     "declaration": true,
     "jsx": "react-jsx",
-    "types": ["vitest/importMeta"],
+    "types": ["vitest/importMeta", "vitest/globals"],
     "module": "esnext"
   }
 }
