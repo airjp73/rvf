@@ -1,5 +1,9 @@
 import { MenuAlt2Icon } from "@heroicons/react/outline";
-import { useLocation, useMatches } from "@remix-run/react";
+import {
+  Link,
+  useLocation,
+  useMatches,
+} from "@remix-run/react";
 import React, {
   Fragment,
   PropsWithChildren,
@@ -9,6 +13,8 @@ import React, {
 import { Sidebar } from "../components/Sidebar";
 import { Footer } from "./Footer";
 import { GithubIcon } from "./GithubIcon";
+import { Alert } from "./Alert";
+import { Button, ButtonLink } from "./Button";
 
 type Section = {
   header: string;
@@ -225,6 +231,21 @@ export const Layout = ({ children }: LayoutProps) => {
       </div>
 
       <div className="flex flex-col flex-1">
+        <Alert
+          className="not-prose"
+          variant="info"
+          title="v6 is coming!"
+          details="Check out the RFC to get an early look or leave a comment."
+          action={
+            <ButtonLink
+              href="https://github.com/airjp73/remix-validated-form/discussions/364"
+              variant="primary"
+              label="View RFC"
+              aria-label="Dismiss"
+            />
+          }
+        />
+
         <main className="relative focus:outline-none p-8 prose prose-invert flex-1 md:flex-initial">
           {children}
         </main>

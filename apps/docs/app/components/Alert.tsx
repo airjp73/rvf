@@ -47,10 +47,10 @@ export const Alert: FC<AlertProps> = ({
           "border-yellow-400 bg-yellow-50",
         variant === "success" &&
           "border-green-400 bg-green-50",
-        className
+        className,
       )}
     >
-      <div className="flex">
+      <div className="flex items-center">
         <div className="flex-shrink-0">
           <Icon
             className={classNames(
@@ -58,7 +58,7 @@ export const Alert: FC<AlertProps> = ({
               variant === "error" && "text-red-500",
               variant === "info" && "text-blue-500",
               variant === "warning" && "text-yellow-500",
-              variant === "success" && "text-green-500"
+              variant === "success" && "text-green-500",
             )}
           />
         </div>
@@ -70,7 +70,7 @@ export const Alert: FC<AlertProps> = ({
                 variant === "error" && "text-red-800",
                 variant === "info" && "text-blue-800",
                 variant === "warning" && "text-yellow-800",
-                variant === "success" && "text-green-800"
+                variant === "success" && "text-green-800",
               )}
             >
               {title}
@@ -84,7 +84,7 @@ export const Alert: FC<AlertProps> = ({
                 variant === "error" && "text-red-700",
                 variant === "info" && "text-blue-700",
                 variant === "warning" && "text-yellow-700",
-                variant === "success" && "text-green-700"
+                variant === "success" && "text-green-700",
               )}
             >
               {details}
