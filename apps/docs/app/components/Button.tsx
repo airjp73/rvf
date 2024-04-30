@@ -24,12 +24,14 @@ const buttonStyles = (
     className
   );
 
-export type ButtonProps = {
+type BaseButtonProps = {
   label: string;
   variant?: keyof typeof variantStyles;
   icon?: ReactElement;
   rightIcon?: ReactElement;
-} & JSX.IntrinsicElements["button"];
+};
+export type ButtonProps = BaseButtonProps &
+  JSX.IntrinsicElements["button"];
 
 export const Button = forwardRef<
   HTMLButtonElement,
@@ -62,5 +64,39 @@ export const Button = forwardRef<
           className: "h-4 w-4 ml-2",
         })}
     </button>
+  )
+);
+
+export type ButtonLinkProps = BaseButtonProps &
+  JSX.IntrinsicElements["a"];
+
+export const ButtonLink = forwardRef<
+  HTMLAnchorElement,
+  ButtonLinkProps
+>(
+  (
+    {
+      className,
+      variant = "primary",
+      label,
+      icon,
+      rightIcon,
+      ...rest
+    },
+    ref
+  ) => (
+    <a
+      className={buttonStyles(variant, className)}
+      ref={ref}
+      {...rest}
+    >
+      {icon &&
+        cloneElement(icon, { className: "h-4 w-4 mr-2" })}
+      {label}
+      {rightIcon &&
+        cloneElement(rightIcon, {
+          className: "h-4 w-4 ml-2",
+        })}
+    </a>
   )
 );

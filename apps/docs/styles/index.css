@@ -25,7 +25,7 @@
   .overrides {
     code.hljs {
       margin: -11px -15px;
-      border-radius: .375rem;
+      border-radius: 0.375rem;
     }
   }
 }

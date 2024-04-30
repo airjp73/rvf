@@ -50,7 +50,7 @@ export const Alert: FC<AlertProps> = ({
         className
       )}
     >
-      <div className="flex">
+      <div className="flex items-center">
         <div className="flex-shrink-0">
           <Icon
             className={classNames(
