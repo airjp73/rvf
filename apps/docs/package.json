@@ -5,10 +5,10 @@
   "license": "",
   "version": "0.0.1",
   "scripts": {
-    "build": "yarn build:css && yarn build:remix",
+    "build": "bun run build:css && bun run build:remix",
     "build:remix": "remix build",
     "build:css": "postcss ./styles/index.css --output app/styles/index.css --env production",
-    "dev": "concurrently \"yarn dev:remix\" \"yarn dev:css\"",
+    "dev": "concurrently \"bun run dev:remix\" \"bun run dev:css\"",
     "dev:remix": "PORT=3002 remix dev",
     "dev:css": "TAILWIND_MODE=watch postcss ./styles/index.css --output app/styles/index.css --watch",
     "typecheck": "tsc --noEmit"
