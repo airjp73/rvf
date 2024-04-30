@@ -1,26 +1,75 @@
-import { renderHook } from "@testing-library/react";
+import { act, renderHook, waitFor } from "@testing-library/react";
 import { useRvf } from "../react";
 import { successValidator } from "./util/successValidator";
 
-// it("should return an isSubmitting state", () => {
-//   const form = renderHook(() => {
-//     const form = useRvf({
-//       initialValues: {
-//         foo: "bar",
-//       },
-//       validator: successValidator,
-//       onSubmit: vi.fn(),
-//     });
-//   });
+it("should return submit state", async () => {
+  let prom: PromiseWithResolvers<any> | null = null;
+  const submission = () => {
+    prom = Promise.withResolvers<any>();
+    return prom.promise;
+  };
 
-//   expect(form.isSubmitting).toBe(false);
-//   form.handleSubmit();
-//   expect(form.isSubmitting).toBe(true);
-//   form.handleSubmit();
-//   expect(form.isSubmitting).toBe(false);
-// });
+  const { result } = renderHook(() => {
+    const form = useRvf({
+      initialValues: {
+        foo: "bar",
+      },
+      validator: successValidator,
+      onSubmit: submission,
+    });
+    return {
+      state: {
+        isSubmitting: form.formState.isSubmitting,
+        submitStatus: form.formState.submitStatus,
+        hasBeenSubmitted: form.formState.hasBeenSubmitted,
+      },
+      submit: form.handleSubmit,
+    };
+  });
 
-it.todo("should return an isSubmitting state");
+  expect(result.current.state).toEqual({
+    isSubmitting: false,
+    submitStatus: "idle",
+    hasBeenSubmitted: false,
+  });
+
+  act(() => result.current.submit());
+  await waitFor(() => {
+    expect(result.current.state).toEqual({
+      isSubmitting: true,
+      submitStatus: "submitting",
+      hasBeenSubmitted: true,
+    });
+  });
+
+  act(() => prom?.resolve({}));
+  await waitFor(() => {
+    expect(result.current.state).toEqual({
+      isSubmitting: false,
+      submitStatus: "success",
+      hasBeenSubmitted: true,
+    });
+  });
+
+  act(() => result.current.submit());
+  await waitFor(() => {
+    expect(result.current.state).toEqual({
+      isSubmitting: true,
+      submitStatus: "submitting",
+      hasBeenSubmitted: true,
+    });
+  });
+
+  act(() => prom?.reject({}));
+  await waitFor(() => {
+    expect(result.current.state).toEqual({
+      isSubmitting: false,
+      submitStatus: "error",
+      hasBeenSubmitted: true,
+    });
+  });
+});
+
 it.todo("should return submit status state");
 
 it.todo("should return formDirty state");

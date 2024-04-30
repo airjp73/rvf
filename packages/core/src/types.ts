@@ -1,13 +1,13 @@
 export type FieldValues = Record<string | number, unknown>;
 
-export type SubmitStatus = "idle" | "loading" | "error" | "success";
+export type SubmitStatus = "idle" | "submitting" | "error" | "success";
 
 export type FieldErrors = Record<string, string>;
 export type Valid<DataType> = { data: DataType; error: undefined };
 export type Invalid = { error: FieldErrors; data: undefined };
 
 export type Validator<InputData extends FieldValues, OutputData> = (
-  data: InputData
+  data: InputData,
 ) => Promise<Valid<OutputData> | Invalid>;
 
 export type ValidationBehavior = "onSubmit" | "onChange" | "onBlur";

@@ -13,6 +13,7 @@ import {
   Rvf,
   createRvf,
   scopeRvf,
+  SubmitStatus,
 } from "@rvf/core";
 import {
   StringToPathTuple,
@@ -180,6 +181,16 @@ interface BaseRvfReact<FormInputData> {
   value<Field extends ValidStringPaths<FormInputData>>(
     fieldName: Field,
   ): ValueAtPath<FormInputData, StringToPathTuple<Field>>;
+
+  formState: {
+    isSubmitting: boolean;
+    hasBeenSubmitted: boolean;
+    submitStatus: SubmitStatus;
+
+    isValid: boolean;
+    isDirty: boolean;
+    isTouched: boolean;
+  };
 
   /**
    * Transient versions of a few other helpers that do not cause rerenders.
@@ -450,6 +461,29 @@ export const useBaseRvf = <FormInputData,>(form: Rvf<FormInputData>) => {
         )
           return trackedState.validationErrors[f(fieldName)];
         return undefined;
+      },
+
+      formState: {
+        get isSubmitting() {
+          return trackedState.submitStatus === "submitting";
+        },
+        get hasBeenSubmitted() {
+          return trackedState.submitStatus !== "idle";
+        },
+        get isDirty() {
+          return Object.values(trackedState.dirtyFields).some(Boolean);
+        },
+        get isTouched() {
+          return Object.values(trackedState.touchedFields).some(Boolean);
+        },
+        get isValid() {
+          return Object.values(trackedState.validationErrors).every(
+            (error) => !error,
+          );
+        },
+        get submitStatus() {
+          return trackedState.submitStatus;
+        },
       },
 
       transient: {

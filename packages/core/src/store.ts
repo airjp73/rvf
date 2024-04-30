@@ -224,7 +224,7 @@ export const createFormStateStore = ({
 
       onSubmit: async () => {
         set((state) => {
-          state.submitStatus = "loading";
+          state.submitStatus = "submitting";
         });
 
         const result = await mutableImplStore.validator(get().values);
