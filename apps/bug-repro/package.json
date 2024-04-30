@@ -30,7 +30,7 @@
     "typescript": "^5.4.5"
   },
   "engines": {
-    "node": ">=14"
+    "node": ">=20"
   },
   "sideEffects": false
 }
