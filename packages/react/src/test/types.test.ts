@@ -7,7 +7,7 @@ describe("types", () => {
     const Component = () => {
       const form = useRvf({
         validator: successValidator,
-        initialValues: {
+        defaultValues: {
           foo: "bar",
           baz: {
             a: "quux",

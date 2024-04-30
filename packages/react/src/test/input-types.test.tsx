@@ -7,7 +7,7 @@ it("should handle number inputs", async () => {
   const submit = vi.fn();
   const useIt = () =>
     useRvf({
-      initialValues: { foo: 0, bar: 0 },
+      defaultValues: { foo: 0, bar: 0 },
       validator: successValidator,
       onSubmit: submit,
     });
@@ -45,7 +45,7 @@ it("should handle boolean checkboxes", async () => {
   const submit = vi.fn();
   const useIt = () =>
     useRvf({
-      initialValues: { foo: false, bar: false },
+      defaultValues: { foo: false, bar: false },
       validator: successValidator,
       onSubmit: submit,
     });

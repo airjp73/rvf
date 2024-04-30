@@ -7,7 +7,7 @@ it("should be able to manually focus fields", async () => {
   const submit = vi.fn();
   const TestComp = () => {
     const form = useRvf({
-      initialValues: {
+      defaultValues: {
         foo: "",
         bar: "",
         baz: "",
@@ -62,7 +62,7 @@ it("should be automatically focus fields when there are submit validation errors
   const submit = vi.fn();
   const TestComp = () => {
     const form = useRvf({
-      initialValues: {
+      defaultValues: {
         foo: "",
         bar: "",
         baz: "",

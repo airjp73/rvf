@@ -3,7 +3,7 @@ import { FormStoreInit, createFormStateStore, createRefStore } from "./store";
 
 const testStore = (init?: Partial<FormStoreInit>) =>
   createFormStateStore({
-    initialValues: {},
+    defaultValues: {},
     controlledFieldRefs: createRefStore(),
     transientFieldRefs: createRefStore(),
     mutableImplStore: {

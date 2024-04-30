@@ -51,7 +51,7 @@ export type RvfOpts<FormInputData extends FieldValues, FormOutputData> = {
    * The initial values of the form.
    * It's recommended that you provide a default value for every field in the form.
    */
-  initialValues: FormInputData;
+  defaultValues: FormInputData;
 
   /**
    * A function that validates the form's values.
@@ -312,7 +312,7 @@ interface BaseRvfReact<FormInputData> {
    *
    * const LargerForm = () => {
    *   const form = useRvf({
-   *     initialValues: {
+   *     defaultValues: {
    *       person: {
    *         name: "",
    *       },
@@ -350,7 +350,7 @@ export interface RvfReact<FormInputData>
    * ```tsx
    * const MyForm = () => {
    *   const form = useRvf({
-   *     initialValues: {
+   *     defaultValues: {
    *       foo: "bar",
    *       baz: "quux",
    *     },
@@ -713,7 +713,7 @@ export function useRvf<FormInputData extends FieldValues, FormOutputData>(
   const [form] = useState<Rvf<FormInputData>>(() => {
     if ("__brand__" in optsOrForm) return optsOrForm;
     return createRvf({
-      initialValues: optsOrForm.initialValues,
+      defaultValues: optsOrForm.defaultValues,
       validator: optsOrForm.validator,
       onSubmit: optsOrForm.onSubmit,
       validationBehaviorConfig: optsOrForm.validationBehaviorConfig,

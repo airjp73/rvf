@@ -9,7 +9,7 @@ import { successValidator } from "./util/successValidator";
 it("should only accept array values", () => {
   const Comp = () => {
     const form = useRvf({
-      initialValues: {
+      defaultValues: {
         foo: ["bar"],
         bar: "bar",
       },
@@ -34,7 +34,7 @@ describe("controlled items", () => {
   it("should render every item in the array", async () => {
     const Comp = () => {
       const form = useRvf({
-        initialValues: {
+        defaultValues: {
           foo: [{ name: "bar" }, { name: "baz" }],
         },
         validator: successValidator,
@@ -67,7 +67,7 @@ describe("controlled items", () => {
   it("should work with non-object array values", async () => {
     const Comp = () => {
       const form = useRvf({
-        initialValues: {
+        defaultValues: {
           foo: ["bar", "baz"],
         },
         validator: successValidator,
@@ -107,7 +107,7 @@ describe("uncontrolled items", () => {
   it("should render every item in the array", async () => {
     const Comp = () => {
       const form = useRvf({
-        initialValues: {
+        defaultValues: {
           foo: [{ name: "bar" }, { name: "baz" }],
         },
         validator: successValidator,
@@ -138,7 +138,7 @@ describe("uncontrolled items", () => {
   it("should work with non-object array values", async () => {
     const Comp = () => {
       const form = useRvf({
-        initialValues: {
+        defaultValues: {
           foo: ["bar", "baz"],
         },
         validator: successValidator,
@@ -177,7 +177,7 @@ describe("uncontrolled items", () => {
 it("should work with a pre-scoped form", async () => {
   const Comp = () => {
     const form = useRvf({
-      initialValues: {
+      defaultValues: {
         foo: [{ name: "bar" }, { name: "baz" }],
       },
       validator: successValidator,
@@ -211,7 +211,7 @@ it("should work with a pre-scoped form", async () => {
 it("should memoize array object creation", async () => {
   const Comp = () => {
     const form = useRvf({
-      initialValues: {
+      defaultValues: {
         foo: [{ name: "bar" }, { name: "baz" }],
       },
       validator: successValidator,
@@ -229,7 +229,7 @@ it("should memoize array object creation", async () => {
 it("should be able to push to an array", async () => {
   const Comp = () => {
     const form = useRvf({
-      initialValues: {
+      defaultValues: {
         foo: [{ name: "bar" }, { name: "baz" }],
       },
       validator: successValidator,
@@ -268,7 +268,7 @@ it("should be able to push to an array", async () => {
 it("should be able to pop from an array", async () => {
   const Comp = () => {
     const form = useRvf({
-      initialValues: {
+      defaultValues: {
         foo: [{ name: "bar" }, { name: "baz" }],
       },
       validator: successValidator,
@@ -307,7 +307,7 @@ it("should be able to pop from an array", async () => {
 it("should be able to shift from an array", async () => {
   const Comp = () => {
     const form = useRvf({
-      initialValues: {
+      defaultValues: {
         foo: [{ name: "bar" }, { name: "baz" }],
       },
       validator: successValidator,
@@ -356,7 +356,7 @@ it("should be able to shift from an array", async () => {
 it("should be able to unshift to an array", async () => {
   const Comp = () => {
     const form = useRvf({
-      initialValues: {
+      defaultValues: {
         foo: [{ name: "bar" }, { name: "baz" }],
       },
       validator: successValidator,
@@ -407,7 +407,7 @@ it("should be able to unshift to an array", async () => {
 it("should be able to insert into an array", async () => {
   const Comp = () => {
     const form = useRvf({
-      initialValues: {
+      defaultValues: {
         foo: [{ name: "bar" }, { name: "baz" }],
       },
       validator: successValidator,
@@ -460,7 +460,7 @@ it("should be able to insert into an array", async () => {
 it("should be able to move within an array", async () => {
   const Comp = () => {
     const form = useRvf({
-      initialValues: {
+      defaultValues: {
         foo: [{ name: "bar" }, { name: "baz" }, { name: "quux" }],
       },
       validator: successValidator,
@@ -515,7 +515,7 @@ it("should be able to move within an array", async () => {
 it("should be able to swap within an array", async () => {
   const Comp = () => {
     const form = useRvf({
-      initialValues: {
+      defaultValues: {
         foo: [{ name: "bar" }, { name: "baz" }, { name: "quux" }],
       },
       validator: successValidator,
@@ -570,7 +570,7 @@ it("should be able to swap within an array", async () => {
 it("should be able to remove from an array", async () => {
   const Comp = () => {
     const form = useRvf({
-      initialValues: {
+      defaultValues: {
         foo: [{ name: "bar" }, { name: "baz" }, { name: "quux" }],
       },
       validator: successValidator,
@@ -623,7 +623,7 @@ it("should be able to remove from an array", async () => {
 it("should be able to replace", async () => {
   const Comp = () => {
     const form = useRvf({
-      initialValues: {
+      defaultValues: {
         foo: [{ name: "bar" }, { name: "baz" }, { name: "quux" }],
       },
       validator: successValidator,

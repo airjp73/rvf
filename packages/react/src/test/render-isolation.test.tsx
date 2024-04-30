@@ -9,7 +9,7 @@ it("should be able to isloate rerenders on the fly with `form.isolate(iso => iso
   const submit = vi.fn();
   const TestComp = () => {
     const form = useRvf({
-      initialValues: { foo: "bar" },
+      defaultValues: { foo: "bar" },
       validator: successValidator,
       onSubmit: submit,
     });

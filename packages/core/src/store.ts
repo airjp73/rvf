@@ -26,7 +26,7 @@ export type RefStore = ReturnType<typeof createRefStore>;
 
 type StoreState = {
   values: FieldValues;
-  initialValues: FieldValues;
+  defaultValues: FieldValues;
   touchedFields: Record<string, boolean>;
   dirtyFields: Record<string, boolean>;
   validationErrors: Record<string, string>;
@@ -87,7 +87,7 @@ const defaultValidationBehaviorConfig: ValidationBehaviorConfig = {
 };
 
 export type FormStoreInit = {
-  initialValues: Record<PropertyKey, unknown>;
+  defaultValues: Record<PropertyKey, unknown>;
   transientFieldRefs: RefStore;
   controlledFieldRefs: RefStore;
   mutableImplStore: MutableImplStore;
@@ -148,7 +148,7 @@ export const moveFieldArrayKeys = (
 };
 
 export const createFormStateStore = ({
-  initialValues,
+  defaultValues,
   controlledFieldRefs,
   transientFieldRefs,
   mutableImplStore,
@@ -157,8 +157,8 @@ export const createFormStateStore = ({
   create<FormStoreValue>()(
     immer((set, get) => ({
       /////// State
-      values: initialValues,
-      initialValues,
+      values: defaultValues,
+      defaultValues,
       touchedFields: {},
       dirtyFields: {},
       validationErrors: {},
@@ -317,10 +317,10 @@ export const createFormStateStore = ({
       },
 
       ///////// Other actions
-      reset: (nextValues = get().initialValues) => {
+      reset: (nextValues = get().defaultValues) => {
         set((state) => {
           state.values = nextValues;
-          state.initialValues = nextValues;
+          state.defaultValues = nextValues;
           state.touchedFields = {};
           state.dirtyFields = {};
           state.validationErrors = {};
@@ -336,7 +336,7 @@ export const createFormStateStore = ({
 
       resetField: (
         fieldName,
-        nextValue = getPath(get().initialValues, fieldName),
+        nextValue = getPath(get().defaultValues, fieldName),
       ) => {
         set((state) => {
           setPath(state.values, fieldName, nextValue);

@@ -9,7 +9,7 @@ it("captures and submits with controlled fields", async () => {
 
   const TestComp = () => {
     const form = useRvf({
-      initialValues: {
+      defaultValues: {
         foo: "bar",
         baz: {
           a: "quux",
@@ -56,7 +56,7 @@ it("should subscribe to value changes", async () => {
   const submit = vi.fn();
   const TestComp = () => {
     const form = useRvf({
-      initialValues: {
+      defaultValues: {
         foo: "bar",
         baz: {
           a: "quux",
@@ -94,7 +94,7 @@ it("should be posible to directly set a field value", async () => {
   const submit = vi.fn();
   const TestComp = () => {
     const form = useRvf({
-      initialValues: {
+      defaultValues: {
         foo: "bar",
         baz: {
           a: "quux",
@@ -130,7 +130,7 @@ it("should work with custom components", async () => {
 
   const TestComp = () => {
     const form = useRvf({
-      initialValues: {
+      defaultValues: {
         foo: "bar",
       },
       validator: successValidator,

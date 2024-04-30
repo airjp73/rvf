@@ -9,7 +9,7 @@ it("should subscribe to value changes", async () => {
   const submit = vi.fn();
   const TestComp = () => {
     const form = useRvf({
-      initialValues: {
+      defaultValues: {
         foo: "bar",
       },
       validator: successValidator,
@@ -40,7 +40,7 @@ it("should only subscribe to the value that was changed even if it's nested", as
   const submit = vi.fn();
   const TestComp = () => {
     const form = useRvf({
-      initialValues: {
+      defaultValues: {
         foo: {
           bar: "bar",
           baz: "baz",
@@ -85,7 +85,7 @@ it("should still function correctly if the call to `value` just returns the whol
   const submit = vi.fn();
   const TestComp = () => {
     const form = useRvf({
-      initialValues: {
+      defaultValues: {
         foo: {
           bar: "bar",
           baz: "baz",
@@ -130,7 +130,7 @@ it("should be possible to access a value in an effect without rerendering", asyn
   const submit = vi.fn();
   const TestComp = () => {
     const form = useRvf({
-      initialValues: {
+      defaultValues: {
         foo: "bar",
       },
       validator: successValidator,
@@ -165,7 +165,7 @@ it("should be possible to access via the transient helpers without rerendering",
   const submit = vi.fn();
   const TestComp = () => {
     const form = useRvf({
-      initialValues: {
+      defaultValues: {
         foo: "bar",
       },
       validator: successValidator,
@@ -201,7 +201,7 @@ it("should be possible to set a value using a value returned from the value help
   const submit = vi.fn();
   const TestComp = () => {
     const form = useRvf({
-      initialValues: {
+      defaultValues: {
         foo: { value: "bar" },
         bar: { value: "" },
       },

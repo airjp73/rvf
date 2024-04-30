@@ -9,7 +9,7 @@ import {
 import { createTrackedSelector } from "react-tracked";
 
 type FormInit<FormInputData extends FieldValues, FormOutputData> = {
-  initialValues: FormInputData;
+  defaultValues: FormInputData;
   validator: Validator<FormInputData, FormOutputData>;
   onSubmit: (data: FormOutputData) => Promise<void>;
   validationBehaviorConfig?: ValidationBehaviorConfig;
@@ -32,7 +32,7 @@ interface RvfStore {
 }
 
 export const createRvf = <FormInputData extends FieldValues, FormOutputData>({
-  initialValues,
+  defaultValues,
   validator,
   onSubmit,
   validationBehaviorConfig,
@@ -41,7 +41,7 @@ export const createRvf = <FormInputData extends FieldValues, FormOutputData>({
   const controlledFieldRefs = createRefStore();
   const mutableImplStore = { validator, onSubmit } satisfies MutableImplStore;
   const store = createFormStateStore({
-    initialValues,
+    defaultValues,
     transientFieldRefs,
     controlledFieldRefs,
     mutableImplStore,

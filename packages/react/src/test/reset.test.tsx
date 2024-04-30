@@ -7,7 +7,7 @@ it("should reset the whole form", async () => {
   const submit = vi.fn();
   const TestComp = () => {
     const form = useRvf({
-      initialValues: {
+      defaultValues: {
         foo: "bar",
         baz: { a: "quux" },
       },
@@ -59,7 +59,7 @@ it("should reset individual fields", async () => {
   const submit = vi.fn();
   const TestComp = () => {
     const form = useRvf({
-      initialValues: {
+      defaultValues: {
         foo: "bar",
         baz: { a: "quux" },
       },
@@ -111,7 +111,7 @@ it("should reset the whole form using custom initial values", async () => {
   const submit = vi.fn();
   const TestComp = () => {
     const form = useRvf({
-      initialValues: {
+      defaultValues: {
         foo: "bar",
         baz: { a: "quux" },
       },
@@ -168,7 +168,7 @@ it("should reset individual fields using custom initial values", async () => {
   const submit = vi.fn();
   const TestComp = () => {
     const form = useRvf({
-      initialValues: {
+      defaultValues: {
         foo: "bar",
         baz: { a: "quux" },
       },

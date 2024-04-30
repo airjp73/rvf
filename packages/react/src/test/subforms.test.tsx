@@ -18,7 +18,7 @@ it("should be able to create scoped subforms", async () => {
 
   const PersonForm = () => {
     const form = useRvf({
-      initialValues: {
+      defaultValues: {
         person: {
           name: "",
         },
@@ -68,7 +68,7 @@ it("should be able to create subforms of arrays", async () => {
   };
 
   const PersonForm = () => {
-    const initialValues = {
+    const defaultValues = {
       people: [
         {
           name: "",
@@ -76,7 +76,7 @@ it("should be able to create subforms of arrays", async () => {
       ],
     };
     const form = useRvf({
-      initialValues,
+      defaultValues,
       validator: (data) =>
         Promise.resolve({
           data: data as { people: { name: string }[] },
@@ -123,7 +123,7 @@ it("should memoize subform creation", async () => {
   const submit = vi.fn();
   const Form = () => {
     const form = useRvf({
-      initialValues: {
+      defaultValues: {
         foo: { bar: { baz: { bap: "" } } },
       },
       validator: successValidator,

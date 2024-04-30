@@ -8,7 +8,7 @@ it("should validate on submit, then on change after that", async () => {
   const submit = vi.fn();
   const TestComp = () => {
     const form = useRvf({
-      initialValues: {
+      defaultValues: {
         foo: "",
         baz: { a: "" },
       },
@@ -91,7 +91,7 @@ it("should handle dependant validations", async () => {
   const submit = vi.fn();
   const TestComp = () => {
     const form = useRvf({
-      initialValues: {
+      defaultValues: {
         password: "",
         confirmPassword: "",
       },
@@ -153,7 +153,7 @@ it("should be possible to customize validation behavior", async () => {
   const submit = vi.fn();
   const TestComp = () => {
     const form = useRvf({
-      initialValues: {
+      defaultValues: {
         foo: "",
       },
       validator: (data) => {
@@ -204,7 +204,7 @@ it.todo("should use validation adapters");
 //   const submit = vi.fn();
 //   const TestComp = () => {
 //     const form = useRvf({
-//       initialValues: {
+//       defaultValues: {
 //         foo: "",
 //         bar: { a: "" },
 //       },

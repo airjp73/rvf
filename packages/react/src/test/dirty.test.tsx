@@ -8,7 +8,7 @@ it("should subscribe to changes in the dirty state", async () => {
   const submit = vi.fn();
   const TestComp = () => {
     const form = useRvf({
-      initialValues: {
+      defaultValues: {
         foo: "",
         baz: { a: "" },
       },

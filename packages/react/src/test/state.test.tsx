@@ -11,7 +11,7 @@ it("should return submit state", async () => {
 
   const { result } = renderHook(() => {
     const form = useRvf({
-      initialValues: {
+      defaultValues: {
         foo: "bar",
       },
       validator: successValidator,
@@ -79,7 +79,7 @@ it("should return form dirty/touched/valid state", async () => {
 
   const { result } = renderHook(() => {
     const form = useRvf({
-      initialValues: {
+      defaultValues: {
         foo: "bar",
       },
       validator,
