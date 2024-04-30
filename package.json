@@ -18,6 +18,7 @@
     "vitest:run": "vitest run",
     "lint": "eslint --cache .",
     "prettier": "prettier --cache --check .",
+    "format": "prettier --write .",
     "build": "turbo run build",
     "prepare": "husky install"
   },
