@@ -188,6 +188,90 @@ it("should be possible to access the default values in the form or a field", asy
   });
 });
 
-it.todo("should be possible to set the dirty state of a field");
-it.todo("should be possible to set the touched state of a field");
-it.todo("should be possible to set the error of a field");
+it("should be possible to set the dirty state of a field", async () => {
+  let prom: PromiseWithResolvers<any> | null = null;
+  const validator = () => {
+    prom = Promise.withResolvers<any>();
+    return prom.promise;
+  };
+
+  const { result } = renderHook(() => {
+    const form = useRvf({
+      defaultValues: {
+        foo: "bar",
+      },
+      validator,
+      onSubmit: vi.fn(),
+    });
+    return {
+      state: {
+        dirty: form.formState.isDirty,
+        touched: form.formState.isTouched,
+        valid: form.formState.isValid,
+        error: form.error("foo"),
+      },
+      setDirty: form.setDirty,
+      setTouched: form.setTouched,
+      setError: form.setError,
+    };
+  });
+
+  expect(result.current.state).toEqual({
+    dirty: false,
+    touched: false,
+    valid: true,
+    error: undefined,
+  });
+
+  act(() => {
+    result.current.setDirty("foo", true);
+  });
+  await waitFor(() => {
+    expect(result.current.state).toEqual({
+      dirty: true,
+      touched: false,
+      valid: true,
+      error: undefined,
+    });
+  });
+
+  act(() => {
+    result.current.setTouched("foo", true);
+  });
+  await waitFor(() => {
+    expect(result.current.state).toEqual({
+      dirty: true,
+      touched: true,
+      valid: true,
+      error: undefined,
+    });
+  });
+
+  act(() => {
+    result.current.setError("foo", "test");
+  });
+  await waitFor(() => {
+    expect(result.current.state).toEqual({
+      dirty: true,
+      touched: true,
+      valid: false,
+      error: "test",
+    });
+  });
+
+  act(() => {
+    result.current.setError("foo", null);
+  });
+  await waitFor(() => {
+    expect(result.current.state).toEqual({
+      dirty: true,
+      touched: true,
+      valid: true,
+      error: undefined,
+    });
+  });
+});
+
+it.todo(
+  "should be possible to set the dirty/touched/error state of the entire form scope",
+);

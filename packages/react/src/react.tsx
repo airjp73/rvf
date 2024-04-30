@@ -281,6 +281,32 @@ interface BaseRvfReact<FormInputData> {
   ) => void;
 
   /**
+   * Set the dirty state of the specified field.
+   */
+  setDirty: (
+    fieldName: ValidStringPaths<FormInputData>,
+    value: boolean,
+  ) => void;
+
+  /**
+   * Set the touched state of the specified field.
+   */
+  setTouched: (
+    fieldName: ValidStringPaths<FormInputData>,
+    value: boolean,
+  ) => void;
+
+  /**
+   * Sets the current error of the specified field.
+   * This will be overwritten when the form gets validated by other means.
+   * To clear the error, pass `null` as the error.
+   */
+  setError: (
+    fieldName: ValidStringPaths<FormInputData>,
+    error: string | null,
+  ) => void;
+
+  /**
    * Manually validates the form.
    * You usually don't need to do this.
    */
@@ -536,6 +562,10 @@ export const useBaseRvf = <FormInputData,>(form: Rvf<FormInputData>) => {
       },
 
       setValue: (fieldName, value) => getState().setValue(f(fieldName), value),
+      setDirty: (fieldName, value) => getState().setDirty(f(fieldName), value),
+      setTouched: (fieldName, value) =>
+        getState().setTouched(f(fieldName), value),
+      setError: (fieldName, value) => getState().setError(f(fieldName), value),
 
       focus: (fieldName) => {
         const element =

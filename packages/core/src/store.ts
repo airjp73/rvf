@@ -45,7 +45,7 @@ type StoreActions = {
   setValue: (fieldName: string, value: unknown) => void;
   setTouched: (fieldName: string, value: boolean) => void;
   setDirty: (fieldName: string, value: boolean) => void;
-  setError: (fieldName: string, value: string) => void;
+  setError: (fieldName: string, value: string | null) => void;
 
   setAllValues: (data: FieldValues) => void;
   setAllTouched: (data: Record<string, boolean>) => void;
@@ -294,7 +294,8 @@ export const createFormStateStore = ({
 
       setError: (fieldName, value) => {
         set((state) => {
-          state.validationErrors[fieldName] = value;
+          if (value == null) delete state.validationErrors[fieldName];
+          else state.validationErrors[fieldName] = value;
         });
       },
 
