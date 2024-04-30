@@ -139,7 +139,7 @@ it("should be possible to access a value in an effect without rerendering", asyn
 
     useEffect(() => {
       form.value("foo");
-    }, []);
+    }, [form]);
 
     return (
       <form>
