@@ -70,11 +70,75 @@ it("should return submit state", async () => {
   });
 });
 
-it.todo("should return submit status state");
+it("should return form dirty/touched/valid state", async () => {
+  let prom: PromiseWithResolvers<any> | null = null;
+  const validator = () => {
+    prom = Promise.withResolvers<any>();
+    return prom.promise;
+  };
 
-it.todo("should return formDirty state");
-it.todo("should return formTouched state");
-it.todo("should return formValid state");
+  const { result } = renderHook(() => {
+    const form = useRvf({
+      initialValues: {
+        foo: "bar",
+      },
+      validator,
+      onSubmit: vi.fn(),
+    });
+    return {
+      state: {
+        dirty: form.formState.isDirty,
+        touched: form.formState.isTouched,
+        valid: form.formState.isValid,
+      },
+      foo: form.field("foo"),
+      submit: form.handleSubmit,
+    };
+  });
+
+  expect(result.current.state).toEqual({
+    dirty: false,
+    touched: false,
+    valid: true,
+  });
+
+  act(() => {
+    result.current.submit();
+    prom?.resolve({ error: { foo: "bar" } });
+  });
+  await waitFor(() => {
+    expect(result.current.state).toEqual({
+      dirty: false,
+      touched: false,
+      valid: false,
+    });
+  });
+
+  act(() => {
+    result.current.foo.onChange("test");
+    prom?.resolve({ data: { foo: "test" } });
+  });
+  await waitFor(() => {
+    expect(result.current.state).toEqual({
+      dirty: true,
+      touched: false,
+      valid: true,
+    });
+  });
+
+  act(() => {
+    result.current.foo.onBlur();
+    prom?.resolve({ data: { foo: "test" } });
+  });
+  await waitFor(() => {
+    expect(result.current.state).toEqual({
+      dirty: true,
+      touched: true,
+      valid: true,
+    });
+  });
+});
+
 it.todo("should be possible to set the dirty state of a field");
 it.todo("should be possible to set the touched state of a field");
 it.todo("should be possible to set the error of a field");
