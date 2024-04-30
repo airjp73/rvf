@@ -182,6 +182,21 @@ interface BaseRvfReact<FormInputData> {
     fieldName: Field,
   ): ValueAtPath<FormInputData, StringToPathTuple<Field>>;
 
+  /**
+   * Gets the default value of the entire form.
+   * If using a scoped form, this will be the value of the scoped form.
+   * @willRerender
+   */
+  defaultValue(): FormInputData;
+
+  /**
+   * Gets the default value of the specified field.
+   * @willRerender
+   */
+  defaultValue<Field extends ValidStringPaths<FormInputData>>(
+    fieldName: Field,
+  ): ValueAtPath<FormInputData, StringToPathTuple<Field>>;
+
   formState: {
     isSubmitting: boolean;
     hasBeenSubmitted: boolean;
@@ -451,6 +466,10 @@ export const useBaseRvf = <FormInputData,>(form: Rvf<FormInputData>) => {
         fieldName == null
           ? trackedState.values
           : (getPath(trackedState.values, f(fieldName)) as any),
+      defaultValue: (fieldName?: string) =>
+        fieldName == null
+          ? trackedState.defaultValues
+          : (getPath(trackedState.defaultValues, f(fieldName)) as any),
       touched: (fieldName: string) => trackedState.touchedFields[f(fieldName)],
       dirty: (fieldName: string) => trackedState.dirtyFields[f(fieldName)],
       error: (fieldName) => {

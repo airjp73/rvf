@@ -139,9 +139,55 @@ it("should return form dirty/touched/valid state", async () => {
   });
 });
 
+it("should be possible to access the default values in the form or a field", async () => {
+  const { result } = renderHook(() => {
+    const form = useRvf({
+      defaultValues: {
+        foo: "bar",
+      },
+      validator: successValidator,
+      onSubmit: vi.fn(),
+    });
+    return {
+      defaultValues: {
+        form: form.defaultValue(),
+        foo: form.defaultValue("foo"),
+      },
+      foo: form.field("foo"),
+      reset: form.reset,
+    };
+  });
+
+  expect(result.current.defaultValues).toEqual({
+    form: { foo: "bar" },
+    foo: "bar",
+  });
+
+  act(() => result.current.foo.onChange("test"));
+  await waitFor(() => {
+    expect(result.current.defaultValues).toEqual({
+      form: { foo: "bar" },
+      foo: "bar",
+    });
+  });
+
+  act(() => result.current.reset({ foo: "bob ross" }));
+  await waitFor(() => {
+    expect(result.current.defaultValues).toEqual({
+      form: { foo: "bob ross" },
+      foo: "bob ross",
+    });
+  });
+
+  act(() => result.current.foo.onChange("test"));
+  await waitFor(() => {
+    expect(result.current.defaultValues).toEqual({
+      form: { foo: "bob ross" },
+      foo: "bob ross",
+    });
+  });
+});
+
 it.todo("should be possible to set the dirty state of a field");
 it.todo("should be possible to set the touched state of a field");
 it.todo("should be possible to set the error of a field");
-
-it.todo("should be possible to access the default values in the form");
-it.todo("should be possible to access the default values of a field");
