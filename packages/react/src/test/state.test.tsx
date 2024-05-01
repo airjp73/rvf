@@ -272,6 +272,78 @@ it("should be possible to set the dirty state of a field", async () => {
   });
 });
 
-it.todo(
-  "should be possible to set the dirty/touched/error state of the entire form scope",
-);
+it("should be possible to set the dirty/touched/error state of the entire form scope", async () => {
+  const { result } = renderHook(() => {
+    const form = useRvf({
+      defaultValues: {
+        foo: "bar",
+      },
+      validator: successValidator,
+      onSubmit: vi.fn(),
+    });
+
+    return {
+      state: {
+        dirty: form.dirty(),
+        tDirty: form.transient.dirty(),
+        touched: form.touched(),
+        tTouched: form.transient.touched(),
+        error: form.error(),
+        tError: form.transient.error(),
+      },
+      setDirty: form.setDirty,
+      setTouched: form.setTouched,
+      setError: form.setError,
+    };
+  });
+
+  expect(result.current.state).toEqual({
+    dirty: false,
+    tDirty: false,
+    touched: false,
+    tTouched: false,
+    error: undefined,
+    tError: undefined,
+  });
+
+  act(() => {
+    result.current.setDirty(true);
+  });
+
+  expect(result.current.state).toEqual({
+    dirty: true,
+    tDirty: true,
+    touched: false,
+    tTouched: false,
+    error: undefined,
+    tError: undefined,
+  });
+
+  act(() => {
+    result.current.setTouched(true);
+  });
+  await waitFor(() => {
+    expect(result.current.state).toEqual({
+      dirty: true,
+      tDirty: true,
+      touched: true,
+      tTouched: true,
+      error: undefined,
+      tError: undefined,
+    });
+  });
+
+  act(() => {
+    result.current.setError("test");
+  });
+  await waitFor(() => {
+    expect(result.current.state).toEqual({
+      dirty: true,
+      tDirty: true,
+      touched: true,
+      tTouched: true,
+      error: "test",
+      tError: "test",
+    });
+  });
+});

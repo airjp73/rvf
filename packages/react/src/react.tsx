@@ -153,19 +153,19 @@ interface BaseRvfReact<FormInputData> {
    * Gets whether the field has been touched.
    * @willRerender
    */
-  touched: (fieldName: ValidStringPaths<FormInputData>) => boolean;
+  touched: (fieldName?: ValidStringPaths<FormInputData>) => boolean;
 
   /**
    * Gets whether the field has been dirty.
    * @willRerender
    */
-  dirty: (fieldName: ValidStringPaths<FormInputData>) => boolean;
+  dirty: (fieldName?: ValidStringPaths<FormInputData>) => boolean;
 
   /**
    * Gets the current error for the field if any.
    * @willRerender
    */
-  error: (fieldName: ValidStringPaths<FormInputData>) => string | undefined;
+  error: (fieldName?: ValidStringPaths<FormInputData>) => string | undefined;
 
   /**
    * Gets the current value of the entire form.
@@ -214,17 +214,17 @@ interface BaseRvfReact<FormInputData> {
     /**
      * Gets whether the field has been touched.
      */
-    touched: (fieldName: ValidStringPaths<FormInputData>) => boolean;
+    touched: (fieldName?: ValidStringPaths<FormInputData>) => boolean;
 
     /**
      * Gets whether the field has been dirty.
      */
-    dirty: (fieldName: ValidStringPaths<FormInputData>) => boolean;
+    dirty: (fieldName?: ValidStringPaths<FormInputData>) => boolean;
 
     /**
      * Gets the current error for the field if any.
      */
-    error: (fieldName: ValidStringPaths<FormInputData>) => string | undefined;
+    error: (fieldName?: ValidStringPaths<FormInputData>) => string | undefined;
 
     /**
      * Gets the current value of the entire form.
@@ -283,28 +283,37 @@ interface BaseRvfReact<FormInputData> {
   /**
    * Set the dirty state of the specified field.
    */
-  setDirty: (
-    fieldName: ValidStringPaths<FormInputData>,
-    value: boolean,
-  ) => void;
+  setDirty(fieldName: ValidStringPaths<FormInputData>, value: boolean): void;
+
+  /**
+   * Set the dirty state of the field in scope.
+   */
+  setDirty(value: boolean): void;
 
   /**
    * Set the touched state of the specified field.
    */
-  setTouched: (
-    fieldName: ValidStringPaths<FormInputData>,
-    value: boolean,
-  ) => void;
+  setTouched(fieldName: ValidStringPaths<FormInputData>, value: boolean): void;
+
+  /**
+   * Set the touched state of the field in scope.
+   */
+  setTouched(value: boolean): void;
 
   /**
    * Sets the current error of the specified field.
    * This will be overwritten when the form gets validated by other means.
    * To clear the error, pass `null` as the error.
    */
-  setError: (
+  setError(
     fieldName: ValidStringPaths<FormInputData>,
     error: string | null,
-  ) => void;
+  ): void;
+
+  /**
+   * Set the current error of the field in scope.
+   */
+  setError(error: string | null): void;
 
   /**
    * Manually validates the form.
@@ -483,9 +492,13 @@ export const useBaseRvf = <FormInputData,>(form: Rvf<FormInputData>) => {
   trackedState.setValue;
 
   const base = useMemo((): BaseRvfReact<FormInputData> => {
-    const f = (fieldName: string) =>
-      prefix ? `${prefix}.${fieldName}` : fieldName;
+    const f = (fieldName?: string) =>
+      [prefix, fieldName].filter(Boolean).join(".");
     const getState = () => form.__store__.store.getState();
+
+    type WithOptionalField<T> = [string, T] | [T];
+    const optionalField = <T,>(args: [string, T] | [T]): [string, T] =>
+      args.length === 1 ? [prefix, args[0]] : [f(args[0]), args[1]];
 
     return {
       value: (fieldName?: string) =>
@@ -496,8 +509,8 @@ export const useBaseRvf = <FormInputData,>(form: Rvf<FormInputData>) => {
         fieldName == null
           ? trackedState.defaultValues
           : (getPath(trackedState.defaultValues, f(fieldName)) as any),
-      touched: (fieldName: string) => trackedState.touchedFields[f(fieldName)],
-      dirty: (fieldName: string) => trackedState.dirtyFields[f(fieldName)],
+      touched: (fieldName) => trackedState.touchedFields[f(fieldName)] ?? false,
+      dirty: (fieldName) => trackedState.dirtyFields[f(fieldName)] ?? false,
       error: (fieldName) => {
         if (
           trackedState.submitStatus !== "idle" ||
@@ -536,9 +549,9 @@ export const useBaseRvf = <FormInputData,>(form: Rvf<FormInputData>) => {
           fieldName == null
             ? getState().values
             : (getPath(getState().values, f(fieldName)) as any),
-        touched: (fieldName: string) => getState().touchedFields[fieldName],
-        dirty: (fieldName: string) => getState().dirtyFields[fieldName],
-        error: (fieldName: string) => getState().validationErrors[fieldName],
+        touched: (fieldName) => getState().touchedFields[f(fieldName)] ?? false,
+        dirty: (fieldName) => getState().dirtyFields[f(fieldName)] ?? false,
+        error: (fieldName) => getState().validationErrors[f(fieldName)],
       },
 
       subscribe: {
@@ -562,10 +575,12 @@ export const useBaseRvf = <FormInputData,>(form: Rvf<FormInputData>) => {
       },
 
       setValue: (fieldName, value) => getState().setValue(f(fieldName), value),
-      setDirty: (fieldName, value) => getState().setDirty(f(fieldName), value),
-      setTouched: (fieldName, value) =>
-        getState().setTouched(f(fieldName), value),
-      setError: (fieldName, value) => getState().setError(f(fieldName), value),
+      setDirty: (...args: WithOptionalField<boolean>) =>
+        getState().setDirty(...optionalField(args)),
+      setTouched: (...args: WithOptionalField<boolean>) =>
+        getState().setTouched(...optionalField(args)),
+      setError: (...args: WithOptionalField<string | null>) =>
+        getState().setError(...optionalField(args)),
 
       focus: (fieldName) => {
         const element =
