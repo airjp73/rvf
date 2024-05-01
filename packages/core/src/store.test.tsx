@@ -65,6 +65,49 @@ describe("validation", () => {
     expect(onSubmit).toHaveBeenCalledTimes(1);
     expect(onSubmit).toHaveBeenCalledWith({ transformed: "data" });
   });
+
+  it("should be possible to set the validation behavior on demand for a given event", async () => {
+    const onSubmit = vi.fn();
+    const store = testStore({
+      mutableImplStore: {
+        validator: (data) => {
+          if (data.firstName === "Jane")
+            return Promise.resolve({
+              error: { firstName: "Invalid" },
+              data: undefined,
+            });
+          return Promise.resolve({
+            data: { transformed: "data" },
+            error: undefined,
+          });
+        },
+        onSubmit,
+      },
+    });
+    store.setState({
+      values: {
+        firstName: "John",
+        lastName: "Doe",
+      },
+    });
+    expect(store.getState().validationErrors).toEqual({});
+
+    store.getState().onFieldChange("firstName", "Jane", true);
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    expect(store.getState().validationErrors).toEqual({
+      firstName: "Invalid",
+    });
+
+    store.getState().onFieldChange("firstName", "John", false);
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    expect(store.getState().validationErrors).toEqual({
+      firstName: "Invalid",
+    });
+
+    store.getState().onFieldBlur("firstName", true);
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    expect(store.getState().validationErrors).toEqual({});
+  });
 });
 
 describe("arrays", () => {

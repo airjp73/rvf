@@ -36,8 +36,12 @@ type StoreState = {
 };
 
 type StoreEvents = {
-  onFieldChange: (fieldName: string, value: unknown) => void;
-  onFieldBlur: (fieldName: string) => void;
+  onFieldChange: (
+    fieldName: string,
+    value: unknown,
+    shouldValidate?: boolean,
+  ) => void;
+  onFieldBlur: (fieldName: string, shouldValidate?: boolean) => void;
   onSubmit: () => void;
 };
 
@@ -201,23 +205,31 @@ export const createFormStateStore = ({
       },
 
       /////// Events
-      onFieldChange: (fieldName, value) => {
+      onFieldChange: (fieldName, value, shouldValidate) => {
         set((state) => {
           setPath(state.values, fieldName, value);
           state.dirtyFields[fieldName] = true;
         });
 
-        if (get().shouldValidate("onChange", fieldName)) {
+        if (
+          shouldValidate == null
+            ? get().shouldValidate("onChange", fieldName)
+            : shouldValidate
+        ) {
           get().validate();
         }
       },
 
-      onFieldBlur: (fieldName) => {
+      onFieldBlur: (fieldName, shouldValidate = true) => {
         set((state) => {
           state.touchedFields[fieldName] = true;
         });
 
-        if (get().shouldValidate("onBlur", fieldName)) {
+        if (
+          shouldValidate == null
+            ? get().shouldValidate("onBlur", fieldName)
+            : shouldValidate
+        ) {
           get().validate();
         }
       },
