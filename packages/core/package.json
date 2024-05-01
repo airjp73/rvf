@@ -24,7 +24,6 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "set-get": "*",
     "tsconfig": "*",
     "tsup-config": "*",
     "typescript": "^5.4.5"
@@ -32,6 +31,7 @@
   "dependencies": {
     "immer": "^10.0.4",
     "react-tracked": "^1.7.14",
-    "zustand": "^4.5.2"
+    "zustand": "^4.5.2",
+    "set-get": "*"
   }
 }

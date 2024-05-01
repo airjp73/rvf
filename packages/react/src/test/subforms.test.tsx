@@ -85,9 +85,11 @@ it("should be able to create subforms of arrays", async () => {
       onSubmit: submit,
     });
 
-    expectTypeOf(form.scope("people.0")).toEqualTypeOf<Rvf<{ name: string }>>();
+    expectTypeOf(form.scope("people[0]")).toEqualTypeOf<
+      Rvf<{ name: string }>
+    >();
 
-    expectTypeOf(form.scope(`people.${0 as number}`)).toEqualTypeOf<
+    expectTypeOf(form.scope(`people[${0 as number}]`)).toEqualTypeOf<
       Rvf<{ name: string }>
     >();
 
@@ -98,7 +100,7 @@ it("should be able to create subforms of arrays", async () => {
 
     return (
       <form onSubmit={form.handleSubmit} data-testid="form">
-        <NameForm form={form.scope("people.0")} />
+        <NameForm form={form.scope("people[0]")} />
       </form>
     );
   };

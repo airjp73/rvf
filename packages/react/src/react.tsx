@@ -72,7 +72,7 @@ export type RvfOpts<FormInputData extends FieldValues, FormOutputData> = {
 };
 
 type MinimalRvf<FieldPaths extends string> = {
-  touched: (fieldName: FieldPaths) => boolean;
+  resetField: (fieldName: FieldPaths, nextValue?: any) => void;
 };
 
 export type FormFields<Form> =

@@ -2,6 +2,7 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { useRvf } from "../react";
 import userEvent from "@testing-library/user-event";
 import { successValidator } from "./util/successValidator";
+import { FieldErrors } from "@rvf/core";
 
 it("should be able to manually focus fields", async () => {
   const submit = vi.fn();
@@ -68,13 +69,13 @@ it("should be automatically focus fields when there are submit validation errors
         baz: "",
       },
       validator: (data) => {
-        const errors: Record<string, string> = {};
+        const errors: FieldErrors = {};
         if (data.foo.length > 3) errors.foo = "too long";
         if (data.bar.length > 3) errors.bar = "too long";
         if (data.baz.length > 3) errors.baz = "too long";
         if (Object.keys(errors).length > 0)
-          return { type: "error", error: errors };
-        return { type: "success", data };
+          return Promise.resolve({ error: errors, data: undefined });
+        return Promise.resolve({ data, error: undefined });
       },
       onSubmit: submit,
     });

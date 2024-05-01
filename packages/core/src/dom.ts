@@ -50,7 +50,7 @@ export const focusFirst = (elements: HTMLElement[]) => {
   });
   const firstFocusable = sorted.find(
     (element): element is typeof element & { focus: () => void } =>
-      "focus" in element
+      "focus" in element,
   );
   firstFocusable?.focus();
 };

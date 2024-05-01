@@ -1,10 +1,10 @@
 {
   "compilerOptions": {
     "allowJs": true,
-    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "lib": ["DOM", "DOM.Iterable", "ESNext", "ESNext.Array"],
     "esModuleInterop": true,
     "moduleResolution": "Node",
-    "target": "ES2019",
+    "target": "ES2022",
     "strict": true,
     "skipLibCheck": true,
     "declaration": true,
