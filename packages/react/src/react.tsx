@@ -275,10 +275,16 @@ interface BaseRvfReact<FormInputData> {
    * This works for both controlled and uncontrolled fields.
    * For uncontrolled fields, this will manually set the value of the form control using the `ref` returned by `field`.
    */
-  setValue: <Field extends ValidStringPaths<FormInputData>>(
+  setValue<Field extends ValidStringPaths<FormInputData>>(
     fieldName: Field,
     value: ValueAtPath<FormInputData, StringToPathTuple<Field>>,
-  ) => void;
+  ): void;
+
+  /**
+   * Sets the value of the entire scope of this form.
+   * This is most useful when using an already scoped form.
+   */
+  setValue(value: FormInputData): void;
 
   /**
    * Set the dirty state of the specified field.
@@ -327,7 +333,7 @@ interface BaseRvfReact<FormInputData> {
    * All touched, dirty, and validation errors will be reset.
    * Optionally, you can provide new initial values to reset.
    */
-  reset: (nextValues?: FormInputData) => void;
+  resetForm: (nextValues?: FormInputData) => void;
 
   /**
    * Resets the field with the specified name to its initial value.
@@ -574,7 +580,8 @@ export const useBaseRvf = <FormInputData,>(form: Rvf<FormInputData>) => {
         },
       },
 
-      setValue: (fieldName, value) => getState().setValue(f(fieldName), value),
+      setValue: (...args: WithOptionalField<unknown>) =>
+        getState().setValue(...optionalField(args)),
       setDirty: (...args: WithOptionalField<boolean>) =>
         getState().setDirty(...optionalField(args)),
       setTouched: (...args: WithOptionalField<boolean>) =>
@@ -590,7 +597,7 @@ export const useBaseRvf = <FormInputData,>(form: Rvf<FormInputData>) => {
       },
 
       validate: () => form.__store__.store.getState().validate(),
-      reset: (...args) =>
+      resetForm: (...args) =>
         form.__store__.store.getState().reset(...(args as any)),
       resetField: (fieldName, nextValue) =>
         form.__store__.store.getState().resetField(f(fieldName), nextValue),

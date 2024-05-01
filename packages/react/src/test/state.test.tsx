@@ -154,7 +154,7 @@ it("should be possible to access the default values in the form or a field", asy
         foo: form.defaultValue("foo"),
       },
       foo: form.field("foo"),
-      reset: form.reset,
+      reset: form.resetForm,
     };
   });
 
@@ -345,5 +345,51 @@ it("should be possible to set the dirty/touched/error state of the entire form s
       error: "test",
       tError: "test",
     });
+  });
+});
+
+it("should be possible to set the value for the entire form scope or a field", async () => {
+  const { result } = renderHook(() => {
+    const form = useRvf({
+      defaultValues: {
+        foo: "bar",
+      },
+      validator: successValidator,
+      onSubmit: vi.fn(),
+    });
+
+    const scope = useRvf(form.scope("foo"));
+    return {
+      value: form.value(),
+      setValue: form.setValue,
+      scopedSet: scope.setValue,
+    };
+  });
+
+  expect(result.current.value).toEqual({
+    foo: "bar",
+  });
+
+  act(() => {
+    result.current.setValue("foo", "bob");
+  });
+  expect(result.current.value).toEqual({
+    foo: "bob",
+  });
+
+  act(() => {
+    result.current.setValue({
+      foo: "baz",
+    });
+  });
+  expect(result.current.value).toEqual({
+    foo: "baz",
+  });
+
+  act(() => {
+    result.current.scopedSet("quux");
+  });
+  expect(result.current.value).toEqual({
+    foo: "quux",
   });
 });

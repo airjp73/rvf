@@ -30,7 +30,7 @@ it("should reset the whole form", async () => {
         <button
           type="button"
           data-testid="reset"
-          onClick={() => form.reset()}
+          onClick={() => form.resetForm()}
         />
       </form>
     );
@@ -135,7 +135,7 @@ it("should reset the whole form using custom initial values", async () => {
           type="button"
           data-testid="reset"
           onClick={() =>
-            form.reset({
+            form.resetForm({
               foo: "testing 123",
               baz: { a: "testing 456" },
             })

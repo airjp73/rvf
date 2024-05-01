@@ -265,7 +265,8 @@ export const createFormStateStore = ({
       /////// Actions
       setValue: (fieldName, value) => {
         set((state) => {
-          setPath(state.values, fieldName, value);
+          if (fieldName) setPath(state.values, fieldName, value);
+          else state.values = value as any;
         });
 
         const transientRef = transientFieldRefs.getRef(fieldName);
