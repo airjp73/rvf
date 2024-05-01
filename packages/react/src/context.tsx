@@ -32,9 +32,14 @@ export const useRvfContext = <TData,>() => {
   return useRvf(value.scope) as RvfReact<TData>;
 };
 
-/**
- * This is an internal helper for adapters to implement custom logic around context.
- */
-export const INTERNAL_USE_RVF_CONTEXT_RAW = () => {
-  return useContext(RvfContext);
+export const useRvfOrContext = <TData,>(rvf?: Rvf<TData>): RvfReact<TData> => {
+  const value = useContext(RvfContext);
+  const scope = value?.scope ?? rvf;
+
+  if (!scope)
+    throw new Error(
+      "useRvfOrContext must be passed an Rvf or be used within a RvfProvider",
+    );
+
+  return useRvf(scope) as RvfReact<TData>;
 };
