@@ -55,7 +55,7 @@ export type FormState = {
   setFormElement: (formElement: HTMLFormElement | null) => void;
   validate: () => Promise<ValidationResult<unknown>>;
   smartValidate: (
-    opts?: SmartValidateOpts
+    opts?: SmartValidateOpts,
   ) => Promise<ValidationResult<unknown>>;
   resetFormElement: () => void;
   submit: () => void;
@@ -153,7 +153,7 @@ const defaultFormState: FormState = {
 
 const createFormState = (
   set: (setter: (draft: WritableDraft<FormState>) => void) => void,
-  get: GetState<FormState>
+  get: GetState<FormState>,
 ): FormState => ({
   // It's not "hydrated" until the form props are synced
   isHydrated: false,
@@ -223,13 +223,13 @@ const createFormState = (
     const formElement = get().formElement;
     invariant(
       formElement,
-      "Cannot find reference to form. This is probably a bug in remix-validated-form."
+      "Cannot find reference to form. This is probably a bug in remix-validated-form.",
     );
 
     const validator = get().formProps?.validator;
     invariant(
       validator,
-      "Cannot find validator. This is probably a bug in remix-validated-form."
+      "Cannot find validator. This is probably a bug in remix-validated-form.",
     );
 
     const result = await validator.validate(new FormData(formElement));
@@ -241,23 +241,23 @@ const createFormState = (
     const formElement = get().formElement;
     invariant(
       formElement,
-      "Cannot find reference to form. This is probably a bug in remix-validated-form."
+      "Cannot find reference to form. This is probably a bug in remix-validated-form.",
     );
 
     const validator = get().formProps?.validator;
     invariant(
       validator,
-      "Cannot find validator. This is probably a bug in remix-validated-form."
+      "Cannot find validator. This is probably a bug in remix-validated-form.",
     );
 
     await Promise.all(
       alwaysIncludeErrorsFromFields.map((field) =>
-        get().controlledFields.awaitValueUpdate?.(field)
-      )
+        get().controlledFields.awaitValueUpdate?.(field),
+      ),
     );
 
     const validationResult = await validator.validate(
-      new FormData(formElement)
+      new FormData(formElement),
     );
     if (!validationResult.error) {
       // Only update the field errors if it hasn't changed
@@ -338,7 +338,7 @@ const createFormState = (
     const formElement = get().formElement;
     invariant(
       formElement,
-      "Cannot find reference to form. This is probably a bug in remix-validated-form."
+      "Cannot find reference to form. This is probably a bug in remix-validated-form.",
     );
 
     requestSubmit(formElement);
@@ -372,7 +372,7 @@ const createFormState = (
         }
 
         const isNested = Object.keys(state.controlledFields.refCounts).some(
-          (key) => fieldName.startsWith(key) && key !== fieldName
+          (key) => fieldName.startsWith(key) && key !== fieldName,
         );
 
         // When nested within a field array, we should leave resetting up to the field array
@@ -380,12 +380,12 @@ const createFormState = (
           setPath(
             state.controlledFields.values,
             fieldName,
-            getPath(state.formProps?.defaultValues, fieldName)
+            getPath(state.formProps?.defaultValues, fieldName),
           );
           setPath(
             state.currentDefaultValues,
             fieldName,
-            getPath(state.formProps?.defaultValues, fieldName)
+            getPath(state.formProps?.defaultValues, fieldName),
           );
         }
 
@@ -434,18 +434,18 @@ const createFormState = (
           arrayUtil.swap(
             arrayUtil.getArray(state.controlledFields.values, fieldName),
             indexA,
-            indexB
+            indexB,
           );
           arrayUtil.swap(
             arrayUtil.getArray(state.currentDefaultValues, fieldName),
             indexA,
-            indexB
+            indexB,
           );
           arrayUtil.mutateAsArray(fieldName, state.touchedFields, (array) =>
-            arrayUtil.swap(array, indexA, indexB)
+            arrayUtil.swap(array, indexA, indexB),
           );
           arrayUtil.mutateAsArray(fieldName, state.fieldErrors, (array) =>
-            arrayUtil.swap(array, indexA, indexB)
+            arrayUtil.swap(array, indexA, indexB),
           );
         });
         get().controlledFields.kickoffValueUpdate(fieldName);
@@ -456,18 +456,18 @@ const createFormState = (
           arrayUtil.move(
             arrayUtil.getArray(state.controlledFields.values, fieldName),
             from,
-            to
+            to,
           );
           arrayUtil.move(
             arrayUtil.getArray(state.currentDefaultValues, fieldName),
             from,
-            to
+            to,
           );
           arrayUtil.mutateAsArray(fieldName, state.touchedFields, (array) =>
-            arrayUtil.move(array, from, to)
+            arrayUtil.move(array, from, to),
           );
           arrayUtil.mutateAsArray(fieldName, state.fieldErrors, (array) =>
-            arrayUtil.move(array, from, to)
+            arrayUtil.move(array, from, to),
           );
         });
         get().controlledFields.kickoffValueUpdate(fieldName);
@@ -477,19 +477,19 @@ const createFormState = (
           arrayUtil.insert(
             arrayUtil.getArray(state.controlledFields.values, fieldName),
             index,
-            item
+            item,
           );
           arrayUtil.insert(
             arrayUtil.getArray(state.currentDefaultValues, fieldName),
             index,
-            item
+            item,
           );
           // Even though this is a new item, we need to push around other items.
           arrayUtil.mutateAsArray(fieldName, state.touchedFields, (array) =>
-            arrayUtil.insertEmpty(array, index)
+            arrayUtil.insertEmpty(array, index),
           );
           arrayUtil.mutateAsArray(fieldName, state.fieldErrors, (array) =>
-            arrayUtil.insertEmpty(array, index)
+            arrayUtil.insertEmpty(array, index),
           );
         });
         get().controlledFields.kickoffValueUpdate(fieldName);
@@ -498,17 +498,17 @@ const createFormState = (
         set((state) => {
           arrayUtil.remove(
             arrayUtil.getArray(state.controlledFields.values, fieldName),
-            index
+            index,
           );
           arrayUtil.remove(
             arrayUtil.getArray(state.currentDefaultValues, fieldName),
-            index
+            index,
           );
           arrayUtil.mutateAsArray(fieldName, state.touchedFields, (array) =>
-            arrayUtil.remove(array, index)
+            arrayUtil.remove(array, index),
           );
           arrayUtil.mutateAsArray(fieldName, state.fieldErrors, (array) =>
-            arrayUtil.remove(array, index)
+            arrayUtil.remove(array, index),
           );
         });
         get().controlledFields.kickoffValueUpdate(fieldName);
@@ -518,10 +518,10 @@ const createFormState = (
           arrayUtil.getArray(state.controlledFields.values, fieldName).pop();
           arrayUtil.getArray(state.currentDefaultValues, fieldName).pop();
           arrayUtil.mutateAsArray(fieldName, state.touchedFields, (array) =>
-            array.pop()
+            array.pop(),
           );
           arrayUtil.mutateAsArray(fieldName, state.fieldErrors, (array) =>
-            array.pop()
+            array.pop(),
           );
         });
         get().controlledFields.kickoffValueUpdate(fieldName);
@@ -535,10 +535,10 @@ const createFormState = (
             .getArray(state.currentDefaultValues, fieldName)
             .unshift(value);
           arrayUtil.mutateAsArray(fieldName, state.touchedFields, (array) =>
-            arrayUtil.insertEmpty(array, 0)
+            arrayUtil.insertEmpty(array, 0),
           );
           arrayUtil.mutateAsArray(fieldName, state.fieldErrors, (array) =>
-            arrayUtil.insertEmpty(array, 0)
+            arrayUtil.insertEmpty(array, 0),
           );
         });
       },
@@ -547,18 +547,18 @@ const createFormState = (
           arrayUtil.replace(
             arrayUtil.getArray(state.controlledFields.values, fieldName),
             index,
-            item
+            item,
           );
           arrayUtil.replace(
             arrayUtil.getArray(state.currentDefaultValues, fieldName),
             index,
-            item
+            item,
           );
           arrayUtil.mutateAsArray(fieldName, state.touchedFields, (array) =>
-            arrayUtil.replace(array, index, item)
+            arrayUtil.replace(array, index, item),
           );
           arrayUtil.mutateAsArray(fieldName, state.fieldErrors, (array) =>
-            arrayUtil.replace(array, index, item)
+            arrayUtil.replace(array, index, item),
           );
         });
         get().controlledFields.kickoffValueUpdate(fieldName);
@@ -581,11 +581,15 @@ export const useRootFormStore = create<FormStoreState>()(
     registerForm: (formId: InternalFormId) => {
       if (get().forms[formId]) return;
       set((state) => {
+        // @ts-expect-error
         state.forms[formId] = createFormState(
-          (setter) => set((state) => setter(state.forms[formId])),
-          () => get().forms[formId]
+          (setter) =>
+            set((state) => {
+              setter(state.forms[formId]);
+            }),
+          () => get().forms[formId],
         ) as WritableDraft<FormState>;
       });
     },
-  }))
+  })),
 );
