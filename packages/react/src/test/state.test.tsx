@@ -1,6 +1,7 @@
 import { act, renderHook, waitFor } from "@testing-library/react";
 import { useRvf } from "../react";
 import { successValidator } from "./util/successValidator";
+import { useEffect, useRef } from "react";
 
 it("should return submit state", async () => {
   let prom: PromiseWithResolvers<any> | null = null;
@@ -348,6 +349,10 @@ it("should be possible to set the dirty/touched/error state of the entire form s
   });
 });
 
+// Maybe this isn't actually what we want.
+// During render, the state should remain consistent to reduce the risk of tearing.
+// So an alternate api for "most up-to-date" would be better.
+// Or maybe the behavior where it's consistent during render, but not during effects is okay.
 it("should always give the most up-to-date state", async () => {
   const { result } = renderHook(() => {
     const form = useRvf({
@@ -358,16 +363,30 @@ it("should always give the most up-to-date state", async () => {
       onSubmit: vi.fn(),
     });
 
+    const initialRef = useRef(form.dirty("foo"));
+    const changedRef = useRef(form.dirty("foo"));
+    useEffect(() => {
+      form.setDirty("foo", true);
+      changedRef.current = form.dirty("foo");
+    }, [form]);
+
     return {
       touched: form.touched,
       setTouched: form.setTouched,
+      dirty: {
+        initial: initialRef,
+        changed: changedRef,
+      },
     };
   });
 
   const res = result.current;
-  expect(res.touched()).toBe(false);
-  res.setTouched(true);
-  expect(res.touched()).toBe(true);
+  expect(res.dirty.initial.current).toBe(false);
+  expect(res.dirty.changed.current).toBe(true);
+
+  expect(res.touched("foo")).toBe(false);
+  res.setTouched("foo", true);
+  expect(res.touched("foo")).toBe(true);
 });
 
 it("should be possible to set the value for the entire form scope or a field", async () => {
