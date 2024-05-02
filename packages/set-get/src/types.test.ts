@@ -127,7 +127,7 @@ describe("ValidStringPaths type", () => {
     expectTypeOf<res>().toEqualTypeOf<`${number}` | `${number}.${string}`>();
   });
 
-  it("should work with recursive types", () => {
+  it("should max out at 10 leves deep", () => {
     type Foo = {
       bar: Bar;
     };
@@ -135,9 +135,45 @@ describe("ValidStringPaths type", () => {
       foo: Foo;
     };
 
-    // Give this a max depth of 10 to avoid infinite recursion
-    type res = ValidStringPaths<Bar>;
-    expectTypeOf<res>().toEqualTypeOf<"bar" | "bar.foo" | "bar.foo.bar">();
+    type res = ValidStringPaths<Foo>;
+    expectTypeOf<res>().toEqualTypeOf<
+      | "bar"
+      | "bar.foo"
+      | "bar.foo.bar"
+      | "bar.foo.bar.foo"
+      | "bar.foo.bar.foo.bar"
+      | "bar.foo.bar.foo.bar.foo"
+      | "bar.foo.bar.foo.bar.foo.bar"
+      | "bar.foo.bar.foo.bar.foo.bar.foo"
+      | "bar.foo.bar.foo.bar.foo.bar.foo.bar"
+      | "bar.foo.bar.foo.bar.foo.bar.foo.bar.foo"
+    >();
+  });
+
+  it("should be possible to chain in order to go deeper than 10 levels", () => {
+    type Foo = {
+      bar: Bar;
+    };
+    type Bar = {
+      foo: Foo;
+    };
+
+    type res = ValidStringPaths<
+      ValueAtPath<Foo, ["bar", "foo", "bar", "foo", "bar", "foo", "bar"]>
+    >;
+
+    expectTypeOf<res>().toEqualTypeOf<
+      | "foo"
+      | "foo.bar"
+      | "foo.bar.foo"
+      | "foo.bar.foo.bar"
+      | "foo.bar.foo.bar.foo"
+      | "foo.bar.foo.bar.foo.bar"
+      | "foo.bar.foo.bar.foo.bar.foo"
+      | "foo.bar.foo.bar.foo.bar.foo.bar"
+      | "foo.bar.foo.bar.foo.bar.foo.bar.foo"
+      | "foo.bar.foo.bar.foo.bar.foo.bar.foo.bar"
+    >();
   });
 });
 

@@ -65,11 +65,17 @@ type Path<Obj, Prefix extends Array<PathKey> = [], AssignableTo = any> =
           ? Path<Item, [...Prefix, number], AssignableTo>
           : PathsOfObject<Obj, Prefix, AssignableTo>);
 
-type PathsOfObject<Obj, Prefix extends Array<PathKey>, AssignableTo = any> = {
-  [K in keyof Obj]: K extends PathKey
-    ? Path<Obj[K], [...Prefix, K], AssignableTo>
-    : never;
-}[keyof Obj];
+type PathsOfObject<
+  Obj,
+  Prefix extends Array<PathKey>,
+  AssignableTo = any,
+> = Prefix["length"] extends 10
+  ? never
+  : {
+      [K in keyof Obj]: K extends PathKey
+        ? Path<Obj[K], [...Prefix, K], AssignableTo>
+        : never;
+    }[keyof Obj];
 
 export type ValueAtPath<
   Obj,
