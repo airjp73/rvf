@@ -158,3 +158,7 @@ it("should work with custom components", async () => {
   await userEvent.click(screen.getByTestId("set-foo"));
   expect(screen.getByTestId("foo")).toHaveValue("bob");
 });
+
+it.todo("should naturally work with boolean checkboxes");
+it.todo("should naturally work with checkbox groups");
+it.todo("should naturally work with radio groups");
