@@ -465,6 +465,7 @@ export interface RvfReact<FormInputData> extends BaseRvfReact<FormInputData> {
    */
   checkbox<Field extends ValidStringPaths<FormInputData>>(
     fieldName: Field,
+    opts?: FieldHelperOptions,
   ): CheckboxProps;
 
   /**
@@ -475,13 +476,14 @@ export interface RvfReact<FormInputData> extends BaseRvfReact<FormInputData> {
    */
   control<Field extends ValidStringPaths<FormInputData>>(
     fieldName: Field,
+    opts?: FieldHelperOptions,
   ): FieldProps<ValueAtPath<FormInputData, StringToPathTuple<Field>>>;
 
   /**
    * Registers an uncontrolled field using the value the form is currently scoped to.
    * This is most useful within `array.map` calls.
    */
-  control(): FieldProps<FormInputData>;
+  control(opts?: FieldHelperOptions): FieldProps<FormInputData>;
 
   /**
    * Pass this to your form's `onSubmit` handler.
@@ -707,7 +709,6 @@ const useFormInternal = <FormInputData extends FieldValues>(
 
       field: (...args: WithOptionalField<FieldHelperOptions>) => {
         const [fieldName, opts = {}] = optionalField(args);
-        const { validationBehavior } = opts;
 
         return {
           // We use the current value here in order to default to the correct value
@@ -717,16 +718,16 @@ const useFormInternal = <FormInputData extends FieldValues>(
             transientState().onFieldChange(
               f(fieldName),
               getEventValue(eventOrValue),
-              validationBehavior,
+              opts.validationBehavior,
             ),
           onBlur: () =>
-            transientState().onFieldBlur(f(fieldName), validationBehavior),
+            transientState().onFieldBlur(f(fieldName), opts.validationBehavior),
           ref: (element) =>
             form.__store__.transientFieldRefs.setRef(f(fieldName), element),
         } satisfies FieldProps<unknown> as any;
       },
 
-      checkbox: (fieldName) => {
+      checkbox: (fieldName, opts = {}) => {
         return {
           // We use the current value here in order to default to the correct value
           // in the case where an input unmounts after modification, then re-mounts
@@ -735,14 +736,17 @@ const useFormInternal = <FormInputData extends FieldValues>(
             trackedState.onFieldChange(
               f(fieldName),
               getEventValue(eventOrValue),
+              opts.validationBehavior,
             ),
-          onBlur: () => trackedState.onFieldBlur(f(fieldName)),
+          onBlur: () =>
+            trackedState.onFieldBlur(f(fieldName), opts.validationBehavior),
           ref: (element) =>
             form.__store__.transientFieldRefs.setRef(f(fieldName), element),
         } satisfies CheckboxProps as any;
       },
 
-      control: (fieldName?: string) => {
+      control: (...args: WithOptionalField<FieldHelperOptions>) => {
+        const [fieldName, opts = {}] = optionalField(args);
         return {
           // We use the current value here in order to default to the correct value
           // in the case where an input unmounts after modification, then re-mounts
@@ -751,8 +755,10 @@ const useFormInternal = <FormInputData extends FieldValues>(
             trackedState.onFieldChange(
               f(fieldName),
               getEventValue(eventOrValue),
+              opts.validationBehavior,
             ),
-          onBlur: () => trackedState.onFieldBlur(f(fieldName)),
+          onBlur: () =>
+            trackedState.onFieldBlur(f(fieldName), opts.validationBehavior),
           ref: (element) =>
             form.__store__.controlledFieldRefs.setRef(f(fieldName), element),
         } satisfies ControlProps<unknown> as any;
