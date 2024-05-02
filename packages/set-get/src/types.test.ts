@@ -126,6 +126,19 @@ describe("ValidStringPaths type", () => {
     type res = ValidStringPaths<Record<string, any>[]>;
     expectTypeOf<res>().toEqualTypeOf<`${number}` | `${number}.${string}`>();
   });
+
+  it("should work with recursive types", () => {
+    type Foo = {
+      bar: Bar;
+    };
+    type Bar = {
+      foo: Foo;
+    };
+
+    // Give this a max depth of 10 to avoid infinite recursion
+    type res = ValidStringPaths<Bar>;
+    expectTypeOf<res>().toEqualTypeOf<"bar" | "bar.foo" | "bar.foo.bar">();
+  });
 });
 
 describe("ValidStringPathsToArrays type", () => {
