@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { FormStoreInit, createFormStateStore, createRefStore } from "./store";
+import { ValidationBehavior } from "./types";
 
 const testStore = (init?: Partial<FormStoreInit>) =>
   createFormStateStore({
@@ -92,19 +93,25 @@ describe("validation", () => {
     });
     expect(store.getState().validationErrors).toEqual({});
 
-    store.getState().onFieldChange("firstName", "Jane", true);
+    const behavior = (b: ValidationBehavior) => ({
+      initial: b,
+      whenTouched: b,
+      whenSubmitted: b,
+    });
+
+    store.getState().onFieldChange("firstName", "Jane", behavior("onChange"));
     await new Promise((resolve) => setTimeout(resolve, 0));
     expect(store.getState().validationErrors).toEqual({
       firstName: "Invalid",
     });
 
-    store.getState().onFieldChange("firstName", "John", false);
+    store.getState().onFieldChange("firstName", "John", behavior("onBlur"));
     await new Promise((resolve) => setTimeout(resolve, 0));
     expect(store.getState().validationErrors).toEqual({
       firstName: "Invalid",
     });
 
-    store.getState().onFieldBlur("firstName", true);
+    store.getState().onFieldBlur("firstName", behavior("onBlur"));
     await new Promise((resolve) => setTimeout(resolve, 0));
     expect(store.getState().validationErrors).toEqual({});
   });

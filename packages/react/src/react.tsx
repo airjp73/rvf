@@ -393,11 +393,11 @@ interface BaseRvfReact<FormInputData> {
   scope(): Rvf<FormInputData>;
 }
 
-interface IsolatableRvf {}
+interface FieldHelperOptions {
+  validationBehavior?: ValidationBehaviorConfig;
+}
 
-export interface RvfReact<FormInputData>
-  extends BaseRvfReact<FormInputData>,
-    IsolatableRvf {
+export interface RvfReact<FormInputData> extends BaseRvfReact<FormInputData> {
   /**
    * Can be used to isolate rerenders in your forms.
    * This renders a component.
@@ -451,13 +451,14 @@ export interface RvfReact<FormInputData>
    */
   field<Field extends ValidStringPaths<FormInputData>>(
     fieldName: Field,
+    opts?: FieldHelperOptions,
   ): FieldProps<ValueAtPath<FormInputData, StringToPathTuple<Field>>>;
 
   /**
    * Registers an uncontrolled field using the value the form is currently scoped to.
    * This is most useful within `array.map` calls.
    */
-  field(): FieldProps<FormInputData>;
+  field(opts?: FieldHelperOptions): FieldProps<FormInputData>;
 
   /**
    * Convenience helper for using checkboxes as boolean flags. Registers a checkbox as a controlled field.
@@ -684,13 +685,31 @@ const useFormInternal = <FormInputData extends FieldValues>(
       return impl;
     };
 
+    type WithOptionalField<T> = [name?: string, arg?: T] | [arg?: T];
+    const optionalField = <T,>(
+      args: WithOptionalField<T>,
+    ): [string | undefined, T | undefined] => {
+      if (args.length === 0) return [undefined, undefined];
+
+      if (args.length === 1) {
+        if (typeof args[0] === "string") return [args[0], undefined];
+        return [prefix, args[0]];
+      }
+
+      if (typeof args[0] === "string") return [args[0], args[1]];
+      throw new Error("Unknown args for field helper");
+    };
+
     return {
       ...base,
 
       array: arrayImpl as any,
 
-      field: (fieldName?: string) =>
-        ({
+      field: (...args: WithOptionalField<FieldHelperOptions>) => {
+        const [fieldName, opts = {}] = optionalField(args);
+        const { validationBehavior } = opts;
+
+        return {
           // We use the current value here in order to default to the correct value
           // in the case where an input unmounts after modification, then re-mounts
           defaultValue: getPath(transientState().values, f(fieldName)),
@@ -698,11 +717,14 @@ const useFormInternal = <FormInputData extends FieldValues>(
             transientState().onFieldChange(
               f(fieldName),
               getEventValue(eventOrValue),
+              validationBehavior,
             ),
-          onBlur: () => transientState().onFieldBlur(f(fieldName)),
+          onBlur: () =>
+            transientState().onFieldBlur(f(fieldName), validationBehavior),
           ref: (element) =>
             form.__store__.transientFieldRefs.setRef(f(fieldName), element),
-        }) satisfies FieldProps<unknown> as any,
+        } satisfies FieldProps<unknown> as any;
+      },
 
       checkbox: (fieldName) => {
         return {

@@ -39,9 +39,12 @@ type StoreEvents = {
   onFieldChange: (
     fieldName: string,
     value: unknown,
-    shouldValidate?: boolean,
+    validationBehaviorConfig?: ValidationBehaviorConfig,
   ) => void;
-  onFieldBlur: (fieldName: string, shouldValidate?: boolean) => void;
+  onFieldBlur: (
+    fieldName: string,
+    validationBehaviorConfig?: ValidationBehaviorConfig,
+  ) => void;
   onSubmit: () => void;
 };
 
@@ -56,7 +59,11 @@ type StoreActions = {
   setAllDirty: (data: Record<string, boolean>) => void;
   setAllErrors: (data: Record<string, string>) => void;
 
-  shouldValidate: (eventType: ValidationBehavior, fieldName: string) => boolean;
+  shouldValidate: (
+    eventType: ValidationBehavior,
+    fieldName: string,
+    validationBehaviorConfig?: ValidationBehaviorConfig,
+  ) => boolean;
   getValidationErrors: (
     nextValues?: FieldValues,
   ) => Promise<Record<string, string>>;
@@ -171,15 +178,16 @@ export const createFormStateStore = ({
       validationBehaviorConfig,
 
       /////// Validation
-      shouldValidate: (eventType, fieldName) => {
+      shouldValidate: (eventType, fieldName, behaviorOverride) => {
         if (eventType === "onSubmit") return true;
 
+        const config = behaviorOverride ?? get().validationBehaviorConfig;
         const currentValidationBehavior =
           get().submitStatus !== "idle"
-            ? validationBehaviorConfig.whenSubmitted
+            ? config.whenSubmitted
             : get().touchedFields[fieldName]
-              ? validationBehaviorConfig.whenTouched
-              : validationBehaviorConfig.initial;
+              ? config.whenTouched
+              : config.initial;
 
         if (eventType === "onBlur")
           return (
@@ -205,30 +213,26 @@ export const createFormStateStore = ({
       },
 
       /////// Events
-      onFieldChange: (fieldName, value, shouldValidate) => {
+      onFieldChange: (fieldName, value, validationBehaviorConfig) => {
         set((state) => {
           setPath(state.values, fieldName, value);
           state.dirtyFields[fieldName] = true;
         });
 
         if (
-          shouldValidate == null
-            ? get().shouldValidate("onChange", fieldName)
-            : shouldValidate
+          get().shouldValidate("onChange", fieldName, validationBehaviorConfig)
         ) {
           get().validate();
         }
       },
 
-      onFieldBlur: (fieldName, shouldValidate = true) => {
+      onFieldBlur: (fieldName, validationBehaviorConfig) => {
         set((state) => {
           state.touchedFields[fieldName] = true;
         });
 
         if (
-          shouldValidate == null
-            ? get().shouldValidate("onBlur", fieldName)
-            : shouldValidate
+          get().shouldValidate("onBlur", fieldName, validationBehaviorConfig)
         ) {
           get().validate();
         }

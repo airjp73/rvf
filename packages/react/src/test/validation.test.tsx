@@ -204,7 +204,7 @@ it("should be posible to customize validation behavior at the field level", asyn
     initial: "onBlur",
     whenTouched: "onChange",
     whenSubmitted: "onChange",
-  };
+  } as const;
 
   const submit = vi.fn();
   const TestComp = () => {
