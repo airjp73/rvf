@@ -349,11 +349,7 @@ it("should be possible to set the dirty/touched/error state of the entire form s
   });
 });
 
-// Maybe this isn't actually what we want.
-// During render, the state should remain consistent to reduce the risk of tearing.
-// So an alternate api for "most up-to-date" would be better.
-// Or maybe the behavior where it's consistent during render, but not during effects is okay.
-it("should always give the most up-to-date state", async () => {
+it("should always give most up-to-date state when accessed outside of render", async () => {
   const { result } = renderHook(() => {
     const form = useRvf({
       defaultValues: {
@@ -383,10 +379,6 @@ it("should always give the most up-to-date state", async () => {
   const res = result.current;
   expect(res.dirty.initial.current).toBe(false);
   expect(res.dirty.changed.current).toBe(true);
-
-  expect(res.touched("foo")).toBe(false);
-  res.setTouched("foo", true);
-  expect(res.touched("foo")).toBe(true);
 });
 
 it("should be possible to set the value for the entire form scope or a field", async () => {

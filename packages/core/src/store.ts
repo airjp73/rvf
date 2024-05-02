@@ -1,6 +1,6 @@
 import { setPath, getPath } from "set-get";
 import { create } from "zustand";
-import { immer } from "zustand/middleware/immer";
+import { immer } from "./immer";
 import { setFormControlValue, focusFirst } from "./dom";
 import {
   FieldValues,
