@@ -348,6 +348,28 @@ it("should be possible to set the dirty/touched/error state of the entire form s
   });
 });
 
+it("should always give the most up-to-date state", async () => {
+  const { result } = renderHook(() => {
+    const form = useRvf({
+      defaultValues: {
+        foo: "bar",
+      },
+      validator: successValidator,
+      onSubmit: vi.fn(),
+    });
+
+    return {
+      touched: form.touched,
+      setTouched: form.setTouched,
+    };
+  });
+
+  const res = result.current;
+  expect(res.touched()).toBe(false);
+  res.setTouched(true);
+  expect(res.touched()).toBe(true);
+});
+
 it("should be possible to set the value for the entire form scope or a field", async () => {
   const { result } = renderHook(() => {
     const form = useRvf({
