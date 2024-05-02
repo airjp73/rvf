@@ -286,11 +286,8 @@ it("should be possible to set the dirty/touched/error state of the entire form s
     return {
       state: {
         dirty: form.dirty(),
-        tDirty: form.transient.dirty(),
         touched: form.touched(),
-        tTouched: form.transient.touched(),
         error: form.error(),
-        tError: form.transient.error(),
       },
       setDirty: form.setDirty,
       setTouched: form.setTouched,
@@ -300,11 +297,8 @@ it("should be possible to set the dirty/touched/error state of the entire form s
 
   expect(result.current.state).toEqual({
     dirty: false,
-    tDirty: false,
     touched: false,
-    tTouched: false,
     error: undefined,
-    tError: undefined,
   });
 
   act(() => {
@@ -313,11 +307,8 @@ it("should be possible to set the dirty/touched/error state of the entire form s
 
   expect(result.current.state).toEqual({
     dirty: true,
-    tDirty: true,
     touched: false,
-    tTouched: false,
     error: undefined,
-    tError: undefined,
   });
 
   act(() => {
@@ -326,11 +317,8 @@ it("should be possible to set the dirty/touched/error state of the entire form s
   await waitFor(() => {
     expect(result.current.state).toEqual({
       dirty: true,
-      tDirty: true,
       touched: true,
-      tTouched: true,
       error: undefined,
-      tError: undefined,
     });
   });
 
@@ -340,11 +328,8 @@ it("should be possible to set the dirty/touched/error state of the entire form s
   await waitFor(() => {
     expect(result.current.state).toEqual({
       dirty: true,
-      tDirty: true,
       touched: true,
-      tTouched: true,
       error: "test",
-      tError: "test",
     });
   });
 });

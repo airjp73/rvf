@@ -161,42 +161,6 @@ it("should be possible to access a value in an effect without rerendering", asyn
   expect(screen.getByTestId("render-count")).toHaveTextContent("1");
 });
 
-it("should be possible to access via the transient helpers without rerendering", async () => {
-  const submit = vi.fn();
-  const TestComp = () => {
-    const form = useRvf({
-      defaultValues: {
-        foo: "bar",
-      },
-      validator: successValidator,
-      onSubmit: submit,
-    });
-
-    form.transient.value("foo");
-    form.transient.dirty("foo");
-    form.transient.touched("foo");
-    form.transient.error("foo");
-
-    return (
-      <form>
-        <pre data-testid="value">{form.value("foo")}</pre>
-        <button
-          type="button"
-          data-testid="set-foo"
-          onClick={() => form.setValue("foo", "test")}
-        />
-        <RenderCounter data-testid="render-count" />
-      </form>
-    );
-  };
-
-  render(<TestComp />);
-  expect(screen.getByTestId("value")).toHaveTextContent("bar");
-  expect(screen.getByTestId("render-count")).toHaveTextContent("1");
-  userEvent.click(screen.getByTestId("set-foo"));
-  expect(screen.getByTestId("render-count")).toHaveTextContent("1");
-});
-
 it("should be possible to set a value using a value returned from the value helper", async () => {
   const submit = vi.fn();
   const TestComp = () => {

@@ -208,39 +208,6 @@ interface BaseRvfReact<FormInputData> {
   };
 
   /**
-   * Transient versions of a few other helpers that do not cause rerenders.
-   */
-  transient: {
-    /**
-     * Gets whether the field has been touched.
-     */
-    touched: (fieldName?: ValidStringPaths<FormInputData>) => boolean;
-
-    /**
-     * Gets whether the field has been dirty.
-     */
-    dirty: (fieldName?: ValidStringPaths<FormInputData>) => boolean;
-
-    /**
-     * Gets the current error for the field if any.
-     */
-    error: (fieldName?: ValidStringPaths<FormInputData>) => string | undefined;
-
-    /**
-     * Gets the current value of the entire form.
-     * If using a scoped form, this will be the value of the scoped form.
-     */
-    value(): FormInputData;
-
-    /**
-     * Gets the current value of the specified field.
-     */
-    value<Field extends ValidStringPaths<FormInputData>>(
-      fieldName: Field,
-    ): ValueAtPath<FormInputData, StringToPathTuple<Field>>;
-  };
-
-  /**
    * Various subscription helpers. These should be used in an effect and do not cause rerenders.
    */
   subscribe: {
@@ -551,16 +518,6 @@ export const useBaseRvf = <FormInputData,>(form: Rvf<FormInputData>) => {
         get submitStatus() {
           return trackedState.submitStatus;
         },
-      },
-
-      transient: {
-        value: (fieldName?: string) =>
-          fieldName == null
-            ? getState().values
-            : (getPath(getState().values, f(fieldName)) as any),
-        touched: (fieldName) => getState().touchedFields[f(fieldName)] ?? false,
-        dirty: (fieldName) => getState().dirtyFields[f(fieldName)] ?? false,
-        error: (fieldName) => getState().validationErrors[f(fieldName)],
       },
 
       subscribe: {

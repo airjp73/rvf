@@ -25,8 +25,8 @@ it("should handle number inputs", async () => {
   };
 
   render(<TestComp />);
-  expect(form?.transient.value("foo")).toBe(0);
-  expect(form?.transient.value("bar")).toBe(0);
+  expect(form?.value("foo")).toBe(0);
+  expect(form?.value("bar")).toBe(0);
 
   expect(screen.getByTestId("foo")).toHaveValue(0);
   expect(screen.getByTestId("bar")).toHaveValue(0);
@@ -37,8 +37,8 @@ it("should handle number inputs", async () => {
   expect(screen.getByTestId("foo")).toHaveValue(123);
   expect(screen.getByTestId("bar")).toHaveValue(234);
 
-  expect(form?.transient.value("foo")).toBe(123);
-  expect(form?.transient.value("bar")).toBe(234);
+  expect(form?.value("foo")).toBe(123);
+  expect(form?.value("bar")).toBe(234);
 });
 
 it("should handle boolean checkboxes", async () => {
@@ -62,14 +62,14 @@ it("should handle boolean checkboxes", async () => {
   };
 
   render(<TestComp />);
-  expect(form?.transient.value("foo")).toBe(false);
+  expect(form?.value("foo")).toBe(false);
   expect(screen.getByTestId("foo")).not.toBeChecked();
 
   await userEvent.click(screen.getByTestId("foo"));
-  expect(form?.transient.value("foo")).toBe(true);
+  expect(form?.value("foo")).toBe(true);
   expect(screen.getByTestId("foo")).toBeChecked();
 
   await userEvent.click(screen.getByTestId("foo"));
-  expect(form?.transient.value("foo")).toBe(false);
+  expect(form?.value("foo")).toBe(false);
   expect(screen.getByTestId("foo")).not.toBeChecked();
 });
