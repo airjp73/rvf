@@ -199,6 +199,60 @@ it("should be possible to customize validation behavior", async () => {
   });
 });
 
+it("should be posible to customize validation behavior at the field level", async () => {
+  const behaviorConfig = {
+    initial: "onBlur",
+    whenTouched: "onChange",
+    whenSubmitted: "onChange",
+  };
+
+  const submit = vi.fn();
+  const TestComp = () => {
+    const form = useRvf({
+      defaultValues: {
+        foo: "",
+      },
+      validator: (data) => {
+        const errors: FieldErrors = {};
+        if (data.foo.length < 3) errors.foo = "too short";
+        if (Object.keys(errors).length > 0)
+          return Promise.resolve({ data: undefined, error: errors });
+        return Promise.resolve({ data, error: undefined });
+      },
+      onSubmit: submit,
+    });
+
+    return (
+      <form onSubmit={form.handleSubmit} data-testid="form">
+        <input
+          data-testid="foo"
+          {...form.field("foo", { validationBehavior: behaviorConfig })}
+        />
+        <pre data-testid="foo-error">{form.error("foo")}</pre>
+        <RenderCounter data-testid="render-count" />
+      </form>
+    );
+  };
+
+  render(<TestComp />);
+
+  await userEvent.type(screen.getByTestId("foo"), "12");
+  expect(screen.getByTestId("foo-error")).toBeEmptyDOMElement();
+
+  await userEvent.click(screen.getByTestId("form"));
+  await waitFor(() => {
+    expect(screen.getByTestId("foo-error")).toHaveTextContent("too short");
+  });
+
+  await userEvent.type(screen.getByTestId("foo"), "12");
+  expect(screen.getByTestId("foo-error")).toBeEmptyDOMElement();
+
+  await userEvent.type(screen.getByTestId("foo"), "{Backspace}{Backspace}");
+  await waitFor(() => {
+    expect(screen.getByTestId("foo-error")).toHaveTextContent("too short");
+  });
+});
+
 it.todo("should use validation adapters");
 // it("should use validation adapters", async () => {
 //   const submit = vi.fn();
