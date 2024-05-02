@@ -26,12 +26,12 @@
   "devDependencies": {
     "tsconfig": "*",
     "tsup-config": "*",
-    "typescript": "^5.4.5"
+    "typescript": "^5.4.5",
+    "set-get": "*"
   },
   "dependencies": {
     "immer": "^10.0.4",
     "react-tracked": "^1.7.14",
-    "zustand": "^4.5.2",
-    "set-get": "*"
+    "zustand": "^4.5.2"
   }
 }
