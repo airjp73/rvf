@@ -32,7 +32,6 @@ type StoreState = {
   validationErrors: Record<string, string>;
   submitStatus: SubmitStatus;
   fieldArrayKeys: Record<string, Array<string>>;
-  validationBehaviorConfig: ValidationBehaviorConfig;
 };
 
 type StoreEvents = {
@@ -175,13 +174,12 @@ export const createFormStateStore = ({
       validationErrors: {},
       fieldArrayKeys: {},
       submitStatus: "idle",
-      validationBehaviorConfig,
 
       /////// Validation
       shouldValidate: (eventType, fieldName, behaviorOverride) => {
         if (eventType === "onSubmit") return true;
 
-        const config = behaviorOverride ?? get().validationBehaviorConfig;
+        const config = behaviorOverride ?? validationBehaviorConfig;
         const currentValidationBehavior =
           get().submitStatus !== "idle"
             ? config.whenSubmitted
