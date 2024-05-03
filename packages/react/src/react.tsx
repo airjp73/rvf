@@ -729,8 +729,11 @@ const useFormInternal = <FormInputData extends FieldValues>(
       },
 
       getFormProps: () => ({
-        onSubmit: (maybeEvent) => {
-          if (maybeEvent instanceof Event) {
+        onSubmit: (maybeEvent: any) => {
+          if (
+            "preventDefault" in maybeEvent &&
+            typeof maybeEvent.preventDefault === "function"
+          ) {
             maybeEvent.preventDefault();
           }
           transientState().onSubmit();
