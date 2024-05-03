@@ -4,7 +4,6 @@ import {
   useRvf,
   useRvfOrContext,
 } from "@rvf/react";
-import { GetInputProps } from "./getInputProps";
 import { useCallback, useMemo } from "react";
 
 /**
@@ -77,10 +76,6 @@ export type FieldProps = {
    * Helper to set the touched state of the field.
    */
   setTouched: (touched: boolean) => void;
-  /**
-   * Helper to get all the props necessary for a regular input.
-   */
-  getInputProps: GetInputProps;
 };
 
 export const useField = (
