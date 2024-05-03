@@ -135,6 +135,8 @@ describe("uncontrolled items", () => {
     expect(screen.getByTestId("foo-0")).toHaveValue("bartest");
   });
 
+  it.todo("should correctly set default values when adding items");
+
   it("should work with non-object array values", async () => {
     const Comp = () => {
       const form = useRvf({

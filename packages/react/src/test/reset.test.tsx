@@ -215,3 +215,45 @@ it("should reset individual fields using custom initial values", async () => {
   expect(screen.getByTestId("foo-touched")).toHaveTextContent("false");
   expect(screen.getByTestId("baz.a-touched")).toHaveTextContent("true");
 });
+
+it("should reset the whole form when a reset button is clicked", async () => {
+  const submit = vi.fn();
+  const TestComp = () => {
+    const form = useRvf({
+      defaultValues: {
+        foo: "bar",
+        baz: {
+          a: "quux",
+        },
+      },
+      validator: successValidator,
+      onSubmit: submit,
+    });
+
+    return (
+      <form onSubmit={form.handleSubmit} data-testid="form">
+        <input data-testid="foo" {...form.field("foo")} />
+        <input data-testid="baz.a" {...form.field("baz.a")} />
+        <button type="reset" data-testid="reset" />
+      </form>
+    );
+  };
+
+  render(<TestComp />);
+  expect(screen.getByTestId("foo-touched")).toHaveTextContent("false");
+  expect(screen.getByTestId("baz.a-touched")).toHaveTextContent("false");
+
+  await userEvent.type(screen.getByTestId("foo"), "test");
+  expect(screen.getByTestId("foo")).toHaveValue("bartest");
+
+  await userEvent.type(screen.getByTestId("baz.a"), "test");
+  expect(screen.getByTestId("baz.a")).toHaveValue("quuxtest");
+  expect(screen.getByTestId("foo-touched")).toHaveTextContent("true");
+  expect(screen.getByTestId("baz.a-touched")).toHaveTextContent("false");
+
+  await userEvent.click(screen.getByTestId("reset"));
+  expect(screen.getByTestId("foo")).toHaveValue("bar");
+  expect(screen.getByTestId("baz.a")).toHaveValue("quux");
+  expect(screen.getByTestId("foo-touched")).toHaveTextContent("false");
+  expect(screen.getByTestId("baz.a-touched")).toHaveTextContent("false");
+});
