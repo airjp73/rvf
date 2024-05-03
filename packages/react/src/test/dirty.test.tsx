@@ -20,7 +20,7 @@ it("should subscribe to changes in the dirty state", async () => {
     renderCounter.current++;
 
     return (
-      <form onSubmit={form.handleSubmit} data-testid="form">
+      <form {...form.getFormProps()} data-testid="form">
         <input data-testid="foo" {...form.field("foo")} />
         <pre data-testid="foo-dirty">
           {form.dirty("foo") ? "true" : "false"}

@@ -18,7 +18,7 @@ it("should be able to isloate rerenders on the fly with `form.isolate(iso => iso
     renderCounter.current++;
 
     return (
-      <form onSubmit={form.handleSubmit} data-testid="form">
+      <form {...form.getFormProps()} data-testid="form">
         <input data-testid="foo" {...form.field("foo")} />
         <pre data-testid="foo-touched">
           {form.touched("foo") ? "true" : "false"}

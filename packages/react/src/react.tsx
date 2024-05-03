@@ -61,7 +61,7 @@ export type RvfOpts<FormInputData extends FieldValues, FormOutputData> = {
 
   /**
    * Handles the submission of the form.
-   * This will be called when `form.handleSubmit` is called.
+   * This will be called when the form is submitted.
    */
   onSubmit: NoInfer<(data: FormOutputData) => Promise<void>>;
 
@@ -364,6 +364,10 @@ interface FieldHelperOptions {
   validationBehavior?: ValidationBehaviorConfig;
 }
 
+interface FormProps {
+  onSubmit: (maybeEvent?: unknown) => void;
+}
+
 export interface RvfReact<FormInputData> extends BaseRvfReact<FormInputData> {
   /**
    * Can be used to isolate rerenders in your forms.
@@ -393,6 +397,8 @@ export interface RvfReact<FormInputData> extends BaseRvfReact<FormInputData> {
    * };
    */
   isolate: (callback: (form: this) => ReactNode) => ReactNode;
+
+  getFormProps: () => FormProps;
 
   /**
    * Get array helpers for the form.
@@ -455,7 +461,7 @@ export interface RvfReact<FormInputData> extends BaseRvfReact<FormInputData> {
   /**
    * Pass this to your form's `onSubmit` handler.
    */
-  handleSubmit: (maybeEvent?: unknown) => void;
+  submit: () => void;
 }
 
 export const useBaseRvf = <FormInputData,>(form: Rvf<FormInputData>) => {
@@ -721,10 +727,16 @@ const useFormInternal = <FormInputData extends FieldValues>(
         } satisfies ControlProps<unknown> as any;
       },
 
-      handleSubmit: (maybeEvent) => {
-        if (maybeEvent instanceof Event) {
-          maybeEvent.preventDefault();
-        }
+      getFormProps: () => ({
+        onSubmit: (maybeEvent) => {
+          if (maybeEvent instanceof Event) {
+            maybeEvent.preventDefault();
+          }
+          transientState().onSubmit();
+        },
+      }),
+
+      submit: () => {
         trackedState.onSubmit();
       },
 

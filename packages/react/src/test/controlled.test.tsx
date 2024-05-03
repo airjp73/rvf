@@ -23,7 +23,7 @@ it("captures and submits with controlled fields", async () => {
     renderCounter.current++;
 
     return (
-      <form onSubmit={form.handleSubmit} data-testid="form">
+      <form {...form.getFormProps()} data-testid="form">
         <input data-testid="foo" {...form.control("foo")} />
         <input data-testid="baz.a" {...form.control("baz.a")} />
         <pre data-testid="render-count">{renderCounter.current}</pre>
@@ -70,7 +70,7 @@ it("should subscribe to value changes", async () => {
     renderCounter.current++;
 
     return (
-      <form onSubmit={form.handleSubmit} data-testid="form">
+      <form {...form.getFormProps()} data-testid="form">
         <input data-testid="foo" {...form.control("foo")} />
         <pre data-testid="value">{form.value("foo")}</pre>
         <pre data-testid="render-count">{renderCounter.current}</pre>
@@ -105,7 +105,7 @@ it("should be posible to directly set a field value", async () => {
     });
 
     return (
-      <form onSubmit={form.handleSubmit} data-testid="form">
+      <form {...form.getFormProps()} data-testid="form">
         <input data-testid="baz.a" {...form.control("baz.a")} />
         <button
           type="button"
@@ -139,7 +139,7 @@ it("should work with custom components", async () => {
 
     const { ref, ...control } = form.control("foo");
     return (
-      <form onSubmit={form.handleSubmit} data-testid="form">
+      <form {...form.getFormProps()} data-testid="form">
         <Input {...control} />
         <button
           type="button"

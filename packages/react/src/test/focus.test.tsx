@@ -18,7 +18,7 @@ it("should be able to manually focus fields", async () => {
     });
 
     return (
-      <form onSubmit={form.handleSubmit} data-testid="form">
+      <form {...form.getFormProps()} data-testid="form">
         <div>
           <input data-testid="foo" {...form.control("foo")} />
           <button
@@ -81,7 +81,7 @@ it("should be automatically focus fields when there are submit validation errors
     });
 
     return (
-      <form onSubmit={form.handleSubmit} data-testid="form">
+      <form {...form.getFormProps()} data-testid="form">
         <div>
           <input data-testid="foo" {...form.control("foo")} />
         </div>

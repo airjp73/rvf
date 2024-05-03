@@ -25,7 +25,7 @@ it("should be possible to use context to access the form", async () => {
 
     return (
       <RvfProvider scope={form.scope()}>
-        <form onSubmit={form.handleSubmit} data-testid="form">
+        <form {...form.getFormProps()} data-testid="form">
           <Name />
         </form>
       </RvfProvider>
@@ -54,7 +54,7 @@ it("should be possible to scope a context provider", async () => {
     });
 
     return (
-      <form onSubmit={form.handleSubmit} data-testid="form">
+      <form {...form.getFormProps()} data-testid="form">
         <RvfProvider scope={form.scope("personA")}>
           <Name />
         </RvfProvider>

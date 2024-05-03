@@ -22,7 +22,7 @@ it("should be able to listen to value changes without rerendering", async () => 
     useEffect(() => form.subscribe.value(valueListener), [form]);
 
     return (
-      <form onSubmit={form.handleSubmit} data-testid="form">
+      <form {...form.getFormProps()} data-testid="form">
         <input data-testid="foo" {...form.field("foo")} />
         <RenderCounter data-testid="render-count" />
       </form>
@@ -65,7 +65,7 @@ it("should unsubscribe from value changes when the effect unmounts", async () =>
     }, [form, sub]);
 
     return (
-      <form onSubmit={form.handleSubmit} data-testid="form">
+      <form {...form.getFormProps()} data-testid="form">
         <pre data-testid="sub">{sub}</pre>
         <input data-testid="foo" {...form.field("foo")} />
         <input data-testid="bar" {...form.field("bar")} />

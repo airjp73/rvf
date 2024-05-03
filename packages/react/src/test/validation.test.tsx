@@ -24,7 +24,7 @@ it("should validate on submit, then on change after that", async () => {
     });
 
     return (
-      <form onSubmit={form.handleSubmit} data-testid="form">
+      <form {...form.getFormProps()} data-testid="form">
         <input data-testid="foo" {...form.field("foo")} />
         <pre data-testid="foo-error">{form.error("foo")}</pre>
 
@@ -107,7 +107,7 @@ it("should handle dependant validations", async () => {
     });
 
     return (
-      <form onSubmit={form.handleSubmit} data-testid="form">
+      <form {...form.getFormProps()} data-testid="form">
         <input data-testid="password" {...form.field("password")} />
         <input
           data-testid="confirmPassword"
@@ -172,7 +172,7 @@ it("should be possible to customize validation behavior", async () => {
     });
 
     return (
-      <form onSubmit={form.handleSubmit} data-testid="form">
+      <form {...form.getFormProps()} data-testid="form">
         <input data-testid="foo" {...form.field("foo")} />
         <pre data-testid="foo-error">{form.error("foo")}</pre>
         <RenderCounter data-testid="render-count" />
@@ -223,7 +223,7 @@ it("should be posible to customize validation behavior at the field level", asyn
     });
 
     return (
-      <form onSubmit={form.handleSubmit} data-testid="form">
+      <form {...form.getFormProps()} data-testid="form">
         <input
           data-testid="foo"
           {...form.field("foo", { validationBehavior: behaviorConfig })}
@@ -279,7 +279,7 @@ it.todo("should use validation adapters");
 //     });
 
 //     return (
-//       <form onSubmit={form.handleSubmit} data-testid="form">
+//       <form {...form.getFormProps()} data-testid="form">
 //         <input data-testid="foo" {...form.field("foo")} />
 //         <pre data-testid="foo-error">{form.error("foo")}</pre>
 

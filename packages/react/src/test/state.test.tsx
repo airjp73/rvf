@@ -24,7 +24,7 @@ it("should return submit state", async () => {
         submitStatus: form.formState.submitStatus,
         hasBeenSubmitted: form.formState.hasBeenSubmitted,
       },
-      submit: form.handleSubmit,
+      submit: form.submit,
     };
   });
 
@@ -93,7 +93,7 @@ it("should return form dirty/touched/valid state", async () => {
         valid: form.formState.isValid,
       },
       foo: form.field("foo"),
-      submit: form.handleSubmit,
+      submit: form.submit,
     };
   });
 

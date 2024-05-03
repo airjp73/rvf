@@ -17,7 +17,7 @@ it("should handle number inputs", async () => {
   const TestComp = () => {
     form = useIt();
     return (
-      <form onSubmit={form.handleSubmit} data-testid="form">
+      <form {...form.getFormProps()} data-testid="form">
         <input data-testid="foo" {...form.field("foo")} type="number" />
         <input data-testid="bar" {...form.control("bar")} type="number" />
       </form>
@@ -55,7 +55,7 @@ it("should handle boolean checkboxes", async () => {
   const TestComp = () => {
     form = useIt();
     return (
-      <form onSubmit={form.handleSubmit} data-testid="form">
+      <form {...form.getFormProps()} data-testid="form">
         <input data-testid="foo" {...form.checkbox("foo")} type="checkbox" />
       </form>
     );

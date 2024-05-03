@@ -35,7 +35,7 @@ it("should be able to create scoped subforms", async () => {
     expectTypeOf(personForm).toEqualTypeOf<Rvf<{ name: string }>>();
 
     return (
-      <form onSubmit={form.handleSubmit} data-testid="form">
+      <form {...form.getFormProps()} data-testid="form">
         <NameForm form={personForm} />
       </form>
     );
@@ -99,7 +99,7 @@ it("should be able to create subforms of arrays", async () => {
     >();
 
     return (
-      <form onSubmit={form.handleSubmit} data-testid="form">
+      <form {...form.getFormProps()} data-testid="form">
         <NameForm form={form.scope("people[0]")} />
       </form>
     );

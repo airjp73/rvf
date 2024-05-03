@@ -20,7 +20,7 @@ it("should subscribe to changes in the touched state", async () => {
     renderCounter.current++;
 
     return (
-      <form onSubmit={form.handleSubmit} data-testid="form">
+      <form {...form.getFormProps()} data-testid="form">
         <input data-testid="foo" {...form.control("foo")} />
         <pre data-testid="foo-touched">
           {form.touched("foo") ? "true" : "false"}

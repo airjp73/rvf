@@ -16,7 +16,7 @@ it("should reset the whole form", async () => {
     });
 
     return (
-      <form onSubmit={form.handleSubmit} data-testid="form">
+      <form {...form.getFormProps()} data-testid="form">
         <input data-testid="foo" {...form.field("foo")} />
         <pre data-testid="foo-touched">
           {form.touched("foo") ? "true" : "false"}
@@ -68,7 +68,7 @@ it("should reset individual fields", async () => {
     });
 
     return (
-      <form onSubmit={form.handleSubmit} data-testid="form">
+      <form {...form.getFormProps()} data-testid="form">
         <input data-testid="foo" {...form.field("foo")} />
         <pre data-testid="foo-touched">
           {form.touched("foo") ? "true" : "false"}
@@ -120,7 +120,7 @@ it("should reset the whole form using custom initial values", async () => {
     });
 
     return (
-      <form onSubmit={form.handleSubmit} data-testid="form">
+      <form {...form.getFormProps()} data-testid="form">
         <input data-testid="foo" {...form.field("foo")} />
         <pre data-testid="foo-touched">
           {form.touched("foo") ? "true" : "false"}
@@ -177,7 +177,7 @@ it("should reset individual fields using custom initial values", async () => {
     });
 
     return (
-      <form onSubmit={form.handleSubmit} data-testid="form">
+      <form {...form.getFormProps()} data-testid="form">
         <input data-testid="foo" {...form.field("foo")} />
         <pre data-testid="foo-touched">
           {form.touched("foo") ? "true" : "false"}
@@ -231,7 +231,7 @@ it("should reset the whole form when a reset button is clicked", async () => {
     });
 
     return (
-      <form onSubmit={form.handleSubmit} data-testid="form">
+      <form {...form.getFormProps()} data-testid="form">
         <input data-testid="foo" {...form.field("foo")} />
         <input data-testid="baz.a" {...form.field("baz.a")} />
         <button type="reset" data-testid="reset" />
