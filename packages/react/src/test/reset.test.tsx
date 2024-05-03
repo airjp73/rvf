@@ -222,9 +222,7 @@ it("should reset the whole form when a reset button is clicked", async () => {
     const form = useRvf({
       defaultValues: {
         foo: "bar",
-        baz: {
-          a: "quux",
-        },
+        baz: { a: "quux" },
       },
       validator: successValidator,
       onSubmit: submit,
@@ -233,7 +231,15 @@ it("should reset the whole form when a reset button is clicked", async () => {
     return (
       <form {...form.getFormProps()} data-testid="form">
         <input data-testid="foo" {...form.field("foo")} />
-        <input data-testid="baz.a" {...form.field("baz.a")} />
+        <pre data-testid="foo-touched">
+          {form.touched("foo") ? "true" : "false"}
+        </pre>
+
+        <input data-testid="baz.a" {...form.control("baz.a")} />
+        <pre data-testid="baz.a-touched">
+          {form.touched("baz.a") ? "true" : "false"}
+        </pre>
+
         <button type="reset" data-testid="reset" />
       </form>
     );
@@ -252,8 +258,8 @@ it("should reset the whole form when a reset button is clicked", async () => {
   expect(screen.getByTestId("baz.a-touched")).toHaveTextContent("false");
 
   await userEvent.click(screen.getByTestId("reset"));
-  expect(screen.getByTestId("foo")).toHaveValue("bar");
   expect(screen.getByTestId("baz.a")).toHaveValue("quux");
+  expect(screen.getByTestId("foo")).toHaveValue("bar");
   expect(screen.getByTestId("foo-touched")).toHaveTextContent("false");
   expect(screen.getByTestId("baz.a-touched")).toHaveTextContent("false");
 });

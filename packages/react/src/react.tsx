@@ -366,6 +366,7 @@ interface FieldHelperOptions {
 
 interface FormProps {
   onSubmit: (maybeEvent?: unknown) => void;
+  onReset: () => void;
 }
 
 export interface RvfReact<FormInputData> extends BaseRvfReact<FormInputData> {
@@ -734,6 +735,7 @@ const useFormInternal = <FormInputData extends FieldValues>(
           }
           transientState().onSubmit();
         },
+        onReset: () => transientState().reset(),
       }),
 
       submit: () => {
