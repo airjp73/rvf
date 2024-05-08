@@ -327,25 +327,12 @@ export const makeBaseRvfReact = <FormInputData,>({
   // };
 
   return {
-    value: (fieldName?: string) =>
-      fieldName == null
-        ? trackedState.values
-        : (getPath(trackedState.values, f(fieldName)) as any),
+    value: (fieldName?: string) => trackedState.getValue(f(fieldName)) as any,
     defaultValue: (fieldName?: string) =>
-      fieldName == null
-        ? trackedState.defaultValues
-        : (getPath(trackedState.defaultValues, f(fieldName)) as any),
-    touched: (fieldName) => trackedState.touchedFields[f(fieldName)] ?? false,
-    dirty: (fieldName) => trackedState.dirtyFields[f(fieldName)] ?? false,
-    error: (fieldName) => {
-      if (
-        trackedState.submitStatus !== "idle" ||
-        trackedState.touchedFields[f(fieldName)] ||
-        trackedState.validationBehaviorConfig.initial === "onChange"
-      )
-        return trackedState.validationErrors[f(fieldName)];
-      return undefined;
-    },
+      trackedState.getDefaultValue(f(fieldName)) as any,
+    touched: (fieldName) => trackedState.getTouched(f(fieldName)),
+    dirty: (fieldName) => trackedState.getDirty(f(fieldName)),
+    error: (fieldName) => trackedState.getError(f(fieldName)) ?? undefined,
 
     formState: {
       get isSubmitting() {
