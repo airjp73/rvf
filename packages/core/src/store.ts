@@ -223,6 +223,8 @@ export const createFormStateStore = ({
           get().shouldValidate("onChange", fieldName, validationBehaviorConfig)
         ) {
           get().validate();
+        } else {
+          get().setError(fieldName, null);
         }
       },
 
