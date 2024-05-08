@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { useRvf } from "../react";
+import { useRvf } from "../useRvf";
 import { successValidator } from "./util/successValidator";
 
 it("should reset the whole form", async () => {

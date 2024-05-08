@@ -1,5 +1,5 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { useRvf } from "../react";
+import { useRvf } from "../useRvf";
 import userEvent from "@testing-library/user-event";
 import { successValidator } from "./util/successValidator";
 import { FieldErrors } from "@rvf/core";

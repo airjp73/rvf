@@ -1,5 +1,5 @@
 import { act, renderHook, waitFor } from "@testing-library/react";
-import { useRvf } from "../react";
+import { useRvf } from "../useRvf";
 import { successValidator } from "./util/successValidator";
 import { useEffect, useRef } from "react";
 

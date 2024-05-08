@@ -5,7 +5,8 @@ import {
   useMemo,
   useContext,
 } from "react";
-import { RvfReact, useRvf } from "./react";
+import { useRvf } from "./useRvf";
+import { RvfReact } from "./base";
 
 type RvfContextValue = {
   scope: Rvf<unknown>;

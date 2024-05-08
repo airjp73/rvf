@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import { useRvf } from "../react";
+import { useRvf } from "../useRvf";
 import userEvent from "@testing-library/user-event";
 import { RenderCounter } from "./util/RenderCounter";
 import { useEffect } from "react";

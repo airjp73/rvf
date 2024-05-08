@@ -16,5 +16,5 @@ export {
   type CheckboxProps,
   type FormFields,
   type RvfReact,
-} from "./react";
+} from "./useRvf";
 export * from "./context";

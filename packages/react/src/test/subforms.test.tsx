@@ -1,6 +1,6 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { Rvf } from "@rvf/core";
-import { useRvf } from "../react";
+import { useRvf } from "../useRvf";
 import userEvent from "@testing-library/user-event";
 import { successValidator } from "./util/successValidator";
 

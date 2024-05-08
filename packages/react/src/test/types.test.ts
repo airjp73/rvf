@@ -1,5 +1,5 @@
 import { describe, expectTypeOf, it } from "vitest";
-import { useRvf, FormFields } from "../react";
+import { useRvf, FormFields } from "../useRvf";
 import { successValidator } from "./util/successValidator";
 
 describe("types", () => {
