@@ -4,6 +4,7 @@ import { forwardRef, useEffect, useRef } from "react";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { RenderCounter } from "./util/RenderCounter";
 import { successValidator } from "./util/successValidator";
+import { RvfReact } from "../base";
 
 it("captures and submits with uncontrolled fields", async () => {
   const submit = vi.fn();
@@ -159,6 +160,121 @@ it("should work with custom components", async () => {
   expect(screen.getByTestId("foo")).toHaveValue("bob");
 });
 
-it.todo("should naturally work with boolean checkboxes");
-it.todo("should naturally work with checkbox groups");
+it("should naturally work with boolean checkboxes", async () => {
+  const submit = vi.fn();
+
+  const TestComp = () => {
+    const form = useRvf({
+      defaultValues: {
+        foo: true,
+      },
+      validator: successValidator,
+      onSubmit: submit,
+    });
+
+    return (
+      <form {...form.getFormProps()} data-testid="form">
+        <input
+          data-testid="foo"
+          {...form.field("foo").getInputProps({ type: "checkbox" })}
+        />
+        <RenderCounter data-testid="render-count" />
+        <button type="submit" data-testid="submit" />
+      </form>
+    );
+  };
+
+  render(<TestComp />);
+  expect(screen.getByTestId("foo")).toBeChecked();
+  expect(screen.getByTestId("render-count")).toHaveTextContent("1");
+
+  await userEvent.click(screen.getByTestId("foo"));
+  expect(screen.getByTestId("foo")).not.toBeChecked();
+
+  await userEvent.click(screen.getByTestId("foo"));
+  expect(screen.getByTestId("foo")).toBeChecked();
+
+  await userEvent.click(screen.getByTestId("foo"));
+  await userEvent.click(screen.getByTestId("submit"));
+  await waitFor(() => expect(submit).toHaveBeenCalledTimes(1));
+  expect(submit).toHaveBeenCalledWith({
+    foo: false,
+  });
+
+  expect(screen.getByTestId("render-count")).toHaveTextContent("1");
+});
+
+it("should naturally work with checkbox groups", async () => {
+  const submit = vi.fn();
+
+  const TestComp = () => {
+    const form = useRvf({
+      defaultValues: {
+        foo: ["bar", "baz"],
+      },
+      validator: successValidator,
+      onSubmit: submit,
+    });
+
+    return (
+      <form {...form.getFormProps()} data-testid="form">
+        <input
+          data-testid="foo"
+          {...form
+            .field("foo")
+            .getInputProps({ type: "checkbox", value: "foo" })}
+        />
+        <input
+          data-testid="bar"
+          {...form
+            .field("foo")
+            .getInputProps({ type: "checkbox", value: "bar" })}
+        />
+        <input
+          data-testid="baz"
+          {...form
+            .field("foo")
+            .getInputProps({ type: "checkbox", value: "baz" })}
+        />
+        <RenderCounter data-testid="render-count" />
+        <button type="submit" data-testid="submit" />
+      </form>
+    );
+  };
+
+  render(<TestComp />);
+  expect(screen.getByTestId("foo")).not.toBeChecked();
+  expect(screen.getByTestId("bar")).toBeChecked();
+  expect(screen.getByTestId("baz")).toBeChecked();
+  expect(screen.getByTestId("render-count")).toHaveTextContent("1");
+
+  await userEvent.click(screen.getByTestId("foo"));
+  expect(screen.getByTestId("foo")).toBeChecked();
+  expect(screen.getByTestId("bar")).toBeChecked();
+  expect(screen.getByTestId("baz")).toBeChecked();
+
+  await userEvent.click(screen.getByTestId("baz"));
+  expect(screen.getByTestId("foo")).toBeChecked();
+  expect(screen.getByTestId("bar")).toBeChecked();
+  expect(screen.getByTestId("baz")).not.toBeChecked();
+
+  await userEvent.click(screen.getByTestId("bar"));
+  expect(screen.getByTestId("foo")).toBeChecked();
+  expect(screen.getByTestId("bar")).not.toBeChecked();
+  expect(screen.getByTestId("baz")).not.toBeChecked();
+
+  await userEvent.click(screen.getByTestId("baz"));
+  expect(screen.getByTestId("foo")).toBeChecked();
+  expect(screen.getByTestId("bar")).not.toBeChecked();
+  expect(screen.getByTestId("baz")).toBeChecked();
+
+  await userEvent.click(screen.getByTestId("submit"));
+  await waitFor(() => expect(submit).toHaveBeenCalledTimes(1));
+  expect(submit).toHaveBeenCalledWith({
+    foo: ["foo", "baz"],
+  });
+
+  expect(screen.getByTestId("render-count")).toHaveTextContent("1");
+});
+
 it.todo("should naturally work with radio groups");

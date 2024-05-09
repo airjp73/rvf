@@ -1,6 +1,9 @@
 import { RefCallback } from "react";
 import * as R from "remeda";
-import { getCheckboxChecked } from "./logic/getCheckboxChecked";
+import {
+  getCheckboxChecked,
+  getNextCheckboxValue,
+} from "./logic/getCheckboxChecked";
 import { getRadioChecked } from "./logic/getRadioChecked";
 import { getEventValue } from "../event";
 
@@ -9,6 +12,7 @@ export type CreateGetInputPropsOptions = {
   onBlur: () => void;
   defaultValue?: any;
   name: string;
+  getCurrentValue: () => unknown;
   ref: RefCallback<HTMLElement>;
 };
 
@@ -23,6 +27,7 @@ type MinimalInputProps = {
   name?: string | undefined;
   type?: string | undefined;
   ref?: RefCallback<any>;
+  value?: string;
 };
 
 export type GetInputProps = <T extends MinimalInputProps>(
@@ -35,14 +40,24 @@ export const createGetInputProps = ({
   defaultValue,
   name,
   ref,
+  getCurrentValue,
 }: CreateGetInputPropsOptions): GetInputProps => {
   return <T extends MinimalInputProps>(props = {} as any) => {
     const inputProps: MinimalInputProps = {
       ...props,
       onChange: (...args: unknown[]) => {
         const value = getEventValue(args[0]);
-        if (props?.type === "number") {
-          onChange(Number(value));
+
+        if (props.type === "radio") {
+          onChange(props.value);
+        } else if (props.type === "checkbox") {
+          onChange(
+            getNextCheckboxValue({
+              derivedValue: value,
+              valueProp: props.value,
+              currentValue: getCurrentValue(),
+            }),
+          );
         } else {
           onChange(value);
         }
