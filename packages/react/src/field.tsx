@@ -14,6 +14,11 @@ export interface RvfField<FormInputData> {
     ref: RefCallback<HTMLInputElement>;
   };
 
+  refs: {
+    controlled: RefCallback<HTMLInputElement>;
+    transient: RefCallback<HTMLInputElement>;
+  };
+
   onChange: (value: FormInputData) => void;
   onBlur: () => void;
 
@@ -70,6 +75,13 @@ export const makeFieldImpl = <FormInputData,>({
       value: trackedState.getValue(fieldName) as never,
       ref: (ref) => form.__store__.controlledFieldRefs.setRef(fieldName, ref),
     }),
+
+    refs: {
+      transient: (ref) =>
+        form.__store__.transientFieldRefs.setRef(fieldName, ref),
+      controlled: (ref) =>
+        form.__store__.controlledFieldRefs.setRef(fieldName, ref),
+    },
 
     onChange,
     onBlur,
