@@ -5,6 +5,11 @@ import {
   scopeRvf,
   SubmitStatus,
   FormStoreValue,
+  getFieldValue,
+  getFieldDefaultValue,
+  getFieldTouched,
+  getFieldDirty,
+  getFieldError,
 } from "@rvf/core";
 import {
   StringToPathTuple,
@@ -46,7 +51,7 @@ export interface RvfReact<FormInputData> {
    * Gets the current error for the field if any.
    * @willRerender
    */
-  error: (fieldName?: ValidStringPaths<FormInputData>) => string | undefined;
+  error: (fieldName?: ValidStringPaths<FormInputData>) => string | null;
 
   /**
    * Gets the current value of the entire form.
@@ -318,18 +323,19 @@ export const makeBaseRvfReact = <FormInputData,>({
   const fieldImpl = makeImplFactory(prefix, (fieldName) =>
     makeFieldImpl({
       form,
-      fieldName: prefix,
+      fieldName,
       trackedState,
     }),
   );
 
   return {
-    value: (fieldName?: string) => trackedState.getValue(f(fieldName)) as any,
+    value: (fieldName?: string) =>
+      getFieldValue(trackedState, f(fieldName)) as any,
     defaultValue: (fieldName?: string) =>
-      trackedState.getDefaultValue(f(fieldName)) as any,
-    touched: (fieldName) => trackedState.getTouched(f(fieldName)),
-    dirty: (fieldName) => trackedState.getDirty(f(fieldName)),
-    error: (fieldName) => trackedState.getError(f(fieldName)) ?? undefined,
+      getFieldDefaultValue(trackedState, f(fieldName)) as any,
+    touched: (fieldName) => getFieldTouched(trackedState, f(fieldName)),
+    dirty: (fieldName) => getFieldDirty(trackedState, f(fieldName)),
+    error: (fieldName) => getFieldError(trackedState, f(fieldName)),
 
     formState: {
       get isSubmitting() {

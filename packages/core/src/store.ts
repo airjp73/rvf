@@ -49,12 +49,6 @@ type StoreEvents = {
 };
 
 type StoreActions = {
-  getValue: (fieldName: string) => unknown;
-  getDefaultValue: (fieldName: string) => unknown;
-  getTouched: (fieldName: string) => boolean;
-  getDirty: (fieldName: string) => boolean;
-  getError: (fieldName: string) => string | null;
-
   setValue: (fieldName: string, value: unknown) => void;
   setTouched: (fieldName: string, value: boolean) => void;
   setDirty: (fieldName: string, value: boolean) => void;
@@ -284,22 +278,6 @@ export const createFormStateStore = ({
             state.submitStatus = "error";
           });
         }
-      },
-
-      /////// Getters
-      getValue: (fieldName) => getPath(get().values, fieldName),
-      getDefaultValue: (fieldName) => getPath(get().defaultValues, fieldName),
-      getTouched: (fieldName) => get().touchedFields[fieldName] ?? false,
-      getDirty: (fieldName) => get().dirtyFields[fieldName] ?? false,
-      getError: (fieldName) => {
-        const state = get();
-        if (
-          state.submitStatus !== "idle" ||
-          state.touchedFields[fieldName] ||
-          state.validationBehaviorConfig.initial === "onChange"
-        )
-          return state.validationErrors[fieldName] ?? null;
-        return null;
       },
 
       /////// Actions

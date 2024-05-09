@@ -3,6 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { useRef } from "react";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { successValidator } from "./util/successValidator";
+import { controlInput } from "./util/controlInput";
 
 it("captures and submits with controlled fields", async () => {
   const submit = vi.fn();
@@ -24,8 +25,8 @@ it("captures and submits with controlled fields", async () => {
 
     return (
       <form {...form.getFormProps()} data-testid="form">
-        <input data-testid="foo" {...form.control("foo")} />
-        <input data-testid="baz.a" {...form.control("baz.a")} />
+        <input data-testid="foo" {...controlInput(form.field("foo"))} />
+        <input data-testid="baz.a" {...controlInput(form.field("baz.a"))} />
         <pre data-testid="render-count">{renderCounter.current}</pre>
       </form>
     );
@@ -71,7 +72,7 @@ it("should subscribe to value changes", async () => {
 
     return (
       <form {...form.getFormProps()} data-testid="form">
-        <input data-testid="foo" {...form.control("foo")} />
+        <input data-testid="foo" {...controlInput(form.field("foo"))} />
         <pre data-testid="value">{form.value("foo")}</pre>
         <pre data-testid="render-count">{renderCounter.current}</pre>
       </form>
@@ -106,7 +107,7 @@ it("should be posible to directly set a field value", async () => {
 
     return (
       <form {...form.getFormProps()} data-testid="form">
-        <input data-testid="baz.a" {...form.control("baz.a")} />
+        <input data-testid="baz.a" {...controlInput(form.field("baz.a"))} />
         <button
           type="button"
           data-testid="set-baz.a"
@@ -137,7 +138,7 @@ it("should work with custom components", async () => {
       onSubmit: submit,
     });
 
-    const { ref, ...control } = form.control("foo");
+    const { ref, ...control } = controlInput(form.field("foo"));
     return (
       <form {...form.getFormProps()} data-testid="form">
         <Input {...control} />
