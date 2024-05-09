@@ -753,3 +753,6 @@ it("should be able to replace", async () => {
   expect(screen.getByTestId("foo-2")).toHaveValue("quux");
   expect(screen.getByTestId("foo-2-touched")).toHaveTextContent("false");
 });
+
+it.todo("should validate on submit, then on change after that by default");
+it.todo("should support custom validation behavior");
