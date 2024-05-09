@@ -10,6 +10,7 @@ import {
   getFieldValue,
 } from "@rvf/core";
 import { GetInputProps, createGetInputProps } from "./inputs/getInputProps";
+import { useRvfOrContextInternal } from "./context";
 
 export interface RvfField<FormInputData> {
   getInputProps: GetInputProps;
@@ -120,17 +121,25 @@ export const makeFieldImpl = <FormInputData,>({
   };
 };
 
+export type UseFieldOpts = {
+  validationBehavior?: ValidationBehaviorConfig;
+};
+
 export function useField<FormInputData>(
   form: Rvf<FormInputData>,
-  {
-    validationBehavior,
-  }: {
-    validationBehavior?: ValidationBehaviorConfig;
-  } = {},
-) {
-  const prefix = form.__field_prefix__;
-  const { useStoreState } = form.__store__;
-  const trackedState = useStoreState();
+  { validationBehavior }?: UseFieldOpts,
+): RvfField<FormInputData>;
+export function useField<FormInputData = unknown>(
+  name: string,
+  opts?: UseFieldOpts,
+): RvfField<FormInputData>;
+export function useField<FormInputData>(
+  formOrName: Rvf<FormInputData> | string,
+  opts?: UseFieldOpts,
+): RvfField<FormInputData> {
+  const scope = useRvfOrContextInternal(formOrName);
+  const prefix = scope.__field_prefix__;
+  const trackedState = scope.__store__.useStoreState();
 
   // Accessing _something_ is required. Otherwise, it will rerender on every state update.
   // I saw this done in one of the dia-shi's codebases, too, but I can't find it now.
@@ -139,13 +148,13 @@ export function useField<FormInputData>(
   const base = useMemo(
     () =>
       makeFieldImpl({
-        form,
+        form: scope,
         fieldName: prefix,
         trackedState,
-        validationBehavior,
+        validationBehavior: opts?.validationBehavior,
       }),
-    [form, prefix, trackedState, validationBehavior],
+    [opts?.validationBehavior, prefix, scope, trackedState],
   );
 
-  return base;
+  return base as never;
 }

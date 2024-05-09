@@ -36,7 +36,10 @@ export const useIsValid = (rvf?: Rvf<any>) =>
 export const useControlField = <T>(name: string, rvf?: Rvf<any>) => {
   const form = useRvfOrContext(rvf);
   const value: T = form.value(name);
-  const setValue = (value: T) => form.setValue(name, value);
+  const setValue = useCallback(
+    (value: T) => form.setValue(name, value),
+    [form, name],
+  );
   return [value, setValue] as const;
 };
 

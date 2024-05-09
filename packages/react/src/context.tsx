@@ -1,4 +1,4 @@
-import { Rvf } from "@rvf/core";
+import { Rvf, scopeRvf } from "@rvf/core";
 import {
   createContext,
   type PropsWithChildren,
@@ -31,6 +31,23 @@ export const useRvfContext = <TData,>() => {
   if (!value)
     throw new Error("useRvfContext must be used within a RvfProvider");
   return useRvf(value.scope) as RvfReact<TData>;
+};
+
+export const useRvfOrContextInternal = (
+  rvfOrName?: Rvf<any> | string,
+): Rvf<unknown> => {
+  const value = useContext(RvfContext);
+  if (rvfOrName == null) {
+    if (!value)
+      throw new Error("useRvfContext must be used within a RvfProvider");
+    return value.scope;
+  }
+
+  if (typeof rvfOrName !== "string") return rvfOrName;
+
+  if (!value)
+    throw new Error("useRvfContext must be used within a RvfProvider");
+  return scopeRvf(value.scope, rvfOrName);
 };
 
 export const useRvfOrContext = <TData,>(rvf?: Rvf<TData>): RvfReact<TData> => {
