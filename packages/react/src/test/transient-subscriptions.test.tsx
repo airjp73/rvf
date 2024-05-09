@@ -23,7 +23,7 @@ it("should be able to listen to value changes without rerendering", async () => 
 
     return (
       <form {...form.getFormProps()} data-testid="form">
-        <input data-testid="foo" {...form.field("foo")} />
+        <input data-testid="foo" {...form.field("foo").getInputProps()} />
         <RenderCounter data-testid="render-count" />
       </form>
     );
@@ -67,8 +67,8 @@ it("should unsubscribe from value changes when the effect unmounts", async () =>
     return (
       <form {...form.getFormProps()} data-testid="form">
         <pre data-testid="sub">{sub}</pre>
-        <input data-testid="foo" {...form.field("foo")} />
-        <input data-testid="bar" {...form.field("bar")} />
+        <input data-testid="foo" {...form.field("foo").getInputProps()} />
+        <input data-testid="bar" {...form.field("bar").getInputProps()} />
         <button
           type="button"
           data-testid="sub-to-bar"

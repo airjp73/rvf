@@ -2,7 +2,6 @@ import { act, renderHook, waitFor } from "@testing-library/react";
 import { useRvf } from "../useRvf";
 import { successValidator } from "./util/successValidator";
 import { useEffect, useRef } from "react";
-import { clear } from "@testing-library/user-event/dist/types/utility";
 
 it("should return submit state", async () => {
   let prom: PromiseWithResolvers<any> | null = null;

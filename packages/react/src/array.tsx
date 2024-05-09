@@ -118,16 +118,3 @@ export const makeFieldArrayImpl = <FormInputData extends Array<any>>({
       trackedState.arrayReplace(arrayFieldName, index, value),
   };
 };
-
-const IsolatedMap = ({
-  form,
-  render,
-}: {
-  form: Rvf<unknown>;
-  render: (form: string[]) => ReactNode;
-}) => {
-  const keys = useStore(form.__store__.store, (state) =>
-    state.getFieldArrayKeys(form.__field_prefix__),
-  );
-  return render(keys);
-};

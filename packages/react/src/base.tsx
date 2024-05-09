@@ -260,17 +260,17 @@ export interface RvfReact<FormInputData> {
     : never;
 
   /**
-   * Get field helpers for the field in scope.
-   * This is only useful if you're using a form that has been scoped to a single field.
-   */
-  field(): RvfField<FormInputData>;
-
-  /**
    * Get field helpers for the specified field.
    */
   field<Field extends ValidStringPaths<FormInputData>>(
     fieldName: Field,
   ): RvfField<ValueAtPath<FormInputData, StringToPathTuple<Field>>>;
+
+  /**
+   * Get field helpers for the field in scope.
+   * This is only useful if you're using a form that has been scoped to a single field.
+   */
+  field(): RvfField<FormInputData>;
 
   /**
    * Pass this to your form's `onSubmit` handler.

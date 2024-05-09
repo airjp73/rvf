@@ -3,6 +3,7 @@ import { Rvf } from "@rvf/core";
 import { useRvf } from "../useRvf";
 import userEvent from "@testing-library/user-event";
 import { successValidator } from "./util/successValidator";
+import { controlInput } from "./util/controlInput";
 
 it("should be able to create scoped subforms", async () => {
   const submit = vi.fn();
@@ -11,7 +12,7 @@ it("should be able to create scoped subforms", async () => {
 
     return (
       <div>
-        <input data-testid="name" {...iso.control("name")} />
+        <input data-testid="name" {...controlInput(iso.field("name"))} />
       </div>
     );
   };
@@ -62,7 +63,7 @@ it("should be able to create subforms of arrays", async () => {
 
     return (
       <div>
-        <input data-testid="name" {...iso.control("name")} />
+        <input data-testid="name" {...controlInput(iso.field("name"))} />
       </div>
     );
   };

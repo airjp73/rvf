@@ -1,4 +1,4 @@
-import { RefCallback } from "react";
+import { RefCallback, useMemo } from "react";
 import {
   FormStoreValue,
   Rvf,
@@ -112,3 +112,33 @@ export const makeFieldImpl = <FormInputData,>({
     reset: () => trackedState.resetField(fieldName),
   };
 };
+
+export function useField<FormInputData>(
+  form: Rvf<FormInputData>,
+  {
+    validationBehavior,
+  }: {
+    validationBehavior?: ValidationBehaviorConfig;
+  } = {},
+) {
+  const prefix = form.__field_prefix__;
+  const { useStoreState } = form.__store__;
+  const trackedState = useStoreState();
+
+  // Accessing _something_ is required. Otherwise, it will rerender on every state update.
+  // I saw this done in one of the dia-shi's codebases, too, but I can't find it now.
+  trackedState.setValue;
+
+  const base = useMemo(
+    () =>
+      makeFieldImpl({
+        form,
+        fieldName: prefix,
+        trackedState,
+        validationBehavior,
+      }),
+    [form, prefix, trackedState, validationBehavior],
+  );
+
+  return base;
+}

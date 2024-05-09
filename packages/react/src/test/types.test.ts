@@ -1,6 +1,7 @@
 import { describe, expectTypeOf, it } from "vitest";
-import { useRvf, FormFields } from "../useRvf";
+import { useRvf } from "../useRvf";
 import { successValidator } from "./util/successValidator";
+import { FormFields } from "../base";
 
 describe("types", () => {
   it("should only allow valid paths", () => {

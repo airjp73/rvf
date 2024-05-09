@@ -25,10 +25,10 @@ it("should validate on submit, then on change after that", async () => {
 
     return (
       <form {...form.getFormProps()} data-testid="form">
-        <input data-testid="foo" {...form.field("foo")} />
+        <input data-testid="foo" {...form.field("foo").getInputProps()} />
         <pre data-testid="foo-error">{form.error("foo")}</pre>
 
-        <input data-testid="baz.a" {...form.field("baz.a")} />
+        <input data-testid="baz.a" {...form.field("baz.a").getInputProps()} />
         <pre data-testid="baz.a-error">{form.error("baz.a")}</pre>
 
         <RenderCounter data-testid="render-count" />
@@ -108,10 +108,13 @@ it("should handle dependant validations", async () => {
 
     return (
       <form {...form.getFormProps()} data-testid="form">
-        <input data-testid="password" {...form.field("password")} />
+        <input
+          data-testid="password"
+          {...form.field("password").getInputProps()}
+        />
         <input
           data-testid="confirmPassword"
-          {...form.field("confirmPassword")}
+          {...form.field("confirmPassword").getInputProps()}
         />
         <pre data-testid="error">{form.error("confirmPassword")}</pre>
 
@@ -173,7 +176,7 @@ it("should be possible to customize validation behavior", async () => {
 
     return (
       <form {...form.getFormProps()} data-testid="form">
-        <input data-testid="foo" {...form.field("foo")} />
+        <input data-testid="foo" {...form.field("foo").getInputProps()} />
         <pre data-testid="foo-error">{form.error("foo")}</pre>
         <RenderCounter data-testid="render-count" />
       </form>
@@ -226,7 +229,9 @@ it("should be posible to customize validation behavior at the field level", asyn
       <form {...form.getFormProps()} data-testid="form">
         <input
           data-testid="foo"
-          {...form.field("foo", { validationBehavior: behaviorConfig })}
+          {...form
+            .field("foo", { validationBehavior: behaviorConfig })
+            .getInputProps()}
         />
         <pre data-testid="foo-error">{form.error("foo")}</pre>
         <RenderCounter data-testid="render-count" />
@@ -254,54 +259,3 @@ it("should be posible to customize validation behavior at the field level", asyn
 });
 
 it.todo("should use validation adapters");
-// it("should use validation adapters", async () => {
-//   const submit = vi.fn();
-//   const TestComp = () => {
-//     const form = useRvf({
-//       defaultValues: {
-//         foo: "",
-//         bar: { a: "" },
-//       },
-//       validator: withZod(
-//         z.object({
-//           foo: z.string().min(3, "too short"),
-//           bar: z.object({
-//             a: z.string().min(3, "too short"),
-//           }),
-//         }),
-//       ),
-//       onSubmit: submit,
-//       validationBehaviorConfig: {
-//         initial: "onChange",
-//         whenTouched: "onChange",
-//         whenSubmitted: "onChange",
-//       },
-//     });
-
-//     return (
-//       <form {...form.getFormProps()} data-testid="form">
-//         <input data-testid="foo" {...form.field("foo")} />
-//         <pre data-testid="foo-error">{form.error("foo")}</pre>
-
-//         <input data-testid="bar.a" {...form.field("bar.a")} />
-//         <pre data-testid="bar.a-error">{form.error("bar.a")}</pre>
-//       </form>
-//     );
-//   };
-
-//   render(<TestComp />);
-
-//   await userEvent.type(screen.getByTestId("foo"), "12");
-//   expect(screen.getByTestId("foo-error")).toHaveTextContent("too short");
-//   await userEvent.type(screen.getByTestId("foo"), "12");
-//   expect(screen.getByTestId("foo-error")).toBeEmptyDOMElement();
-//   await userEvent.type(screen.getByTestId("foo"), "{Backspace}{Backspace}");
-//   expect(screen.getByTestId("foo-error")).toHaveTextContent("too short");
-
-//   await userEvent.type(screen.getByTestId("bar.a"), "12");
-//   expect(screen.getByTestId("bar.a-error")).toHaveTextContent("too short");
-//   await userEvent.type(screen.getByTestId("bar.a"), "12");
-//   expect(screen.getByTestId("bar.a-error")).toBeEmptyDOMElement();
-//   await userEvent.type(screen.getByTestId("bar.a"), "{Backspace}{Backspace}");
-//   expect(screen.getByTestId("bar.a-error")).toHaveTextContent("too short");
-// });

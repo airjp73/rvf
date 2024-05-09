@@ -3,6 +3,7 @@ import { useRef } from "react";
 import { useRvf } from "../useRvf";
 import userEvent from "@testing-library/user-event";
 import { successValidator } from "./util/successValidator";
+import { controlInput } from "./util/controlInput";
 
 it("should subscribe to changes in the touched state", async () => {
   const submit = vi.fn();
@@ -21,12 +22,12 @@ it("should subscribe to changes in the touched state", async () => {
 
     return (
       <form {...form.getFormProps()} data-testid="form">
-        <input data-testid="foo" {...form.control("foo")} />
+        <input data-testid="foo" {...controlInput(form.field("foo"))} />
         <pre data-testid="foo-touched">
           {form.touched("foo") ? "true" : "false"}
         </pre>
 
-        <input data-testid="baz.a" {...form.field("baz.a")} />
+        <input data-testid="baz.a" {...form.field("baz.a").getInputProps()} />
         <pre data-testid="baz.a-touched">
           {form.touched("baz.a") ? "true" : "false"}
         </pre>
