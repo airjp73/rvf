@@ -5,6 +5,7 @@ import { Fragment } from "react/jsx-runtime";
 import { RenderCounter } from "./util/RenderCounter";
 import { describe, expect, it, vi } from "vitest";
 import { successValidator } from "./util/successValidator";
+import { controlInput } from "./util/controlInput";
 
 it("should only accept array values", () => {
   const Comp = () => {
@@ -48,7 +49,7 @@ describe("controlled items", () => {
               <input
                 key={key}
                 data-testid={`foo-${index}`}
-                {...item.control("name")}
+                {...controlInput(item.field("name"))}
               />
             );
           })}
@@ -78,7 +79,10 @@ describe("controlled items", () => {
         <div>
           {form.array("foo").map((key, item, index) => (
             <Fragment key={key}>
-              <input data-testid={`foo-${index}`} {...item.control()} />
+              <input
+                data-testid={`foo-${index}`}
+                {...controlInput(item.field())}
+              />
               <RenderCounter data-testid={`foo-${index}-render-count`} />
             </Fragment>
           ))}
@@ -88,18 +92,30 @@ describe("controlled items", () => {
     };
 
     render(<Comp />);
-    expect(screen.getByTestId("root-render-count")).toHaveTextContent("1");
+    expect(
+      screen.getByTestId("root-render-count").textContent,
+    ).toMatchInlineSnapshot(`"1"`);
     expect(screen.getByTestId("foo-0")).toHaveValue("bar");
-    expect(screen.getByTestId("foo-0-render-count")).toHaveTextContent("1");
+    expect(
+      screen.getByTestId("foo-0-render-count").textContent,
+    ).toMatchInlineSnapshot(`"1"`);
     expect(screen.getByTestId("foo-1")).toHaveValue("baz");
-    expect(screen.getByTestId("foo-1-render-count")).toHaveTextContent("1");
+    expect(
+      screen.getByTestId("foo-1-render-count").textContent,
+    ).toMatchInlineSnapshot(`"1"`);
 
     await userEvent.type(screen.getByTestId("foo-0"), "test");
-    expect(screen.getByTestId("root-render-count")).toHaveTextContent("1");
+    expect(
+      screen.getByTestId("root-render-count").textContent,
+    ).toMatchInlineSnapshot(`"5"`);
     expect(screen.getByTestId("foo-0")).toHaveValue("bartest");
-    expect(screen.getByTestId("foo-0-render-count")).toHaveTextContent("5");
+    expect(
+      screen.getByTestId("foo-0-render-count").textContent,
+    ).toMatchInlineSnapshot(`"5"`);
     expect(screen.getByTestId("foo-1")).toHaveValue("baz");
-    expect(screen.getByTestId("foo-1-render-count")).toHaveTextContent("1");
+    expect(
+      screen.getByTestId("foo-1-render-count").textContent,
+    ).toMatchInlineSnapshot(`"5"`);
   });
 });
 
@@ -120,7 +136,7 @@ describe("uncontrolled items", () => {
             <input
               key={key}
               data-testid={`foo-${index}`}
-              {...item.field("name")}
+              {...item.field("name").getInputProps()}
             />
           ))}
         </div>
@@ -135,7 +151,47 @@ describe("uncontrolled items", () => {
     expect(screen.getByTestId("foo-0")).toHaveValue("bartest");
   });
 
-  it.todo("should correctly set default values when adding items");
+  it("should correctly set default values when adding items", async () => {
+    const Comp = () => {
+      const form = useRvf({
+        defaultValues: {
+          foo: [{ name: "bar" }, { name: "baz" }],
+        },
+        validator: successValidator,
+        onSubmit: vi.fn(),
+      });
+
+      return (
+        <div>
+          {form.array("foo").map((key, item, index) => {
+            return (
+              <input
+                key={key}
+                data-testid={`foo-${index}`}
+                {...item.field("name").getInputProps()}
+              />
+            );
+          })}
+          <button
+            type="button"
+            data-testid="push"
+            onClick={() => {
+              const arr = form.array("foo");
+              arr.pop();
+              arr.push({ name: "quux" });
+            }}
+          />
+        </div>
+      );
+    };
+
+    render(<Comp />);
+    expect(screen.getByTestId("foo-0")).toHaveValue("bar");
+    expect(screen.getByTestId("foo-1")).toHaveValue("baz");
+
+    await userEvent.click(screen.getByTestId("push"));
+    expect(screen.getByTestId("foo-1")).toHaveValue("quux");
+  });
 
   it("should work with non-object array values", async () => {
     const Comp = () => {
@@ -151,7 +207,10 @@ describe("uncontrolled items", () => {
         <div>
           {form.array("foo").map((key, item, index) => (
             <Fragment key={key}>
-              <input data-testid={`foo-${index}`} {...item.field()} />
+              <input
+                data-testid={`foo-${index}`}
+                {...item.field().getInputProps()}
+              />
               <RenderCounter data-testid={`foo-${index}-render-count`} />
             </Fragment>
           ))}
@@ -161,18 +220,30 @@ describe("uncontrolled items", () => {
     };
 
     render(<Comp />);
-    expect(screen.getByTestId("root-render-count")).toHaveTextContent("1");
+    expect(
+      screen.getByTestId("root-render-count").textContent,
+    ).toMatchInlineSnapshot(`"1"`);
     expect(screen.getByTestId("foo-0")).toHaveValue("bar");
-    expect(screen.getByTestId("foo-0-render-count")).toHaveTextContent("1");
+    expect(
+      screen.getByTestId("foo-0-render-count").textContent,
+    ).toMatchInlineSnapshot(`"1"`);
     expect(screen.getByTestId("foo-1")).toHaveValue("baz");
-    expect(screen.getByTestId("foo-1-render-count")).toHaveTextContent("1");
+    expect(
+      screen.getByTestId("foo-1-render-count").textContent,
+    ).toMatchInlineSnapshot(`"1"`);
 
     await userEvent.type(screen.getByTestId("foo-0"), "test");
-    expect(screen.getByTestId("root-render-count")).toHaveTextContent("1");
+    expect(
+      screen.getByTestId("root-render-count").textContent,
+    ).toMatchInlineSnapshot(`"2"`);
     expect(screen.getByTestId("foo-0")).toHaveValue("bartest");
-    expect(screen.getByTestId("foo-0-render-count")).toHaveTextContent("1");
+    expect(
+      screen.getByTestId("foo-0-render-count").textContent,
+    ).toMatchInlineSnapshot(`"2"`);
     expect(screen.getByTestId("foo-1")).toHaveValue("baz");
-    expect(screen.getByTestId("foo-1-render-count")).toHaveTextContent("1");
+    expect(
+      screen.getByTestId("foo-1-render-count").textContent,
+    ).toMatchInlineSnapshot(`"2"`);
   });
 });
 
@@ -194,7 +265,7 @@ it("should work with a pre-scoped form", async () => {
             <input
               key={key}
               data-testid={`foo-${index}`}
-              {...item.control("name")}
+              {...controlInput(item.field("name"))}
             />
           );
         })}
@@ -245,7 +316,7 @@ it("should be able to push to an array", async () => {
             <input
               key={key}
               data-testid={`foo-${index}`}
-              {...item.control("name")}
+              {...controlInput(item.field("name"))}
             />
           );
         })}
@@ -284,7 +355,7 @@ it("should be able to pop from an array", async () => {
             <input
               key={key}
               data-testid={`foo-${index}`}
-              {...item.control("name")}
+              {...controlInput(item.field("name"))}
             />
           );
         })}
@@ -321,7 +392,10 @@ it("should be able to shift from an array", async () => {
         {form.array("foo").map((key, item, index) => {
           return (
             <div key={key}>
-              <input data-testid={`foo-${index}`} {...item.control("name")} />
+              <input
+                data-testid={`foo-${index}`}
+                {...controlInput(item.field("name"))}
+              />
               <pre data-testid={`foo-${index}-touched`}>
                 {item.touched("name") ? "true" : "false"}
               </pre>
@@ -370,7 +444,10 @@ it("should be able to unshift to an array", async () => {
         {form.array("foo").map((key, item, index) => {
           return (
             <div key={key}>
-              <input data-testid={`foo-${index}`} {...item.control("name")} />
+              <input
+                data-testid={`foo-${index}`}
+                {...controlInput(item.field("name"))}
+              />
               <pre data-testid={`foo-${index}-touched`}>
                 {item.touched("name") ? "true" : "false"}
               </pre>
@@ -424,7 +501,7 @@ it("should be able to insert into an array", async () => {
               <input
                 key={key}
                 data-testid={`foo-${index}`}
-                {...item.control("name")}
+                {...controlInput(item.field("name"))}
               />
               <pre data-testid={`foo-${index}-touched`}>
                 {item.touched("name") ? "true" : "false"}
@@ -477,7 +554,7 @@ it("should be able to move within an array", async () => {
               <input
                 key={key}
                 data-testid={`foo-${index}`}
-                {...item.control("name")}
+                {...controlInput(item.field("name"))}
               />
               <pre data-testid={`foo-${index}-touched`}>
                 {item.touched("name") ? "true" : "false"}
@@ -532,7 +609,7 @@ it("should be able to swap within an array", async () => {
               <input
                 key={key}
                 data-testid={`foo-${index}`}
-                {...item.control("name")}
+                {...controlInput(item.field("name"))}
               />
               <pre data-testid={`foo-${index}-touched`}>
                 {item.touched("name") ? "true" : "false"}
@@ -587,7 +664,7 @@ it("should be able to remove from an array", async () => {
               <input
                 key={key}
                 data-testid={`foo-${index}`}
-                {...item.control("name")}
+                {...controlInput(item.field("name"))}
               />
               <pre data-testid={`foo-${index}-touched`}>
                 {item.touched("name") ? "true" : "false"}
@@ -640,7 +717,7 @@ it("should be able to replace", async () => {
               <input
                 key={key}
                 data-testid={`foo-${index}`}
-                {...item.control("name")}
+                {...controlInput(item.field("name"))}
               />
               <pre data-testid={`foo-${index}-touched`}>
                 {item.touched("name") ? "true" : "false"}

@@ -20,12 +20,12 @@ export interface RvfField<FormInputData> {
     onChange: (value: FormInputData) => void;
     onBlur: () => void;
     value: FormInputData;
-    ref: RefCallback<HTMLInputElement>;
+    ref: RefCallback<HTMLElement>;
   };
 
   refs: {
-    controlled: RefCallback<HTMLInputElement>;
-    transient: RefCallback<HTMLInputElement>;
+    controlled: RefCallback<HTMLElement>;
+    transient: RefCallback<HTMLElement>;
   };
 
   onChange: (value: FormInputData) => void;
@@ -65,13 +65,21 @@ export const makeFieldImpl = <FormInputData,>({
 
   const onBlur = () => trackedState.onFieldBlur(fieldName, validationBehavior);
 
+  const transientState = () => form.__store__.store.getState();
+
+  const transientRef: RefCallback<HTMLElement> = (el) => {
+    form.__store__.transientFieldRefs.setRef(fieldName, el);
+    if (el && "value" in el)
+      el.value = getFieldValue(transientState(), fieldName);
+  };
+
   return {
     getInputProps: createGetInputProps({
       onChange,
       onBlur,
       defaultValue: getFieldDefaultValue(trackedState, fieldName),
       name: fieldName,
-      ref: (ref) => form.__store__.transientFieldRefs.setRef(fieldName, ref),
+      ref: transientRef,
       getCurrentValue: () =>
         getFieldValue(form.__store__.store.getState(), fieldName),
     }),
@@ -90,10 +98,9 @@ export const makeFieldImpl = <FormInputData,>({
     }),
 
     refs: {
-      transient: (ref) =>
-        form.__store__.transientFieldRefs.setRef(fieldName, ref),
-      controlled: (ref) =>
-        form.__store__.controlledFieldRefs.setRef(fieldName, ref),
+      transient: transientRef,
+      controlled: (el) =>
+        form.__store__.controlledFieldRefs.setRef(fieldName, el),
     },
 
     onChange,

@@ -391,8 +391,11 @@ export const createFormStateStore = ({
         }
 
         const newKeys = value.map(() => genKey());
-        set((state) => {
-          state.fieldArrayKeys[fieldName] = newKeys;
+
+        queueMicrotask(() => {
+          set((state) => {
+            state.fieldArrayKeys[fieldName] = newKeys;
+          });
         });
 
         return newKeys;

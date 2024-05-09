@@ -1,8 +1,9 @@
 import { ReactNode } from "react";
-import { FormStoreValue, Rvf, scopeRvf } from "@rvf/core";
+import { FormStoreValue, Rvf, getFieldValue, scopeRvf } from "@rvf/core";
 import { useStore } from "zustand";
 import { makeImplFactory } from "./implFactory";
 import { RvfField, makeFieldImpl } from "./field";
+import { RvfReact, makeBaseRvfReact } from "./base";
 
 export interface RvfArray<FormInputData extends Array<any>> {
   /**
@@ -19,7 +20,7 @@ export interface RvfArray<FormInputData extends Array<any>> {
   map: (
     callback: (
       key: string,
-      form: RvfField<FormInputData[number]>,
+      form: RvfReact<FormInputData[number]>,
       index: number,
     ) => ReactNode,
   ) => ReactNode;
@@ -86,16 +87,21 @@ export const makeFieldArrayImpl = <FormInputData extends Array<any>>({
   trackedState,
 }: FieldArrayParams<FormInputData>): RvfArray<FormInputData> => {
   const itemImpl = makeImplFactory(arrayFieldName, (itemFieldName) =>
-    makeFieldImpl({
+    makeBaseRvfReact({
       form: scopeRvf(form, itemFieldName) as Rvf<FormInputData[number]>,
-      fieldName: itemFieldName,
+      prefix: itemFieldName,
       trackedState,
     }),
   );
 
+  const length = () => getFieldValue(trackedState, arrayFieldName).length;
+
   return {
-    length: () => trackedState.getFieldArrayKeys(arrayFieldName).length,
+    length,
     map: (callback) => {
+      // getFieldArrayKeys doesn't subscribe to changes in length,
+      // so we need to subscribe here
+      length();
       return trackedState
         .getFieldArrayKeys(arrayFieldName)
         .map((key, index) => {

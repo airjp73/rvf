@@ -1,11 +1,11 @@
+import { useState } from "react";
 import { useRvf } from "../useRvf";
 import userEvent from "@testing-library/user-event";
-import { forwardRef, useEffect, useRef } from "react";
+import { forwardRef, useRef } from "react";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { RenderCounter } from "./util/RenderCounter";
 import { successValidator } from "./util/successValidator";
-import { RvfReact } from "../base";
-import { controlInput, controlNumberInput } from "./util/controlInput";
+import { controlNumberInput } from "./util/controlInput";
 
 it("captures and submits with uncontrolled fields", async () => {
   const submit = vi.fn();
@@ -49,6 +49,46 @@ it("captures and submits with uncontrolled fields", async () => {
   });
 
   expect(screen.getByTestId("render-count")).toHaveTextContent("1");
+});
+
+it("should work correctly when the input is unmounted and remounted", async () => {
+  const submit = vi.fn();
+
+  const TestComp = () => {
+    const form = useRvf({
+      defaultValues: {
+        foo: "bar",
+      },
+      validator: successValidator,
+      onSubmit: submit,
+    });
+    const [show, setShow] = useState(true);
+
+    return (
+      <form {...form.getFormProps()} data-testid="form">
+        {show && (
+          <input data-testid="foo" {...form.field("foo").getInputProps()} />
+        )}
+        <button
+          data-testid="toggle"
+          type="button"
+          onClick={() => setShow((prev) => !prev)}
+        />
+      </form>
+    );
+  };
+
+  render(<TestComp />);
+  expect(screen.getByTestId("foo")).toHaveValue("bar");
+
+  await userEvent.type(screen.getByTestId("foo"), "testing 123");
+  expect(screen.getByTestId("foo")).toHaveValue("bartesting 123");
+
+  await userEvent.click(screen.getByTestId("toggle"));
+  expect(screen.queryByTestId("foo")).not.toBeInTheDocument();
+
+  await userEvent.click(screen.getByTestId("toggle"));
+  expect(screen.getByTestId("foo")).toHaveValue("bartesting 123");
 });
 
 it("should handle number inputs", async () => {
