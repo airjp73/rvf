@@ -2,7 +2,9 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { useRvf } from "../useRvf";
 import userEvent from "@testing-library/user-event";
 import { RenderCounter } from "./util/RenderCounter";
-import { FieldErrors } from "@rvf/core";
+import { FieldErrors, Rvf } from "@rvf/core";
+import { RvfReact } from "../base";
+import { useField } from "../field";
 
 it("should validate on submit, then on change after that", async () => {
   const submit = vi.fn();
@@ -210,6 +212,12 @@ it("should be posible to customize validation behavior at the field level", asyn
   } as const;
 
   const submit = vi.fn();
+
+  const Input = ({ form }: { form: Rvf<string> }) => {
+    const field = useField(form, { validationBehavior: behaviorConfig });
+    return <input data-testid="foo" {...field.getInputProps()} />;
+  };
+
   const TestComp = () => {
     const form = useRvf({
       defaultValues: {
@@ -227,12 +235,7 @@ it("should be posible to customize validation behavior at the field level", asyn
 
     return (
       <form {...form.getFormProps()} data-testid="form">
-        <input
-          data-testid="foo"
-          {...form
-            .field("foo", { validationBehavior: behaviorConfig })
-            .getInputProps()}
-        />
+        <Input form={form.scope("foo")} />
         <pre data-testid="foo-error">{form.error("foo")}</pre>
         <RenderCounter data-testid="render-count" />
       </form>
