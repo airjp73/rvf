@@ -1,9 +1,9 @@
 import { ReactNode, useMemo } from "react";
 import { FormStoreValue, Rvf, getFieldValue, scopeRvf } from "@rvf/core";
 import { makeImplFactory } from "./implFactory";
-import { makeFieldImpl } from "./field";
 import { RvfReact, makeBaseRvfReact } from "./base";
 import { ValidationBehaviorConfig } from "@rvf/core";
+import { useRvfOrContextInternal } from "./context";
 
 export interface RvfArray<FormInputData extends Array<any>> {
   /**
@@ -133,16 +133,24 @@ export const makeFieldArrayImpl = <FormInputData extends Array<any>>({
   };
 };
 
-export function useFieldArray<FormInputData extends Array<any>>(
+export type UseFieldArrayOpts = {
+  validationBehavior?: FieldArrayValidationConfig;
+};
+export function useFieldArray<FormInputData extends any[]>(
   form: Rvf<FormInputData>,
-  {
-    validationBehavior,
-  }: {
-    validationBehavior?: FieldArrayValidationConfig;
-  } = {},
+  { validationBehavior }?: UseFieldArrayOpts,
+): RvfArray<FormInputData>;
+export function useFieldArray<FormInputData extends any[] = unknown[]>(
+  name: string,
+  opts?: UseFieldArrayOpts,
+): RvfArray<FormInputData>;
+export function useFieldArray<FormInputData extends any[]>(
+  formOrName: Rvf<FormInputData> | string,
+  { validationBehavior }: UseFieldArrayOpts = {},
 ) {
-  const prefix = form.__field_prefix__;
-  const { useStoreState } = form.__store__;
+  const scope = useRvfOrContextInternal(formOrName);
+  const prefix = scope.__field_prefix__;
+  const { useStoreState } = scope.__store__;
   const trackedState = useStoreState();
 
   // Accessing _something_ is required. Otherwise, it will rerender on every state update.
@@ -152,12 +160,12 @@ export function useFieldArray<FormInputData extends Array<any>>(
   const base = useMemo(
     () =>
       makeFieldArrayImpl({
-        form,
+        form: scope as never,
         arrayFieldName: prefix,
         trackedState,
         validationBehavior,
       }),
-    [form, prefix, trackedState, validationBehavior],
+    [prefix, scope, trackedState, validationBehavior],
   );
 
   return base;

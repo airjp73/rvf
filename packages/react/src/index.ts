@@ -12,7 +12,7 @@ export type {
 export { type RvfReact, type FormFields } from "./base";
 export { useRvf } from "./useRvf";
 export { useField, RvfField, UseFieldOpts } from "./field";
-export { useFieldArray, RvfArray } from "./array";
+export { useFieldArray, RvfArray, UseFieldArrayOpts } from "./array";
 export {
   RvfProvider,
   RvfProviderProps,
