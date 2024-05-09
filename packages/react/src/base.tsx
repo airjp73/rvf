@@ -24,10 +24,6 @@ type MinimalRvf<FieldPaths extends string> = {
 export type FormFields<Form> =
   Form extends MinimalRvf<infer FieldPaths> ? FieldPaths : never;
 
-interface FieldHelperOptions {
-  validationBehavior?: ValidationBehaviorConfig;
-}
-
 interface FormProps {
   onSubmit: (maybeEvent?: unknown) => void;
   onReset: () => void;
