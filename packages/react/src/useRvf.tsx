@@ -14,27 +14,6 @@ import {
 } from "@rvf/core";
 import { RvfReact, useRvfInternal } from "./base";
 
-export type FieldProps<Value> = {
-  defaultValue: Value;
-  onChange: (eventOrValue?: ChangeEvent<any> | Value) => void;
-  onBlur: () => void;
-  ref: RefCallback<HTMLElement>;
-};
-
-export type ControlProps<Value> = {
-  value: Value;
-  onChange: (eventOrValue?: ChangeEvent<any> | Value) => void;
-  onBlur: () => void;
-  ref: RefCallback<HTMLElement>;
-};
-
-export type CheckboxProps = {
-  checked: boolean;
-  onChange: (eventOrValue?: ChangeEvent<any> | boolean) => void;
-  onBlur: () => void;
-  ref: RefCallback<HTMLElement>;
-};
-
 export type RvfOpts<FormInputData extends FieldValues, FormOutputData> = {
   /**
    * The initial values of the form.
