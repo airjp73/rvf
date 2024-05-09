@@ -1,6 +1,8 @@
+import { RefCallback } from "react";
 import * as R from "remeda";
 import { getCheckboxChecked } from "./logic/getCheckboxChecked";
 import { getRadioChecked } from "./logic/getRadioChecked";
+import { getEventValue } from "../event";
 
 export type ValidationBehavior = "onBlur" | "onChange" | "onSubmit";
 
@@ -11,14 +13,11 @@ export type ValidationBehaviorOptions = {
 };
 
 export type CreateGetInputPropsOptions = {
-  clearError: () => void;
-  validate: () => void;
+  onChange: (value: unknown) => void;
+  onBlur: () => void;
   defaultValue?: any;
-  touched: boolean;
-  setTouched: (touched: boolean) => void;
-  hasBeenSubmitted: boolean;
-  validationBehavior?: Partial<ValidationBehaviorOptions>;
   name: string;
+  ref: RefCallback<HTMLElement>;
 };
 
 type HandledProps = "name" | "defaultValue" | "defaultChecked";
@@ -31,53 +30,38 @@ type MinimalInputProps = {
   defaultChecked?: boolean | undefined;
   name?: string | undefined;
   type?: string | undefined;
+  ref?: RefCallback<any>;
 };
 
 export type GetInputProps = <T extends MinimalInputProps>(
   props?: Omit<T, HandledProps | Callbacks> & Partial<Pick<T, Callbacks>>,
 ) => T;
 
-const defaultValidationBehavior: ValidationBehaviorOptions = {
-  initial: "onBlur",
-  whenTouched: "onChange",
-  whenSubmitted: "onChange",
-};
-
 export const createGetInputProps = ({
-  clearError,
-  validate,
+  onChange,
+  onBlur,
   defaultValue,
-  touched,
-  setTouched,
-  hasBeenSubmitted,
-  validationBehavior,
   name,
+  ref,
 }: CreateGetInputPropsOptions): GetInputProps => {
-  const validationBehaviors = {
-    ...defaultValidationBehavior,
-    ...validationBehavior,
-  };
-
   return <T extends MinimalInputProps>(props = {} as any) => {
-    const behavior = hasBeenSubmitted
-      ? validationBehaviors.whenSubmitted
-      : touched
-        ? validationBehaviors.whenTouched
-        : validationBehaviors.initial;
-
     const inputProps: MinimalInputProps = {
       ...props,
       onChange: (...args: unknown[]) => {
-        if (behavior === "onChange") validate();
-        else clearError();
-        return props?.onChange?.(...args);
+        const value = getEventValue(args[0]);
+        if (props?.type === "number") {
+          onChange(Number(value));
+        } else {
+          onChange(value);
+        }
+        props?.onChange?.(...args);
       },
       onBlur: (...args: unknown[]) => {
-        if (behavior === "onBlur") validate();
-        setTouched(true);
+        onBlur();
         return props?.onBlur?.(...args);
       },
       name,
+      ref,
     };
 
     if (props.type === "checkbox") {
