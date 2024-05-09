@@ -1,9 +1,9 @@
-import { ReactNode } from "react";
+import { ReactNode, useMemo } from "react";
 import { FormStoreValue, Rvf, getFieldValue, scopeRvf } from "@rvf/core";
-import { useStore } from "zustand";
 import { makeImplFactory } from "./implFactory";
-import { RvfField, makeFieldImpl } from "./field";
+import { makeFieldImpl } from "./field";
 import { RvfReact, makeBaseRvfReact } from "./base";
+import { ValidationBehaviorConfig } from "@rvf/core";
 
 export interface RvfArray<FormInputData extends Array<any>> {
   /**
@@ -75,10 +75,16 @@ export interface RvfArray<FormInputData extends Array<any>> {
   replace: (index: number, value: FormInputData[number]) => void;
 }
 
+export type FieldArrayValidationConfig = Pick<
+  ValidationBehaviorConfig,
+  "initial" | "whenSubmitted"
+>;
+
 export type FieldArrayParams<FormInputData> = {
   form: Rvf<FormInputData>;
   arrayFieldName: string;
   trackedState: FormStoreValue;
+  validationBehavior?: FieldArrayValidationConfig;
 };
 
 export const makeFieldArrayImpl = <FormInputData extends Array<any>>({
@@ -95,6 +101,8 @@ export const makeFieldArrayImpl = <FormInputData extends Array<any>>({
   );
 
   const length = () => getFieldValue(trackedState, arrayFieldName).length;
+
+  // TODO: handle validation behavior
 
   return {
     length,
@@ -124,3 +132,33 @@ export const makeFieldArrayImpl = <FormInputData extends Array<any>>({
       trackedState.arrayReplace(arrayFieldName, index, value),
   };
 };
+
+export function useFieldArray<FormInputData extends Array<any>>(
+  form: Rvf<FormInputData>,
+  {
+    validationBehavior,
+  }: {
+    validationBehavior?: FieldArrayValidationConfig;
+  } = {},
+) {
+  const prefix = form.__field_prefix__;
+  const { useStoreState } = form.__store__;
+  const trackedState = useStoreState();
+
+  // Accessing _something_ is required. Otherwise, it will rerender on every state update.
+  // I saw this done in one of the dia-shi's codebases, too, but I can't find it now.
+  trackedState.setValue;
+
+  const base = useMemo(
+    () =>
+      makeFieldArrayImpl({
+        form,
+        arrayFieldName: prefix,
+        trackedState,
+        validationBehavior,
+      }),
+    [form, prefix, trackedState, validationBehavior],
+  );
+
+  return base;
+}
