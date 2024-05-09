@@ -46,6 +46,7 @@ export interface RvfField<FormInputData> {
   clearError(): void;
 
   reset(): void;
+  validate(): void;
 }
 
 export type FieldImplParams<FormInputData> = {
@@ -118,6 +119,9 @@ export const makeFieldImpl = <FormInputData,>({
     error: () => getFieldError(trackedState, fieldName),
     clearError: () => trackedState.setError(fieldName, null),
     reset: () => trackedState.resetField(fieldName),
+    validate: () => {
+      void trackedState.validate();
+    },
   };
 };
 
