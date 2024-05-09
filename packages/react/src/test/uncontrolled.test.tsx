@@ -5,7 +5,7 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { RenderCounter } from "./util/RenderCounter";
 import { successValidator } from "./util/successValidator";
 import { RvfReact } from "../base";
-import { controlInput } from "./util/controlInput";
+import { controlInput, controlNumberInput } from "./util/controlInput";
 
 it("captures and submits with uncontrolled fields", async () => {
   const submit = vi.fn();
@@ -68,12 +68,11 @@ it("should handle number inputs", async () => {
       <form {...form.getFormProps()} data-testid="form">
         <input
           data-testid="foo"
-          {...form.field("foo").getInputProps()}
-          type="number"
+          {...form.field("foo").getInputProps({ type: "number" })}
         />
         <input
           data-testid="bar"
-          {...controlInput(form.field("bar"))}
+          {...controlNumberInput(form.field("bar"))}
           type="number"
         />
       </form>
