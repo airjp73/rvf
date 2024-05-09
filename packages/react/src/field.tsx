@@ -1,10 +1,9 @@
 import { FormStoreValue, Rvf } from "@rvf/core";
+import { GetInputProps, createGetInputProps } from "./inputs/getInputProps";
 
 export interface RvfField<FormInputData> {
-  helpers: RvfFieldHelpers<FormInputData>;
-}
+  getInputProps: GetInputProps;
 
-export interface RvfFieldHelpers<FormInputData> {
   value(): FormInputData;
   setValue(value: FormInputData): void;
   defaultValue(): FormInputData;
@@ -16,7 +15,7 @@ export interface RvfFieldHelpers<FormInputData> {
   setDirty(value: boolean): void;
 
   error(): string | null;
-  setError(value: string | null): void;
+  clearError(): void;
 
   reset(): void;
 }
@@ -33,18 +32,21 @@ export const makeFieldImpl = <FormInputData,>({
   trackedState,
 }: FieldImplParams<FormInputData>): RvfField<FormInputData> => {
   return {
-    helpers: {
-      value: () => trackedState.getValue(fieldName) as FormInputData,
-      setValue: (value) => trackedState.setValue(fieldName, value),
-      defaultValue: () =>
-        trackedState.getDefaultValue(fieldName) as FormInputData,
-      touched: () => trackedState.getTouched(fieldName),
-      setTouched: (value) => trackedState.setTouched(fieldName, value),
-      dirty: () => trackedState.getDirty(fieldName),
-      setDirty: (value) => trackedState.setDirty(fieldName, value),
-      error: () => trackedState.getError(fieldName),
-      setError: (value) => trackedState.setError(fieldName, value),
-      reset: () => trackedState.resetField(fieldName),
-    },
+    getInputProps: createGetInputProps({
+      clearError: () => trackedState.setError(fieldName, null),
+      validate: () => trackedState.validateField(fieldName),
+    }),
+
+    value: () => trackedState.getValue(fieldName) as FormInputData,
+    setValue: (value) => trackedState.setValue(fieldName, value),
+    defaultValue: () =>
+      trackedState.getDefaultValue(fieldName) as FormInputData,
+    touched: () => trackedState.getTouched(fieldName),
+    setTouched: (value) => trackedState.setTouched(fieldName, value),
+    dirty: () => trackedState.getDirty(fieldName),
+    setDirty: (value) => trackedState.setDirty(fieldName, value),
+    error: () => trackedState.getError(fieldName),
+    clearError: () => trackedState.setError(fieldName, null),
+    reset: () => trackedState.resetField(fieldName),
   };
 };

@@ -158,19 +158,14 @@ export interface RvfReact<FormInputData> {
   setTouched(value: boolean): void;
 
   /**
-   * Sets the current error of the specified field.
-   * This will be overwritten when the form gets validated by other means.
-   * To clear the error, pass `null` as the error.
+   * Clears the error of the specified field.
    */
-  setError(
-    fieldName: ValidStringPaths<FormInputData>,
-    error: string | null,
-  ): void;
+  clearError(fieldName: ValidStringPaths<FormInputData>): void;
 
   /**
    * Set the current error of the field in scope.
    */
-  setError(error: string | null): void;
+  clearError(): void;
 
   /**
    * Manually validates the form.
@@ -383,8 +378,8 @@ export const makeBaseRvfReact = <FormInputData,>({
       transientState().setDirty(...optionalField(args)),
     setTouched: (...args: WithOptionalField<boolean>) =>
       transientState().setTouched(...optionalField(args)),
-    setError: (...args: WithOptionalField<string | null>) =>
-      transientState().setError(...optionalField(args)),
+    clearError: (fieldName?: string) =>
+      transientState().setError(fieldName, null),
 
     focus: (fieldName) => {
       const element =
