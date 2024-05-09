@@ -8,7 +8,7 @@ const Name = () => {
   const form = useRvfContext<{ name: string }>();
   return (
     <div>
-      <input data-testid="name" {...form.field("name")} />
+      <input data-testid="name" {...form.field("name").getInputProps()} />
     </div>
   );
 };

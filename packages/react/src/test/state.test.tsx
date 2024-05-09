@@ -2,6 +2,7 @@ import { act, renderHook, waitFor } from "@testing-library/react";
 import { useRvf } from "../useRvf";
 import { successValidator } from "./util/successValidator";
 import { useEffect, useRef } from "react";
+import { clear } from "@testing-library/user-event/dist/types/utility";
 
 it("should return submit state", async () => {
   let prom: PromiseWithResolvers<any> | null = null;
@@ -213,7 +214,8 @@ it("should be possible to set the dirty state of a field", async () => {
       },
       setDirty: form.setDirty,
       setTouched: form.setTouched,
-      setError: form.setError,
+      clearError: form.clearError,
+      _setError: form.scope().__store__.store.getState().setError,
     };
   });
 
@@ -221,7 +223,7 @@ it("should be possible to set the dirty state of a field", async () => {
     dirty: false,
     touched: false,
     valid: true,
-    error: undefined,
+    error: null,
   });
 
   act(() => {
@@ -232,7 +234,7 @@ it("should be possible to set the dirty state of a field", async () => {
       dirty: true,
       touched: false,
       valid: true,
-      error: undefined,
+      error: null,
     });
   });
 
@@ -244,12 +246,12 @@ it("should be possible to set the dirty state of a field", async () => {
       dirty: true,
       touched: true,
       valid: true,
-      error: undefined,
+      error: null,
     });
   });
 
   act(() => {
-    result.current.setError("foo", "test");
+    result.current._setError("foo", "test");
   });
   await waitFor(() => {
     expect(result.current.state).toEqual({
@@ -261,14 +263,14 @@ it("should be possible to set the dirty state of a field", async () => {
   });
 
   act(() => {
-    result.current.setError("foo", null);
+    result.current.clearError("foo");
   });
   await waitFor(() => {
     expect(result.current.state).toEqual({
       dirty: true,
       touched: true,
       valid: true,
-      error: undefined,
+      error: null,
     });
   });
 });
@@ -291,14 +293,13 @@ it("should be possible to set the dirty/touched/error state of the entire form s
       },
       setDirty: form.setDirty,
       setTouched: form.setTouched,
-      setError: form.setError,
     };
   });
 
   expect(result.current.state).toEqual({
     dirty: false,
     touched: false,
-    error: undefined,
+    error: null,
   });
 
   act(() => {
@@ -308,7 +309,7 @@ it("should be possible to set the dirty/touched/error state of the entire form s
   expect(result.current.state).toEqual({
     dirty: true,
     touched: false,
-    error: undefined,
+    error: null,
   });
 
   act(() => {
@@ -318,18 +319,7 @@ it("should be possible to set the dirty/touched/error state of the entire form s
     expect(result.current.state).toEqual({
       dirty: true,
       touched: true,
-      error: undefined,
-    });
-  });
-
-  act(() => {
-    result.current.setError("test");
-  });
-  await waitFor(() => {
-    expect(result.current.state).toEqual({
-      dirty: true,
-      touched: true,
-      error: "test",
+      error: null,
     });
   });
 });

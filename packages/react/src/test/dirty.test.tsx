@@ -3,6 +3,7 @@ import { useRef } from "react";
 import { useRvf } from "../useRvf";
 import userEvent from "@testing-library/user-event";
 import { successValidator } from "./util/successValidator";
+import { controlInput } from "./util/controlInput";
 
 it("should subscribe to changes in the dirty state", async () => {
   const submit = vi.fn();
@@ -21,12 +22,12 @@ it("should subscribe to changes in the dirty state", async () => {
 
     return (
       <form {...form.getFormProps()} data-testid="form">
-        <input data-testid="foo" {...form.field("foo")} />
+        <input data-testid="foo" {...form.field("foo").getInputProps()} />
         <pre data-testid="foo-dirty">
           {form.dirty("foo") ? "true" : "false"}
         </pre>
 
-        <input data-testid="baz.a" {...form.control("baz.a")} />
+        <input data-testid="baz.a" {...controlInput(form.field("baz.a"))} />
         <pre data-testid="baz.a-dirty">
           {form.dirty("baz.a") ? "true" : "false"}
         </pre>

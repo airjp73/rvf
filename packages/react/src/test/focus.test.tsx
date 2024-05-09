@@ -3,6 +3,7 @@ import { useRvf } from "../useRvf";
 import userEvent from "@testing-library/user-event";
 import { successValidator } from "./util/successValidator";
 import { FieldErrors } from "@rvf/core";
+import { controlInput } from "./util/controlInput";
 
 it("should be able to manually focus fields", async () => {
   const submit = vi.fn();
@@ -20,7 +21,7 @@ it("should be able to manually focus fields", async () => {
     return (
       <form {...form.getFormProps()} data-testid="form">
         <div>
-          <input data-testid="foo" {...form.control("foo")} />
+          <input data-testid="foo" {...form.field("foo").getInputProps()} />
           <button
             type="button"
             data-testid="focus-foo"
@@ -28,7 +29,7 @@ it("should be able to manually focus fields", async () => {
           />
         </div>
 
-        <input data-testid="bar" {...form.control("bar")} />
+        <input data-testid="bar" {...controlInput(form.field("bar"))} />
         <button
           type="button"
           data-testid="focus-bar"
@@ -36,7 +37,7 @@ it("should be able to manually focus fields", async () => {
         />
 
         <div>
-          <input data-testid="baz" {...form.control("baz")} />
+          <input data-testid="baz" {...controlInput(form.field("baz"))} />
           <button
             type="button"
             data-testid="focus-baz"
@@ -83,13 +84,13 @@ it("should be automatically focus fields when there are submit validation errors
     return (
       <form {...form.getFormProps()} data-testid="form">
         <div>
-          <input data-testid="foo" {...form.control("foo")} />
+          <input data-testid="foo" {...controlInput(form.field("foo"))} />
         </div>
 
-        <input data-testid="bar" {...form.control("bar")} />
+        <input data-testid="bar" {...controlInput(form.field("bar"))} />
 
         <div>
-          <input data-testid="baz" {...form.control("baz")} />
+          <input data-testid="baz" {...controlInput(form.field("baz"))} />
         </div>
       </form>
     );

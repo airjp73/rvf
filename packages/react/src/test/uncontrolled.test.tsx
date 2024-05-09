@@ -5,6 +5,7 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { RenderCounter } from "./util/RenderCounter";
 import { successValidator } from "./util/successValidator";
 import { RvfReact } from "../base";
+import { controlInput } from "./util/controlInput";
 
 it("captures and submits with uncontrolled fields", async () => {
   const submit = vi.fn();
@@ -48,6 +49,52 @@ it("captures and submits with uncontrolled fields", async () => {
   });
 
   expect(screen.getByTestId("render-count")).toHaveTextContent("1");
+});
+
+it("should handle number inputs", async () => {
+  const submit = vi.fn();
+  const useIt = () =>
+    useRvf({
+      defaultValues: { foo: 0, bar: 0 },
+      validator: successValidator,
+      onSubmit: submit,
+    });
+
+  let form: ReturnType<typeof useIt> | null = null as any;
+
+  const TestComp = () => {
+    form = useIt();
+    return (
+      <form {...form.getFormProps()} data-testid="form">
+        <input
+          data-testid="foo"
+          {...form.field("foo").getInputProps()}
+          type="number"
+        />
+        <input
+          data-testid="bar"
+          {...controlInput(form.field("bar"))}
+          type="number"
+        />
+      </form>
+    );
+  };
+
+  render(<TestComp />);
+  expect(form?.value("foo")).toBe(0);
+  expect(form?.value("bar")).toBe(0);
+
+  expect(screen.getByTestId("foo")).toHaveValue(0);
+  expect(screen.getByTestId("bar")).toHaveValue(0);
+
+  await userEvent.type(screen.getByTestId("foo"), "123");
+  await userEvent.type(screen.getByTestId("bar"), "234");
+
+  expect(screen.getByTestId("foo")).toHaveValue(123);
+  expect(screen.getByTestId("bar")).toHaveValue(234);
+
+  expect(form?.value("foo")).toBe(123);
+  expect(form?.value("bar")).toBe(234);
 });
 
 it("should subscribe to value changes", async () => {

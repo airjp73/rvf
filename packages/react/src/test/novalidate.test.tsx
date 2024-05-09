@@ -16,7 +16,7 @@ it.todo("should not validate when novalidate is set", async () => {
 
     return (
       <form {...form.getFormProps()} data-testid="form">
-        <input data-testid="foo" {...form.field("foo")} />
+        <input data-testid="foo" {...form.field("foo").getInputProps()} />
         <button type="submit" formNoValidate data-testid="submit" />
       </form>
     );
