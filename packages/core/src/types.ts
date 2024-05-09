@@ -5,10 +5,11 @@ export type SubmitStatus = "idle" | "submitting" | "error" | "success";
 export type FieldErrors = Record<string, string>;
 export type Valid<DataType> = { data: DataType; error: undefined };
 export type Invalid = { error: FieldErrors; data: undefined };
+export type ValidationResult<DataType> = Valid<DataType> | Invalid;
 
 export type Validator<InputData extends FieldValues, OutputData> = (
   data: InputData,
-) => Promise<Valid<OutputData> | Invalid>;
+) => Promise<ValidationResult<OutputData>>;
 
 export type ValidationBehavior = "onSubmit" | "onChange" | "onBlur";
 

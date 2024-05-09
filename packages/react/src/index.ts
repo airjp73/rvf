@@ -3,6 +3,7 @@ export type {
   Validator,
   Valid,
   Invalid,
+  ValidationResult,
   ValidationBehavior,
   ValidationBehaviorConfig,
   FieldValues,
