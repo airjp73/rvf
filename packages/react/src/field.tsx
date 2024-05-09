@@ -1,5 +1,5 @@
 import { RefCallback } from "react";
-import { FormStoreValue, Rvf } from "@rvf/core";
+import { FormStoreValue, Rvf, ValidationBehaviorConfig } from "@rvf/core";
 import { GetInputProps, createGetInputProps } from "./inputs/getInputProps";
 
 export interface RvfField<FormInputData> {
@@ -42,17 +42,19 @@ export type FieldImplParams<FormInputData> = {
   form: Rvf<FormInputData>;
   fieldName: string;
   trackedState: FormStoreValue;
+  validationBehavior?: ValidationBehaviorConfig;
 };
 
 export const makeFieldImpl = <FormInputData,>({
   form,
   fieldName,
   trackedState,
+  validationBehavior,
 }: FieldImplParams<FormInputData>): RvfField<FormInputData> => {
   const onChange = (value: unknown) =>
-    trackedState.onFieldChange(fieldName, value);
+    trackedState.onFieldChange(fieldName, value, validationBehavior);
 
-  const onBlur = () => trackedState.onFieldBlur(fieldName);
+  const onBlur = () => trackedState.onFieldBlur(fieldName, validationBehavior);
 
   return {
     getInputProps: createGetInputProps({
@@ -63,14 +65,14 @@ export const makeFieldImpl = <FormInputData,>({
       ref: (ref) => form.__store__.transientFieldRefs.setRef(fieldName, ref),
     }),
 
-    getControlProps: ({ onChange, onBlur } = {}) => ({
+    getControlProps: (props = {}) => ({
       onChange: (value) => {
-        trackedState.onFieldChange(fieldName, value);
-        onChange?.(value);
+        onChange(value);
+        props.onChange?.(value);
       },
       onBlur: () => {
-        trackedState.onFieldBlur(fieldName);
-        onBlur?.();
+        onBlur();
+        props.onBlur?.();
       },
       value: trackedState.getValue(fieldName) as never,
       ref: (ref) => form.__store__.controlledFieldRefs.setRef(fieldName, ref),

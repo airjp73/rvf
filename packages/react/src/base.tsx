@@ -15,6 +15,7 @@ import {
 } from "set-get";
 import { RvfArray, makeFieldArrayImpl } from "./array";
 import { makeImplFactory } from "./implFactory";
+import { RvfField, makeFieldImpl } from "./field";
 
 type MinimalRvf<FieldPaths extends string> = {
   resetField: (fieldName: FieldPaths, nextValue?: any) => void;
@@ -258,6 +259,19 @@ export interface RvfReact<FormInputData> {
     : never;
 
   /**
+   * Get field helpers for the field in scope.
+   * This is only useful if you're using a form that has been scoped to a single field.
+   */
+  field(): RvfField<FormInputData>;
+
+  /**
+   * Get field helpers for the specified field.
+   */
+  field<Field extends ValidStringPaths<FormInputData>>(
+    fieldName: Field,
+  ): RvfField<ValueAtPath<FormInputData, StringToPathTuple<Field>>>;
+
+  /**
    * Pass this to your form's `onSubmit` handler.
    */
   submit: () => void;
@@ -305,21 +319,13 @@ export const makeBaseRvfReact = <FormInputData,>({
     }),
   );
 
-  // const arrayImplCache = new Map<string, RvfArray<any>>();
-  // const arrayImpl = (fieldName?: string): RvfArray<any> => {
-  //   const arrayFieldName = f(fieldName);
-
-  //   const existingImpl = arrayImplCache.get(arrayFieldName);
-  //   if (existingImpl) return existingImpl;
-
-  //   const impl = makeFieldArrayImpl({
-  //     trackedState,
-  //     arrayFieldName,
-  //     form: scopeRvf(form, arrayFieldName) as Rvf<any[]>,
-  //   });
-  //   arrayImplCache.set(arrayFieldName, impl);
-  //   return impl;
-  // };
+  const fieldImpl = makeImplFactory(prefix, (fieldName) =>
+    makeFieldImpl({
+      form,
+      fieldName: prefix,
+      trackedState,
+    }),
+  );
 
   return {
     value: (fieldName?: string) => trackedState.getValue(f(fieldName)) as any,
@@ -379,7 +385,7 @@ export const makeBaseRvfReact = <FormInputData,>({
     setTouched: (...args: WithOptionalField<boolean>) =>
       transientState().setTouched(...optionalField(args)),
     clearError: (fieldName?: string) =>
-      transientState().setError(fieldName, null),
+      transientState().setError(f(fieldName), null),
 
     focus: (fieldName) => {
       const element =
@@ -397,7 +403,8 @@ export const makeBaseRvfReact = <FormInputData,>({
     scope: (fieldName?: string) =>
       fieldName == null ? form : (scopeRvf(form, fieldName) as any),
 
-    array: arrayImpl as any,
+    array: arrayImpl as never,
+    field: fieldImpl as never,
 
     getFormProps: () => ({
       onSubmit: (maybeEvent: any) => {

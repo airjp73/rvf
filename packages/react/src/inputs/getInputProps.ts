@@ -4,14 +4,6 @@ import { getCheckboxChecked } from "./logic/getCheckboxChecked";
 import { getRadioChecked } from "./logic/getRadioChecked";
 import { getEventValue } from "../event";
 
-export type ValidationBehavior = "onBlur" | "onChange" | "onSubmit";
-
-export type ValidationBehaviorOptions = {
-  initial: ValidationBehavior;
-  whenTouched: ValidationBehavior;
-  whenSubmitted: ValidationBehavior;
-};
-
 export type CreateGetInputPropsOptions = {
   onChange: (value: unknown) => void;
   onBlur: () => void;
