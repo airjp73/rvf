@@ -42,6 +42,8 @@ export type RvfOpts<FormInputData extends FieldValues, FormOutputData> = {
    */
   defaultValues: FormInputData;
 
+  submitSource?: "state" | "dom";
+
   /**
    * A function that validates the form's values.
    * This is most commonly used in combination with an adapter for a particular validation library like `zod`.
@@ -87,6 +89,7 @@ export function useRvf<FormInputData extends FieldValues, FormOutputData>(
       validator: optsOrForm.validator,
       onSubmit: optsOrForm.onSubmit,
       validationBehaviorConfig: optsOrForm.validationBehaviorConfig,
+      submitSource: optsOrForm.submitSource ?? "state",
     });
   });
 

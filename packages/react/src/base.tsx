@@ -32,6 +32,7 @@ export type FormFields<Form> =
 interface FormProps {
   onSubmit: (maybeEvent?: unknown) => void;
   onReset: () => void;
+  ref: React.RefCallback<HTMLFormElement>;
 }
 
 export interface RvfReact<FormInputData> {
@@ -419,6 +420,9 @@ export const makeBaseRvfReact = <FormInputData,>({
         transientState().onSubmit();
       },
       onReset: () => transientState().reset(),
+      ref: (el) => {
+        form.__store__.formRef.current = el;
+      },
     }),
 
     submit: () => {

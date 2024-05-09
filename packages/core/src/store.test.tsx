@@ -7,6 +7,8 @@ const testStore = (init?: Partial<FormStoreInit>) =>
     defaultValues: {},
     controlledFieldRefs: createRefStore(),
     transientFieldRefs: createRefStore(),
+    formRef: { current: null },
+    submitSource: "state",
     mutableImplStore: {
       validator: () => Promise.resolve({ data: null, error: undefined }),
       onSubmit: () => Promise.resolve(),

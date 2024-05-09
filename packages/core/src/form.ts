@@ -13,6 +13,7 @@ type FormInit<FormInputData extends FieldValues, FormOutputData> = {
   validator: Validator<FormInputData, FormOutputData>;
   onSubmit: (data: FormOutputData) => Promise<void>;
   validationBehaviorConfig?: ValidationBehaviorConfig;
+  submitSource: "state" | "dom";
 };
 
 export interface Rvf<FormInputData> {
@@ -25,6 +26,7 @@ export interface Rvf<FormInputData> {
 interface RvfStore {
   transientFieldRefs: RefStore;
   controlledFieldRefs: RefStore;
+  formRef: { current: HTMLFormElement | null };
   mutableImplStore: MutableImplStore;
   store: ReturnType<typeof createFormStateStore>;
   useStoreState: () => FormStoreValue;
@@ -36,14 +38,18 @@ export const createRvf = <FormInputData extends FieldValues, FormOutputData>({
   validator,
   onSubmit,
   validationBehaviorConfig,
+  submitSource,
 }: FormInit<FormInputData, FormOutputData>): Rvf<FormInputData> => {
   const transientFieldRefs = createRefStore();
   const controlledFieldRefs = createRefStore();
+  const formRef = { current: null as HTMLFormElement | null };
   const mutableImplStore = { validator, onSubmit } satisfies MutableImplStore;
   const store = createFormStateStore({
     defaultValues,
     transientFieldRefs,
     controlledFieldRefs,
+    formRef,
+    submitSource,
     mutableImplStore,
     validationBehaviorConfig,
   });
@@ -52,6 +58,7 @@ export const createRvf = <FormInputData extends FieldValues, FormOutputData>({
   const rvfStore: RvfStore = {
     transientFieldRefs,
     controlledFieldRefs,
+    formRef,
     mutableImplStore,
     store,
     subformCache,

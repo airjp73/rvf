@@ -9,6 +9,7 @@ import {
   ValidationBehaviorConfig,
   Validator,
 } from "./types";
+import { preprocessFormData } from "./native-form-data/flatten";
 
 export const createRefStore = () => {
   const elementRefs = new Map<string, HTMLElement | null>();
@@ -101,6 +102,8 @@ export type FormStoreInit = {
   defaultValues: Record<PropertyKey, unknown>;
   transientFieldRefs: RefStore;
   controlledFieldRefs: RefStore;
+  formRef: { current: HTMLFormElement | null };
+  submitSource: "state" | "dom";
   mutableImplStore: MutableImplStore;
   validationBehaviorConfig?: ValidationBehaviorConfig;
 };
@@ -163,6 +166,8 @@ export const createFormStateStore = ({
   controlledFieldRefs,
   transientFieldRefs,
   mutableImplStore,
+  formRef,
+  submitSource,
   validationBehaviorConfig = defaultValidationBehaviorConfig,
 }: FormStoreInit) =>
   create<FormStoreValue>()(
@@ -245,7 +250,18 @@ export const createFormStateStore = ({
           state.submitStatus = "submitting";
         });
 
-        const result = await mutableImplStore.validator(get().values);
+        const getValues = () => {
+          if (submitSource === "state") return get().values;
+
+          const form = formRef.current;
+          if (!form)
+            throw new Error(
+              "`submitSource` is set to `dom`, but no form is registered with RVF.",
+            );
+          return preprocessFormData(new FormData(form));
+        };
+
+        const result = await mutableImplStore.validator(getValues());
 
         if (result.error) {
           set((state) => {

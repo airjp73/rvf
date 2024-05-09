@@ -7,6 +7,6 @@ export const objectFromPathEntries = (entries: [string, any][]) => {
   return [...map.entries()].reduce(
     (acc, [key, value]) =>
       setPath(acc, key, value.length === 1 ? value[0] : value),
-    {} as Record<string, any>
+    {} as Record<string, any>,
   );
 };
