@@ -99,19 +99,35 @@ describe("validation", () => {
       whenSubmitted: b,
     });
 
+    store.getState().onFieldChange("firstName", "Jane", behavior("onBlur"));
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    expect(store.getState().validationErrors).toEqual({});
+
     store.getState().onFieldChange("firstName", "Jane", behavior("onChange"));
     await new Promise((resolve) => setTimeout(resolve, 0));
     expect(store.getState().validationErrors).toEqual({
       firstName: "Invalid",
     });
 
-    store.getState().onFieldChange("firstName", "John", behavior("onBlur"));
+    store.getState().setValue("firstName", "John");
+    store.getState().onFieldBlur("firstName", behavior("onSubmit"));
     await new Promise((resolve) => setTimeout(resolve, 0));
     expect(store.getState().validationErrors).toEqual({
       firstName: "Invalid",
     });
 
     store.getState().onFieldBlur("firstName", behavior("onBlur"));
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    expect(store.getState().validationErrors).toEqual({});
+
+    store.getState().onFieldChange("firstName", "Jane", behavior("onChange"));
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    expect(store.getState().validationErrors).toEqual({
+      firstName: "Invalid",
+    });
+
+    // Always gets cleared on change
+    store.getState().onFieldChange("firstName", "John", behavior("onBlur"));
     await new Promise((resolve) => setTimeout(resolve, 0));
     expect(store.getState().validationErrors).toEqual({});
   });
