@@ -22,8 +22,8 @@ it("captures and submits with uncontrolled fields", async () => {
 
     return (
       <form {...form.getFormProps()} data-testid="form">
-        <input data-testid="foo" {...form.field("foo")} />
-        <input data-testid="baz.a" {...form.field("baz.a")} />
+        <input data-testid="foo" {...form.field("foo").getInputProps()} />
+        <input data-testid="baz.a" {...form.field("baz.a").getInputProps()} />
         <RenderCounter data-testid="render-count" />
       </form>
     );
@@ -68,7 +68,7 @@ it("should subscribe to value changes", async () => {
 
     return (
       <form {...form.getFormProps()} data-testid="form">
-        <input data-testid="foo" {...form.field("foo")} />
+        <input data-testid="foo" {...form.field("foo").getInputProps()} />
         <pre data-testid="value">{form.value("foo")}</pre>
         <pre data-testid="render-count">{renderCounter.current}</pre>
       </form>
@@ -103,7 +103,7 @@ it("should be posible to directly set a field value", async () => {
 
     return (
       <form {...form.getFormProps()} data-testid="form">
-        <input data-testid="foo" {...form.field("foo")} />
+        <input data-testid="foo" {...form.field("foo").getInputProps()} />
         <button
           type="button"
           data-testid="set-foo"
@@ -141,7 +141,7 @@ it("should work with custom components", async () => {
 
     return (
       <form {...form.getFormProps()} data-testid="form">
-        <Input {...form.field("foo")} />
+        <Input {...form.field("foo").getInputProps()} />
         <button
           type="button"
           data-testid="set-foo"
