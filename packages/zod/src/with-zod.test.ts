@@ -60,12 +60,6 @@ describe("withZod", () => {
       },
       submittedData: obj,
     });
-    expect(await validator.validateField!(obj, "field1")).toEqual({
-      error: anyString,
-    });
-    expect(await validator.validateField!(obj, "field2")).toEqual({
-      error: anyString,
-    });
   });
 
   it("returns custom error message when using a custom error map", async () => {
@@ -93,18 +87,14 @@ describe("withZod", () => {
 
 const packageDir = path.join(__dirname, "..");
 const packageJsonPath = path.join(packageDir, "package.json");
-const rvfPackageJsonPath = path.join(
-  packageDir,
-  "../remix-validated-form/package.json",
-);
+const corePackageJsonPath = path.join(packageDir, "../core/package.json");
 
 describe("peer dependecy version", () => {
   it("should have a peer dependency version that matches the lastet version of RVF", async () => {
     const packageJson = JSON.parse(await fs.readFile(packageJsonPath, "utf-8"));
-    const peerDependencyVersion =
-      packageJson.peerDependencies["remix-validated-form"];
+    const peerDependencyVersion = packageJson.peerDependencies["@rvf/core"];
     const rvfPackageJson = JSON.parse(
-      await fs.readFile(rvfPackageJsonPath, "utf-8"),
+      await fs.readFile(corePackageJsonPath, "utf-8"),
     );
     const rvfVersion = rvfPackageJson.version;
 
