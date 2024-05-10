@@ -29,9 +29,9 @@ export type FormFields<Form> =
   Form extends MinimalRvf<infer FieldPaths> ? FieldPaths : never;
 
 interface FormProps {
-  onSubmit: (maybeEvent?: unknown) => void;
-  onReset: () => void;
-  ref: React.RefCallback<HTMLFormElement>;
+  onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
+  onReset: (event: React.FormEvent<HTMLFormElement>) => void;
+  ref: React.Ref<HTMLFormElement>;
 }
 
 export interface RvfReact<FormInputData> {
@@ -240,7 +240,7 @@ export interface RvfReact<FormInputData> {
    */
   scope(): Rvf<FormInputData>;
 
-  getFormProps: () => FormProps;
+  getFormProps: (props: Partial<FormProps>) => FormProps;
 
   /**
    * Get array helpers for the form.
@@ -408,18 +408,26 @@ export const makeBaseRvfReact = <FormInputData,>({
     array: arrayImpl as never,
     field: fieldImpl as never,
 
-    getFormProps: () => ({
-      onSubmit: (maybeEvent: any) => {
-        if (
-          "preventDefault" in maybeEvent &&
-          typeof maybeEvent.preventDefault === "function"
-        ) {
-          maybeEvent.preventDefault();
-        }
+    getFormProps: (formProps = {}) => ({
+      ...formProps,
+      onSubmit: (event) => {
+        formProps.onSubmit?.(event);
+        if (event.defaultPrevented) return;
+
+        event.preventDefault();
         transientState().onSubmit();
       },
-      onReset: () => transientState().reset(),
+      onReset: (event) => {
+        formProps.onReset?.(event);
+        if (event.defaultPrevented) return;
+        transientState().reset();
+      },
       ref: (el) => {
+        if (typeof formProps.ref === "function") formProps.ref(el);
+        else if (formProps.ref) {
+          (formProps.ref as any).current = el;
+        }
+
         form.__store__.formRef.current = el;
       },
     }),
