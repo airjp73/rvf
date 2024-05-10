@@ -240,7 +240,7 @@ export interface RvfReact<FormInputData> {
    */
   scope(): Rvf<FormInputData>;
 
-  getFormProps: (props: Partial<FormProps>) => FormProps;
+  getFormProps: (props?: Partial<FormProps>) => FormProps;
 
   /**
    * Get array helpers for the form.
