@@ -2,6 +2,7 @@ import { act, renderHook, waitFor } from "@testing-library/react";
 import { useRvf } from "../useRvf";
 import { successValidator } from "./util/successValidator";
 import { useEffect, useRef } from "react";
+import { createValidator } from "@rvf/core";
 
 it("should return submit state", async () => {
   let prom: PromiseWithResolvers<any> | null = null;
@@ -73,10 +74,12 @@ it("should return submit state", async () => {
 
 it("should return form dirty/touched/valid state", async () => {
   let prom: PromiseWithResolvers<any> | null = null;
-  const validator = () => {
-    prom = Promise.withResolvers<any>();
-    return prom.promise;
-  };
+  const validator = createValidator({
+    validate: () => {
+      prom = Promise.withResolvers<any>();
+      return prom.promise;
+    },
+  });
 
   const { result } = renderHook(() => {
     const form = useRvf({
@@ -191,10 +194,12 @@ it("should be possible to access the default values in the form or a field", asy
 
 it("should be possible to set the dirty state of a field", async () => {
   let prom: PromiseWithResolvers<any> | null = null;
-  const validator = () => {
-    prom = Promise.withResolvers<any>();
-    return prom.promise;
-  };
+  const validator = createValidator({
+    validate: () => {
+      prom = Promise.withResolvers<any>();
+      return prom.promise;
+    },
+  });
 
   const { result } = renderHook(() => {
     const form = useRvf({

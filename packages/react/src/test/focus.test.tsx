@@ -2,7 +2,7 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { useRvf } from "../useRvf";
 import userEvent from "@testing-library/user-event";
 import { successValidator } from "./util/successValidator";
-import { FieldErrors } from "@rvf/core";
+import { FieldErrors, createValidator } from "@rvf/core";
 import { controlInput } from "./util/controlInput";
 
 it("should be able to manually focus fields", async () => {
@@ -69,15 +69,17 @@ it("should be automatically focus fields when there are submit validation errors
         bar: "",
         baz: "",
       },
-      validator: (data) => {
-        const errors: FieldErrors = {};
-        if (data.foo.length > 3) errors.foo = "too long";
-        if (data.bar.length > 3) errors.bar = "too long";
-        if (data.baz.length > 3) errors.baz = "too long";
-        if (Object.keys(errors).length > 0)
-          return Promise.resolve({ error: errors, data: undefined });
-        return Promise.resolve({ data, error: undefined });
-      },
+      validator: createValidator({
+        validate: (data) => {
+          const errors: FieldErrors = {};
+          if (data.foo.length > 3) errors.foo = "too long";
+          if (data.bar.length > 3) errors.bar = "too long";
+          if (data.baz.length > 3) errors.baz = "too long";
+          if (Object.keys(errors).length > 0)
+            return Promise.resolve({ error: errors, data: undefined });
+          return Promise.resolve({ data, error: undefined });
+        },
+      }),
       handleSubmit: submit,
     });
 
@@ -92,6 +94,8 @@ it("should be automatically focus fields when there are submit validation errors
         <div>
           <input data-testid="baz" {...controlInput(form.field("baz"))} />
         </div>
+
+        <button type="submit" data-testid="submit" />
       </form>
     );
   };
@@ -101,25 +105,24 @@ it("should be automatically focus fields when there are submit validation errors
   await userEvent.type(screen.getByTestId("foo"), "1234");
   await userEvent.type(screen.getByTestId("bar"), "1234");
   await userEvent.type(screen.getByTestId("baz"), "1234");
-  await userEvent.click(screen.getByTestId("form")); // blur
 
-  fireEvent.submit(screen.getByTestId("form"));
-  await waitFor(() => expect(screen.getByTestId("foo")).toHaveFocus());
+  await userEvent.click(screen.getByTestId("submit"));
+  expect(screen.getByTestId("foo")).toHaveFocus();
 
   await userEvent.type(screen.getByTestId("foo"), "{Backspace}");
   await userEvent.click(screen.getByTestId("form")); // blur
-  fireEvent.submit(screen.getByTestId("form"));
-  await waitFor(() => expect(screen.getByTestId("bar")).toHaveFocus());
+  await userEvent.click(screen.getByTestId("submit"));
+  expect(screen.getByTestId("bar")).toHaveFocus();
 
   await userEvent.type(screen.getByTestId("bar"), "{Backspace}");
   await userEvent.click(screen.getByTestId("form")); // blur
-  fireEvent.submit(screen.getByTestId("form"));
-  await waitFor(() => expect(screen.getByTestId("baz")).toHaveFocus());
+  await userEvent.click(screen.getByTestId("submit"));
+  expect(screen.getByTestId("baz")).toHaveFocus();
 
   await userEvent.type(screen.getByTestId("foo"), "4");
   await userEvent.click(screen.getByTestId("form")); // blur
-  fireEvent.submit(screen.getByTestId("form"));
-  await waitFor(() => expect(screen.getByTestId("foo")).toHaveFocus());
+  await userEvent.click(screen.getByTestId("submit"));
+  expect(screen.getByTestId("foo")).toHaveFocus();
 });
 
 it.todo(

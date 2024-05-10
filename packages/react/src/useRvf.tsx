@@ -29,7 +29,7 @@ export type RvfOpts<FormInputData extends FieldValues, FormOutputData> = {
    * A function that validates the form's values.
    * This is most commonly used in combination with an adapter for a particular validation library like `zod`.
    */
-  validator: Validator<FormInputData, FormOutputData>;
+  validator: Validator<FormOutputData>;
 
   /**
    * Allows you to customize the validation behavior of the form.

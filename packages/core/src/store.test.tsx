@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { FormStoreInit, createFormStateStore, createRefStore } from "./store";
 import { ValidationBehavior } from "./types";
+import { createValidator } from "./createValidator";
 
 const testStore = (init?: Partial<FormStoreInit>) =>
   createFormStateStore({
@@ -10,7 +11,9 @@ const testStore = (init?: Partial<FormStoreInit>) =>
     formRef: { current: null },
     submitSource: "state",
     mutableImplStore: {
-      validator: () => Promise.resolve({ data: null, error: undefined }),
+      validator: createValidator({
+        validate: () => Promise.resolve({ data: null, error: undefined }),
+      }),
       onSubmit: () => Promise.resolve(),
     },
     ...init,
@@ -21,17 +24,19 @@ describe("validation", () => {
     const onSubmit = vi.fn();
     const store = testStore({
       mutableImplStore: {
-        validator: (data) => {
-          if (data.firstName === "Jane")
+        validator: createValidator({
+          validate: (data) => {
+            if (data.firstName === "Jane")
+              return Promise.resolve({
+                error: { firstName: "Invalid" },
+                data: undefined,
+              });
             return Promise.resolve({
-              error: { firstName: "Invalid" },
-              data: undefined,
+              data: { transformed: "data" },
+              error: undefined,
             });
-          return Promise.resolve({
-            data: { transformed: "data" },
-            error: undefined,
-          });
-        },
+          },
+        }),
         onSubmit,
       },
     });
@@ -73,17 +78,19 @@ describe("validation", () => {
     const onSubmit = vi.fn();
     const store = testStore({
       mutableImplStore: {
-        validator: (data) => {
-          if (data.firstName === "Jane")
+        validator: createValidator({
+          validate: (data) => {
+            if (data.firstName === "Jane")
+              return Promise.resolve({
+                error: { firstName: "Invalid" },
+                data: undefined,
+              });
             return Promise.resolve({
-              error: { firstName: "Invalid" },
-              data: undefined,
+              data: { transformed: "data" },
+              error: undefined,
             });
-          return Promise.resolve({
-            data: { transformed: "data" },
-            error: undefined,
-          });
-        },
+          },
+        }),
         onSubmit,
       },
     });

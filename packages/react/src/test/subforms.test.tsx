@@ -1,5 +1,5 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { Rvf } from "@rvf/core";
+import { Rvf, createValidator } from "@rvf/core";
 import { useRvf } from "../useRvf";
 import userEvent from "@testing-library/user-event";
 import { successValidator } from "./util/successValidator";
@@ -24,11 +24,13 @@ it("should be able to create scoped subforms", async () => {
           name: "",
         },
       },
-      validator: (data) =>
-        Promise.resolve({
-          data: data as { person: { name: string } },
-          error: undefined,
-        }),
+      validator: createValidator({
+        validate: (data) =>
+          Promise.resolve({
+            data: data as { person: { name: string } },
+            error: undefined,
+          }),
+      }),
       handleSubmit: submit,
     });
 
@@ -78,11 +80,13 @@ it("should be able to create subforms of arrays", async () => {
     };
     const form = useRvf({
       defaultValues,
-      validator: (data) =>
-        Promise.resolve({
-          data: data as { people: { name: string }[] },
-          error: undefined,
-        }),
+      validator: createValidator({
+        validate: (data) =>
+          Promise.resolve({
+            data: data as { people: { name: string }[] },
+            error: undefined,
+          }),
+      }),
       handleSubmit: submit,
     });
 

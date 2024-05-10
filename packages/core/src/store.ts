@@ -9,7 +9,7 @@ import {
   ValidationBehaviorConfig,
   Validator,
 } from "./types";
-import { preprocessFormData } from "./native-form-data/flatten";
+import { GenericObject } from "./native-form-data/flatten";
 
 export const createRefStore = () => {
   const elementRefs = new Map<string, HTMLElement | null>();
@@ -21,6 +21,7 @@ export const createRefStore = () => {
       [...elementRefs.entries()].forEach(([fieldName, ref]) =>
         callback(fieldName, ref),
       ),
+    all: () => [...elementRefs.entries()],
   };
 };
 export type RefStore = ReturnType<typeof createRefStore>;
@@ -96,7 +97,7 @@ export type FormStoreValue = StoreState & StoreEvents & StoreActions;
 type StateSubmitter = (data: any) => void | Promise<void>;
 type DomSubmitter = (data: any, formData: FormData) => void | Promise<void>;
 export type MutableImplStore = {
-  validator: Validator<any, any>;
+  validator: Validator<any>;
   onSubmit: StateSubmitter | DomSubmitter;
 };
 
@@ -213,8 +214,8 @@ export const createFormStateStore = ({
       },
 
       getValidationErrors: async (nextValues = get().values) => {
-        const result = await mutableImplStore.validator(nextValues);
-        if (result.error) return result.error;
+        const result = await mutableImplStore.validator.validate(nextValues);
+        if (result.error) return result.error.fieldErrors;
         return {};
       },
 
@@ -259,9 +260,8 @@ export const createFormStateStore = ({
           state.submitStatus = "submitting";
         });
 
-        const getValues = () => {
-          if (get().submitSource === "state")
-            return [get().values, undefined] as const;
+        const getValues = (): GenericObject | FormData => {
+          if (get().submitSource === "state") return get().values;
 
           const form = formRef.current;
           if (!form)
@@ -275,18 +275,18 @@ export const createFormStateStore = ({
               formData.append(key, value);
             });
           }
-          return [preprocessFormData(formData), formData] as const;
+          return formData;
         };
 
-        const [data, formData] = getValues();
-        const result = await mutableImplStore.validator(data);
+        const rawValues = getValues();
+        const result = await mutableImplStore.validator.validate(rawValues);
 
         if (result.error) {
           set((state) => {
             state.submitStatus = "error";
-            state.validationErrors = result.error;
+            state.validationErrors = result.error.fieldErrors;
           });
-          const elementsWithErrors = Object.keys(result.error)
+          const elementsWithErrors = Object.keys(result.error.fieldErrors)
             .map(
               (fieldName) =>
                 transientFieldRefs.getRef(fieldName) ??
@@ -308,7 +308,7 @@ export const createFormStateStore = ({
           } else
             await (mutableImplStore.onSubmit as DomSubmitter)(
               result.data,
-              formData as never,
+              rawValues as FormData, // should be FormData in this case
             );
           set((state) => {
             state.submitStatus = "success";

@@ -2,8 +2,7 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { useRvf } from "../useRvf";
 import userEvent from "@testing-library/user-event";
 import { RenderCounter } from "./util/RenderCounter";
-import { FieldErrors, Rvf } from "@rvf/core";
-import { RvfReact } from "../base";
+import { FieldErrors, Rvf, createValidator } from "@rvf/core";
 import { useField } from "../field";
 
 it("should validate on submit, then on change after that", async () => {
@@ -14,14 +13,16 @@ it("should validate on submit, then on change after that", async () => {
         foo: "",
         baz: { a: "" },
       },
-      validator: (data) => {
-        const errors: FieldErrors = {};
-        if (data.foo.length < 3) errors.foo = "too short";
-        if (data.baz.a.length > 3) errors["baz.a"] = "too long";
-        if (Object.keys(errors).length > 0)
-          return Promise.resolve({ data: undefined, error: errors });
-        return Promise.resolve({ data, error: undefined });
-      },
+      validator: createValidator({
+        validate: (data) => {
+          const errors: FieldErrors = {};
+          if (data.foo.length < 3) errors.foo = "too short";
+          if (data.baz.a.length > 3) errors["baz.a"] = "too long";
+          if (Object.keys(errors).length > 0)
+            return Promise.resolve({ data: undefined, error: errors });
+          return Promise.resolve({ data, error: undefined });
+        },
+      }),
       handleSubmit: submit,
     });
 
@@ -97,14 +98,16 @@ it("should handle dependant validations", async () => {
         password: "",
         confirmPassword: "",
       },
-      validator: (data) => {
-        if (data.password !== data.confirmPassword)
-          return Promise.resolve({
-            data: undefined,
-            error: { confirmPassword: "not equal" },
-          });
-        return Promise.resolve({ data, error: undefined });
-      },
+      validator: createValidator({
+        validate: (data) => {
+          if (data.password !== data.confirmPassword)
+            return Promise.resolve({
+              data: undefined,
+              error: { confirmPassword: "not equal" },
+            });
+          return Promise.resolve({ data, error: undefined });
+        },
+      }),
       handleSubmit: submit,
     });
 
@@ -161,13 +164,15 @@ it("should be possible to customize validation behavior", async () => {
       defaultValues: {
         foo: "",
       },
-      validator: (data) => {
-        const errors: FieldErrors = {};
-        if (data.foo.length < 3) errors.foo = "too short";
-        if (Object.keys(errors).length > 0)
-          return Promise.resolve({ data: undefined, error: errors });
-        return Promise.resolve({ data, error: undefined });
-      },
+      validator: createValidator({
+        validate: (data) => {
+          const errors: FieldErrors = {};
+          if (data.foo.length < 3) errors.foo = "too short";
+          if (Object.keys(errors).length > 0)
+            return Promise.resolve({ data: undefined, error: errors });
+          return Promise.resolve({ data, error: undefined });
+        },
+      }),
       handleSubmit: submit,
       validationBehaviorConfig: {
         initial: "onBlur",
@@ -223,13 +228,15 @@ it("should be posible to customize validation behavior at the field level", asyn
       defaultValues: {
         foo: "",
       },
-      validator: (data) => {
-        const errors: FieldErrors = {};
-        if (data.foo.length < 3) errors.foo = "too short";
-        if (Object.keys(errors).length > 0)
-          return Promise.resolve({ data: undefined, error: errors });
-        return Promise.resolve({ data, error: undefined });
-      },
+      validator: createValidator({
+        validate: (data) => {
+          const errors: FieldErrors = {};
+          if (data.foo.length < 3) errors.foo = "too short";
+          if (Object.keys(errors).length > 0)
+            return Promise.resolve({ data: undefined, error: errors });
+          return Promise.resolve({ data, error: undefined });
+        },
+      }),
       handleSubmit: submit,
     });
 

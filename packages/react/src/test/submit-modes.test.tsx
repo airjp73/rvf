@@ -3,10 +3,10 @@ import { useRvf } from "../useRvf";
 import { successValidator } from "./util/successValidator";
 import userEvent from "@testing-library/user-event";
 import { useState } from "react";
+import { preprocessFormData } from "@rvf/core";
 
 it("should use the form itself as the source of truth for `dom` mode", async () => {
   const submit = vi.fn();
-  const validator = vi.fn(successValidator);
 
   const TestComp = () => {
     const form = useRvf({
@@ -14,13 +14,13 @@ it("should use the form itself as the source of truth for `dom` mode", async () 
       defaultValues: {
         foo: 123,
       },
-      validator,
+      validator: successValidator,
       handleSubmit: submit,
     });
 
     return (
       <form {...form.getFormProps()} data-testid="form">
-        <input data-testid="foo" value="456" name="foo" />
+        <input readOnly data-testid="foo" value="456" name="foo" />
         <button type="submit" data-testid="submit" />
       </form>
     );
@@ -29,8 +29,12 @@ it("should use the form itself as the source of truth for `dom` mode", async () 
   render(<TestComp />);
 
   await userEvent.click(screen.getByTestId("submit"));
-  expect(validator).toHaveBeenCalledTimes(1);
-  expect(validator).toHaveBeenCalledWith({ foo: "456" });
+  expect(successValidator.validate).toHaveBeenCalledTimes(1);
+  expect(successValidator.validate).toHaveBeenCalledWith(expect.any(FormData));
+  expect(
+    preprocessFormData(successValidator.validate.mock.lastCall[0]),
+  ).toEqual({ foo: "456" });
+
   expect(submit).toHaveBeenCalledTimes(1);
   expect(submit).toHaveBeenCalledWith({ foo: "456" }, expect.any(FormData));
 });
@@ -40,20 +44,18 @@ it.todo("should include data from the form submitter on submit in `dom` mode");
 
 it("should use state as the source of truth for state mode", async () => {
   const submit = vi.fn();
-  const validator = vi.fn(successValidator);
-
   const TestComp = () => {
     const form = useRvf({
       defaultValues: {
         foo: 123,
       },
-      validator,
+      validator: successValidator,
       handleSubmit: submit,
     });
 
     return (
       <form {...form.getFormProps()} data-testid="form">
-        <input data-testid="foo" value="456" name="foo" />
+        <input readOnly data-testid="foo" value="456" name="foo" />
         <button type="submit" data-testid="submit" />
       </form>
     );
@@ -62,8 +64,8 @@ it("should use state as the source of truth for state mode", async () => {
   render(<TestComp />);
 
   await userEvent.click(screen.getByTestId("submit"));
-  expect(validator).toHaveBeenCalledTimes(1);
-  expect(validator).toHaveBeenCalledWith({
+  expect(successValidator.validate).toHaveBeenCalledTimes(1);
+  expect(successValidator.validate).toHaveBeenCalledWith({
     foo: 123,
   });
   expect(submit).toHaveBeenCalledTimes(1);
@@ -74,7 +76,6 @@ it("should use state as the source of truth for state mode", async () => {
 
 it("should respect changes to the submit source", async () => {
   const submit = vi.fn();
-  const validator = vi.fn(successValidator);
 
   const TestComp = () => {
     const [submitSource, setSubmitSource] = useState(
@@ -84,14 +85,14 @@ it("should respect changes to the submit source", async () => {
       defaultValues: {
         foo: 123,
       },
-      validator,
+      validator: successValidator,
       handleSubmit: submit,
       submitSource,
     });
 
     return (
       <form {...form.getFormProps()} data-testid="form">
-        <input data-testid="foo" value="456" name="foo" />
+        <input readOnly data-testid="foo" value="456" name="foo" />
         <button
           type="button"
           onClick={() => setSubmitSource("dom")}

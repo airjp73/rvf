@@ -20,7 +20,7 @@ type SubmitTypes<FormOutputData> =
 
 type FormInit<FormInputData extends FieldValues, FormOutputData> = {
   defaultValues: FormInputData;
-  validator: Validator<FormInputData, FormOutputData>;
+  validator: Validator<FormOutputData>;
   validationBehaviorConfig?: ValidationBehaviorConfig;
   onSubmit: (data: FormOutputData) => Promise<void>;
 } & SubmitTypes<FormOutputData>;

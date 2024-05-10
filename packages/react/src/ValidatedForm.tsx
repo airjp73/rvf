@@ -8,8 +8,6 @@ export type ValidatedFormProps<
   FormOutputData,
 > = RvfOpts<FormInputData, FormOutputData> &
   Omit<React.ComponentProps<"form">, "children"> & {
-    validator: (data: FormInputData) => Promise<FormOutputData>;
-
     /**
      * A ref to the form element.
      */
