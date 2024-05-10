@@ -35,6 +35,7 @@ it("should use the form itself as the source of truth for `dom` mode", async () 
   expect(submit).toHaveBeenCalledWith({ foo: "456" }, expect.any(FormData));
 });
 
+// This will have to be tested in cypress because jsdom doesn't handle it
 it.todo("should include data from the form submitter on submit in `dom` mode");
 
 it("should use state as the source of truth for state mode", async () => {

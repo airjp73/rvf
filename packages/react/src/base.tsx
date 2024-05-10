@@ -415,7 +415,24 @@ export const makeBaseRvfReact = <FormInputData,>({
         if (event.defaultPrevented) return;
 
         event.preventDefault();
-        transientState().onSubmit();
+
+        type HTMLSubmitEvent = React.BaseSyntheticEvent<
+          SubmitEvent,
+          Event,
+          HTMLFormElement
+        >;
+
+        type HTMLFormSubmitter = HTMLButtonElement | HTMLInputElement;
+
+        const nativeEvent = event.nativeEvent as HTMLSubmitEvent["nativeEvent"];
+        const submitter = nativeEvent.submitter as HTMLFormSubmitter | null;
+
+        const submitterData =
+          submitter?.name != null
+            ? { [submitter.name]: submitter.value }
+            : undefined;
+
+        transientState().onSubmit(submitterData);
       },
       onReset: (event) => {
         formProps.onReset?.(event);

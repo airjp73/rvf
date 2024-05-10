@@ -47,7 +47,7 @@ type StoreEvents = {
     fieldName: string,
     validationBehaviorConfig?: ValidationBehaviorConfig,
   ) => void;
-  onSubmit: () => void;
+  onSubmit: (submitterData?: Record<string, string>) => void;
 };
 
 type StoreActions = {
@@ -254,7 +254,7 @@ export const createFormStateStore = ({
         }
       },
 
-      onSubmit: async () => {
+      onSubmit: async (submitterData) => {
         set((state) => {
           state.submitStatus = "submitting";
         });
@@ -270,6 +270,11 @@ export const createFormStateStore = ({
             );
 
           const formData = new FormData(form);
+          if (submitterData) {
+            Object.entries(submitterData).forEach(([key, value]) => {
+              formData.append(key, value);
+            });
+          }
           return [preprocessFormData(formData), formData] as const;
         };
 
