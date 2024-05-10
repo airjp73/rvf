@@ -71,7 +71,10 @@ type StoreActions = {
   ) => Promise<Record<string, string>>;
   validate: () => Promise<Record<string, string>>;
 
-  syncSubmitSource: (submitSource: "state" | "dom") => void;
+  syncOptions: (opts: {
+    submitSource: "state" | "dom";
+    validationBehaviorConfig?: ValidationBehaviorConfig | undefined;
+  }) => void;
 
   reset: (nextValues?: FieldValues) => void;
   resetField: (fieldName: string, nextValue?: unknown) => void;
@@ -301,9 +304,13 @@ export const createFormStateStore = ({
       },
 
       /////// Actions
-      syncSubmitSource: (submitSource) => {
+      syncOptions: ({
+        submitSource,
+        validationBehaviorConfig = defaultValidationBehaviorConfig,
+      }) => {
         set((state) => {
           state.submitSource = submitSource;
+          state.validationBehaviorConfig = validationBehaviorConfig;
         });
       },
 

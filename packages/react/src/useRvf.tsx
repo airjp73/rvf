@@ -1,10 +1,4 @@
-import {
-  ChangeEvent,
-  ReactNode,
-  RefCallback,
-  useEffect,
-  useState,
-} from "react";
+import { useEffect, useState } from "react";
 import {
   FieldValues,
   ValidationBehaviorConfig,
@@ -77,6 +71,16 @@ export function useRvf<FormInputData extends FieldValues, FormOutputData>(
   const isWholeForm = isRvf(optsOrForm);
   const submitSource = isRvf(optsOrForm) ? undefined : optsOrForm.submitSource;
 
+  const initial = isRvf(optsOrForm)
+    ? undefined
+    : optsOrForm.validationBehaviorConfig?.initial;
+  const whenSubmitted = isRvf(optsOrForm)
+    ? undefined
+    : optsOrForm.validationBehaviorConfig?.whenSubmitted;
+  const whenTouched = isRvf(optsOrForm)
+    ? undefined
+    : optsOrForm.validationBehaviorConfig?.whenTouched;
+
   useEffect(() => {
     if (isWholeForm) return;
 
@@ -87,9 +91,27 @@ export function useRvf<FormInputData extends FieldValues, FormOutputData>(
   }, [validator, onSubmit, isWholeForm, form.__store__.mutableImplStore]);
 
   useEffect(() => {
-    if (isWholeForm || !submitSource) return;
-    form.__store__.store.getState().syncSubmitSource(submitSource);
-  }, [form.__store__.store, isWholeForm, submitSource]);
+    if (isWholeForm) return;
+
+    form.__store__.store.getState().syncOptions({
+      submitSource: submitSource ?? "state",
+      validationBehaviorConfig:
+        initial && whenSubmitted && whenTouched
+          ? {
+              initial,
+              whenSubmitted,
+              whenTouched,
+            }
+          : undefined,
+    });
+  }, [
+    form.__store__.store,
+    initial,
+    isWholeForm,
+    submitSource,
+    whenSubmitted,
+    whenTouched,
+  ]);
 
   return useRvfInternal(form) as never;
 }
