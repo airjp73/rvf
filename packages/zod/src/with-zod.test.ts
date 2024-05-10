@@ -95,7 +95,7 @@ const packageDir = path.join(__dirname, "..");
 const packageJsonPath = path.join(packageDir, "package.json");
 const rvfPackageJsonPath = path.join(
   packageDir,
-  "../remix-validated-form/package.json"
+  "../remix-validated-form/package.json",
 );
 
 describe("peer dependecy version", () => {
@@ -104,7 +104,7 @@ describe("peer dependecy version", () => {
     const peerDependencyVersion =
       packageJson.peerDependencies["remix-validated-form"];
     const rvfPackageJson = JSON.parse(
-      await fs.readFile(rvfPackageJsonPath, "utf-8")
+      await fs.readFile(rvfPackageJsonPath, "utf-8"),
     );
     const rvfVersion = rvfPackageJson.version;
 

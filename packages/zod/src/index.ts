@@ -25,7 +25,7 @@ function pathToString(array: (string | number)[]): string {
  */
 export function withZod<T, U extends z.ZodTypeDef>(
   zodSchema: z.Schema<T, U, unknown>,
-  parseParams?: Partial<z.ParseParams>
+  parseParams?: Partial<z.ParseParams>,
 ): Validator<T> {
   return createValidator({
     validate: async (value) => {
@@ -44,7 +44,7 @@ export function withZod<T, U extends z.ZodTypeDef>(
       if (result.success) return { error: undefined };
       return {
         error: getIssuesForError(result.error).find((issue) =>
-          R.equals(issue.path, stringToPathArray(field))
+          R.equals(issue.path, stringToPathArray(field)),
         )?.message,
       };
     },

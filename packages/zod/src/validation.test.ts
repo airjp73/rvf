@@ -49,9 +49,9 @@ const validationTestCases: ValidationTestCase[] = [
           yup.object({
             animal: yup.string().required(),
             name: yup.string().required(),
-          })
+          }),
         ),
-      })
+      }),
     ),
   },
   {
@@ -67,7 +67,7 @@ const validationTestCases: ValidationTestCase[] = [
             streetAddress: z.string().min(1),
             city: z.string().min(1),
             country: z.string().min(1),
-          })
+          }),
         ),
         pets: z
           .object({
@@ -76,7 +76,7 @@ const validationTestCases: ValidationTestCase[] = [
           })
           .array()
           .optional(),
-      })
+      }),
     ),
   },
 ];
@@ -270,7 +270,7 @@ describe("Validation", () => {
           pets: [{ animal: "dog", name: "Fido" }],
         };
         expect(
-          await validator.validateField!(person, "address.streetAddress")
+          await validator.validateField!(person, "address.streetAddress"),
         ).toEqual({
           error: undefined,
         });
@@ -278,12 +278,12 @@ describe("Validation", () => {
           error: undefined,
         });
         expect(
-          await validator.validateField!(person, "address.country")
+          await validator.validateField!(person, "address.country"),
         ).toEqual({
           error: undefined,
         });
         expect(
-          await validator.validateField!(person, "pets[0].animal")
+          await validator.validateField!(person, "pets[0].animal"),
         ).toEqual({
           error: undefined,
         });
@@ -317,7 +317,7 @@ describe("Validation", () => {
           pets: [{ animal: "dog" }],
         };
         expect(
-          await validator.validateField!(person, "address.country")
+          await validator.validateField!(person, "address.country"),
         ).toEqual({
           error: anyString,
         });
