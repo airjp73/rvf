@@ -24,7 +24,7 @@
     "nanoid": "^3.3.4",
     "react": "^18.1.0",
     "react-dom": "^18.1.0",
-    "remix-validated-form": "*",
+    "@rvf/core": "*",
     "yup": "^1.0.0",
     "zod": "~3.20.0",
     "zod-form-data": "*"

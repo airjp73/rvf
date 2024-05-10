@@ -11,7 +11,7 @@ import {
   ValidatedForm,
   validationError,
   ValidatorData,
-} from "remix-validated-form";
+} from "@rvf/remix";
 import { z } from "zod";
 import { Alert } from "~/components/Alert";
 import { Button } from "~/components/Button";

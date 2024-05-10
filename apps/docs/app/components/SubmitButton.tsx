@@ -1,5 +1,5 @@
 import React, { FC } from "react";
-import { useIsSubmitting } from "remix-validated-form";
+import { useIsSubmitting } from "@rvf/remix";
 import { Button } from "./Button";
 import { Spinner } from "./Spinner";
 

@@ -3,7 +3,7 @@ import { useActionData } from "@remix-run/react";
 import { withZod } from "@rvf/zod";
 import { useEffect } from "react";
 import { useState } from "react";
-import { useFormContext, ValidatedForm } from "remix-validated-form";
+import { useFormContext, ValidatedForm } from "@rvf/remix";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
 import { Input } from "~/components/Input";

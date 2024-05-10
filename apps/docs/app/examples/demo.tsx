@@ -1,10 +1,7 @@
 import { DataFunctionArgs, json } from "@remix-run/node";
 import { useActionData } from "@remix-run/react";
 import { withZod } from "@rvf/zod";
-import {
-  ValidatedForm,
-  validationError,
-} from "remix-validated-form";
+import { ValidatedForm, validationError } from "@rvf/remix";
 import { z } from "zod";
 import { Alert } from "~/components/Alert";
 import { FormInput } from "~/components/FormInput";

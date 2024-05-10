@@ -1,4 +1,4 @@
-import { createValidator, FieldErrors, Validator } from "remix-validated-form";
+import { createValidator, FieldErrors, Validator } from "@rvf/remix";
 import type { AnyObjectSchema, InferType, ValidationError } from "yup";
 
 const validationErrorToFieldErrors = (error: ValidationError): FieldErrors => {

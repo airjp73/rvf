@@ -1,5 +1,5 @@
 import { FC, PropsWithChildren } from "react";
-import { useField } from "remix-validated-form";
+import { useField } from "@rvf/remix";
 
 type FieldsetProps = PropsWithChildren<{
   label: string;

@@ -59,7 +59,7 @@ If you're using zod, you might also find `zod-form-data` helpful.
 In order to display field errors or do field-by-field validation, it's recommended to incorporate this library into an input component using `useField`.
 
 ```tsx
-import { useField } from "remix-validated-form";
+import { useField } from "@rvf/remix";
 
 type MyInputProps = {
   name: string;
@@ -83,7 +83,7 @@ export const MyInput = ({ name, label }: MyInputProps) => {
 To best take advantage of the per-form submission detection, we can create a submit button component.
 
 ```tsx
-import { useFormContext, useIsSubmitting } from "remix-validated-form";
+import { useFormContext, useIsSubmitting } from "@rvf/remix";
 
 export const MySubmitButton = () => {
   const isSubmitting = useIsSubmitting();
@@ -110,7 +110,7 @@ Now that we have our components, making a form is easy.
 import { DataFunctionArgs, json, redirect } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import * as yup from "yup";
-import { validationError, ValidatedForm, withYup } from "remix-validated-form";
+import { validationError, ValidatedForm, withYup } from "@rvf/remix";
 import { MyInput, MySubmitButton } from "~/components/Input";
 
 // Using yup in this example, but you can use anything

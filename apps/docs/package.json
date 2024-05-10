@@ -30,7 +30,7 @@
     "react": "^18.1.0",
     "react-dom": "^18.1.0",
     "rehype-highlight": "^5.0.1",
-    "remix-validated-form": "*",
+    "@rvf/remix": "*",
     "zod": "~3.20.0",
     "zod-form-data": "*"
   },

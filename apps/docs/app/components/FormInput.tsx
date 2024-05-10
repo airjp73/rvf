@@ -1,7 +1,7 @@
 import { ExclamationCircleIcon } from "@heroicons/react/solid";
 import classNames from "classnames";
 import { FC } from "react";
-import { useField } from "remix-validated-form";
+import { useField } from "@rvf/remix";
 
 export type InputProps = {
   label: string;
@@ -47,7 +47,7 @@ export const FormInput: FC<
               "border focus:ring-teal-500 focus:border-teal-500 focus:z-10 block w-full sm:text-sm text-black pr-10",
               "rounded-md p-2",
               error &&
-                "border-red-800 bg-red-50 text-red-800 placeholder-red-300 focus:outline-none focus:ring-red-500 focus:border-red-500"
+                "border-red-800 bg-red-50 text-red-800 placeholder-red-300 focus:outline-none focus:ring-red-500 focus:border-red-500",
             ),
             ...rest,
           })}

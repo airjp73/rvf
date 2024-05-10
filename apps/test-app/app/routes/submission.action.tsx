@@ -3,7 +3,7 @@ import { DataFunctionArgs, json } from "@remix-run/node";
 import { useActionData } from "@remix-run/react";
 import { withYup } from "@rvf/yup";
 import { useState } from "react";
-import { ValidatedForm } from "remix-validated-form";
+import { ValidatedForm } from "@rvf/remix";
 import * as yup from "yup";
 import { SubmitButton } from "~/components/SubmitButton";
 

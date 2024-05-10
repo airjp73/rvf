@@ -19,7 +19,7 @@ To use this, the `ValidatedForm` must have an `id`.
 
 ```tsx
 import { json, DataFunctionArgs } from "@remix-run/node";
-import { setFormDefaults } from "remix-validated-form";
+import { setFormDefaults } from "@rvf/remix";
 
 export const loader = (args: DataFunctionArgs) => {
   return json(
@@ -52,7 +52,7 @@ import { json, DataFunctionArgs } from "@remix-run/node";
 import {
   setFormDefaults,
   FormDefaults,
-} from "remix-validated-form";
+} from "@rvf/remix";
 
 type LoaderData = { message: string };
 
@@ -76,7 +76,7 @@ import { json, DataFunctionArgs } from "@remix-run/node";
 import {
   setFormDefaults,
   FormDefaults,
-} from "remix-validated-form";
+} from "@rvf/remix";
 
 export const loader = (args: DataFunctionArgs) => {
   return json<FormDefaults>({

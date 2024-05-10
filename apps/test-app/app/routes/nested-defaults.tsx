@@ -1,6 +1,6 @@
 import { withZod } from "@rvf/zod";
-import { useField } from "remix-validated-form";
-import { ValidatedForm } from "remix-validated-form";
+import { useField } from "@rvf/remix";
+import { ValidatedForm } from "@rvf/remix";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
 

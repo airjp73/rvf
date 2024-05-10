@@ -13,8 +13,7 @@ const rvfPackageJsonPath = path.join(
 describe("peer dependecy version", () => {
   it("should have a peer dependency version that matches the lastet version of RVF", async () => {
     const packageJson = JSON.parse(await fs.readFile(packageJsonPath, "utf-8"));
-    const peerDependencyVersion =
-      packageJson.peerDependencies["remix-validated-form"];
+    const peerDependencyVersion = packageJson.peerDependencies["@rvf/remix"];
     const rvfPackageJson = JSON.parse(
       await fs.readFile(rvfPackageJsonPath, "utf-8"),
     );

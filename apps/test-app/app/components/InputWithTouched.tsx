@@ -1,5 +1,5 @@
 import React, { forwardRef } from "react";
-import { useField } from "remix-validated-form";
+import { useField } from "@rvf/remix";
 
 type InputProps = {
   name: string;
@@ -31,5 +31,5 @@ export const InputWithTouched = forwardRef(
         {error && <span style={{ color: "red" }}>{error}</span>}
       </div>
     );
-  }
+  },
 );

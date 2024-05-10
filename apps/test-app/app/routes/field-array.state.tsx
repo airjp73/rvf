@@ -1,7 +1,7 @@
 import { withZod } from "@rvf/zod";
 import { nanoid } from "nanoid";
 import { useState } from "react";
-import { ValidatedForm, useFieldArray } from "remix-validated-form";
+import { ValidatedForm, useFieldArray } from "@rvf/remix";
 import { z } from "zod";
 import { InputWithTouched } from "~/components/InputWithTouched";
 

@@ -1,6 +1,6 @@
 import { DataFunctionArgs, redirect } from "@remix-run/node";
 import { withZod } from "@rvf/zod";
-import { ValidatedForm } from "remix-validated-form";
+import { ValidatedForm } from "@rvf/remix";
 import { z } from "zod";
 import { SubmitButton } from "~/components/SubmitButton";
 

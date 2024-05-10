@@ -1,4 +1,4 @@
-import { useIsSubmitting, useIsValid } from "remix-validated-form";
+import { useIsSubmitting, useIsValid } from "@rvf/remix";
 
 type Props = {
   label?: string;

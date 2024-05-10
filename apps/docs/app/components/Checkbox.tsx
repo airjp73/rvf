@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { useField } from "remix-validated-form";
+import { useField } from "@rvf/remix";
 
 export type CheckboxProps = {
   label: string;

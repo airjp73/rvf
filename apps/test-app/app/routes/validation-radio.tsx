@@ -1,5 +1,5 @@
 import { withZod } from "@rvf/zod";
-import { ValidatedForm } from "remix-validated-form";
+import { ValidatedForm } from "@rvf/remix";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
 import { Input } from "~/components/Input";

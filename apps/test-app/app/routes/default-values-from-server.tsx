@@ -5,7 +5,7 @@ import {
   ValidatorData,
   setFormDefaults,
   FormDefaults,
-} from "remix-validated-form";
+} from "@rvf/remix";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
 import { Fieldset } from "~/components/Fieldset";

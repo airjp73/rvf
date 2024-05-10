@@ -1,5 +1,5 @@
 import * as R from "remeda";
-import { createValidator, FieldErrors, Validator } from "remix-validated-form";
+import { createValidator, FieldErrors, Validator } from "@rvf/remix";
 import { stringToPathArray } from "set-get";
 import type { z } from "zod";
 

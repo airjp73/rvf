@@ -1,6 +1,6 @@
 import { withZod } from "@rvf/zod";
 import { useEffect } from "react";
-import { ValidatedForm, useControlField } from "remix-validated-form";
+import { ValidatedForm, useControlField } from "@rvf/remix";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
 

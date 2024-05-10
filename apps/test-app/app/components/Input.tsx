@@ -1,5 +1,5 @@
 import React, { forwardRef } from "react";
-import { useField } from "remix-validated-form";
+import { useField } from "@rvf/remix";
 
 type InputProps = {
   name: string;
@@ -24,7 +24,7 @@ export const Input = forwardRef(
       form,
       disabled,
     }: InputProps,
-    ref: React.ForwardedRef<HTMLInputElement>
+    ref: React.ForwardedRef<HTMLInputElement>,
   ) => {
     const { getInputProps, error } = useField(name, {
       formId: form,
@@ -47,5 +47,5 @@ export const Input = forwardRef(
         {error && !noErrors && <span style={{ color: "red" }}>{error}</span>}
       </div>
     );
-  }
+  },
 );
