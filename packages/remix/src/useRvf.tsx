@@ -51,7 +51,16 @@ export function useRvf<FormInputData extends FieldValues, FormOutputData>(
   // For remix, it makes sense to default to "dom" for submitSource
   const submitSource = optsOrForm.submitSource ?? ("dom" as const);
 
-  const handleDomSubmit = (_data: FormOutputData, formData: FormData) => {
+  const handleDomSubmit = (data: FormOutputData, formData: FormData) => {
+    const handleSubmit = optsOrForm.handleSubmit as
+      | ((data: FormOutputData, formData: FormData) => Promise<void>)
+      | undefined;
+
+    // when the user provides a handleSubmit, we should use that instead
+    if (handleSubmit) {
+      return handleSubmit(data, formData);
+    }
+
     return submitWithRemix(formData, {
       method: optsOrForm.method,
       replace: optsOrForm.replace,
@@ -63,13 +72,17 @@ export function useRvf<FormInputData extends FieldValues, FormOutputData>(
   };
 
   const handleStateSubmit = (data: FormOutputData) => {
-    if (!optsOrForm.handleSubmit) {
+    const handleSubmit = optsOrForm.handleSubmit as
+      | ((data: FormOutputData) => Promise<void>)
+      | undefined;
+
+    if (!handleSubmit) {
       throw new Error(
         "`state` submit source is only supported with `handleSubmit`",
       );
     }
 
-    return optsOrForm.handleSubmit(data);
+    return handleSubmit(data);
   };
 
   const handleSubmit =

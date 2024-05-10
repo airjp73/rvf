@@ -10,7 +10,7 @@ import { RvfReact, useRvfInternal } from "./base";
 
 type SubmitTypes<FormOutputData> =
   | {
-      submitSource: "state";
+      submitSource?: "state";
       handleSubmit: (data: FormOutputData) => Promise<void>;
     }
   | {

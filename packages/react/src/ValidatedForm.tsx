@@ -38,7 +38,7 @@ export const ValidatedForm = <
   const rvf = useRvf<FormInputData, FormOutputData>({
     defaultValues: defaultValues,
     validator,
-    handleSubmit,
+    handleSubmit: handleSubmit as never,
     submitSource,
     validationBehaviorConfig,
   });
