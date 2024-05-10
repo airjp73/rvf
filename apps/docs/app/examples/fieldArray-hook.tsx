@@ -4,7 +4,7 @@ import {
   useActionData,
   useLoaderData,
 } from "@remix-run/react";
-import { withZod } from "@remix-validated-form/with-zod";
+import { withZod } from "@rvf/zod";
 import { nanoid } from "nanoid";
 import {
   useFieldArray,
@@ -30,16 +30,16 @@ export const validator = withZod(
           .string()
           .min(1, { message: "Title is required" }),
         notes: z.string().optional(),
-      })
+      }),
     ),
-  })
+  }),
 );
 
 export const action = async ({
   request,
 }: DataFunctionArgs) => {
   const result = await validator.validate(
-    await request.formData()
+    await request.formData(),
   );
   if (result.error) return validationError(result.error);
   const { name, todos } = result.data;
@@ -123,7 +123,7 @@ export default function Demo() {
           variant="info"
           title={`Hello, ${data.submittedName}!`}
           details={`You need to ${data.todoTitles.join(
-            ", "
+            ", ",
           )}`}
         />
       )}

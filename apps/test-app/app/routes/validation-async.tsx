@@ -1,6 +1,6 @@
 import { DataFunctionArgs, json } from "@remix-run/node";
 import { useActionData } from "@remix-run/react";
-import { withZod } from "@remix-validated-form/with-zod";
+import { withZod } from "@rvf/zod";
 import { validationError, ValidatedForm } from "remix-validated-form";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
@@ -16,18 +16,18 @@ const validator = withZod(
       firstName: zfd.text(
         z.string({
           required_error: "First Name is a required field",
-        })
+        }),
       ),
       lastName: zfd.text(
         z.string({
           required_error: "Last Name is a required field",
-        })
+        }),
       ),
     })
     .refine(async (data) => await pretendApi(data.firstName, data.lastName), {
       message: "First Name and Last Name must be different",
       path: ["lastName"],
-    })
+    }),
 );
 
 export const action = async ({ request }: DataFunctionArgs) => {

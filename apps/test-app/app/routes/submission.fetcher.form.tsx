@@ -1,5 +1,5 @@
 import { useFetcher } from "@remix-run/react";
-import { withYup } from "@remix-validated-form/with-yup";
+import { withYup } from "@rvf/yup";
 import { ValidatedForm } from "remix-validated-form";
 import * as yup from "yup";
 import { SubmitButton } from "~/components/SubmitButton";
@@ -8,7 +8,8 @@ const schema = yup.object({});
 const validator = withYup(schema);
 
 export default function FrontendValidation() {
-  const fetcher = useFetcher<typeof import("./submission.fetcher")["action"]>();
+  const fetcher =
+    useFetcher<(typeof import("./submission.fetcher"))["action"]>();
   return (
     <ValidatedForm
       validator={validator}

@@ -1,4 +1,4 @@
-import { withZod } from "@remix-validated-form/with-zod";
+import { withZod } from "@rvf/zod";
 import { nanoid } from "nanoid";
 import { useState } from "react";
 import { ValidatedForm, useFieldArray } from "remix-validated-form";
@@ -8,7 +8,7 @@ import { InputWithTouched } from "~/components/InputWithTouched";
 const validator = withZod(
   z.object({
     counters: z.array(z.object({})),
-  })
+  }),
 );
 
 const defaultValues = {

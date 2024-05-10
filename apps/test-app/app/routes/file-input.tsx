@@ -8,7 +8,7 @@ import {
   unstable_composeUploadHandlers,
   unstable_createMemoryUploadHandler,
 } from "@remix-run/server-runtime";
-import { withZod } from "@remix-validated-form/with-zod";
+import { withZod } from "@rvf/zod";
 import { validationError, ValidatedForm } from "remix-validated-form";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
@@ -25,18 +25,18 @@ const clientValidator = withZod(
       myFile: zfd.file(
         z.instanceof(File, {
           message: "Please choose a file",
-        })
+        }),
       ),
-    })
-  )
+    }),
+  ),
 );
 
 const serverValidator = withZod(
   baseSchema.and(
     z.object({
       myFile: zfd.file(z.string()),
-    })
-  )
+    }),
+  ),
 );
 
 const testUploadHandler = unstable_composeUploadHandlers(async ({ name }) => {
@@ -49,7 +49,7 @@ const testUploadHandler = unstable_composeUploadHandlers(async ({ name }) => {
 
 export const action = async ({ request }: DataFunctionArgs) => {
   const result = await serverValidator.validate(
-    await unstable_parseMultipartFormData(request, testUploadHandler)
+    await unstable_parseMultipartFormData(request, testUploadHandler),
   );
   if (result.error) return validationError(result.error);
   const { myFile, description } = result.data;

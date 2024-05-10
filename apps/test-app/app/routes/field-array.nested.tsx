@@ -1,4 +1,4 @@
-import { withZod } from "@remix-validated-form/with-zod";
+import { withZod } from "@rvf/zod";
 import { nanoid } from "nanoid";
 import { ValidatedForm, useFieldArray } from "remix-validated-form";
 import { z } from "zod";
@@ -14,19 +14,19 @@ const validator = withZod(
           title: zfd.text(
             z.string({
               required_error: "Title is required",
-            })
+            }),
           ),
           notes: z
             .array(z.object({ text: zfd.text() }))
             .optional()
             .refine(
               (arr) => (arr ?? []).length >= 1,
-              "Must have at least one note"
+              "Must have at least one note",
             ),
-        })
+        }),
       )
       .refine((arr) => arr.length > 1, "Must have at least two todos"),
-  })
+  }),
 );
 
 const defaultValues = {

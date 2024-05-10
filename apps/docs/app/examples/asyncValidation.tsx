@@ -3,7 +3,7 @@ import {
   useActionData,
   useFetcher,
 } from "@remix-run/react";
-import { withZod } from "@remix-validated-form/with-zod";
+import { withZod } from "@rvf/zod";
 import {
   ValidatedForm,
   validationError,
@@ -31,7 +31,7 @@ const schema = z
     {
       path: ["passwordConfirm"],
       message: "Passwords must match",
-    }
+    },
   );
 
 /**
@@ -56,13 +56,13 @@ export const action = async ({
       {
         message: "Whoops! That username is taken.",
         path: ["username"],
-      }
-    )
+      },
+    ),
   );
 
   // Since the db check is already in the schema, we can continue on as normal
   const result = await serverValidator.validate(
-    await request.formData()
+    await request.formData(),
   );
   if (result.error) return validationError(result.error);
 
@@ -123,7 +123,7 @@ const UsernameInput = () => {
           if (username) {
             // Ping our api to see if the username is taken.
             usernameCheckFetcher.load(
-              `/username-exists?username=${username}`
+              `/username-exists?username=${username}`,
             );
           }
 

@@ -1,6 +1,6 @@
 import { json, DataFunctionArgs } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
-import { withZod } from "@remix-validated-form/with-zod";
+import { withZod } from "@rvf/zod";
 import { ValidatedForm, ValidatorData } from "remix-validated-form";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
@@ -19,7 +19,7 @@ const validator = withZod(
     likesPizza: zfd.checkbox(),
     favoriteDessert: z.union([z.literal("iceCream"), z.literal("cake")]),
     likesColors: zfd.repeatable(),
-  })
+  }),
 );
 
 type LoaderData = {

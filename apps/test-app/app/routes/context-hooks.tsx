@@ -1,6 +1,6 @@
 import { DataFunctionArgs, json } from "@remix-run/node";
 import { useActionData } from "@remix-run/react";
-import { withYup } from "@remix-validated-form/with-yup";
+import { withYup } from "@rvf/yup";
 import { useFormContext, ValidatedForm } from "remix-validated-form";
 import * as yup from "yup";
 import { Input } from "~/components/Input";
@@ -79,7 +79,7 @@ export default function FrontendValidation() {
         validator={withYup(
           yup.object({
             firstName: yup.string().label("First Name").required(),
-          })
+          }),
         )}
         method="post"
         id="test-form"

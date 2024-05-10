@@ -1,4 +1,4 @@
-import { withYup } from "@remix-validated-form/with-yup";
+import { withYup } from "@rvf/yup";
 import { useEffect, useRef } from "react";
 import { useFormContext, ValidatedForm } from "remix-validated-form";
 import * as yup from "yup";

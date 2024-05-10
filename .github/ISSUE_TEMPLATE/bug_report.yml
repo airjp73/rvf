@@ -23,16 +23,16 @@ body:
       label: Which packages are impacted?
       options:
         - label: "`remix-validated-form`"
-        - label: "`@remix-validated-form/with-zod`"
-        - label: "`@remix-validated-form/with-yup`"
+        - label: "`@rvf/zod`"
+        - label: "`@rvf/yup`"
         - label: "`zod-form-data`"
   - type: textarea
     attributes:
       label: What version of these packages are you using?
       placeholder: |
         - `remix-validated-form`: ^0.0.0
-        - `@remix-validated-form/with-zod`: ^0.0.0
-        - `@remix-validated-form/with-yup`: ^0.0.0
+        - `@rvf/zod`: ^0.0.0
+        - `@rvf/yup`: ^0.0.0
         - `zod-form-data`: ^0.0.0
     validations:
       required: true

@@ -1,6 +1,6 @@
 import { DataFunctionArgs, json } from "@remix-run/node";
 import { useActionData, useLoaderData } from "@remix-run/react";
-import { withZod } from "@remix-validated-form/with-zod";
+import { withZod } from "@rvf/zod";
 import { validationError, ValidatedForm } from "remix-validated-form";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
@@ -12,12 +12,12 @@ const validator = withZod(
     firstName: zfd.text(
       z.string({
         required_error: "First Name is a required field",
-      })
+      }),
     ),
     lastName: zfd.text(
       z.string({
         required_error: "Last Name is a required field",
-      })
+      }),
     ),
     email: zfd.text(z.string().email("Email must be a valid email").optional()),
     contacts: z.array(
@@ -25,13 +25,13 @@ const validator = withZod(
         name: zfd.text(
           z.string({
             required_error: "Name of a contact is a required field",
-          })
+          }),
         ),
-      })
+      }),
     ),
     myCheckbox: zfd.checkbox(),
     daysOfWeek: zfd.repeatable(),
-  })
+  }),
 );
 
 const paramSchema = zfd.formData({

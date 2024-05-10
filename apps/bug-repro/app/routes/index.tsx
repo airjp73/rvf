@@ -1,11 +1,11 @@
-import { withZod } from "@remix-validated-form/with-zod";
+import { withZod } from "@rvf/zod";
 import { useField, ValidatedForm } from "remix-validated-form";
 import { z } from "zod";
 
 const validator = withZod(
   z.object({
     name: z.string(),
-  })
+  }),
 );
 
 type InputProps = { name: string; label: string; formId?: string };

@@ -1,5 +1,5 @@
 import { useActionData } from "@remix-run/react";
-import { withZod } from "@remix-validated-form/with-zod";
+import { withZod } from "@rvf/zod";
 import { ValidatedForm } from "remix-validated-form";
 import { z } from "zod";
 import { Alert } from "~/components/Alert";
@@ -18,7 +18,7 @@ export const validator = withZod(
       .string()
       .min(1, { message: "Email is required" })
       .email("Must be a valid email"),
-  })
+  }),
 );
 
 export default function Demo() {

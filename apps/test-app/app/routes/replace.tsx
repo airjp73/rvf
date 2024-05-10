@@ -6,7 +6,7 @@
 import { json } from "@remix-run/node";
 import type { DataFunctionArgs } from "@remix-run/node";
 import { useActionData } from "@remix-run/react";
-import { withYup } from "@remix-validated-form/with-yup";
+import { withYup } from "@rvf/yup";
 import { useEffect, useState } from "react";
 import { ValidatedForm } from "remix-validated-form";
 import * as yup from "yup";

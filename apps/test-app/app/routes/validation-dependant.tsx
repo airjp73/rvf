@@ -1,6 +1,6 @@
 import { DataFunctionArgs, json } from "@remix-run/node";
 import { useActionData } from "@remix-run/react";
-import { withYup } from "@remix-validated-form/with-yup";
+import { withYup } from "@rvf/yup";
 import { validationError, ValidatedForm } from "remix-validated-form";
 import * as yup from "yup";
 import { Input } from "~/components/Input";
@@ -13,7 +13,7 @@ const validator = withYup(
       .string()
       .label("First name")
       .when("isRequired", { is: (v: any) => !!v, then: (s) => s.required() }),
-  })
+  }),
 );
 
 export const action = async ({ request }: DataFunctionArgs) => {

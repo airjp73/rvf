@@ -1,4 +1,4 @@
-import { withZod } from "@remix-validated-form/with-zod";
+import { withZod } from "@rvf/zod";
 import { ValidatedForm } from "remix-validated-form";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
@@ -10,10 +10,10 @@ const validator = withZod(
     text1: zfd.text(
       z.string({
         required_error: "Text 1 is a required field",
-      })
+      }),
     ),
     text2: zfd.text(),
-  })
+  }),
 );
 
 export default function FrontendValidation() {

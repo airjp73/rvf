@@ -1,6 +1,6 @@
 import { DataFunctionArgs, json } from "@remix-run/node";
 import { useActionData } from "@remix-run/react";
-import { withZod } from "@remix-validated-form/with-zod";
+import { withZod } from "@rvf/zod";
 import { useEffect } from "react";
 import { useState } from "react";
 import { useFormContext, ValidatedForm } from "remix-validated-form";
@@ -11,7 +11,7 @@ import { Input } from "~/components/Input";
 const validator = withZod(
   z.object({
     isValid: zfd.checkbox().refine((val) => !!val, "Must be checked"),
-  })
+  }),
 );
 
 export const action = async (args: DataFunctionArgs) => {

@@ -1,5 +1,5 @@
 import { DataFunctionArgs, json } from "@remix-run/node";
-import { withYup } from "@remix-validated-form/with-yup";
+import { withYup } from "@rvf/yup";
 import { useRef } from "react";
 import { ValidatedForm } from "remix-validated-form";
 import * as yup from "yup";

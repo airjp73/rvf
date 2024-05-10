@@ -1,4 +1,4 @@
-import { withZod } from "@remix-validated-form/with-zod";
+import { withZod } from "@rvf/zod";
 import { nanoid } from "nanoid";
 import {
   FieldArray,
@@ -18,13 +18,13 @@ const validator = withZod(
           title: zfd.text(
             z.string({
               required_error: "Title is required",
-            })
+            }),
           ),
           note: zfd.text().optional(),
-        })
+        }),
       )
       .refine((arr) => arr.length > 1, "Must have at least two todos"),
-  })
+  }),
 );
 
 const ControlledInput = ({ label, name }: { label: string; name: string }) => {
@@ -79,7 +79,7 @@ export default function FrontendValidation() {
         {(
           items,
           { push, remove, swap, move, insert, pop, unshift, replace },
-          error
+          error,
         ) => (
           <>
             {items.map(({ defaultValue, key }, index) => (

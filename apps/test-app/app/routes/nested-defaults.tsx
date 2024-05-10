@@ -1,4 +1,4 @@
-import { withZod } from "@remix-validated-form/with-zod";
+import { withZod } from "@rvf/zod";
 import { useField } from "remix-validated-form";
 import { ValidatedForm } from "remix-validated-form";
 import { z } from "zod";
@@ -37,7 +37,7 @@ export const validator = withZod(
       checkTrue: zfd.checkbox(),
       checkFalse: zfd.checkbox(),
     }),
-  })
+  }),
 );
 
 export default function Index() {

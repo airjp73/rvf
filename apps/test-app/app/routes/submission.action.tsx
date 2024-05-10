@@ -1,7 +1,7 @@
 import { Dialog } from "@headlessui/react";
 import { DataFunctionArgs, json } from "@remix-run/node";
 import { useActionData } from "@remix-run/react";
-import { withYup } from "@remix-validated-form/with-yup";
+import { withYup } from "@rvf/yup";
 import { useState } from "react";
 import { ValidatedForm } from "remix-validated-form";
 import * as yup from "yup";

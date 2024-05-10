@@ -1,6 +1,6 @@
 import { json, DataFunctionArgs } from "@remix-run/node";
 import { useActionData } from "@remix-run/react";
-import { withZod } from "@remix-validated-form/with-zod";
+import { withZod } from "@rvf/zod";
 import {
   ValidatedForm,
   validationError,
@@ -14,14 +14,14 @@ import { CheckboxGroup } from "~/components/CheckboxGroup";
 import { SubmitButton } from "~/components/SubmitButton";
 
 export const validator = withZod(
-  z.object({ likes: zfd.repeatable() })
+  z.object({ likes: zfd.repeatable() }),
 );
 
 export const action = async ({
   request,
 }: DataFunctionArgs) => {
   const result = await validator.validate(
-    await request.formData()
+    await request.formData(),
   );
   if (result.error) return validationError(result.error);
   const { likes } = result.data;

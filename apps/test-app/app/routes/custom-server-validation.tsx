@@ -1,5 +1,5 @@
 import { DataFunctionArgs } from "@remix-run/node";
-import { withYup } from "@remix-validated-form/with-yup";
+import { withYup } from "@rvf/yup";
 import { validationError, ValidatedForm } from "remix-validated-form";
 import * as yup from "yup";
 import { Input } from "~/components/Input";
@@ -15,7 +15,7 @@ export const action = async (args: DataFunctionArgs) => {
       fieldErrors: { firstName: "Error", lastName: "Error 2" },
       formId: "test-form",
     },
-    { firstName: "Bob", lastName: "Ross" }
+    { firstName: "Bob", lastName: "Ross" },
   );
 };
 

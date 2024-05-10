@@ -1,5 +1,5 @@
 import { anyString, TestFormData } from "@remix-validated-form/test-utils";
-import { withYup } from "@remix-validated-form/with-yup/src";
+import { withYup } from "@rvf/yup/src";
 import * as R from "remeda";
 import { Validator } from "remix-validated-form/src";
 import { FORM_ID_FIELD } from "remix-validated-form/src/internal/constants";

@@ -1,4 +1,4 @@
-# @remix-validated-form/with-yup
+# @rvf/yup
 
 Yup adapter for [remix-validated-form](https://github.com/airjp73/remix-validated-form).
 

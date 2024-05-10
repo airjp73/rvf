@@ -1,5 +1,5 @@
 import { DataFunctionArgs, json } from "@remix-run/node";
-import { withZod } from "@remix-validated-form/with-zod";
+import { withZod } from "@rvf/zod";
 import { ValidatedForm, validationError, useField } from "remix-validated-form";
 import { z } from "zod";
 import { SubmitButton } from "~/components/SubmitButton";
@@ -7,7 +7,7 @@ import { SubmitButton } from "~/components/SubmitButton";
 const validator = withZod(
   z.object({
     testinput: z.literal("success"),
-  })
+  }),
 );
 
 export const action = async ({ request }: DataFunctionArgs) => {

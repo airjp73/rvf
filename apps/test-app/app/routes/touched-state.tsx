@@ -1,4 +1,4 @@
-import { withYup } from "@remix-validated-form/with-yup";
+import { withYup } from "@rvf/yup";
 import { ValidatedForm } from "remix-validated-form";
 import * as yup from "yup";
 import { InputWithTouched } from "~/components/InputWithTouched";

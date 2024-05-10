@@ -1,6 +1,6 @@
 import { DataFunctionArgs, json } from "@remix-run/node";
 import { useActionData, useFetcher } from "@remix-run/react";
-import { withYup } from "@remix-validated-form/with-yup";
+import { withYup } from "@rvf/yup";
 import { ValidatedForm } from "remix-validated-form";
 import * as yup from "yup";
 import { SubmitButton } from "~/components/SubmitButton";

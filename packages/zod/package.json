@@ -1,6 +1,6 @@
 {
-  "name": "@remix-validated-form/with-zod",
-  "version": "2.0.7",
+  "name": "@rvf/zod",
+  "version": "3.0.0",
   "main": "./dist/index.cjs.js",
   "module": "./dist/index.esm.js",
   "types": "./dist/index.d.ts",
@@ -16,13 +16,13 @@
     "typecheck": "tsc --noEmit"
   },
   "peerDependencies": {
-    "remix-validated-form": "^4.x || ^5.x",
+    "@rvf/core": ">= 6.0.0 <= 7.0.0",
     "zod": ">= 3.11.0"
   },
   "devDependencies": {
-    "@remix-validated-form/with-yup": "*",
+    "@rvf/yup": "*",
     "@types/semver": "^7.5.0",
-    "remix-validated-form": "*",
+    "@rvf/core": "*",
     "semver": "^7.5.1",
     "set-get": "*",
     "tsconfig": "*",

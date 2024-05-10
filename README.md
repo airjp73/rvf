@@ -45,11 +45,11 @@ npm install remix-validated-form
 There are official adapters available for `zod` and `yup`.
 If you're using a different library, see the [Validation library support](#validation-library-support) section below.
 
-- @remix-validated-form/with-zod
-- @remix-validated-form/with-yup
+- @rvf/zod
+- @rvf/yup
 
 ```bash
-npm install @remix-validated-form/with-zod
+npm install @rvf/zod
 ```
 
 If you're using zod, you might also find `zod-form-data` helpful.
@@ -119,7 +119,7 @@ const validator = withYup(
     firstName: yup.string().label("First Name").required(),
     lastName: yup.string().label("Last Name").required(),
     email: yup.string().email().label("Email").required(),
-  })
+  }),
 );
 
 export const action = async ({ request }: DataFunctionArgs) => {
@@ -209,7 +209,7 @@ type Validator<DataType> = {
   validate: (unvalidatedData: unknown) => ValidationResult<DataType>;
   validateField: (
     unvalidatedData: unknown,
-    field: string
+    field: string,
   ) => ValidateFieldResult;
 };
 ```
@@ -224,7 +224,7 @@ The out-of-the-box support for `yup` in this library works as the following:
 
 ```ts
 export const withYup = <Schema extends AnyObjectSchema>(
-  validationSchema: Schema
+  validationSchema: Schema,
   // For best result with Typescript, we should type the `Validator` we return based on the provided schema
 ): Validator<InferType<Schema>> =>
   createValidator({

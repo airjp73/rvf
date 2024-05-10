@@ -1,5 +1,5 @@
 import { useActionData } from "@remix-run/react";
-import { withYup } from "@remix-validated-form/with-yup";
+import { withYup } from "@rvf/yup";
 import { ValidatedForm } from "remix-validated-form";
 import * as yup from "yup";
 import { Input } from "~/components/Input";
@@ -13,7 +13,7 @@ const schema = yup.object({
     .array(
       yup.object({
         name: yup.string().label("Name of a contact").required(),
-      })
+      }),
     )
     .required(),
 });
