@@ -4,7 +4,7 @@ import { successValidator } from "./util/successValidator";
 import userEvent from "@testing-library/user-event";
 import { useState } from "react";
 
-it("should use the form itself as the source of truth for FormData mode", async () => {
+it("should use the form itself as the source of truth for `dom` mode", async () => {
   const submit = vi.fn();
   const validator = vi.fn(successValidator);
 
@@ -34,6 +34,8 @@ it("should use the form itself as the source of truth for FormData mode", async 
   expect(submit).toHaveBeenCalledTimes(1);
   expect(submit).toHaveBeenCalledWith({ foo: "456" });
 });
+
+it.todo("should include data from the form submitter on submit in `dom` mode");
 
 it("should use state as the source of truth for state mode", async () => {
   const submit = vi.fn();
