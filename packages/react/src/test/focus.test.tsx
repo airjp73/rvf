@@ -121,3 +121,7 @@ it("should be automatically focus fields when there are submit validation errors
   fireEvent.submit(screen.getByTestId("form"));
   await waitFor(() => expect(screen.getByTestId("foo")).toHaveFocus());
 });
+
+it.todo(
+  "should be possible to turn off focus on error using the `disableFocusOnError` option",
+);

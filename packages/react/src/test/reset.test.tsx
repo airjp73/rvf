@@ -264,3 +264,7 @@ it("should reset the whole form when a reset button is clicked", async () => {
   expect(screen.getByTestId("foo-touched")).toHaveTextContent("false");
   expect(screen.getByTestId("baz.a-touched")).toHaveTextContent("false");
 });
+
+it.todo(
+  "should be possible to reset automatically on submit success with `resetAfterSubmit` option",
+);
