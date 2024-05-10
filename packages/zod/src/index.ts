@@ -1,5 +1,5 @@
 import * as R from "remeda";
-import { createValidator, FieldErrors, Validator } from "@rvf/remix";
+import { createValidator, FieldErrors, Validator } from "@rvf/core";
 import { stringToPathArray } from "set-get";
 import type { z } from "zod";
 
@@ -38,15 +38,6 @@ export function withZod<T, U extends z.ZodTypeDef>(
         if (!fieldErrors[path]) fieldErrors[path] = issue.message;
       });
       return { error: fieldErrors, data: undefined };
-    },
-    validateField: async (data, field) => {
-      const result = await zodSchema.safeParseAsync(data, parseParams);
-      if (result.success) return { error: undefined };
-      return {
-        error: getIssuesForError(result.error).find((issue) =>
-          R.equals(issue.path, stringToPathArray(field)),
-        )?.message,
-      };
     },
   });
 }

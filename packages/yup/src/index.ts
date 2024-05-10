@@ -1,4 +1,4 @@
-import { createValidator, FieldErrors, Validator } from "@rvf/remix";
+import { createValidator, FieldErrors, Validator } from "@rvf/core";
 import type { AnyObjectSchema, InferType, ValidationError } from "yup";
 
 const validationErrorToFieldErrors = (error: ValidationError): FieldErrors => {
@@ -28,14 +28,6 @@ export const withYup = <Schema extends AnyObjectSchema>(
           error: validationErrorToFieldErrors(err as ValidationError),
           data: undefined,
         };
-      }
-    },
-    validateField: async (data, field) => {
-      try {
-        await validationSchema.validateAt(field, data);
-        return {};
-      } catch (err) {
-        return { error: (err as ValidationError).message };
       }
     },
   });

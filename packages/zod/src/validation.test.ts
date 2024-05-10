@@ -1,9 +1,7 @@
 import { anyString, TestFormData } from "@remix-validated-form/test-utils";
-import { withYup } from "@rvf/yup/src";
+import { withYup } from "@rvf/yup";
 import * as R from "remeda";
-import { Validator } from "remix-validated-form/src";
-import { FORM_ID_FIELD } from "remix-validated-form/src/internal/constants";
-import { objectFromPathEntries } from "remix-validated-form/src/internal/flatten";
+import { Validator, objectFromPathEntries } from "@rvf/core";
 import { describe, it, expect } from "vitest";
 import * as yup from "yup";
 import { z } from "zod";
@@ -114,16 +112,11 @@ describe("Validation", () => {
             country: "USA",
           },
           pets: [{ animal: "dog", name: "Fido" }],
-
-          // @ts-expect-error
-          // internal filed technically not part of person type
-          [FORM_ID_FIELD]: "something",
         };
         expect(await validator.validate(person)).toEqual({
-          data: R.omit(person as any, [FORM_ID_FIELD]),
+          data: person,
           error: undefined,
           submittedData: person,
-          formId: "something",
         });
       });
 
@@ -240,89 +233,9 @@ describe("Validation", () => {
             fieldErrors: {
               firstName: anyString,
             },
-            subaction: "updatePerson",
           },
           data: undefined,
           submittedData: person,
-        });
-      });
-    });
-
-    describe("validateField", () => {
-      it("should not return an error if field is valid", async () => {
-        const person = {
-          firstName: "John",
-          lastName: {}, // invalid, but we should only be validating firstName
-        };
-        expect(await validator.validateField!(person, "firstName")).toEqual({
-          error: undefined,
-        });
-      });
-      it("should not return an error if a nested field is valid", async () => {
-        const person = {
-          firstName: "John",
-          lastName: {}, // invalid, but we should only be validating firstName
-          address: {
-            streetAddress: "123 Main St",
-            city: "Anytown",
-            country: "USA",
-          },
-          pets: [{ animal: "dog", name: "Fido" }],
-        };
-        expect(
-          await validator.validateField!(person, "address.streetAddress"),
-        ).toEqual({
-          error: undefined,
-        });
-        expect(await validator.validateField!(person, "address.city")).toEqual({
-          error: undefined,
-        });
-        expect(
-          await validator.validateField!(person, "address.country"),
-        ).toEqual({
-          error: undefined,
-        });
-        expect(
-          await validator.validateField!(person, "pets[0].animal"),
-        ).toEqual({
-          error: undefined,
-        });
-        expect(await validator.validateField!(person, "pets[0].name")).toEqual({
-          error: undefined,
-        });
-      });
-
-      it("should return an error if field is invalid", async () => {
-        const person = {
-          firstName: "John",
-          lastName: {},
-          address: {
-            streetAddress: "123 Main St",
-            city: 1234,
-          },
-        };
-        expect(await validator.validateField!(person, "lastName")).toEqual({
-          error: anyString,
-        });
-      });
-
-      it("should return an error if a nested field is invalid", async () => {
-        const person = {
-          firstName: "John",
-          lastName: {},
-          address: {
-            streetAddress: "123 Main St",
-            city: 1234,
-          },
-          pets: [{ animal: "dog" }],
-        };
-        expect(
-          await validator.validateField!(person, "address.country"),
-        ).toEqual({
-          error: anyString,
-        });
-        expect(await validator.validateField!(person, "pets[0].name")).toEqual({
-          error: anyString,
         });
       });
     });
