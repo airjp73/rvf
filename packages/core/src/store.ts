@@ -71,6 +71,8 @@ type StoreActions = {
   ) => Promise<Record<string, string>>;
   validate: () => Promise<Record<string, string>>;
 
+  syncSubmitSource: (submitSource: "state" | "dom") => void;
+
   reset: (nextValues?: FieldValues) => void;
   resetField: (fieldName: string, nextValue?: unknown) => void;
 
@@ -299,6 +301,12 @@ export const createFormStateStore = ({
       },
 
       /////// Actions
+      syncSubmitSource: (submitSource) => {
+        set((state) => {
+          state.submitSource = submitSource;
+        });
+      },
+
       setValue: (fieldName, value) => {
         set((state) => {
           if (fieldName) setPath(state.values, fieldName, value);

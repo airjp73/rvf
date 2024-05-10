@@ -75,6 +75,7 @@ export function useRvf<FormInputData extends FieldValues, FormOutputData>(
   const validator = isRvf(optsOrForm) ? undefined : optsOrForm.validator;
   const onSubmit = isRvf(optsOrForm) ? undefined : optsOrForm.handleSubmit;
   const isWholeForm = isRvf(optsOrForm);
+  const submitSource = isRvf(optsOrForm) ? undefined : optsOrForm.submitSource;
 
   useEffect(() => {
     if (isWholeForm) return;
@@ -85,5 +86,10 @@ export function useRvf<FormInputData extends FieldValues, FormOutputData>(
     });
   }, [validator, onSubmit, isWholeForm, form.__store__.mutableImplStore]);
 
-  return useRvfInternal(form);
+  useEffect(() => {
+    if (isWholeForm || !submitSource) return;
+    form.__store__.store.getState().syncSubmitSource(submitSource);
+  }, [form.__store__.store, isWholeForm, submitSource]);
+
+  return useRvfInternal(form) as never;
 }
