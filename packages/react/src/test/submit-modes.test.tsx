@@ -4,6 +4,7 @@ import { successValidator } from "./util/successValidator";
 import userEvent from "@testing-library/user-event";
 import { useState } from "react";
 import { preprocessFormData } from "@rvf/core";
+import { Mock } from "vitest";
 
 it("should use the form itself as the source of truth for `dom` mode", async () => {
   const submit = vi.fn();
@@ -32,7 +33,7 @@ it("should use the form itself as the source of truth for `dom` mode", async () 
   expect(successValidator.validate).toHaveBeenCalledTimes(1);
   expect(successValidator.validate).toHaveBeenCalledWith(expect.any(FormData));
   expect(
-    preprocessFormData(successValidator.validate.mock.lastCall[0]),
+    preprocessFormData((successValidator.validate as Mock).mock.lastCall[0]),
   ).toEqual({ foo: "456" });
 
   expect(submit).toHaveBeenCalledTimes(1);
