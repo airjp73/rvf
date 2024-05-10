@@ -14,7 +14,7 @@ it("should subscribe to changes in the touched state", async () => {
         baz: { a: "quux" },
       },
       validator: successValidator,
-      onSubmit: submit,
+      handleSubmit: submit,
     });
 
     const renderCounter = useRef(0);

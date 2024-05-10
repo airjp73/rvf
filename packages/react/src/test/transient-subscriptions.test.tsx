@@ -16,7 +16,7 @@ it("should be able to listen to value changes without rerendering", async () => 
         baz: { a: "quux" },
       },
       validator: successValidator,
-      onSubmit: submit,
+      handleSubmit: submit,
     });
 
     useEffect(() => form.subscribe.value(valueListener), [form]);
@@ -55,7 +55,7 @@ it("should unsubscribe from value changes when the effect unmounts", async () =>
         bar: "",
       },
       validator: successValidator,
-      onSubmit: submit,
+      handleSubmit: submit,
     });
     const [sub, setSub] = useState<"foo" | "bar">("foo");
 

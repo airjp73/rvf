@@ -13,7 +13,7 @@ it("should reset the whole form", async () => {
         baz: { a: "quux" },
       },
       validator: successValidator,
-      onSubmit: submit,
+      handleSubmit: submit,
     });
 
     return (
@@ -65,7 +65,7 @@ it("should reset individual fields", async () => {
         baz: { a: "quux" },
       },
       validator: successValidator,
-      onSubmit: submit,
+      handleSubmit: submit,
     });
 
     return (
@@ -117,7 +117,7 @@ it("should reset the whole form using custom initial values", async () => {
         baz: { a: "quux" },
       },
       validator: successValidator,
-      onSubmit: submit,
+      handleSubmit: submit,
     });
 
     return (
@@ -174,7 +174,7 @@ it("should reset individual fields using custom initial values", async () => {
         baz: { a: "quux" },
       },
       validator: successValidator,
-      onSubmit: submit,
+      handleSubmit: submit,
     });
 
     return (
@@ -226,7 +226,7 @@ it("should reset the whole form when a reset button is clicked", async () => {
         baz: { a: "quux" },
       },
       validator: successValidator,
-      onSubmit: submit,
+      handleSubmit: submit,
     });
 
     return (

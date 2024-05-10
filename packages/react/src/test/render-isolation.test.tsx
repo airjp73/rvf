@@ -13,7 +13,7 @@ describe("Isolate", () => {
       const form = useRvf({
         defaultValues: { foo: "bar" },
         validator: successValidator,
-        onSubmit: submit,
+        handleSubmit: submit,
       });
 
       const renderCounter = useRef(0);
@@ -72,7 +72,7 @@ describe("Field", () => {
       const form = useRvf({
         defaultValues: { foo: "bar" },
         validator: successValidator,
-        onSubmit: submit,
+        handleSubmit: submit,
       });
 
       const renderCounter = useRef(0);

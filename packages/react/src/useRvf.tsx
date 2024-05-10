@@ -33,7 +33,7 @@ export type RvfOpts<FormInputData extends FieldValues, FormOutputData> = {
    * Handles the submission of the form.
    * This will be called when the form is submitted.
    */
-  onSubmit: NoInfer<(data: FormOutputData) => Promise<void>>;
+  handleSubmit: NoInfer<(data: FormOutputData) => Promise<void>>;
 
   /**
    * Allows you to customize the validation behavior of the form.
@@ -66,14 +66,14 @@ export function useRvf<FormInputData extends FieldValues, FormOutputData>(
     return createRvf({
       defaultValues: optsOrForm.defaultValues,
       validator: optsOrForm.validator,
-      onSubmit: optsOrForm.onSubmit,
+      onSubmit: optsOrForm.handleSubmit,
       validationBehaviorConfig: optsOrForm.validationBehaviorConfig,
       submitSource: optsOrForm.submitSource ?? "state",
     });
   });
 
   const validator = isRvf(optsOrForm) ? undefined : optsOrForm.validator;
-  const onSubmit = isRvf(optsOrForm) ? undefined : optsOrForm.onSubmit;
+  const onSubmit = isRvf(optsOrForm) ? undefined : optsOrForm.handleSubmit;
   const isWholeForm = isRvf(optsOrForm);
 
   useEffect(() => {

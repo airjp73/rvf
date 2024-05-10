@@ -19,7 +19,7 @@ it("should be possible to use context to access the form", async () => {
   const TestComp = () => {
     const form = useRvf({
       defaultValues: { name: "Bob" },
-      onSubmit: submit,
+      handleSubmit: submit,
       validator: successValidator,
     });
 
@@ -49,7 +49,7 @@ it("should be possible to scope a context provider", async () => {
   const TestComp = () => {
     const form = useRvf({
       defaultValues: { personA: { name: "Bob" }, personB: { name: "Jane" } },
-      onSubmit: submit,
+      handleSubmit: submit,
       validator: successValidator,
     });
 

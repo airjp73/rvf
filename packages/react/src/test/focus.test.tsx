@@ -15,7 +15,7 @@ it("should be able to manually focus fields", async () => {
         baz: "",
       },
       validator: successValidator,
-      onSubmit: submit,
+      handleSubmit: submit,
     });
 
     return (
@@ -78,7 +78,7 @@ it("should be automatically focus fields when there are submit validation errors
           return Promise.resolve({ error: errors, data: undefined });
         return Promise.resolve({ data, error: undefined });
       },
-      onSubmit: submit,
+      handleSubmit: submit,
     });
 
     return (

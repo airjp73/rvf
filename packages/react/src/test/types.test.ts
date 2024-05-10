@@ -15,7 +15,7 @@ describe("types", () => {
             b: "quux",
           },
         },
-        onSubmit: vi.fn(),
+        handleSubmit: vi.fn(),
       });
 
       form.field("foo");

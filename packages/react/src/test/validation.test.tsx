@@ -22,7 +22,7 @@ it("should validate on submit, then on change after that", async () => {
           return Promise.resolve({ data: undefined, error: errors });
         return Promise.resolve({ data, error: undefined });
       },
-      onSubmit: submit,
+      handleSubmit: submit,
     });
 
     return (
@@ -105,7 +105,7 @@ it("should handle dependant validations", async () => {
           });
         return Promise.resolve({ data, error: undefined });
       },
-      onSubmit: submit,
+      handleSubmit: submit,
     });
 
     return (
@@ -168,7 +168,7 @@ it("should be possible to customize validation behavior", async () => {
           return Promise.resolve({ data: undefined, error: errors });
         return Promise.resolve({ data, error: undefined });
       },
-      onSubmit: submit,
+      handleSubmit: submit,
       validationBehaviorConfig: {
         initial: "onBlur",
         whenTouched: "onChange",
@@ -230,7 +230,7 @@ it("should be posible to customize validation behavior at the field level", asyn
           return Promise.resolve({ data: undefined, error: errors });
         return Promise.resolve({ data, error: undefined });
       },
-      onSubmit: submit,
+      handleSubmit: submit,
     });
 
     return (

@@ -19,7 +19,7 @@ it("captures and submits with uncontrolled fields", async () => {
         },
       },
       validator: successValidator,
-      onSubmit: submit,
+      handleSubmit: submit,
     });
 
     return (
@@ -60,7 +60,7 @@ it("should work correctly when the input is unmounted and remounted", async () =
         foo: "bar",
       },
       validator: successValidator,
-      onSubmit: submit,
+      handleSubmit: submit,
     });
     const [show, setShow] = useState(true);
 
@@ -97,7 +97,7 @@ it("should handle number inputs", async () => {
     useRvf({
       defaultValues: { foo: 0, bar: 0 },
       validator: successValidator,
-      onSubmit: submit,
+      handleSubmit: submit,
     });
 
   let form: ReturnType<typeof useIt> | null = null as any;
@@ -147,7 +147,7 @@ it("should subscribe to value changes", async () => {
         },
       },
       validator: successValidator,
-      onSubmit: submit,
+      handleSubmit: submit,
     });
 
     const renderCounter = useRef(0);
@@ -185,7 +185,7 @@ it("should be posible to directly set a field value", async () => {
         },
       },
       validator: successValidator,
-      onSubmit: submit,
+      handleSubmit: submit,
     });
 
     return (
@@ -223,7 +223,7 @@ it("should work with custom components", async () => {
         foo: "bar",
       },
       validator: successValidator,
-      onSubmit: submit,
+      handleSubmit: submit,
     });
 
     return (
@@ -255,7 +255,7 @@ it("should naturally work with boolean checkboxes", async () => {
         foo: true,
       },
       validator: successValidator,
-      onSubmit: submit,
+      handleSubmit: submit,
     });
 
     return (
@@ -299,7 +299,7 @@ it("should naturally work with checkbox groups", async () => {
         foo: ["bar", "baz"],
       },
       validator: successValidator,
-      onSubmit: submit,
+      handleSubmit: submit,
     });
 
     return (
@@ -372,7 +372,7 @@ it("should naturally work with radio groups", async () => {
         foo: "foo",
       },
       validator: successValidator,
-      onSubmit: submit,
+      handleSubmit: submit,
     });
 
     return (

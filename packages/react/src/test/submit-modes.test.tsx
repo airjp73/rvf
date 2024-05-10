@@ -14,7 +14,7 @@ it("should use the form itself as the source of truth for FormData mode", async 
         foo: 123,
       },
       validator,
-      onSubmit: submit,
+      handleSubmit: submit,
     });
 
     return (
@@ -44,7 +44,7 @@ it("should use state as the source of truth for state mode", async () => {
         foo: 123,
       },
       validator,
-      onSubmit: submit,
+      handleSubmit: submit,
     });
 
     return (

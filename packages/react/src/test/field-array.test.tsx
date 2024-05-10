@@ -15,7 +15,7 @@ it("should only accept array values", () => {
         bar: "bar",
       },
       validator: successValidator,
-      onSubmit: vi.fn(),
+      handleSubmit: vi.fn(),
     });
 
     form.array("foo");
@@ -39,7 +39,7 @@ describe("controlled items", () => {
           foo: [{ name: "bar" }, { name: "baz" }],
         },
         validator: successValidator,
-        onSubmit: vi.fn(),
+        handleSubmit: vi.fn(),
       });
 
       return (
@@ -72,7 +72,7 @@ describe("controlled items", () => {
           foo: ["bar", "baz"],
         },
         validator: successValidator,
-        onSubmit: vi.fn(),
+        handleSubmit: vi.fn(),
       });
 
       return (
@@ -127,7 +127,7 @@ describe("uncontrolled items", () => {
           foo: [{ name: "bar" }, { name: "baz" }],
         },
         validator: successValidator,
-        onSubmit: vi.fn(),
+        handleSubmit: vi.fn(),
       });
 
       return (
@@ -158,7 +158,7 @@ describe("uncontrolled items", () => {
           foo: [{ name: "bar" }, { name: "baz" }],
         },
         validator: successValidator,
-        onSubmit: vi.fn(),
+        handleSubmit: vi.fn(),
       });
 
       return (
@@ -200,7 +200,7 @@ describe("uncontrolled items", () => {
           foo: ["bar", "baz"],
         },
         validator: successValidator,
-        onSubmit: vi.fn(),
+        handleSubmit: vi.fn(),
       });
 
       return (
@@ -254,7 +254,7 @@ it("should work with a pre-scoped form", async () => {
         foo: [{ name: "bar" }, { name: "baz" }],
       },
       validator: successValidator,
-      onSubmit: vi.fn(),
+      handleSubmit: vi.fn(),
     });
     const array = useRvf(form.scope("foo"));
 
@@ -288,7 +288,7 @@ it("should memoize array object creation", async () => {
         foo: [{ name: "bar" }, { name: "baz" }],
       },
       validator: successValidator,
-      onSubmit: vi.fn(),
+      handleSubmit: vi.fn(),
     });
 
     expect(form.array("foo")).toBe(form.array("foo"));
@@ -306,7 +306,7 @@ it("should be able to push to an array", async () => {
         foo: [{ name: "bar" }, { name: "baz" }],
       },
       validator: successValidator,
-      onSubmit: vi.fn(),
+      handleSubmit: vi.fn(),
     });
 
     return (
@@ -345,7 +345,7 @@ it("should be able to pop from an array", async () => {
         foo: [{ name: "bar" }, { name: "baz" }],
       },
       validator: successValidator,
-      onSubmit: vi.fn(),
+      handleSubmit: vi.fn(),
     });
 
     return (
@@ -384,7 +384,7 @@ it("should be able to shift from an array", async () => {
         foo: [{ name: "bar" }, { name: "baz" }],
       },
       validator: successValidator,
-      onSubmit: vi.fn(),
+      handleSubmit: vi.fn(),
     });
 
     return (
@@ -436,7 +436,7 @@ it("should be able to unshift to an array", async () => {
         foo: [{ name: "bar" }, { name: "baz" }],
       },
       validator: successValidator,
-      onSubmit: vi.fn(),
+      handleSubmit: vi.fn(),
     });
 
     return (
@@ -490,7 +490,7 @@ it("should be able to insert into an array", async () => {
         foo: [{ name: "bar" }, { name: "baz" }],
       },
       validator: successValidator,
-      onSubmit: vi.fn(),
+      handleSubmit: vi.fn(),
     });
 
     return (
@@ -543,7 +543,7 @@ it("should be able to move within an array", async () => {
         foo: [{ name: "bar" }, { name: "baz" }, { name: "quux" }],
       },
       validator: successValidator,
-      onSubmit: vi.fn(),
+      handleSubmit: vi.fn(),
     });
 
     return (
@@ -598,7 +598,7 @@ it("should be able to swap within an array", async () => {
         foo: [{ name: "bar" }, { name: "baz" }, { name: "quux" }],
       },
       validator: successValidator,
-      onSubmit: vi.fn(),
+      handleSubmit: vi.fn(),
     });
 
     return (
@@ -653,7 +653,7 @@ it("should be able to remove from an array", async () => {
         foo: [{ name: "bar" }, { name: "baz" }, { name: "quux" }],
       },
       validator: successValidator,
-      onSubmit: vi.fn(),
+      handleSubmit: vi.fn(),
     });
 
     return (
@@ -706,7 +706,7 @@ it("should be able to replace", async () => {
         foo: [{ name: "bar" }, { name: "baz" }, { name: "quux" }],
       },
       validator: successValidator,
-      onSubmit: vi.fn(),
+      handleSubmit: vi.fn(),
     });
 
     return (

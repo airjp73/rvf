@@ -16,7 +16,7 @@ it("should return submit state", async () => {
         foo: "bar",
       },
       validator: successValidator,
-      onSubmit: submission,
+      handleSubmit: submission,
     });
     return {
       state: {
@@ -84,7 +84,7 @@ it("should return form dirty/touched/valid state", async () => {
         foo: "bar",
       },
       validator,
-      onSubmit: vi.fn(),
+      handleSubmit: vi.fn(),
     });
     return {
       state: {
@@ -147,7 +147,7 @@ it("should be possible to access the default values in the form or a field", asy
         foo: "bar",
       },
       validator: successValidator,
-      onSubmit: vi.fn(),
+      handleSubmit: vi.fn(),
     });
     return {
       defaultValues: {
@@ -202,7 +202,7 @@ it("should be possible to set the dirty state of a field", async () => {
         foo: "bar",
       },
       validator,
-      onSubmit: vi.fn(),
+      handleSubmit: vi.fn(),
     });
     return {
       state: {
@@ -281,7 +281,7 @@ it("should be possible to set the dirty/touched/error state of the entire form s
         foo: "bar",
       },
       validator: successValidator,
-      onSubmit: vi.fn(),
+      handleSubmit: vi.fn(),
     });
 
     return {
@@ -330,7 +330,7 @@ it("should always give most up-to-date state when accessed outside of render", a
         foo: "bar",
       },
       validator: successValidator,
-      onSubmit: vi.fn(),
+      handleSubmit: vi.fn(),
     });
 
     const initialRef = useRef(form.dirty("foo"));
@@ -362,7 +362,7 @@ it("should be possible to set the value for the entire form scope or a field", a
         foo: "bar",
       },
       validator: successValidator,
-      onSubmit: vi.fn(),
+      handleSubmit: vi.fn(),
     });
 
     const scope = useRvf(form.scope("foo"));

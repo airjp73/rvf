@@ -13,7 +13,7 @@ it("should be possible to use useField with a scoped form", async () => {
         foo: "foo",
       },
       validator: successValidator,
-      onSubmit: submit,
+      handleSubmit: submit,
     });
 
     const field = useField(form.scope("foo"));
@@ -48,7 +48,7 @@ it("should be possible to use useField with context", async () => {
         foo: "foo",
       },
       validator: successValidator,
-      onSubmit: submit,
+      handleSubmit: submit,
     });
 
     return (
@@ -85,7 +85,7 @@ it("should be possible to use useField with scoped context", async () => {
         },
       },
       validator: successValidator,
-      onSubmit: submit,
+      handleSubmit: submit,
     });
 
     return (
@@ -118,7 +118,7 @@ it("should work naturally with DOM submit source", async () => {
         foo: "foo",
       },
       validator: successValidator,
-      onSubmit: submit,
+      handleSubmit: submit,
     });
 
     const field = useField(form.scope("foo"));

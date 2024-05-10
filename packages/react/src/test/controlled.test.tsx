@@ -17,7 +17,7 @@ it("captures and submits with controlled fields", async () => {
         },
       },
       validator: successValidator,
-      onSubmit: submit,
+      handleSubmit: submit,
     });
 
     const renderCounter = useRef(0);
@@ -64,7 +64,7 @@ it("should subscribe to value changes", async () => {
         },
       },
       validator: successValidator,
-      onSubmit: submit,
+      handleSubmit: submit,
     });
 
     const renderCounter = useRef(0);
@@ -102,7 +102,7 @@ it("should be posible to directly set a field value", async () => {
         },
       },
       validator: successValidator,
-      onSubmit: submit,
+      handleSubmit: submit,
     });
 
     return (
@@ -135,7 +135,7 @@ it("should work with custom components", async () => {
         foo: "bar",
       },
       validator: successValidator,
-      onSubmit: submit,
+      handleSubmit: submit,
     });
 
     const { ref, ...control } = controlInput(form.field("foo"));

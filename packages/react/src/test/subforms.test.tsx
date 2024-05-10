@@ -29,7 +29,7 @@ it("should be able to create scoped subforms", async () => {
           data: data as { person: { name: string } },
           error: undefined,
         }),
-      onSubmit: submit,
+      handleSubmit: submit,
     });
 
     const personForm = form.scope("person");
@@ -83,7 +83,7 @@ it("should be able to create subforms of arrays", async () => {
           data: data as { people: { name: string }[] },
           error: undefined,
         }),
-      onSubmit: submit,
+      handleSubmit: submit,
     });
 
     expectTypeOf(form.scope("people[0]")).toEqualTypeOf<
@@ -130,7 +130,7 @@ it("should memoize subform creation", async () => {
         foo: { bar: { baz: { bap: "" } } },
       },
       validator: successValidator,
-      onSubmit: submit,
+      handleSubmit: submit,
     });
 
     expect(form.scope("foo")).toBe(form.scope("foo"));

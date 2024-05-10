@@ -11,7 +11,7 @@ it.todo("should not validate when novalidate is set", async () => {
       },
       validator: () =>
         Promise.resolve({ data: undefined, error: { foo: "invalid" } }),
-      onSubmit: submit,
+      handleSubmit: submit,
     });
 
     return (

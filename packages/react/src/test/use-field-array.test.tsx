@@ -13,7 +13,7 @@ it("should be possible to use useFieldArray with a scoped form", async () => {
         foo: ["foo"],
       },
       validator: successValidator,
-      onSubmit: submit,
+      handleSubmit: submit,
     });
 
     const array = useFieldArray(form.scope("foo"));
@@ -56,7 +56,7 @@ it("should be possible to use useFieldArray with context", async () => {
         foo: ["foo"],
       },
       validator: successValidator,
-      onSubmit: submit,
+      handleSubmit: submit,
     });
 
     return (
@@ -95,7 +95,7 @@ it("should be possible to use useFieldArray with scoped context", async () => {
         },
       },
       validator: successValidator,
-      onSubmit: submit,
+      handleSubmit: submit,
     });
 
     return (
@@ -128,7 +128,7 @@ it("should work naturally with DOM submit source", async () => {
         foo: ["foo"],
       },
       validator: successValidator,
-      onSubmit: submit,
+      handleSubmit: submit,
     });
 
     const array = useFieldArray(form.scope("foo"));

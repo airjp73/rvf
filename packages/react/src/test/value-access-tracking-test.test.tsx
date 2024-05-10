@@ -13,7 +13,7 @@ it("should subscribe to value changes", async () => {
         foo: "bar",
       },
       validator: successValidator,
-      onSubmit: submit,
+      handleSubmit: submit,
     });
 
     return (
@@ -47,7 +47,7 @@ it("should only subscribe to the value that was changed even if it's nested", as
         },
       },
       validator: successValidator,
-      onSubmit: submit,
+      handleSubmit: submit,
     });
 
     return (
@@ -92,7 +92,7 @@ it("should still function correctly if the call to `value` just returns the whol
         },
       },
       validator: successValidator,
-      onSubmit: submit,
+      handleSubmit: submit,
     });
 
     return (
@@ -134,7 +134,7 @@ it("should be possible to access a value in an effect without rerendering", asyn
         foo: "bar",
       },
       validator: successValidator,
-      onSubmit: submit,
+      handleSubmit: submit,
     });
 
     useEffect(() => {
@@ -170,7 +170,7 @@ it("should be possible to set a value using a value returned from the value help
         bar: { value: "" },
       },
       validator: successValidator,
-      onSubmit: submit,
+      handleSubmit: submit,
     });
 
     const value = form.value("foo");

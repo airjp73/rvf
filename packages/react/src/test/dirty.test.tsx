@@ -14,7 +14,7 @@ it("should subscribe to changes in the dirty state", async () => {
         baz: { a: "" },
       },
       validator: successValidator,
-      onSubmit: submit,
+      handleSubmit: submit,
     });
 
     const renderCounter = useRef(0);
