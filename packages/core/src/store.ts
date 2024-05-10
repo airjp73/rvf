@@ -34,6 +34,7 @@ type StoreState = {
   submitStatus: SubmitStatus;
   fieldArrayKeys: Record<string, Array<string>>;
   validationBehaviorConfig: ValidationBehaviorConfig;
+  submitSource: "state" | "dom";
 };
 
 type StoreEvents = {
@@ -181,6 +182,7 @@ export const createFormStateStore = ({
       fieldArrayKeys: {},
       submitStatus: "idle",
       validationBehaviorConfig,
+      submitSource,
 
       /////// Validation
       shouldValidate: (eventType, fieldName, behaviorOverride) => {
@@ -251,7 +253,7 @@ export const createFormStateStore = ({
         });
 
         const getValues = () => {
-          if (submitSource === "state") return get().values;
+          if (get().submitSource === "state") return get().values;
 
           const form = formRef.current;
           if (!form)
