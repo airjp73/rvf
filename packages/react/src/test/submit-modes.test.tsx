@@ -32,7 +32,7 @@ it("should use the form itself as the source of truth for `dom` mode", async () 
   expect(validator).toHaveBeenCalledTimes(1);
   expect(validator).toHaveBeenCalledWith({ foo: "456" });
   expect(submit).toHaveBeenCalledTimes(1);
-  expect(submit).toHaveBeenCalledWith({ foo: "456" });
+  expect(submit).toHaveBeenCalledWith({ foo: "456" }, expect.any(FormData));
 });
 
 it.todo("should include data from the form submitter on submit in `dom` mode");
@@ -112,7 +112,5 @@ it("should respect changes to the submit source", async () => {
   await userEvent.click(screen.getByTestId("switch"));
   await userEvent.click(screen.getByTestId("submit"));
   expect(submit).toHaveBeenCalledTimes(2);
-  expect(submit).toHaveBeenLastCalledWith({
-    foo: "456",
-  });
+  expect(submit).toHaveBeenLastCalledWith({ foo: "456" }, expect.any(FormData));
 });

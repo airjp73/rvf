@@ -93,9 +93,11 @@ type StoreActions = {
 
 export type FormStoreValue = StoreState & StoreEvents & StoreActions;
 
+type StateSubmitter = (data: any) => void | Promise<void>;
+type DomSubmitter = (data: any, formData: FormData) => void | Promise<void>;
 export type MutableImplStore = {
   validator: Validator<any, any>;
-  onSubmit: (data: any) => void | Promise<void>;
+  onSubmit: StateSubmitter | DomSubmitter;
 };
 
 const defaultValidationBehaviorConfig: ValidationBehaviorConfig = {
@@ -258,17 +260,21 @@ export const createFormStateStore = ({
         });
 
         const getValues = () => {
-          if (get().submitSource === "state") return get().values;
+          if (get().submitSource === "state")
+            return [get().values, undefined] as const;
 
           const form = formRef.current;
           if (!form)
             throw new Error(
               "`submitSource` is set to `dom`, but no form is registered with RVF.",
             );
-          return preprocessFormData(new FormData(form));
+
+          const formData = new FormData(form);
+          return [preprocessFormData(formData), formData] as const;
         };
 
-        const result = await mutableImplStore.validator(getValues());
+        const [data, formData] = getValues();
+        const result = await mutableImplStore.validator(data);
 
         if (result.error) {
           set((state) => {
@@ -292,7 +298,13 @@ export const createFormStateStore = ({
         });
 
         try {
-          await mutableImplStore.onSubmit(result.data);
+          if (get().submitSource === "state") {
+            await (mutableImplStore.onSubmit as StateSubmitter)(result.data);
+          } else
+            await (mutableImplStore.onSubmit as DomSubmitter)(
+              result.data,
+              formData as never,
+            );
           set((state) => {
             state.submitStatus = "success";
           });

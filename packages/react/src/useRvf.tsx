@@ -8,14 +8,22 @@ import {
 } from "@rvf/core";
 import { RvfReact, useRvfInternal } from "./base";
 
+type SubmitTypes<FormOutputData> =
+  | {
+      submitSource: "state";
+      handleSubmit: (data: FormOutputData) => Promise<void>;
+    }
+  | {
+      submitSource: "dom";
+      handleSubmit: (data: FormOutputData, formData: FormData) => Promise<void>;
+    };
+
 export type RvfOpts<FormInputData extends FieldValues, FormOutputData> = {
   /**
    * The initial values of the form.
    * It's recommended that you provide a default value for every field in the form.
    */
   defaultValues: FormInputData;
-
-  submitSource?: "state" | "dom";
 
   /**
    * A function that validates the form's values.
@@ -24,16 +32,10 @@ export type RvfOpts<FormInputData extends FieldValues, FormOutputData> = {
   validator: Validator<FormInputData, FormOutputData>;
 
   /**
-   * Handles the submission of the form.
-   * This will be called when the form is submitted.
-   */
-  handleSubmit: NoInfer<(data: FormOutputData) => Promise<void>>;
-
-  /**
    * Allows you to customize the validation behavior of the form.
    */
   validationBehaviorConfig?: ValidationBehaviorConfig;
-};
+} & SubmitTypes<FormOutputData>;
 
 const isRvf = (form: any): form is Rvf<any> =>
   "__brand__" in form && form.__brand__ === "rvf";
@@ -60,7 +62,7 @@ export function useRvf<FormInputData extends FieldValues, FormOutputData>(
     return createRvf({
       defaultValues: optsOrForm.defaultValues,
       validator: optsOrForm.validator,
-      onSubmit: optsOrForm.handleSubmit,
+      onSubmit: optsOrForm.handleSubmit as never,
       validationBehaviorConfig: optsOrForm.validationBehaviorConfig,
       submitSource: optsOrForm.submitSource ?? "state",
     });

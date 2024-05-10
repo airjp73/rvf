@@ -8,13 +8,22 @@ import {
 } from "./store";
 import { createTrackedSelector } from "react-tracked";
 
+type SubmitTypes<FormOutputData> =
+  | {
+      submitSource: "state";
+      onSubmit: (data: FormOutputData) => Promise<void>;
+    }
+  | {
+      submitSource: "dom";
+      onSubmit: (data: FormOutputData, formData: FormData) => Promise<void>;
+    };
+
 type FormInit<FormInputData extends FieldValues, FormOutputData> = {
   defaultValues: FormInputData;
   validator: Validator<FormInputData, FormOutputData>;
-  onSubmit: (data: FormOutputData) => Promise<void>;
   validationBehaviorConfig?: ValidationBehaviorConfig;
-  submitSource: "state" | "dom";
-};
+  onSubmit: (data: FormOutputData) => Promise<void>;
+} & SubmitTypes<FormOutputData>;
 
 export interface Rvf<FormInputData> {
   __brand__: "rvf";

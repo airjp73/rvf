@@ -41,33 +41,47 @@ export function useRvf<FormInputData extends FieldValues, FormOutputData>(
 ): RvfReact<FormInputData> {
   const submitWithRemix = useRemixSubmit();
 
-  // We're not actually breaking the rules here, it's just easier for the types to
-  // put the whole hook call in the conditional.
+  // We're not actually breaking the rules here, because both branches have the same hook calls.
+  // it's just easier for the types to put the whole hook call in the conditional.
   /* eslint-disable react-hooks/rules-of-hooks */
-  const base =
-    "__brand__" in optsOrForm
-      ? useRvfReact(optsOrForm)
-      : useRvfReact<FormInputData, FormOutputData>({
-          defaultValues: optsOrForm.defaultValues,
-          validator: optsOrForm.validator,
-          validationBehaviorConfig: optsOrForm.validationBehaviorConfig,
+  if ("__brand__" in optsOrForm) {
+    return useRvfReact(optsOrForm);
+  }
 
-          // For remix, it makes sense to default to "dom" for submitSource
-          submitSource: optsOrForm.submitSource ?? "dom",
+  // For remix, it makes sense to default to "dom" for submitSource
+  const submitSource = optsOrForm.submitSource ?? ("dom" as const);
 
-          // For remix, we need to manage the submission differently
-          handleSubmit: (data) => {
-            return submitWithRemix(data, {
-              method: optsOrForm.method,
-              replace: optsOrForm.replace,
-              preventScrollReset: optsOrForm.preventScrollReset,
-              relative: optsOrForm.relative,
-              action: optsOrForm.action,
-              encType: optsOrForm.encType,
-            });
-          },
-        });
+  const handleDomSubmit = (_data: FormOutputData, formData: FormData) => {
+    return submitWithRemix(formData, {
+      method: optsOrForm.method,
+      replace: optsOrForm.replace,
+      preventScrollReset: optsOrForm.preventScrollReset,
+      relative: optsOrForm.relative,
+      action: optsOrForm.action,
+      encType: optsOrForm.encType,
+    });
+  };
+
+  const handleStateSubmit = (data: FormOutputData) => {
+    if (!optsOrForm.handleSubmit) {
+      throw new Error(
+        "`state` submit source is only supported with `handleSubmit`",
+      );
+    }
+
+    return optsOrForm.handleSubmit(data);
+  };
+
+  const handleSubmit =
+    submitSource === "state" ? handleStateSubmit : handleDomSubmit;
+
+  return useRvfReact<FormInputData, FormOutputData>({
+    defaultValues: optsOrForm.defaultValues,
+    validator: optsOrForm.validator,
+    validationBehaviorConfig: optsOrForm.validationBehaviorConfig,
+
+    submitSource,
+    handleSubmit: handleSubmit as never,
+  });
   /* eslint-enable */
-
-  return base;
 }
