@@ -7,6 +7,7 @@ import {
   createRefStore,
 } from "./store";
 import { createTrackedSelector } from "react-tracked";
+import { StringToPathTuple, ValidStringPaths, ValueAtPath } from "set-get";
 
 type SubmitTypes<FormOutputData> =
   | {
@@ -30,6 +31,9 @@ export interface Rvf<FormInputData> {
   __type__FormInputData: FormInputData;
   __field_prefix__: string;
   __store__: RvfStore;
+  scope<Path extends ValidStringPaths<FormInputData>>(
+    field: Path,
+  ): Rvf<ValueAtPath<FormInputData, StringToPathTuple<Path>>>;
 }
 
 interface RvfStore {
@@ -85,23 +89,20 @@ const instantiateRvf = <FormInputData extends FieldValues>(
   __type__FormInputData: {} as any,
   __field_prefix__: prefix,
   __store__: store,
+  scope(field) {
+    const newPrefix = [prefix, field].filter(Boolean).join(".");
+    if (store.subformCache.has(newPrefix))
+      return store.subformCache.get(newPrefix);
+
+    const scoped = instantiateRvf(store, newPrefix);
+    store.subformCache.set(newPrefix, scoped);
+    return scoped;
+  },
 });
 
 export const scopeRvf = (
   parentForm: Rvf<unknown>,
   prefix: string,
 ): Rvf<unknown> => {
-  const newPrefix = parentForm.__field_prefix__
-    ? `${parentForm.__field_prefix__}.${prefix}`
-    : prefix;
-  if (parentForm.__store__.subformCache.has(newPrefix))
-    return parentForm.__store__.subformCache.get(newPrefix);
-
-  const scoped = {
-    ...parentForm,
-    __field_prefix__: newPrefix,
-  } as any;
-  parentForm.__store__.subformCache.set(newPrefix, scoped);
-
-  return scoped;
+  return parentForm.scope(prefix as never);
 };
