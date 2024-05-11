@@ -3,8 +3,11 @@ import {
   useActionData,
   useFetcher,
 } from "@remix-run/react";
-import { withZod } from "@rvf/zod";
-import { ValidatedForm, validationError } from "@rvf/remix";
+import { withZod } from "@remix-validated-form/with-zod";
+import {
+  ValidatedForm,
+  validationError,
+} from "remix-validated-form";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
 import { Alert } from "~/components/Alert";

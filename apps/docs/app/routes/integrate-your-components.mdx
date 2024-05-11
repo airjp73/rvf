@@ -26,7 +26,7 @@ or you don't have a plain input,
 check out the [useField](/reference/use-field) documentation to see what other helpers and options are available.
 
 ```tsx
-import { useField } from "@rvf/remix";
+import { useField } from "remix-validated-form";
 
 type MyInputProps = {
   name: string;
@@ -53,7 +53,7 @@ The `useIsSubmitting` hook enables you to detect if the current form is submitti
 even if there are multiple forms on the page.
 
 ```tsx
-import { useIsSubmitting } from "@rvf/remix";
+import { useIsSubmitting } from "remix-validated-form";
 
 export const MySubmitButton = () => {
   const isSubmitting = useIsSubmitting();
@@ -70,8 +70,8 @@ export const MySubmitButton = () => {
 Now, we can create a fully validated form with minimal boilerplate.
 
 ```tsx
-import { ValidatedForm } from "@rvf/remix";
-import { withZod } from "@rvf/zod";
+import { ValidatedForm } from "remix-validated-form";
+import { withZod } from "@remix-validated-form/with-zod";
 import { z } from "zod";
 
 export const validator = withZod(

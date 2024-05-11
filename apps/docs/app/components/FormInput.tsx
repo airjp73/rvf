@@ -1,7 +1,7 @@
 import { ExclamationCircleIcon } from "@heroicons/react/solid";
 import classNames from "classnames";
 import { FC } from "react";
-import { useField } from "@rvf/remix";
+import { useField } from "remix-validated-form";
 
 export type InputProps = {
   label: string;

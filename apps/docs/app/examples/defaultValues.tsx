@@ -1,6 +1,6 @@
 import { useActionData } from "@remix-run/react";
-import { withZod } from "@rvf/zod";
-import { ValidatedForm } from "@rvf/remix";
+import { withZod } from "@remix-validated-form/with-zod";
+import { ValidatedForm } from "remix-validated-form";
 import { z } from "zod";
 import { Alert } from "~/components/Alert";
 import { FormInput } from "~/components/FormInput";

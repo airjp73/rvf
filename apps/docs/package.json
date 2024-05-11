@@ -20,7 +20,7 @@
     "@remix-run/react": "^1.16.1",
     "@remix-run/vercel": "^1.16.1",
     "@remix-run/server-runtime": "^1.16.1",
-    "@rvf/zod": "*",
+    "@remix-validated-form/with-zod": "2.0.7",
     "@vercel/node": "^2.8.1",
     "classnames": "^2.3.1",
     "framer-motion": "^7.6.12",
@@ -30,7 +30,7 @@
     "react": "^18.1.0",
     "react-dom": "^18.1.0",
     "rehype-highlight": "^5.0.1",
-    "@rvf/remix": "*",
+    "remix-validated-form": "5.1.5",
     "zod": "~3.20.0",
     "zod-form-data": "*"
   },

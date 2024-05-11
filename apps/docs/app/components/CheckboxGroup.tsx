@@ -1,5 +1,5 @@
 import { PropsWithChildren } from "react";
-import { useField } from "@rvf/remix";
+import { useField } from "remix-validated-form";
 
 export type CheckboxGroupProps = PropsWithChildren<{
   label: string;

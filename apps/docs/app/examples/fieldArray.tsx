@@ -4,14 +4,14 @@ import {
   useActionData,
   useLoaderData,
 } from "@remix-run/react";
-import { withZod } from "@rvf/zod";
+import { withZod } from "@remix-validated-form/with-zod";
 import { nanoid } from "nanoid";
 import {
   FieldArray,
   ValidatedForm,
   validationError,
   ValidatorData,
-} from "@rvf/remix";
+} from "remix-validated-form";
 import { z } from "zod";
 import { Alert } from "~/components/Alert";
 import { Button } from "~/components/Button";
