@@ -1,4 +1,4 @@
-import { RefCallback } from "react";
+import { RefCallback, Ref } from "react";
 import * as R from "remeda";
 import {
   getCheckboxChecked,
@@ -13,7 +13,7 @@ export type CreateGetInputPropsOptions = {
   defaultValue?: any;
   name: string;
   getCurrentValue: () => unknown;
-  ref: RefCallback<HTMLElement>;
+  ref: Ref<HTMLElement>;
 };
 
 type HandledProps = "name" | "defaultValue" | "defaultChecked";
