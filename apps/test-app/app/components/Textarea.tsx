@@ -18,10 +18,11 @@ export const Textarea: FC<TextareaProps> = ({
     <>
       <label htmlFor={name}>{label}</label>
       <textarea
-        {...getInputProps({ id: name })}
+        id={name}
+        {...getInputProps()}
         data-testid={dataTestId}
       ></textarea>
-      {error && <p>{error}</p>}
+      {error() && <p>{error()}</p>}
     </>
   );
 };

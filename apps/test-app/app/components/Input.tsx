@@ -1,5 +1,6 @@
 import React, { forwardRef } from "react";
 import { useField } from "@rvf/remix";
+import { Rvf } from "@rvf/core";
 
 type InputProps = {
   name: string;
@@ -8,7 +9,7 @@ type InputProps = {
   value?: string;
   hideErrors?: boolean;
   "data-testid"?: string;
-  form?: string;
+  form?: Rvf<string>;
   disabled?: boolean;
 };
 
@@ -26,25 +27,23 @@ export const Input = forwardRef(
     }: InputProps,
     ref: React.ForwardedRef<HTMLInputElement>,
   ) => {
-    const { getInputProps, error } = useField(name, {
-      formId: form,
-    });
-    const actualValue = value ?? (type === "checkbox" ? "on" : undefined);
+    const field = useField(form ?? name);
     return (
       <div>
         <label htmlFor={name}>{label}</label>
         <input
           data-testid={dataTestId}
-          {...getInputProps({
-            form,
+          id={name}
+          disabled={disabled}
+          {...field.getInputProps({
             type,
+            value,
             ref,
-            id: name,
-            value: actualValue,
-            disabled,
           })}
         />
-        {error && !noErrors && <span style={{ color: "red" }}>{error}</span>}
+        {field.error() && !noErrors && (
+          <span style={{ color: "red" }}>{field.error()}</span>
+        )}
       </div>
     );
   },

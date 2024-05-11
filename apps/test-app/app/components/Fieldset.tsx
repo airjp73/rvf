@@ -4,23 +4,15 @@ import { useField } from "@rvf/remix";
 type FieldsetProps = PropsWithChildren<{
   label: string;
   name: string;
-  form?: string;
 }>;
 
-export const Fieldset: FC<FieldsetProps> = ({
-  children,
-  label,
-  name,
-  form,
-}) => {
-  const { error, validate } = useField(name, {
-    formId: form,
-  });
+export const Fieldset: FC<FieldsetProps> = ({ children, label, name }) => {
+  const { error, validate } = useField(name);
   return (
     <fieldset onChange={validate}>
       <legend>{label}</legend>
       {children}
-      {error ? <p style={{ color: "red" }}>{error}</p> : null}
+      {error() ? <p style={{ color: "red" }}>{error()}</p> : null}
     </fieldset>
   );
 };
