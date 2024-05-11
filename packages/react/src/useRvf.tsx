@@ -18,7 +18,10 @@ type SubmitTypes<FormOutputData> =
       handleSubmit: (data: FormOutputData, formData: FormData) => Promise<void>;
     };
 
-export type RvfOpts<FormInputData extends FieldValues, FormOutputData> = {
+export type RvfOpts<
+  FormInputData extends FieldValues = Record<never, never>,
+  FormOutputData = never,
+> = {
   /**
    * The initial values of the form.
    * It's recommended that you provide a default value for every field in the form.
@@ -48,19 +51,32 @@ export function useRvf<FormInputData extends FieldValues, FormOutputData>(
 ): RvfReact<FormInputData>;
 
 /**
+ * Create and use an `Rvf`.
+ */
+export function useRvf<FormOutputData>(
+  options: Omit<RvfOpts<Record<never, never>, FormOutputData>, "defaultValues">,
+): RvfReact<unknown>;
+
+/**
  * Interprets an `Rvf` created via `form.scope`, for use in a subcomponent.
  */
 export function useRvf<FormInputData>(
   form: Rvf<FormInputData>,
 ): RvfReact<FormInputData>;
 
-export function useRvf<FormInputData extends FieldValues, FormOutputData>(
-  optsOrForm: RvfOpts<FormInputData, FormOutputData> | Rvf<FormInputData>,
-): RvfReact<FormInputData> {
-  const [form] = useState<Rvf<FormInputData>>(() => {
+export function useRvf(
+  optsOrForm:
+    | RvfOpts<any, unknown>
+    | Omit<RvfOpts<any, unknown>, "defaultValues">
+    | Rvf<unknown>,
+): RvfReact<any> {
+  const [form] = useState<Rvf<unknown>>(() => {
     if ("__brand__" in optsOrForm) return optsOrForm;
     return createRvf({
-      defaultValues: optsOrForm.defaultValues,
+      defaultValues:
+        "defaultValues" in optsOrForm && optsOrForm.defaultValues
+          ? optsOrForm.defaultValues
+          : {},
       validator: optsOrForm.validator,
       onSubmit: optsOrForm.handleSubmit as never,
       validationBehaviorConfig: optsOrForm.validationBehaviorConfig,

@@ -71,8 +71,10 @@ export const makeFieldImpl = <FormInputData,>({
 
   const transientRef: RefCallback<HTMLElement> = (el) => {
     form.__store__.transientFieldRefs.setRef(fieldName, el);
-    if (el && "value" in el)
-      el.value = getFieldValue(transientState(), fieldName);
+    if (el && "value" in el) {
+      const value = getFieldValue(transientState(), fieldName);
+      if (value != null) el.value = value;
+    }
   };
 
   return {

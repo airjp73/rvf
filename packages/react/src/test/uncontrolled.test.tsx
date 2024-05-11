@@ -51,6 +51,48 @@ it("captures and submits with uncontrolled fields", async () => {
   expect(screen.getByTestId("render-count")).toHaveTextContent("1");
 });
 
+it("shoud work correctly when no default values exist", async () => {
+  const submit = vi.fn();
+
+  const TestComp = () => {
+    const form = useRvf({
+      validator: successValidator,
+      handleSubmit: submit,
+    });
+
+    const renderCounter = useRef(0);
+    renderCounter.current++;
+
+    return (
+      <form {...form.getFormProps()} data-testid="form">
+        {/* @ts-expect-error */}
+        <input data-testid="foo" {...form.field("foo").getInputProps()} />
+        {/* @ts-expect-error */}
+        <input data-testid="baz.a" {...form.field("baz.a").getInputProps()} />
+        <pre data-testid="render-count">{renderCounter.current}</pre>
+      </form>
+    );
+  };
+
+  render(<TestComp />);
+  expect(screen.getByTestId("foo")).toHaveValue("");
+  expect(screen.getByTestId("baz.a")).toHaveValue("");
+  expect(screen.getByTestId("render-count")).toHaveTextContent("1");
+
+  await userEvent.type(screen.getByTestId("foo"), "test");
+  await userEvent.type(screen.getByTestId("baz.a"), "bob");
+  fireEvent.submit(screen.getByTestId("form"));
+
+  await waitFor(() => expect(submit).toHaveBeenCalledTimes(1));
+  expect(submit).toHaveBeenCalledWith({
+    foo: "test",
+    baz: { a: "bob" },
+  });
+
+  // Once for each keystroke + once for the initial render
+  expect(screen.getByTestId("render-count")).toHaveTextContent("1");
+});
+
 it("should work correctly when the input is unmounted and remounted", async () => {
   const submit = vi.fn();
 
