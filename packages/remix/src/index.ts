@@ -23,4 +23,5 @@ export {
   useRvfContext,
   useRvfOrContext,
 } from "@rvf/react";
-export { useRvf } from "./useRvf";
+export { useRvf, RvfRemixOpts } from "./useRvf";
+export { ValidatedForm, ValidatedFormProps } from "./ValidatedForm";
