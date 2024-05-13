@@ -24,7 +24,7 @@ type PathSegment<
 > = Root extends true
   ? `${Segment}`
   : Segment extends number
-    ? `[${Segment}]`
+    ? `[${Segment}]` | `.${Segment}`
     : `.${Segment}`;
 
 type StringPaths<
