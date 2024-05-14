@@ -67,9 +67,7 @@ it("shoud work correctly when no default values exist", async () => {
 
     return (
       <form {...form.getFormProps()} data-testid="form">
-        {/* @ts-expect-error */}
         <input data-testid="foo" {...controlInput(form.field("foo"))} />
-        {/* @ts-expect-error */}
         <input data-testid="baz.a" {...controlInput(form.field("baz.a"))} />
         <pre data-testid="render-count">{renderCounter.current}</pre>
       </form>

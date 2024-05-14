@@ -19,14 +19,14 @@ type SubmitTypes<FormOutputData> =
     };
 
 export type RvfOpts<
-  FormInputData extends FieldValues = Record<never, never>,
+  FormInputData extends FieldValues = FieldValues,
   FormOutputData = never,
 > = {
   /**
    * The initial values of the form.
    * It's recommended that you provide a default value for every field in the form.
    */
-  defaultValues: FormInputData;
+  defaultValues?: FormInputData;
 
   /**
    * A function that validates the form's values.
@@ -49,13 +49,6 @@ const isRvf = (form: any): form is Rvf<any> =>
 export function useRvf<FormInputData extends FieldValues, FormOutputData>(
   options: RvfOpts<FormInputData, FormOutputData>,
 ): RvfReact<FormInputData>;
-
-/**
- * Create and use an `Rvf`.
- */
-export function useRvf<FormOutputData>(
-  options: Omit<RvfOpts<Record<never, never>, FormOutputData>, "defaultValues">,
-): RvfReact<unknown>;
 
 /**
  * Interprets an `Rvf` created via `form.scope`, for use in a subcomponent.

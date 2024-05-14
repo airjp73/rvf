@@ -1,6 +1,6 @@
 import { GenericObject } from "./native-form-data/flatten";
 
-export type FieldValues = Record<string | number, unknown>;
+export type FieldValues = Record<string | number, any>;
 
 export type SubmitStatus = "idle" | "submitting" | "error" | "success";
 
