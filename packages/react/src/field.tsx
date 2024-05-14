@@ -11,6 +11,8 @@ import {
 } from "@rvf/core";
 import { GetInputProps, createGetInputProps } from "./inputs/getInputProps";
 import { useRvfOrContextInternal } from "./context";
+import { getRadioChecked } from "./inputs/logic/getRadioChecked";
+import { getCheckboxChecked } from "./inputs/logic/getCheckboxChecked";
 
 export interface RvfField<FormInputData> {
   getInputProps: GetInputProps;
@@ -79,9 +81,17 @@ export const makeFieldImpl = <FormInputData,>({
       }
 
       form.__store__.transientFieldRefs.setRef(fieldName, el, sym);
-      if (el && "value" in el) {
+      if (el instanceof HTMLInputElement) {
         const value = getFieldValue(transientState(), fieldName);
-        if (value != null) el.value = value;
+        if (el.type === "radio") {
+          const checked = getRadioChecked(el.value, value);
+          if (checked != null) el.checked = checked;
+        } else if (el.type === "checkbox") {
+          const checked = getCheckboxChecked(el.value, value);
+          if (checked != null) el.checked = checked;
+        } else if (value != null) {
+          el.value = value;
+        }
       }
     };
   };
