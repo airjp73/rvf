@@ -16,6 +16,7 @@ export const createRefStore = () => {
   const elementRefs = new MultiValueMap<string, HTMLElement>();
   const symbolMaps = new Map<symbol, HTMLElement>();
   return {
+    has: (name: string) => elementRefs.has(name),
     getRefs: (fieldName: string) => elementRefs.getAll(fieldName),
     removeRef: (fieldName: string, symbol?: symbol) => {
       if (symbol) {

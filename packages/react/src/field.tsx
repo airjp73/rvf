@@ -8,11 +8,11 @@ import {
   getFieldError,
   getFieldTouched,
   getFieldValue,
+  setFormControlValue,
 } from "@rvf/core";
 import { GetInputProps, createGetInputProps } from "./inputs/getInputProps";
 import { useRvfOrContextInternal } from "./context";
-import { getRadioChecked } from "./inputs/logic/getRadioChecked";
-import { getCheckboxChecked } from "./inputs/logic/getCheckboxChecked";
+import { isFormControl } from "./inputs/logic/isFormControl";
 
 export interface RvfField<FormInputData> {
   getInputProps: GetInputProps;
@@ -20,6 +20,7 @@ export interface RvfField<FormInputData> {
     onChange?: (value: FormInputData) => void;
     onBlur?: () => void;
   }) => {
+    name: string;
     onChange: (value: FormInputData) => void;
     onBlur: () => void;
     value: FormInputData;
@@ -81,17 +82,9 @@ export const makeFieldImpl = <FormInputData,>({
       }
 
       form.__store__.transientFieldRefs.setRef(fieldName, el, sym);
-      if (el instanceof HTMLInputElement) {
+      if (isFormControl(el)) {
         const value = getFieldValue(transientState(), fieldName);
-        if (el.type === "radio") {
-          const checked = getRadioChecked(el.value, value);
-          if (checked != null) el.checked = checked;
-        } else if (el.type === "checkbox") {
-          const checked = getCheckboxChecked(el.value, value);
-          if (checked != null) el.checked = checked;
-        } else if (value != null) {
-          el.value = value;
-        }
+        if (value != null) setFormControlValue(el, value);
       }
     };
   };
@@ -120,6 +113,7 @@ export const makeFieldImpl = <FormInputData,>({
     }),
 
     getControlProps: (props = {}) => ({
+      name: fieldName,
       onChange: (value) => {
         onChange(value);
         props.onChange?.(value);
