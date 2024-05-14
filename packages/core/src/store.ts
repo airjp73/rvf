@@ -10,16 +10,31 @@ import {
   Validator,
 } from "./types";
 import { GenericObject } from "./native-form-data/flatten";
+import { MultiValueMap } from "./native-form-data/MultiValueMap";
 
 export const createRefStore = () => {
-  const elementRefs = new Map<string, HTMLElement | null>();
+  const elementRefs = new MultiValueMap<string, HTMLElement>();
+  const symbolMaps = new Map<symbol, HTMLElement>();
   return {
-    getRef: (fieldName: string) => elementRefs.get(fieldName),
-    setRef: (fieldName: string, ref: HTMLElement | null) =>
-      elementRefs.set(fieldName, ref),
+    getRefs: (fieldName: string) => elementRefs.getAll(fieldName),
+    removeRef: (fieldName: string, symbol?: symbol) => {
+      if (symbol) {
+        const el = symbolMaps.get(symbol);
+        symbolMaps.delete(symbol);
+        if (!el)
+          throw new Error("Ref symbol not found. This is likely a bug in RVF");
+        elementRefs.remove(fieldName, el);
+        return;
+      }
+      elementRefs.delete(fieldName);
+    },
+    setRef: (fieldName: string, ref: HTMLElement, symbol?: symbol) => {
+      if (symbol) symbolMaps.set(symbol, ref);
+      elementRefs.add(fieldName, ref);
+    },
     forEach: (callback: (fieldName: string, ref: HTMLElement | null) => void) =>
-      [...elementRefs.entries()].forEach(([fieldName, ref]) =>
-        callback(fieldName, ref),
+      [...elementRefs.entries()].forEach(([fieldName, refs]) =>
+        refs.forEach((ref) => callback(fieldName, ref)),
       ),
     all: () => [...elementRefs.entries()],
   };
@@ -287,11 +302,10 @@ export const createFormStateStore = ({
             state.validationErrors = result.error.fieldErrors;
           });
           const elementsWithErrors = Object.keys(result.error.fieldErrors)
-            .map(
-              (fieldName) =>
-                transientFieldRefs.getRef(fieldName) ??
-                controlledFieldRefs.getRef(fieldName),
-            )
+            .flatMap((fieldName) => [
+              ...transientFieldRefs.getRefs(fieldName),
+              ...controlledFieldRefs.getRefs(fieldName),
+            ])
             .filter((val): val is NonNullable<typeof val> => val != null);
           focusFirst(elementsWithErrors);
 
@@ -337,10 +351,9 @@ export const createFormStateStore = ({
           else state.values = value as any;
         });
 
-        const transientRef = transientFieldRefs.getRef(fieldName);
-        if (transientRef) {
-          setFormControlValue(transientRef, value);
-        }
+        transientFieldRefs.getRefs(fieldName).forEach((ref) => {
+          setFormControlValue(ref, value);
+        });
       },
 
       setAllValues: (data) => {

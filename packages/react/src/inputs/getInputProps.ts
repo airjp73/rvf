@@ -13,7 +13,7 @@ export type CreateGetInputPropsOptions = {
   defaultValue?: any;
   name: string;
   getCurrentValue: () => unknown;
-  ref: Ref<HTMLElement>;
+  createRef: () => Ref<HTMLElement>;
 };
 
 type HandledProps = "name" | "defaultValue" | "defaultChecked";
@@ -39,7 +39,7 @@ export const createGetInputProps = ({
   onBlur,
   defaultValue,
   name,
-  ref,
+  createRef,
   getCurrentValue,
 }: CreateGetInputPropsOptions): GetInputProps => {
   return <T extends MinimalInputProps>(props = {} as any) => {
@@ -68,7 +68,7 @@ export const createGetInputProps = ({
         return props?.onBlur?.(...args);
       },
       name,
-      ref,
+      ref: createRef(),
     };
 
     if (props.type === "checkbox") {

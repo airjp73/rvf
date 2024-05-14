@@ -9,6 +9,7 @@ import {
   getFieldTouched,
   getFieldDirty,
   getFieldError,
+  focusFirst,
 } from "@rvf/core";
 import {
   StringToPathTuple,
@@ -390,10 +391,11 @@ export const makeBaseRvfReact = <FormInputData,>({
       transientState().setError(f(fieldName), null),
 
     focus: (fieldName) => {
-      const element =
-        form.__store__.transientFieldRefs.getRef(f(fieldName)) ??
-        form.__store__.controlledFieldRefs.getRef(f(fieldName));
-      if (element && "focus" in element) element.focus();
+      const elements = [
+        ...form.__store__.transientFieldRefs.getRefs(f(fieldName)),
+        ...form.__store__.controlledFieldRefs.getRefs(f(fieldName)),
+      ];
+      focusFirst(elements);
     },
 
     validate: () => form.__store__.store.getState().validate(),

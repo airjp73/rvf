@@ -25,8 +25,8 @@ export interface RvfField<FormInputData> {
   };
 
   refs: {
-    controlled: RefCallback<HTMLElement>;
-    transient: RefCallback<HTMLElement>;
+    controlled: () => RefCallback<HTMLElement>;
+    transient: () => RefCallback<HTMLElement>;
   };
 
   onChange: (value: FormInputData) => void;
@@ -69,12 +69,33 @@ export const makeFieldImpl = <FormInputData,>({
 
   const transientState = () => form.__store__.store.getState();
 
-  const transientRef: RefCallback<HTMLElement> = (el) => {
-    form.__store__.transientFieldRefs.setRef(fieldName, el);
-    if (el && "value" in el) {
-      const value = getFieldValue(transientState(), fieldName);
-      if (value != null) el.value = value;
-    }
+  // This is a little hacky, but we can simplify when React adds ref cleanup functions.
+  const createTransientRef = (): RefCallback<HTMLElement> => {
+    const sym = Symbol(fieldName);
+    return (el) => {
+      if (el == null) {
+        form.__store__.transientFieldRefs.removeRef(fieldName, sym);
+        return;
+      }
+
+      form.__store__.transientFieldRefs.setRef(fieldName, el, sym);
+      if (el && "value" in el) {
+        const value = getFieldValue(transientState(), fieldName);
+        if (value != null) el.value = value;
+      }
+    };
+  };
+
+  const createControlledRef = (): RefCallback<HTMLElement> => {
+    const sym = Symbol(fieldName);
+    return (el) => {
+      if (el == null) {
+        form.__store__.controlledFieldRefs.removeRef(fieldName, sym);
+        return;
+      }
+
+      form.__store__.controlledFieldRefs.setRef(fieldName, el, sym);
+    };
   };
 
   return {
@@ -83,7 +104,7 @@ export const makeFieldImpl = <FormInputData,>({
       onBlur,
       defaultValue: getFieldDefaultValue(trackedState, fieldName),
       name: fieldName,
-      ref: transientRef,
+      createRef: createTransientRef,
       getCurrentValue: () =>
         getFieldValue(form.__store__.store.getState(), fieldName),
     }),
@@ -98,13 +119,12 @@ export const makeFieldImpl = <FormInputData,>({
         props.onBlur?.();
       },
       value: getFieldValue(trackedState, fieldName) as never,
-      ref: (ref) => form.__store__.controlledFieldRefs.setRef(fieldName, ref),
+      ref: createControlledRef(),
     }),
 
     refs: {
-      transient: transientRef,
-      controlled: (el) =>
-        form.__store__.controlledFieldRefs.setRef(fieldName, el),
+      transient: createTransientRef,
+      controlled: createControlledRef,
     },
 
     onChange,
