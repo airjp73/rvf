@@ -398,7 +398,11 @@ export const makeBaseRvfReact = <FormInputData,>({
       focusFirst(elements);
     },
 
-    validate: () => form.__store__.store.getState().validate(),
+    validate: () =>
+      form.__store__.store
+        .getState()
+        .validate()
+        .then((res) => res.errors ?? {}),
     resetForm: (...args) =>
       form.__store__.store.getState().reset(...(args as any)),
     resetField: (fieldName, nextValue) =>

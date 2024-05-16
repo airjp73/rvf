@@ -38,7 +38,17 @@ export const getFormControlValue = (element: HTMLElement) => {
   return undefined;
 };
 
-export const focusFirst = (elements: HTMLElement[]) => {
+export type FormControl =
+  | HTMLInputElement
+  | HTMLSelectElement
+  | HTMLTextAreaElement;
+
+export const isFormControl = (el: EventTarget): el is FormControl =>
+  el instanceof HTMLInputElement ||
+  el instanceof HTMLSelectElement ||
+  el instanceof HTMLTextAreaElement;
+
+const getFirst = (elements: HTMLElement[]) => {
   const sorted = elements.toSorted((a, b) => {
     const comparison = a.compareDocumentPosition(b);
     if (comparison & Node.DOCUMENT_POSITION_FOLLOWING) {
@@ -52,5 +62,41 @@ export const focusFirst = (elements: HTMLElement[]) => {
     (element): element is typeof element & { focus: () => void } =>
       "focus" in element,
   );
+  return firstFocusable;
+};
+
+export const focusOrReportFirst = (elements: HTMLElement[]) => {
+  const firstFocusable = getFirst(elements);
+  if (
+    firstFocusable &&
+    "checkValidity" in firstFocusable &&
+    typeof firstFocusable.checkValidity === "function" &&
+    !firstFocusable.checkValidity() &&
+    "reportValidity" in firstFocusable &&
+    typeof firstFocusable.reportValidity === "function"
+  ) {
+    firstFocusable.reportValidity();
+  } else {
+    firstFocusable?.focus();
+  }
+};
+
+export const focusFirst = (elements: HTMLElement[]) => {
+  const firstFocusable = getFirst(elements);
   firstFocusable?.focus();
+};
+
+export const getElementsWithNames = (
+  names: string[],
+  formElement: HTMLFormElement,
+) => {
+  if (names.length === 0) return [];
+
+  const els = document.querySelectorAll(
+    names.map((name) => `[name="${name}"]`).join(","),
+  );
+
+  return [...els].filter(
+    (el) => isFormControl(el) && el.form === formElement,
+  ) as HTMLElement[];
 };

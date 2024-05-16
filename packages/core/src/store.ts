@@ -1,7 +1,12 @@
 import { setPath, getPath } from "set-get";
 import { create } from "zustand";
 import { immer } from "./immer";
-import { setFormControlValue, focusFirst } from "./dom";
+import {
+  setFormControlValue,
+  focusOrReportFirst,
+  isFormControl,
+  getElementsWithNames,
+} from "./dom";
 import {
   FieldValues,
   SubmitStatus,
@@ -11,6 +16,7 @@ import {
 } from "./types";
 import { GenericObject } from "./native-form-data/flatten";
 import { MultiValueMap } from "./native-form-data/MultiValueMap";
+import { getFieldError } from "./getters";
 
 export const createRefStore = () => {
   const elementRefs = new MultiValueMap<string, HTMLElement>();
@@ -83,10 +89,13 @@ type StoreActions = {
     fieldName: string,
     validationBehaviorConfig?: ValidationBehaviorConfig,
   ) => boolean;
-  getValidationErrors: (
+  validate: (
     nextValues?: FieldValues,
-  ) => Promise<Record<string, string>>;
-  validate: () => Promise<Record<string, string>>;
+    shouldMarkSubmitted?: boolean,
+  ) => Promise<
+    | { data: GenericObject; errors: undefined }
+    | { errors: Record<string, string>; data: undefined }
+  >;
 
   syncOptions: (opts: {
     submitSource: "state" | "dom";
@@ -229,18 +238,55 @@ export const createFormStateStore = ({
         return currentValidationBehavior === "onChange";
       },
 
-      getValidationErrors: async (nextValues = get().values) => {
-        const result = await mutableImplStore.validator.validate(nextValues);
-        if (result.error) return result.error.fieldErrors;
-        return {};
-      },
+      validate: async (nextValues, shouldMarkSubmitted = false) => {
+        const result = await mutableImplStore.validator.validate(
+          nextValues ?? get().values,
+        );
+        if (result.data) {
+          set((state) => {
+            state.validationErrors = {};
+          });
+          document.querySelectorAll("input,textarea,select").forEach((el) => {
+            if (
+              isFormControl(el) &&
+              el.form === formRef.current &&
+              !transientFieldRefs.has(el.name) &&
+              !controlledFieldRefs.has(el.name)
+            ) {
+              el.setCustomValidity("");
+            }
+          });
+          return { data: result.data, errors: undefined };
+        }
 
-      validate: async () => {
-        const errors = await get().getValidationErrors();
+        const errors = result.error?.fieldErrors ?? {};
+
         set((state) => {
           state.validationErrors = errors;
+          if (shouldMarkSubmitted) state.submitStatus = "error";
         });
-        return errors;
+
+        const state = get();
+        const nativeErrorFields = Object.keys(errors)
+          .filter((name) => !!getFieldError(state, name))
+          .filter(
+            (name) =>
+              !transientFieldRefs.has(name) && !controlledFieldRefs.has(name),
+          );
+
+        nativeErrorFields.forEach((name) => {
+          const el = formRef.current?.querySelector(`[name="${name}"]`);
+          if (!el) return;
+
+          if (
+            "setCustomValidity" in el &&
+            typeof el.setCustomValidity === "function"
+          ) {
+            el.setCustomValidity(errors[name]);
+          }
+        });
+
+        return { errors, data: undefined };
       },
 
       /////// Events
@@ -295,27 +341,32 @@ export const createFormStateStore = ({
         };
 
         const rawValues = getValues();
-        const result = await mutableImplStore.validator.validate(rawValues);
+        const result = await get().validate(rawValues, true);
 
-        if (result.error) {
-          set((state) => {
-            state.submitStatus = "error";
-            state.validationErrors = result.error.fieldErrors;
-          });
-          const elementsWithErrors = Object.keys(result.error.fieldErrors)
+        if (result.errors) {
+          const refElementsWithErrors = Object.keys(result.errors)
             .flatMap((fieldName) => [
               ...transientFieldRefs.getRefs(fieldName),
               ...controlledFieldRefs.getRefs(fieldName),
             ])
             .filter((val): val is NonNullable<typeof val> => val != null);
-          focusFirst(elementsWithErrors);
+
+          if (formRef.current) {
+            const unRegisteredNames = Object.keys(result.errors).filter(
+              (name) =>
+                !transientFieldRefs.has(name) && !controlledFieldRefs.has(name),
+            );
+            const otherErrorElements = getElementsWithNames(
+              unRegisteredNames,
+              formRef.current!,
+            );
+            refElementsWithErrors.push(...otherErrorElements);
+          }
+
+          focusOrReportFirst(refElementsWithErrors);
 
           return;
         }
-
-        set((state) => {
-          state.validationErrors = {};
-        });
 
         try {
           if (get().submitSource === "state") {
