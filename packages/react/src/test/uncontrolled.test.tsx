@@ -6,6 +6,7 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { RenderCounter } from "./util/RenderCounter";
 import { successValidator } from "./util/successValidator";
 import { controlNumberInput } from "./util/controlInput";
+import { createValidator } from "@rvf/core";
 
 it("captures and submits with uncontrolled fields", async () => {
   const submit = vi.fn();
@@ -130,6 +131,53 @@ it("should update `value` with auto-form", async () => {
   expect(submit).toHaveBeenCalledTimes(1);
   expect(submit).toHaveBeenCalledWith({
     foo: "testing 123",
+  });
+});
+
+it("should validate with auto-form", async () => {
+  const submit = vi.fn();
+
+  const TestComp = () => {
+    const form = useRvf({
+      defaultValues: { foo: "" },
+      validator: createValidator({
+        validate: (data) => {
+          if (data.foo === "testing 123")
+            return Promise.resolve({
+              error: { foo: "Invalid" },
+              data: undefined,
+            });
+          return Promise.resolve({ data, error: undefined });
+        },
+      }),
+      handleSubmit: submit,
+    });
+
+    return (
+      <form {...form.getFormProps()} data-testid="form">
+        <input data-testid="foo" name={form.name("foo")} />
+        <pre data-testid="foo-error">{form.error("foo")}</pre>
+        <button type="submit" data-testid="submit" />
+      </form>
+    );
+  };
+
+  render(<TestComp />);
+  // Default values don't work for this case, so the values will be different
+  expect(screen.getByTestId("foo")).toHaveValue("");
+
+  await userEvent.type(screen.getByTestId("foo"), "testing 123");
+  await userEvent.click(screen.getByTestId("submit"));
+
+  expect(submit).not.toHaveBeenCalled();
+  expect(screen.getByTestId("foo-error")).toHaveTextContent("Invalid");
+  await userEvent.type(screen.getByTestId("foo"), "bro");
+  expect(screen.getByTestId("foo-error")).toHaveTextContent("");
+
+  await userEvent.click(screen.getByTestId("submit"));
+  expect(submit).toHaveBeenCalledTimes(1);
+  expect(submit).toHaveBeenCalledWith({
+    foo: "testing 123bro",
   });
 });
 
