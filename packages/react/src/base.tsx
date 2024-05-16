@@ -21,6 +21,7 @@ import {
 import { RvfArray, makeFieldArrayImpl } from "./array";
 import { makeImplFactory } from "./implFactory";
 import { RvfField, makeFieldImpl } from "./field";
+import { setupAutoForm } from "./inputs/autoForm";
 
 type MinimalRvf<FieldPaths extends string> = {
   resetField: (fieldName: FieldPaths, nextValue?: any) => void;
@@ -261,6 +262,16 @@ export interface RvfReact<FormInputData> {
     : never;
 
   /**
+   * Get the name of the specified field.
+   */
+  name<Field extends ValidStringPaths<FormInputData>>(fieldName: Field): string;
+
+  /**
+   * Get the name of the current field in scope.
+   */
+  name(): string;
+
+  /**
    * Get field helpers for the specified field.
    */
   field<Field extends ValidStringPaths<FormInputData>>(
@@ -328,6 +339,8 @@ export const makeBaseRvfReact = <FormInputData,>({
       trackedState,
     }),
   );
+
+  let formRefCleanup = null as null | (() => void);
 
   return {
     value: (fieldName?: string) =>
@@ -407,6 +420,8 @@ export const makeBaseRvfReact = <FormInputData,>({
     scope: (fieldName?: string) =>
       fieldName == null ? form : (scopeRvf(form, fieldName) as any),
 
+    name: (fieldName?: string) => f(fieldName),
+
     array: arrayImpl as never,
     field: fieldImpl as never,
 
@@ -442,12 +457,30 @@ export const makeBaseRvfReact = <FormInputData,>({
         transientState().reset();
       },
       ref: (el) => {
+        if (formRefCleanup) {
+          formRefCleanup();
+          formRefCleanup = null;
+        }
+
         if (typeof formProps.ref === "function") formProps.ref(el);
         else if (formProps.ref) {
           (formProps.ref as any).current = el;
         }
 
         form.__store__.formRef.current = el;
+        if (el instanceof HTMLFormElement)
+          formRefCleanup = setupAutoForm({
+            formElement: el,
+            onChange: (name, value) =>
+              transientState().onFieldChange(name, value),
+            onBlur: (name) => transientState().onFieldBlur(name),
+            isUserManaged: (name) =>
+              form.__store__.transientFieldRefs.has(name) ||
+              form.__store__.controlledFieldRefs.has(name),
+            getCurrentValue: (name) => getFieldValue(transientState(), name),
+          });
+        else if (el != null)
+          console.warn("`getFormProps` must be used with a form element.");
       },
     }),
 

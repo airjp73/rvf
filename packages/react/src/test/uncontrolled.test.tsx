@@ -51,6 +51,52 @@ it("captures and submits with uncontrolled fields", async () => {
   expect(screen.getByTestId("render-count")).toHaveTextContent("1");
 });
 
+it("captures and submits without registering uncontrolled inputs", async () => {
+  const submit = vi.fn();
+
+  const TestComp = () => {
+    const form = useRvf({
+      defaultValues: {
+        foo: "bar",
+        baz: {
+          a: "quux",
+        },
+      },
+      validator: successValidator,
+      handleSubmit: submit,
+    });
+
+    return (
+      <form {...form.getFormProps()} data-testid="form">
+        <input data-testid="foo" name={form.name("foo")} />
+        <input data-testid="baz.a" name={form.name("baz.a")} />
+        <button type="submit" data-testid="submit" />
+        <RenderCounter data-testid="render-count" />
+      </form>
+    );
+  };
+
+  render(<TestComp />);
+  // Default values don't work for thi case
+  expect(screen.getByTestId("foo")).toHaveValue("");
+  expect(screen.getByTestId("baz.a")).toHaveValue("");
+  expect(screen.getByTestId("render-count")).toHaveTextContent("1");
+
+  await userEvent.type(screen.getByTestId("foo"), "testing 123");
+  await userEvent.type(screen.getByTestId("baz.a"), "another value");
+  await userEvent.click(screen.getByTestId("submit"));
+
+  expect(submit).toHaveBeenCalledTimes(1);
+  expect(submit).toHaveBeenCalledWith({
+    foo: "testing 123",
+    baz: {
+      a: "another value",
+    },
+  });
+
+  expect(screen.getByTestId("render-count")).toHaveTextContent("1");
+});
+
 it("shoud work correctly when no default values exist", async () => {
   const submit = vi.fn();
 
@@ -464,3 +510,5 @@ it("should naturally work with radio groups", async () => {
 
   expect(screen.getByTestId("render-count")).toHaveTextContent("1");
 });
+
+it.todo("should work with selects");
