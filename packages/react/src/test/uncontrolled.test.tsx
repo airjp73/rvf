@@ -97,6 +97,42 @@ it("captures and submits without registering uncontrolled inputs", async () => {
   expect(screen.getByTestId("render-count")).toHaveTextContent("1");
 });
 
+it("should update `value` with auto-form", async () => {
+  const submit = vi.fn();
+
+  const TestComp = () => {
+    const form = useRvf({
+      defaultValues: {
+        foo: "bar",
+      },
+      validator: successValidator,
+      handleSubmit: submit,
+    });
+
+    return (
+      <form {...form.getFormProps()} data-testid="form">
+        <input data-testid="foo" name={form.name("foo")} />
+        <pre data-testid="foo-value">{form.value("foo")}</pre>
+        <button type="submit" data-testid="submit" />
+      </form>
+    );
+  };
+
+  render(<TestComp />);
+  // Default values don't work for this case, so the values will be different
+  expect(screen.getByTestId("foo")).toHaveValue("");
+  expect(screen.getByTestId("foo-value")).toHaveTextContent("bar");
+
+  await userEvent.type(screen.getByTestId("foo"), "testing 123");
+  expect(screen.getByTestId("foo-value")).toHaveTextContent("testing 123");
+
+  await userEvent.click(screen.getByTestId("submit"));
+  expect(submit).toHaveBeenCalledTimes(1);
+  expect(submit).toHaveBeenCalledWith({
+    foo: "testing 123",
+  });
+});
+
 it("shoud work correctly when no default values exist", async () => {
   const submit = vi.fn();
 

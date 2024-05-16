@@ -10,6 +10,7 @@ import {
   getFieldDirty,
   getFieldError,
   focusFirst,
+  getFormControlValue,
 } from "@rvf/core";
 import {
   StringToPathTuple,
@@ -22,6 +23,8 @@ import { RvfArray, makeFieldArrayImpl } from "./array";
 import { makeImplFactory } from "./implFactory";
 import { RvfField, makeFieldImpl } from "./field";
 import { setupAutoForm } from "./inputs/autoForm";
+import { isFormControl } from "./inputs/logic/isFormControl";
+import { getNextCheckboxValue } from "./inputs/logic/getCheckboxChecked";
 
 type MinimalRvf<FieldPaths extends string> = {
   resetField: (fieldName: FieldPaths, nextValue?: any) => void;
@@ -33,6 +36,8 @@ export type FormFields<Form> =
 interface FormProps {
   onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
   onReset: (event: React.FormEvent<HTMLFormElement>) => void;
+  onChange: (event: React.FormEvent<HTMLFormElement>) => void;
+  onBlur: (event: React.FormEvent<HTMLFormElement>) => void;
   ref: React.Ref<HTMLFormElement>;
 }
 
@@ -340,8 +345,6 @@ export const makeBaseRvfReact = <FormInputData,>({
     }),
   );
 
-  let formRefCleanup = null as null | (() => void);
-
   return {
     value: (fieldName?: string) =>
       getFieldValue(trackedState, f(fieldName)) as any,
@@ -456,31 +459,82 @@ export const makeBaseRvfReact = <FormInputData,>({
         if (event.defaultPrevented) return;
         transientState().reset();
       },
-      ref: (el) => {
-        if (formRefCleanup) {
-          formRefCleanup();
-          formRefCleanup = null;
-        }
+      onChange: (event) => {
+        formProps.onChange?.(event);
+        if (event.defaultPrevented) return;
 
+        const changed = event.target;
+        const formEl = form.__store__.formRef.current;
+
+        if (
+          !formEl ||
+          !changed ||
+          !isFormControl(changed) ||
+          !changed.form ||
+          changed.form !== formEl
+        )
+          return;
+
+        const name = changed.name;
+        if (
+          form.__store__.transientFieldRefs.has(name) ||
+          form.__store__.controlledFieldRefs.has(name)
+        )
+          return;
+
+        const getValue = () => {
+          const derivedValue = getFormControlValue(changed);
+
+          if (changed.type === "checkbox") {
+            const nextValue = getNextCheckboxValue({
+              currentValue: getFieldValue(transientState(), name),
+              derivedValue,
+              valueProp: changed.value,
+            });
+            return nextValue;
+          }
+
+          if (changed.type === "radio") {
+            return changed.value;
+          }
+
+          return derivedValue;
+        };
+
+        transientState().onFieldChange(name, getValue());
+      },
+      onBlur: (event) => {
+        formProps.onBlur?.(event);
+        if (event.defaultPrevented) return;
+
+        const changed = event.target;
+        const formEl = form.__store__.formRef.current;
+
+        if (
+          !formEl ||
+          !changed ||
+          !isFormControl(changed) ||
+          !changed.form ||
+          changed.form !== formEl
+        )
+          return;
+
+        const name = changed.name;
+        if (
+          form.__store__.transientFieldRefs.has(name) ||
+          form.__store__.controlledFieldRefs.has(name)
+        )
+          return;
+
+        transientState().onFieldBlur(name);
+      },
+      ref: (el) => {
         if (typeof formProps.ref === "function") formProps.ref(el);
         else if (formProps.ref) {
           (formProps.ref as any).current = el;
         }
 
         form.__store__.formRef.current = el;
-        if (el instanceof HTMLFormElement)
-          formRefCleanup = setupAutoForm({
-            formElement: el,
-            onChange: (name, value) =>
-              transientState().onFieldChange(name, value),
-            onBlur: (name) => transientState().onFieldBlur(name),
-            isUserManaged: (name) =>
-              form.__store__.transientFieldRefs.has(name) ||
-              form.__store__.controlledFieldRefs.has(name),
-            getCurrentValue: (name) => getFieldValue(transientState(), name),
-          });
-        else if (el != null)
-          console.warn("`getFormProps` must be used with a form element.");
       },
     }),
 
