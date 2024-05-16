@@ -22,7 +22,6 @@ import {
 import { RvfArray, makeFieldArrayImpl } from "./array";
 import { makeImplFactory } from "./implFactory";
 import { RvfField, makeFieldImpl } from "./field";
-import { setupAutoForm } from "./inputs/autoForm";
 import { isFormControl } from "./inputs/logic/isFormControl";
 import { getNextCheckboxValue } from "./inputs/logic/getCheckboxChecked";
 
@@ -294,21 +293,6 @@ export interface RvfReact<FormInputData> {
    */
   submit: () => void;
 }
-
-// type WithOptionalField<T> = [name?: string, arg?: T] | [arg?: T];
-// const optionalField = <T,>(
-//   args: WithOptionalField<T>,
-// ): [string | undefined, T | undefined] => {
-//   if (args.length === 0) return [undefined, undefined];
-
-//   if (args.length === 1) {
-//     if (typeof args[0] === "string") return [args[0], undefined];
-//     return [prefix, args[0]];
-//   }
-
-//   if (typeof args[0] === "string") return [args[0], args[1]];
-//   throw new Error("Unknown args for field helper");
-// };
 
 export type BaseRvfReactParams<FormInputData> = {
   form: Rvf<FormInputData>;
