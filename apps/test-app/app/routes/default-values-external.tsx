@@ -1,5 +1,5 @@
 import { withZod } from "@rvf/zod";
-import { ValidatedForm } from "@rvf/remix";
+import { ValidatedForm, useRvf } from "@rvf/remix";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
 import { Fieldset } from "~/components/Fieldset";
@@ -17,13 +17,35 @@ const validator = withZod(
 );
 
 export default function FrontendValidation() {
+  const rvf = useRvf({
+    validator,
+    method: "post",
+    defaultValues: {
+      text1: "John",
+      text2: "Bob",
+      check1: true,
+      radio: "value3",
+      likesColors: ["red", "green"],
+    },
+  });
+
   return (
     <>
-      <Input name="text1" type="text" form="test-form" label="Text 1" />
-      <Input name="check1" type="checkbox" form="test-form" label="Check 1" />
-      <Fieldset label="Radios" name="radios" form="test-form">
+      <Input
+        type="text"
+        name={rvf.scope("text1")}
+        form="test-form"
+        label="Text 1"
+      />
+      <Input
+        name={rvf.scope("check1")}
+        type="checkbox"
+        form="test-form"
+        label="Check 1"
+      />
+      <Fieldset label="Radios" name="radios" rvf={rvf.scope("radio")}>
         <Input
-          name="radio"
+          name={rvf.scope("radio")}
           type="radio"
           form="test-form"
           label="Value 1"
@@ -32,7 +54,7 @@ export default function FrontendValidation() {
           hideErrors
         />
         <Input
-          name="radio"
+          name={rvf.scope("radio")}
           type="radio"
           form="test-form"
           label="Value 2"
@@ -41,7 +63,7 @@ export default function FrontendValidation() {
           hideErrors
         />
         <Input
-          name="radio"
+          name={rvf.scope("radio")}
           type="radio"
           form="test-form"
           label="Value 3"
@@ -53,11 +75,11 @@ export default function FrontendValidation() {
       <Fieldset
         label="Which colors do you like"
         name="likesColors"
-        form="test-form"
+        rvf={rvf.scope("likesColors")}
       >
         <Input
           data-testid="red"
-          name="likesColors"
+          name={rvf.scope("likesColors")}
           type="checkbox"
           label="Red"
           value="red"
@@ -66,7 +88,7 @@ export default function FrontendValidation() {
         />
         <Input
           data-testid="blue"
-          name="likesColors"
+          name={rvf.scope("likesColors")}
           type="checkbox"
           label="Blue"
           value="blue"
@@ -75,7 +97,7 @@ export default function FrontendValidation() {
         />
         <Input
           data-testid="green"
-          name="likesColors"
+          name={rvf.scope("likesColors")}
           type="checkbox"
           label="Green"
           value="green"
@@ -84,21 +106,10 @@ export default function FrontendValidation() {
         />
       </Fieldset>
       <hr />
-      <ValidatedForm
-        validator={validator}
-        method="post"
-        id="test-form"
-        defaultValues={{
-          text1: "John",
-          text2: "Bob",
-          check1: true,
-          radio: "value3",
-          likesColors: ["red", "green"],
-        }}
-      >
+      <form {...rvf.getFormProps()}>
         <Input name="text2" type="text" label="Text 2" />
         <SubmitButton />
-      </ValidatedForm>
+      </form>
     </>
   );
 }

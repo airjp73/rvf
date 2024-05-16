@@ -8,6 +8,7 @@ import {
   validationError,
   useField,
   useUpdateControlledField,
+  useRvf,
 } from "@rvf/remix";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
@@ -50,9 +51,9 @@ const Controlled = () => {
       >
         Yellow{value === "yellow" && " (selected)"}
       </button>
-      {error && (
+      {error() && (
         <p style={{ color: "red" }} data-testid="error">
-          {error}
+          {error()}
         </p>
       )}
     </div>
@@ -78,7 +79,7 @@ const ControlledInput = () => {
         onChange={(e) => update(e.target.value)}
         data-testid="text-input"
       />
-      {error && <p data-testid="text-error">{error}</p>}
+      {error() && <p data-testid="text-error">{error()}</p>}
       <p data-testid="resolution-count">{count}</p>
     </div>
   );
@@ -93,14 +94,14 @@ function* range(min: number, max: number) {
 export default function ControlledField() {
   const data = useActionData<typeof action>();
   const [count, setCount] = useState(1);
-  const update = useUpdateControlledField("test-form");
+  const rvf = useRvf({
+    validator,
+    method: "post",
+    defaultValues: { myField: "green", text: "" },
+  });
+
   return (
-    <ValidatedForm
-      id="test-form"
-      validator={validator}
-      method="post"
-      defaultValues={{ myField: "green" as any, text: "" as any }}
-    >
+    <form {...rvf.getFormProps()}>
       {data && "message" in data && <div>{data.message}</div>}
       <div style={{ margin: "1rem" }}>
         <button type="button" onClick={() => setCount((prev) => prev + 1)}>
@@ -115,13 +116,13 @@ export default function ControlledField() {
       ))}
       <ControlledInput />
       <button
-        onClick={() => update("text", "Hello from update hook")}
+        onClick={() => rvf.setValue("text", "Hello from update hook")}
         type="button"
       >
         Force Update
       </button>
       <button type="reset">Reset</button>
       <SubmitButton />
-    </ValidatedForm>
+    </form>
   );
 }

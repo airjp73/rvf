@@ -1,7 +1,13 @@
 import { DataFunctionArgs, json } from "@remix-run/node";
 import { useActionData } from "@remix-run/react";
 import { withYup } from "@rvf/yup";
-import { useFormContext, ValidatedForm } from "@rvf/remix";
+import {
+  Rvf,
+  ValidatedForm,
+  useRvfContext,
+  useRvf,
+  useRvfOrContext,
+} from "@rvf/remix";
 import * as yup from "yup";
 import { Input } from "~/components/Input";
 import { SubmitButton } from "~/components/SubmitButton";
@@ -17,29 +23,18 @@ const DisplayContext = ({
   form,
 }: {
   testid: string;
-  form?: string;
+  form?: Rvf<any>;
 }) => {
-  const {
-    action,
-    hasBeenSubmitted,
-    isValid,
-    fieldErrors,
-    defaultValues,
-    touchedFields,
-    getValues,
-  } = useFormContext(form);
+  const context = useRvfOrContext(form);
 
   return (
     <div data-testid={testid}>
       <dl>
         <dt>hasBeenSubmitted</dt>
-        <dd>{hasBeenSubmitted ? "true" : "false"}</dd>
+        <dd>{context.formState.hasBeenSubmitted ? "true" : "false"}</dd>
 
         <dt>isValid</dt>
-        <dd>{isValid ? "true" : "false"}</dd>
-
-        <dt>action</dt>
-        <dd>{action}</dd>
+        <dd>{context.formState.isValid ? "true" : "false"}</dd>
 
         <dt>fieldErrors</dt>
         <dd>
@@ -58,7 +53,7 @@ const DisplayContext = ({
 
         <dt>getValues</dt>
         <dd>
-          <pre>{JSON.stringify(Object.fromEntries(getValues()))}</pre>
+          <pre>{JSON.stringify(Object.fromEntries(context.value()))}</pre>
         </dd>
       </dl>
     </div>
@@ -69,27 +64,26 @@ export default function FrontendValidation() {
   const actionData = useActionData<typeof action>();
 
   // Verify we don't get an infinite loop
-  useFormContext("test-form");
+  const form = useRvf({
+    validator: withYup(
+      yup.object({
+        firstName: yup.string().label("First Name").required(),
+      }),
+    ),
+    method: "post",
+    action: "/context-hooks",
+    defaultValues: { firstName: "defaultFirstName" },
+  });
 
   return (
     <>
       {actionData?.message && <h1>{actionData.message}</h1>}
-      <DisplayContext testid="external-values" form="test-form" />
-      <ValidatedForm
-        validator={withYup(
-          yup.object({
-            firstName: yup.string().label("First Name").required(),
-          }),
-        )}
-        method="post"
-        id="test-form"
-        action="/context-hooks"
-        defaultValues={{ firstName: "defaultFirstName" }}
-      >
+      <DisplayContext testid="external-values" form={form.scope()} />
+      <form {...form.getFormProps()}>
         <Input name="firstName" label="First Name" />
         <DisplayContext testid="internal-values" />
         <SubmitButton />
-      </ValidatedForm>
+      </form>
     </>
   );
 }

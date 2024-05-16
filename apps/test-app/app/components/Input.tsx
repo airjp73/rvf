@@ -3,13 +3,13 @@ import { useField } from "@rvf/remix";
 import { Rvf } from "@rvf/core";
 
 type InputProps = {
-  name: string;
+  name: string | Rvf<string | boolean | string[]>;
   label: string;
   type?: string;
   value?: string;
   hideErrors?: boolean;
   "data-testid"?: string;
-  form?: Rvf<string>;
+  form?: string;
   disabled?: boolean;
 };
 
@@ -27,14 +27,17 @@ export const Input = forwardRef(
     }: InputProps,
     ref: React.ForwardedRef<HTMLInputElement>,
   ) => {
-    const field = useField(form ?? name);
+    // Not actually breaking rules here
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const field = typeof name === "string" ? useField(name) : useField(name);
     return (
       <div>
-        <label htmlFor={name}>{label}</label>
+        <label htmlFor={field.name()}>{label}</label>
         <input
           data-testid={dataTestId}
-          id={name}
+          id={field.name()}
           disabled={disabled}
+          form={form}
           {...field.getInputProps({
             type,
             value,
