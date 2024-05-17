@@ -8,6 +8,7 @@ import {
   getElementsWithNames,
 } from "./dom";
 import {
+  FieldErrors,
   FieldValues,
   SubmitStatus,
   ValidationBehavior,
@@ -116,6 +117,8 @@ type StoreActions = {
     flags: StoreFlags;
   }) => void;
 
+  syncServerValidtionErrors: (errors: FieldErrors) => void;
+
   reset: (nextValues?: FieldValues) => void;
   resetField: (fieldName: string, nextValue?: unknown) => void;
 
@@ -156,6 +159,7 @@ export type FormStoreInit = {
   validationBehaviorConfig?: ValidationBehaviorConfig;
   formProps: StoreFormProps;
   flags: StoreFlags;
+  serverValidationErrors: FieldErrors;
 };
 
 const genKey = () => `${Math.round(Math.random() * 10_000)}-${Date.now()}`;
@@ -221,6 +225,7 @@ export const createFormStateStore = ({
   validationBehaviorConfig = defaultValidationBehaviorConfig,
   formProps,
   flags,
+  serverValidationErrors = {},
 }: FormStoreInit) =>
   create<FormStoreValue>()(
     immer((set, get) => ({
@@ -229,9 +234,11 @@ export const createFormStateStore = ({
       defaultValues,
       touchedFields: {},
       dirtyFields: {},
-      validationErrors: {},
+      validationErrors: serverValidationErrors,
+      // If we have default errors, lets treat that as a failed server-side validation
+      submitStatus:
+        Object.keys(serverValidationErrors).length > 0 ? "error" : "idle",
       fieldArrayKeys: {},
-      submitStatus: "idle",
       validationBehaviorConfig,
       submitSource,
       formProps,
@@ -427,6 +434,13 @@ export const createFormStateStore = ({
           state.validationBehaviorConfig = validationBehaviorConfig;
           state.formProps = formProps;
           state.flags = flags;
+        });
+      },
+
+      syncServerValidtionErrors: (errors) => {
+        set((state) => {
+          state.validationErrors = errors;
+          state.submitStatus = "error";
         });
       },
 

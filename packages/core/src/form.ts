@@ -1,4 +1,9 @@
-import { FieldValues, ValidationBehaviorConfig, Validator } from "./types";
+import {
+  FieldErrors,
+  FieldValues,
+  ValidationBehaviorConfig,
+  Validator,
+} from "./types";
 import {
   FormStoreValue,
   MutableImplStore,
@@ -23,6 +28,7 @@ type SubmitTypes<FormOutputData> =
 
 type FormInit<FormInputData extends FieldValues, FormOutputData> = {
   defaultValues: FormInputData;
+  serverValidationErrors: FieldErrors;
   validator: Validator<FormOutputData>;
   validationBehaviorConfig?: ValidationBehaviorConfig;
   onSubmit: (data: FormOutputData) => Promise<void>;
@@ -52,6 +58,7 @@ interface RvfStore {
 
 export const createRvf = <FormInputData extends FieldValues, FormOutputData>({
   defaultValues,
+  serverValidationErrors,
   validator,
   onSubmit,
   validationBehaviorConfig,
@@ -65,6 +72,7 @@ export const createRvf = <FormInputData extends FieldValues, FormOutputData>({
   const mutableImplStore = { validator, onSubmit } satisfies MutableImplStore;
   const store = createFormStateStore({
     defaultValues,
+    serverValidationErrors,
     transientFieldRefs,
     controlledFieldRefs,
     formRef,

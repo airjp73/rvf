@@ -7,6 +7,7 @@ import {
   createRvf,
 } from "@rvf/core";
 import { RvfReact, useRvfInternal } from "./base";
+import { FieldErrors } from "@rvf/core";
 
 type SubmitTypes<FormOutputData> =
   | {
@@ -27,6 +28,15 @@ export type RvfOpts<
    * It's recommended that you provide a default value for every field in the form.
    */
   defaultValues?: FormInputData;
+
+  /**
+   * Can be used to set the default errors of the entire form.
+   * This is most useful went integrating with server-side validation.
+   *
+   * **CAREFUL**: this will cause an update every time the identity of `serverValidationErrors` changes.
+   * So make sure the identity of `serverValidationErrors` is stable.
+   */
+  serverValidationErrors?: FieldErrors;
 
   /**
    * A function that validates the form's values.
@@ -95,6 +105,9 @@ export function useRvf(
   const disableNativeValidation = isRvf(optsOrForm)
     ? undefined
     : optsOrForm.disableNativeValidation;
+  const serverValidationErrors = isRvf(optsOrForm)
+    ? undefined
+    : optsOrForm.serverValidationErrors;
 
   const providedFormId = isRvf(optsOrForm) ? undefined : optsOrForm.formId;
   const defaultFormId = useId();
@@ -106,6 +119,7 @@ export function useRvf(
         "defaultValues" in optsOrForm && optsOrForm.defaultValues
           ? optsOrForm.defaultValues
           : {},
+      serverValidationErrors: serverValidationErrors ?? {},
       validator: optsOrForm.validator,
       onSubmit: optsOrForm.handleSubmit as never,
       validationBehaviorConfig: optsOrForm.validationBehaviorConfig,
@@ -175,6 +189,13 @@ export function useRvf(
     disableNativeValidation,
     disableFocusOnError,
   ]);
+
+  useEffect(() => {
+    if (isWholeForm || !serverValidationErrors) return;
+    form.__store__.store
+      .getState()
+      .syncServerValidtionErrors(serverValidationErrors);
+  }, [serverValidationErrors, form.__store__.store, isWholeForm]);
 
   return useRvfInternal(form) as never;
 }

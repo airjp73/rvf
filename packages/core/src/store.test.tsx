@@ -16,6 +16,14 @@ const testStore = (init?: Partial<FormStoreInit>) =>
       }),
       onSubmit: () => Promise.resolve(),
     },
+    flags: {
+      disableFocusOnError: false,
+      disableNativeValidation: false,
+    },
+    serverValidationErrors: {},
+    formProps: {
+      id: "test-form",
+    },
     ...init,
   });
 
