@@ -1,6 +1,6 @@
 import { FieldValues } from "@rvf/core";
 import { RvfRemixOpts, useRvf } from "./useRvf";
-import { RvfProvider, RvfReact, RvfSubmitOpts } from "@rvf/react";
+import { RvfProvider, RvfReact } from "@rvf/react";
 import { FORM_ID_FIELD_NAME } from "./constants";
 import {
   useDefaultValuesFromLoader,
