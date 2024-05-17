@@ -48,6 +48,17 @@ export type RvfOpts<
    * The id of the form element.
    */
   formId?: string;
+
+  /**
+   * Disables the default behavior of focusing the first invalid field when a submit fails due to validation errors.
+   */
+  disableFocusOnError?: boolean;
+
+  /**
+   * Disables the default behavior of using native browser validation for fields that haven't been registered with
+   * `getInputProps` or `getControlProps`.
+   */
+  disableNativeValidation?: boolean;
 } & SubmitTypes<FormOutputData>;
 
 const isRvf = (form: any): form is Rvf<any> =>
@@ -78,8 +89,14 @@ export function useRvf(
   const isWholeForm = isRvf(optsOrForm);
   const submitSource = isRvf(optsOrForm) ? undefined : optsOrForm.submitSource;
   const action = isRvf(optsOrForm) ? undefined : optsOrForm.action;
-  const providedFormId = isRvf(optsOrForm) ? undefined : optsOrForm.formId;
+  const disableFocusOnError = isRvf(optsOrForm)
+    ? undefined
+    : optsOrForm.disableFocusOnError;
+  const disableNativeValidation = isRvf(optsOrForm)
+    ? undefined
+    : optsOrForm.disableNativeValidation;
 
+  const providedFormId = isRvf(optsOrForm) ? undefined : optsOrForm.formId;
   const defaultFormId = useId();
 
   const [form] = useState<Rvf<unknown>>(() => {
@@ -96,6 +113,10 @@ export function useRvf(
       formProps: {
         action,
         id: providedFormId ?? defaultFormId,
+      },
+      flags: {
+        disableNativeValidation: disableNativeValidation ?? false,
+        disableFocusOnError: disableFocusOnError ?? false,
       },
     });
   });
@@ -136,6 +157,10 @@ export function useRvf(
         action,
         id: providedFormId ?? defaultFormId,
       },
+      flags: {
+        disableNativeValidation: disableNativeValidation ?? false,
+        disableFocusOnError: disableFocusOnError ?? false,
+      },
     });
   }, [
     form.__store__.store,
@@ -147,6 +172,8 @@ export function useRvf(
     action,
     providedFormId,
     defaultFormId,
+    disableNativeValidation,
+    disableFocusOnError,
   ]);
 
   return useRvfInternal(form) as never;

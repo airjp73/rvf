@@ -53,6 +53,11 @@ export type StoreFormProps = {
   id: string;
 };
 
+export type StoreFlags = {
+  disableNativeValidation: boolean;
+  disableFocusOnError: boolean;
+};
+
 type StoreState = {
   values: FieldValues;
   defaultValues: FieldValues;
@@ -64,6 +69,7 @@ type StoreState = {
   validationBehaviorConfig: ValidationBehaviorConfig;
   submitSource: "state" | "dom";
   formProps: StoreFormProps;
+  flags: StoreFlags;
 };
 
 type StoreEvents = {
@@ -107,6 +113,7 @@ type StoreActions = {
     submitSource: "state" | "dom";
     validationBehaviorConfig?: ValidationBehaviorConfig | undefined;
     formProps: StoreFormProps;
+    flags: StoreFlags;
   }) => void;
 
   reset: (nextValues?: FieldValues) => void;
@@ -148,6 +155,7 @@ export type FormStoreInit = {
   mutableImplStore: MutableImplStore;
   validationBehaviorConfig?: ValidationBehaviorConfig;
   formProps: StoreFormProps;
+  flags: StoreFlags;
 };
 
 const genKey = () => `${Math.round(Math.random() * 10_000)}-${Date.now()}`;
@@ -212,6 +220,7 @@ export const createFormStateStore = ({
   submitSource,
   validationBehaviorConfig = defaultValidationBehaviorConfig,
   formProps,
+  flags,
 }: FormStoreInit) =>
   create<FormStoreValue>()(
     immer((set, get) => ({
@@ -226,6 +235,7 @@ export const createFormStateStore = ({
       validationBehaviorConfig,
       submitSource,
       formProps,
+      flags,
 
       /////// Validation
       shouldValidate: (eventType, fieldName, behaviorOverride) => {
@@ -249,23 +259,28 @@ export const createFormStateStore = ({
       },
 
       validate: async (nextValues, shouldMarkSubmitted = false) => {
+        const { disableNativeValidation } = get().flags;
+
         const result = await mutableImplStore.validator.validate(
           nextValues ?? get().values,
         );
+
         if (result.data) {
           set((state) => {
             state.validationErrors = {};
           });
-          document.querySelectorAll("input,textarea,select").forEach((el) => {
-            if (
-              isFormControl(el) &&
-              el.form === formRef.current &&
-              !transientFieldRefs.has(el.name) &&
-              !controlledFieldRefs.has(el.name)
-            ) {
-              el.setCustomValidity("");
-            }
-          });
+          if (!disableNativeValidation) {
+            document.querySelectorAll("input,textarea,select").forEach((el) => {
+              if (
+                isFormControl(el) &&
+                el.form === formRef.current &&
+                !transientFieldRefs.has(el.name) &&
+                !controlledFieldRefs.has(el.name)
+              ) {
+                el.setCustomValidity("");
+              }
+            });
+          }
           return { data: result.data, errors: undefined };
         }
 
@@ -277,24 +292,27 @@ export const createFormStateStore = ({
         });
 
         const state = get();
-        const nativeErrorFields = Object.keys(errors)
-          .filter((name) => !!getFieldError(state, name))
-          .filter(
-            (name) =>
-              !transientFieldRefs.has(name) && !controlledFieldRefs.has(name),
-          );
 
-        nativeErrorFields.forEach((name) => {
-          const el = formRef.current?.querySelector(`[name="${name}"]`);
-          if (!el) return;
+        if (!disableNativeValidation) {
+          const nativeErrorFields = Object.keys(errors)
+            .filter((name) => !!getFieldError(state, name))
+            .filter(
+              (name) =>
+                !transientFieldRefs.has(name) && !controlledFieldRefs.has(name),
+            );
 
-          if (
-            "setCustomValidity" in el &&
-            typeof el.setCustomValidity === "function"
-          ) {
-            el.setCustomValidity(errors[name]);
-          }
-        });
+          nativeErrorFields.forEach((name) => {
+            const el = formRef.current?.querySelector(`[name="${name}"]`);
+            if (!el) return;
+
+            if (
+              "setCustomValidity" in el &&
+              typeof el.setCustomValidity === "function"
+            ) {
+              el.setCustomValidity(errors[name]);
+            }
+          });
+        }
 
         return { errors, data: undefined };
       },
@@ -328,6 +346,7 @@ export const createFormStateStore = ({
       },
 
       onSubmit: async (submitterData) => {
+        const { disableFocusOnError, disableNativeValidation } = get().flags;
         set((state) => {
           state.submitStatus = "submitting";
         });
@@ -353,7 +372,7 @@ export const createFormStateStore = ({
         const rawValues = getValues();
         const result = await get().validate(rawValues, true);
 
-        if (result.errors) {
+        if (result.errors && !disableFocusOnError) {
           const refElementsWithErrors = Object.keys(result.errors)
             .flatMap((fieldName) => [
               ...transientFieldRefs.getRefs(fieldName),
@@ -361,7 +380,7 @@ export const createFormStateStore = ({
             ])
             .filter((val): val is NonNullable<typeof val> => val != null);
 
-          if (formRef.current) {
+          if (formRef.current && !disableNativeValidation) {
             const unRegisteredNames = Object.keys(result.errors).filter(
               (name) =>
                 !transientFieldRefs.has(name) && !controlledFieldRefs.has(name),
@@ -401,11 +420,13 @@ export const createFormStateStore = ({
         submitSource,
         validationBehaviorConfig = defaultValidationBehaviorConfig,
         formProps,
+        flags,
       }) => {
         set((state) => {
           state.submitSource = submitSource;
           state.validationBehaviorConfig = validationBehaviorConfig;
           state.formProps = formProps;
+          state.flags = flags;
         });
       },
 

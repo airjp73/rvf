@@ -3,6 +3,7 @@ import {
   FormStoreValue,
   MutableImplStore,
   RefStore,
+  StoreFlags,
   StoreFormProps,
   createFormStateStore,
   createRefStore,
@@ -26,6 +27,7 @@ type FormInit<FormInputData extends FieldValues, FormOutputData> = {
   validationBehaviorConfig?: ValidationBehaviorConfig;
   onSubmit: (data: FormOutputData) => Promise<void>;
   formProps: StoreFormProps;
+  flags: StoreFlags;
 } & SubmitTypes<FormOutputData>;
 
 export interface Rvf<FormInputData> {
@@ -55,6 +57,7 @@ export const createRvf = <FormInputData extends FieldValues, FormOutputData>({
   validationBehaviorConfig,
   submitSource,
   formProps,
+  flags,
 }: FormInit<FormInputData, FormOutputData>): Rvf<FormInputData> => {
   const transientFieldRefs = createRefStore();
   const controlledFieldRefs = createRefStore();
@@ -69,6 +72,7 @@ export const createRvf = <FormInputData extends FieldValues, FormOutputData>({
     mutableImplStore,
     validationBehaviorConfig,
     formProps: formProps,
+    flags,
   });
   const subformCache = new Map<string, any>();
 
