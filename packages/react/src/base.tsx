@@ -14,6 +14,8 @@ import {
   getAllTouched,
   getAllDirty,
   getAllErrors,
+  getFormAction,
+  getFormId,
 } from "@rvf/core";
 import {
   StringToPathTuple,
@@ -94,6 +96,7 @@ export interface RvfReact<FormInputData> {
 
   formOptions: {
     action?: string;
+    formId?: string;
   };
 
   formState: {
@@ -351,9 +354,13 @@ export const makeBaseRvfReact = <FormInputData,>({
 
     formOptions: {
       get action() {
-        return trackedState.action;
+        return getFormAction(trackedState);
+      },
+      get formId() {
+        return getFormId(trackedState);
       },
     },
+
     formState: {
       get isSubmitting() {
         return trackedState.submitStatus === "submitting";

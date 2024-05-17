@@ -41,3 +41,7 @@ export const getAllErrors = (state: FormStoreValue) => {
   );
   return Object.fromEntries(fieldsWithErrors);
 };
+
+export const getFormId = (state: FormStoreValue) => state.formProps.id;
+
+export const getFormAction = (state: FormStoreValue) => state.formProps.action;

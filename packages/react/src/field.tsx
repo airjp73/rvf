@@ -8,6 +8,7 @@ import {
   getFieldError,
   getFieldTouched,
   getFieldValue,
+  getFormId,
   setFormControlValue,
 } from "@rvf/core";
 import { GetInputProps, createGetInputProps } from "./inputs/getInputProps";
@@ -126,6 +127,7 @@ export const makeFieldImpl = <FormInputData,>({
       defaultValue: getFieldDefaultValue(trackedState, fieldName),
       name: fieldName,
       createRef: createTransientRef,
+      formId: getFormId(trackedState),
       getCurrentValue: () =>
         getFieldValue(form.__store__.store.getState(), fieldName),
     }),

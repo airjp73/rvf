@@ -48,6 +48,11 @@ export const createRefStore = () => {
 };
 export type RefStore = ReturnType<typeof createRefStore>;
 
+export type StoreFormProps = {
+  action?: string;
+  id?: string;
+};
+
 type StoreState = {
   values: FieldValues;
   defaultValues: FieldValues;
@@ -58,7 +63,7 @@ type StoreState = {
   fieldArrayKeys: Record<string, Array<string>>;
   validationBehaviorConfig: ValidationBehaviorConfig;
   submitSource: "state" | "dom";
-  action?: string;
+  formProps: StoreFormProps;
 };
 
 type StoreEvents = {
@@ -101,7 +106,7 @@ type StoreActions = {
   syncOptions: (opts: {
     submitSource: "state" | "dom";
     validationBehaviorConfig?: ValidationBehaviorConfig | undefined;
-    action?: string;
+    formProps: StoreFormProps;
   }) => void;
 
   reset: (nextValues?: FieldValues) => void;
@@ -142,7 +147,7 @@ export type FormStoreInit = {
   submitSource: "state" | "dom";
   mutableImplStore: MutableImplStore;
   validationBehaviorConfig?: ValidationBehaviorConfig;
-  action?: string;
+  formProps: StoreFormProps;
 };
 
 const genKey = () => `${Math.round(Math.random() * 10_000)}-${Date.now()}`;
@@ -206,7 +211,7 @@ export const createFormStateStore = ({
   formRef,
   submitSource,
   validationBehaviorConfig = defaultValidationBehaviorConfig,
-  action,
+  formProps,
 }: FormStoreInit) =>
   create<FormStoreValue>()(
     immer((set, get) => ({
@@ -220,7 +225,7 @@ export const createFormStateStore = ({
       submitStatus: "idle",
       validationBehaviorConfig,
       submitSource,
-      action,
+      formProps,
 
       /////// Validation
       shouldValidate: (eventType, fieldName, behaviorOverride) => {
@@ -395,12 +400,12 @@ export const createFormStateStore = ({
       syncOptions: ({
         submitSource,
         validationBehaviorConfig = defaultValidationBehaviorConfig,
-        action,
+        formProps,
       }) => {
         set((state) => {
           state.submitSource = submitSource;
           state.validationBehaviorConfig = validationBehaviorConfig;
-          state.action = action;
+          state.formProps = formProps;
         });
       },
 

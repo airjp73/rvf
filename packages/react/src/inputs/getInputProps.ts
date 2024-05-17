@@ -14,6 +14,7 @@ export type CreateGetInputPropsOptions = {
   name: string;
   getCurrentValue: () => unknown;
   createRef: () => Ref<HTMLElement>;
+  formId?: string;
 };
 
 type HandledProps = "name" | "defaultValue" | "defaultChecked";
@@ -28,6 +29,7 @@ type MinimalInputProps = {
   type?: string | undefined;
   ref?: Ref<any>;
   value?: string;
+  form?: string;
 };
 
 export type GetInputProps = <T extends MinimalInputProps>(
@@ -41,10 +43,12 @@ export const createGetInputProps = ({
   name,
   createRef,
   getCurrentValue,
+  formId,
 }: CreateGetInputPropsOptions): GetInputProps => {
   return <T extends MinimalInputProps>(props = {} as any) => {
     const inputProps: MinimalInputProps = {
       ...props,
+      form: formId,
       onChange: (...args: unknown[]) => {
         const value = getEventValue(args[0]);
 

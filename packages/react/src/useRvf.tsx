@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useId } from "react";
 import {
   FieldValues,
   ValidationBehaviorConfig,
@@ -40,9 +40,14 @@ export type RvfOpts<
   validationBehaviorConfig?: ValidationBehaviorConfig;
 
   /**
-   * The action prop of the form.
+   * The action prop of the form element.
    */
   action?: string;
+
+  /**
+   * The id of the form element.
+   */
+  formId?: string;
 } & SubmitTypes<FormOutputData>;
 
 const isRvf = (form: any): form is Rvf<any> =>
@@ -68,6 +73,15 @@ export function useRvf(
     | Omit<RvfOpts<any, unknown>, "defaultValues">
     | Rvf<unknown>,
 ): RvfReact<any> {
+  const validator = isRvf(optsOrForm) ? undefined : optsOrForm.validator;
+  const onSubmit = isRvf(optsOrForm) ? undefined : optsOrForm.handleSubmit;
+  const isWholeForm = isRvf(optsOrForm);
+  const submitSource = isRvf(optsOrForm) ? undefined : optsOrForm.submitSource;
+  const action = isRvf(optsOrForm) ? undefined : optsOrForm.action;
+  const providedFormId = isRvf(optsOrForm) ? undefined : optsOrForm.formId;
+
+  const defaultFormId = useId();
+
   const [form] = useState<Rvf<unknown>>(() => {
     if ("__brand__" in optsOrForm) return optsOrForm;
     return createRvf({
@@ -79,14 +93,12 @@ export function useRvf(
       onSubmit: optsOrForm.handleSubmit as never,
       validationBehaviorConfig: optsOrForm.validationBehaviorConfig,
       submitSource: optsOrForm.submitSource ?? "state",
+      formProps: {
+        action,
+        id: providedFormId ?? defaultFormId,
+      },
     });
   });
-
-  const validator = isRvf(optsOrForm) ? undefined : optsOrForm.validator;
-  const onSubmit = isRvf(optsOrForm) ? undefined : optsOrForm.handleSubmit;
-  const isWholeForm = isRvf(optsOrForm);
-  const submitSource = isRvf(optsOrForm) ? undefined : optsOrForm.submitSource;
-  const action = isRvf(optsOrForm) ? undefined : optsOrForm.action;
 
   const initial = isRvf(optsOrForm)
     ? undefined
@@ -120,7 +132,10 @@ export function useRvf(
               whenTouched,
             }
           : undefined,
-      action,
+      formProps: {
+        action,
+        id: providedFormId ?? defaultFormId,
+      },
     });
   }, [
     form.__store__.store,
@@ -130,6 +145,8 @@ export function useRvf(
     whenSubmitted,
     whenTouched,
     action,
+    providedFormId,
+    defaultFormId,
   ]);
 
   return useRvfInternal(form) as never;
