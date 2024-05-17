@@ -11,6 +11,9 @@ import {
   getFieldError,
   focusFirst,
   getFormControlValue,
+  getAllTouched,
+  getAllDirty,
+  getAllErrors,
 } from "@rvf/core";
 import {
   StringToPathTuple,
@@ -101,6 +104,10 @@ export interface RvfReact<FormInputData> {
     isValid: boolean;
     isDirty: boolean;
     isTouched: boolean;
+
+    touchedFields: Record<string, boolean>;
+    dirtyFields: Record<string, boolean>;
+    fieldErrors: Record<string, string>;
   };
 
   /**
@@ -367,6 +374,18 @@ export const makeBaseRvfReact = <FormInputData,>({
       },
       get submitStatus() {
         return trackedState.submitStatus;
+      },
+
+      get touchedFields() {
+        return getAllTouched(trackedState);
+      },
+
+      get dirtyFields() {
+        return getAllDirty(trackedState);
+      },
+
+      get fieldErrors() {
+        return getAllErrors(trackedState);
       },
     },
 

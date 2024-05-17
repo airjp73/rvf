@@ -1,4 +1,3 @@
-- Accessing `defaultValues`/`fieldErrors`/`touchedFields` from form context
 - `disableFocusOnError` option
 - Add a `disableNativeValidation` option
 - Hooking into server-side validation

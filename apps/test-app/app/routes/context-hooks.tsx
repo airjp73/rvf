@@ -41,7 +41,7 @@ const DisplayContext = ({
 
         <dt>fieldErrors</dt>
         <dd>
-          <pre>{JSON.stringify(fieldErrors)}</pre>
+          <pre>{JSON.stringify(context.formState.fieldErrors)}</pre>
         </dd>
 
         <dt>defaultValues</dt>
@@ -51,7 +51,7 @@ const DisplayContext = ({
 
         <dt>touchedFields</dt>
         <dd>
-          <pre>{JSON.stringify(touchedFields)}</pre>
+          <pre>{JSON.stringify(context.formState.touchedFields)}</pre>
         </dd>
 
         <dt>getValues</dt>

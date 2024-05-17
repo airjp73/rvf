@@ -27,3 +27,17 @@ export const getFieldError = (state: FormStoreValue, fieldName: string) => {
 
 export const getFieldArrayKeys = (state: FormStoreValue, fieldName: string) =>
   state.fieldArrayKeys[fieldName];
+
+export const getAllTouched = (state: FormStoreValue) => state.touchedFields;
+
+export const getAllDirty = (state: FormStoreValue) => state.dirtyFields;
+
+export const getAllErrors = (state: FormStoreValue) => {
+  if (state.submitStatus !== "idle") return state.validationErrors;
+  const fieldsWithErrors = Object.entries(state.validationErrors).filter(
+    ([fieldName]) =>
+      state.touchedFields[fieldName] ||
+      state.validationBehaviorConfig.initial === "onChange",
+  );
+  return Object.fromEntries(fieldsWithErrors);
+};
