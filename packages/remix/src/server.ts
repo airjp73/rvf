@@ -1,6 +1,6 @@
 import { json } from "@remix-run/server-runtime";
 import { ValidationErrorResponseData, ValidatorError } from "@rvf/core";
-import { formDefaultValuesKey } from "./constants";
+import { FormDefaultsKey, formDefaultValuesKey } from "./constants";
 
 /**
  * Takes the errors from a `Validator` and returns a `Response`.
@@ -35,6 +35,9 @@ export function validationError(
   );
 }
 
+export type FormDefaults = {
+  [formDefaultsKey: FormDefaultsKey]: any;
+};
 /**
  * @deprecated This was a workaround for features in the old version of `remix-validated-form` that don't exist anymore.
  * Directly setting the `defaultValues` with data returned from your loader is now the preferred way to set the default values.
@@ -44,6 +47,6 @@ export function validationError(
 export const setFormDefaults = <DataType = any>(
   formId: string,
   defaultValues: Partial<DataType>,
-) => ({
+): FormDefaults => ({
   [formDefaultValuesKey(formId)]: defaultValues,
 });

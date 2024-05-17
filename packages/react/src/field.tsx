@@ -235,3 +235,22 @@ export function useField<FormInputData>(
 
   return base as never;
 }
+
+export type FieldPropsWithScope<FormInputData> = {
+  scope: Rvf<FormInputData>;
+  children: (field: RvfField<FormInputData>) => React.ReactNode;
+};
+
+export type FieldPropsWithName<FormInputData> = {
+  name: string;
+  children: (field: RvfField<FormInputData>) => React.ReactNode;
+};
+
+export function Field<FormInputData = unknown>(
+  props: FieldPropsWithName<FormInputData> | FieldPropsWithScope<FormInputData>,
+): React.ReactNode {
+  // not actually breaking rules here
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const field = "name" in props ? useField(props.name) : useField(props.scope);
+  return props.children(field as RvfField<FormInputData>);
+}

@@ -7,6 +7,10 @@ export {
   ValidationResult,
   ValidationBehavior,
   ValidationBehaviorConfig,
+  ValidatorData,
+  ValidationErrorResponseData,
+  ValidatorError,
+  CreateValidatorArg,
   FieldValues,
   SubmitStatus,
   Rvf,
@@ -25,4 +29,4 @@ export {
 } from "@rvf/react";
 export { useRvf, RvfRemixOpts } from "./useRvf";
 export { ValidatedForm, ValidatedFormProps } from "./ValidatedForm";
-export { validationError, setFormDefaults } from "./server";
+export { validationError, setFormDefaults, FormDefaults } from "./server";

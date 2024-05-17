@@ -176,3 +176,25 @@ export function useFieldArray<FormInputData extends any[]>(
 
   return base;
 }
+
+export type FieldArrayPropsWithScope<FormInputData extends any[]> = {
+  scope: Rvf<FormInputData>;
+  children: (field: RvfArray<FormInputData>) => React.ReactNode;
+};
+
+export type FieldArrayPropsWithName<FormInputData extends any[]> = {
+  name: string;
+  children: (field: RvfArray<FormInputData>) => React.ReactNode;
+};
+
+export function FieldArray<FormInputData extends any[] = unknown[]>(
+  props:
+    | FieldArrayPropsWithName<FormInputData>
+    | FieldArrayPropsWithScope<FormInputData>,
+): React.ReactNode {
+  const field =
+    // not actually breaking rules here
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    "name" in props ? useFieldArray(props.name) : useFieldArray(props.scope);
+  return props.children(field as RvfArray<FormInputData>);
+}

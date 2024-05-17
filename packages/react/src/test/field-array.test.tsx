@@ -6,6 +6,7 @@ import { RenderCounter } from "./util/RenderCounter";
 import { describe, expect, it, vi } from "vitest";
 import { successValidator } from "./util/successValidator";
 import { controlInput } from "./util/controlInput";
+import { FieldArray } from "../array";
 
 it("should only accept array values", () => {
   const Comp = () => {
@@ -139,6 +140,41 @@ describe("uncontrolled items", () => {
               {...item.field("name").getInputProps()}
             />
           ))}
+        </div>
+      );
+    };
+
+    render(<Comp />);
+    expect(screen.getByTestId("foo-0")).toHaveValue("bar");
+    expect(screen.getByTestId("foo-1")).toHaveValue("baz");
+
+    await userEvent.type(screen.getByTestId("foo-0"), "test");
+    expect(screen.getByTestId("foo-0")).toHaveValue("bartest");
+  });
+
+  it("should work with the component version of FieldArray", async () => {
+    const Comp = () => {
+      const form = useRvf({
+        defaultValues: {
+          foo: [{ name: "bar" }, { name: "baz" }],
+        },
+        validator: successValidator,
+        handleSubmit: vi.fn(),
+      });
+
+      return (
+        <div>
+          <FieldArray scope={form.scope("foo")}>
+            {(array) =>
+              array.map((key, item, index) => (
+                <input
+                  key={key}
+                  data-testid={`foo-${index}`}
+                  {...item.field("name").getInputProps()}
+                />
+              ))
+            }
+          </FieldArray>
         </div>
       );
     };

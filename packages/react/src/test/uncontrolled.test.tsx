@@ -7,6 +7,7 @@ import { RenderCounter } from "./util/RenderCounter";
 import { successValidator } from "./util/successValidator";
 import { controlNumberInput } from "./util/controlInput";
 import { createValidator } from "@rvf/core";
+import { Field } from "../field";
 
 it("captures and submits with uncontrolled fields", async () => {
   const submit = vi.fn();
@@ -47,6 +48,43 @@ it("captures and submits with uncontrolled fields", async () => {
     baz: {
       a: "quuxanother value",
     },
+  });
+
+  expect(screen.getByTestId("render-count")).toHaveTextContent("1");
+});
+
+it("should work with the component version of Field", async () => {
+  const submit = vi.fn();
+
+  const TestComp = () => {
+    const form = useRvf({
+      defaultValues: {
+        foo: "bar",
+      },
+      validator: successValidator,
+      handleSubmit: submit,
+    });
+
+    return (
+      <form {...form.getFormProps()} data-testid="form">
+        <Field scope={form.scope("foo")}>
+          {(field) => <input data-testid="foo" {...field.getInputProps()} />}
+        </Field>
+        <RenderCounter data-testid="render-count" />
+      </form>
+    );
+  };
+
+  render(<TestComp />);
+  expect(screen.getByTestId("foo")).toHaveValue("bar");
+  expect(screen.getByTestId("render-count")).toHaveTextContent("1");
+
+  await userEvent.type(screen.getByTestId("foo"), "testing 123");
+  fireEvent.submit(screen.getByTestId("form"));
+
+  await waitFor(() => expect(submit).toHaveBeenCalledTimes(1));
+  expect(submit).toHaveBeenCalledWith({
+    foo: "bartesting 123",
   });
 
   expect(screen.getByTestId("render-count")).toHaveTextContent("1");

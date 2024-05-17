@@ -5,6 +5,7 @@ import {
   ValidatorData,
   setFormDefaults,
   FormDefaults,
+  useRvf,
 } from "@rvf/remix";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
@@ -39,11 +40,16 @@ export const loader = (args: DataFunctionArgs) =>
   });
 
 export default function FrontendValidation() {
+  const form = useRvf({
+    validator: validator,
+    method: "post",
+    id: "test-form",
+  });
   return (
     <>
       <Input name="text1" type="text" form="test-form" label="Text 1" />
       <Input name="check1" type="checkbox" form="test-form" label="Check 1" />
-      <Fieldset label="Radios" name="radios" form="test-form">
+      <Fieldset label="Radios" name="radios" rvf={form.scope("radios")}>
         <Input
           name="radio"
           type="radio"
@@ -75,7 +81,7 @@ export default function FrontendValidation() {
       <Fieldset
         label="Which colors do you like"
         name="likesColors"
-        form="test-form"
+        rvf={form.scope("likesColors")}
       >
         <Input
           data-testid="red"
@@ -106,10 +112,10 @@ export default function FrontendValidation() {
         />
       </Fieldset>
       <hr />
-      <ValidatedForm validator={validator} method="post" id="test-form">
+      <form {...form.getFormProps()}>
         <Input name="text2" type="text" label="Text 2" />
         <SubmitButton />
-      </ValidatedForm>
+      </form>
     </>
   );
 }
