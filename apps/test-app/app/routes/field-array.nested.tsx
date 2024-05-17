@@ -1,6 +1,6 @@
 import { withZod } from "@rvf/zod";
 import { nanoid } from "nanoid";
-import { ValidatedForm, useFieldArray } from "@rvf/remix";
+import { ValidatedForm, useFieldArray, useRvf } from "@rvf/remix";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
 import { InputWithTouched } from "~/components/InputWithTouched";
@@ -50,50 +50,49 @@ const defaultValues = {
 };
 
 const Notes = ({ name }: { name: string }) => {
-  const [items, arr, error] = useFieldArray(name);
+  const array = useFieldArray(name);
 
   return (
     <div>
       <ul>
-        {items.map(({ defaultValue, key }, index) => (
+        {array.map((key, item, index) => (
           <li key={key} data-testid="note">
             <InputWithTouched
               name={`${name}[${index}].text`}
               label={`Note ${index}`}
             />
-            <button type="button" onClick={() => arr.remove(index)}>
+            <button type="button" onClick={() => array.remove(index)}>
               Delete note {index}
             </button>
           </li>
         ))}
       </ul>
-      <button type="button" onClick={() => arr.push({ text: "New note" })}>
+      <button type="button" onClick={() => array.push({ text: "New note" })}>
         Add note
       </button>
-      {error && <div>{error}</div>}
+      {array.error() && <div>{array.error()}</div>}
     </div>
   );
 };
 
 export default function FrontendValidation() {
-  const [
-    items,
-    { swap, insert, pop, unshift, replace, push, move, remove },
-    error,
-  ] = useFieldArray("todos", { formId: "form" });
+  const form = useRvf({
+    validator,
+    method: "post",
+    defaultValues,
+    formId: "form",
+  });
+
+  const array = useFieldArray(form.scope("todos"));
+
   return (
-    <ValidatedForm
-      validator={validator}
-      method="post"
-      defaultValues={defaultValues}
-      id="form"
-    >
-      {items.map(({ defaultValue, key }, index) => (
+    <form {...form.getFormProps()}>
+      {array.map((key, item, index) => (
         <div key={key} data-testid={`todo-${index}`}>
           <input
             type="hidden"
             name={`todos[${index}].id`}
-            value={defaultValue.id}
+            value={item.value("id")}
             data-testid="todo-id"
           />
           <InputWithTouched name={`todos[${index}].title`} label="Title" />
@@ -101,35 +100,41 @@ export default function FrontendValidation() {
           <button
             type="button"
             onClick={() => {
-              remove(index);
+              array.remove(index);
             }}
           >
             Delete todo
           </button>
         </div>
       ))}
-      <button type="button" onClick={() => swap(0, 2)}>
+      <button type="button" onClick={() => array.swap(0, 2)}>
         Swap
       </button>
-      <button type="button" onClick={() => move(0, 2)}>
+      <button type="button" onClick={() => array.move(0, 2)}>
         Move
       </button>
-      <button type="button" onClick={() => insert(1, { id: nanoid() })}>
+      <button
+        type="button"
+        onClick={() => array.insert(1, { id: nanoid(), title: "", notes: [] })}
+      >
         Insert
       </button>
-      <button type="button" onClick={() => pop()}>
+      <button type="button" onClick={() => array.pop()}>
         Pop
       </button>
-      <button type="button" onClick={() => unshift({ id: nanoid() })}>
+      <button
+        type="button"
+        onClick={() => array.unshift({ id: nanoid(), title: "", notes: [] })}
+      >
         Unshift
       </button>
       <button
         type="button"
         onClick={() =>
-          replace(1, {
+          array.replace(1, {
             id: nanoid(),
             title: "New title",
-            notes: "New note",
+            notes: [{ text: "New note" }],
           })
         }
       >
@@ -138,10 +143,10 @@ export default function FrontendValidation() {
       <button
         type="button"
         onClick={() =>
-          push({
+          array.push({
             id: nanoid(),
             title: "New title",
-            notes: "New note",
+            notes: [{ text: "New note" }],
           })
         }
       >
@@ -149,7 +154,7 @@ export default function FrontendValidation() {
       </button>
       <button type="reset">Reset</button>
       <button type="submit">Submit</button>
-      {error && <div>{error}</div>}
-    </ValidatedForm>
+      {array.error() && <div>{array.error()}</div>}
+    </form>
   );
 }

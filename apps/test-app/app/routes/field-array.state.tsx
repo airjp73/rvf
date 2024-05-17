@@ -1,7 +1,7 @@
 import { withZod } from "@rvf/zod";
 import { nanoid } from "nanoid";
 import { useState } from "react";
-import { ValidatedForm, useFieldArray } from "@rvf/remix";
+import { ValidatedForm, useFieldArray, useRvf } from "@rvf/remix";
 import { z } from "zod";
 import { InputWithTouched } from "~/components/InputWithTouched";
 
@@ -28,46 +28,48 @@ const Counter = () => {
 };
 
 export default function FrontendValidation() {
-  const [items, { swap, insert, unshift, replace, push, remove }, error] =
-    useFieldArray("counters", { formId: "form" });
+  const form = useRvf({
+    validator,
+    method: "post",
+    defaultValues,
+    formId: "form",
+  });
+
+  const array = useFieldArray(form.scope("counters"));
+
   return (
-    <ValidatedForm
-      validator={validator}
-      method="post"
-      defaultValues={defaultValues}
-      id="form"
-    >
-      {items.map(({ key }, index) => (
+    <form {...form.getFormProps()}>
+      {array.map((key, item, index) => (
         <div key={key} data-testid={`counter-${index}`}>
           <Counter key={key} />
           <button
             type="button"
             onClick={() => {
-              remove(index);
+              array.remove(index);
             }}
           >
             Delete todo
           </button>
         </div>
       ))}
-      <button type="button" onClick={() => swap(0, 1)}>
+      <button type="button" onClick={() => array.swap(0, 1)}>
         Swap
       </button>
-      <button type="button" onClick={() => insert(1, {})}>
+      <button type="button" onClick={() => array.insert(1, {} as never)}>
         Insert
       </button>
-      <button type="button" onClick={() => unshift({})}>
+      <button type="button" onClick={() => array.unshift({} as never)}>
         Unshift
       </button>
-      <button type="button" onClick={() => replace(1, {})}>
+      <button type="button" onClick={() => array.replace(1, {} as never)}>
         Replace
       </button>
-      <button type="button" onClick={() => push({})}>
+      <button type="button" onClick={() => array.push({} as never)}>
         Push
       </button>
       <button type="reset">Reset</button>
       <button type="submit">Submit</button>
-      {error && <div>{error}</div>}
-    </ValidatedForm>
+      {array.error() && <div>{array.error()}</div>}
+    </form>
   );
 }

@@ -1,5 +1,11 @@
 import { ReactNode, useMemo } from "react";
-import { FormStoreValue, Rvf, getFieldValue, scopeRvf } from "@rvf/core";
+import {
+  FormStoreValue,
+  Rvf,
+  getFieldError,
+  getFieldValue,
+  scopeRvf,
+} from "@rvf/core";
 import { makeImplFactory } from "./implFactory";
 import { RvfReact, makeBaseRvfReact } from "./base";
 import { ValidationBehaviorConfig } from "@rvf/core";
@@ -10,6 +16,11 @@ export interface RvfArray<FormInputData extends Array<any>> {
    * Gets field name of the array.
    */
   name: () => string;
+
+  /**
+   * Gets the error message for the array itself, if any.
+   */
+  error: () => string | null;
 
   /**
    * Gets the length of the array.
@@ -111,6 +122,7 @@ export const makeFieldArrayImpl = <FormInputData extends Array<any>>({
 
   return {
     name: () => arrayFieldName,
+    error: () => getFieldError(trackedState, arrayFieldName),
     length,
     map: (callback) => {
       // getFieldArrayKeys doesn't subscribe to changes in length,

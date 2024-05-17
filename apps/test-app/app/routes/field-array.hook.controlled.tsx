@@ -1,11 +1,6 @@
 import { withZod } from "@rvf/zod";
 import { nanoid } from "nanoid";
-import {
-  useFieldArray,
-  useControlField,
-  useField,
-  ValidatedForm,
-} from "@rvf/remix";
+import { useFieldArray, useControlField, useField, useRvf } from "@rvf/remix";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
 
@@ -42,8 +37,8 @@ const ControlledInput = ({ label, name }: { label: string; name: string }) => {
           })}
         />
       </label>
-      {touched && <span>{name} touched</span>}
-      {error && <p data-testid="text-error">{error}</p>}
+      {touched() && <span>{name} touched</span>}
+      {error() && <p data-testid="text-error">{error()}</p>}
     </div>
   );
 };
@@ -69,24 +64,23 @@ const defaultValues = {
 };
 
 export default function FrontendValidation() {
-  const [
-    items,
-    { swap, insert, pop, unshift, replace, push, move, remove },
-    error,
-  ] = useFieldArray("todos", { formId: "form" });
+  const form = useRvf({
+    validator,
+    method: "post",
+    defaultValues,
+    formId: "form",
+  });
+
+  const array = useFieldArray(form.scope("todos"));
+
   return (
-    <ValidatedForm
-      validator={validator}
-      method="post"
-      defaultValues={defaultValues}
-      id="form"
-    >
-      {items.map(({ defaultValue, key }, index) => (
+    <form {...form.getFormProps()}>
+      {array.map((key, item, index) => (
         <div key={key} data-testid={`todo-${index}`}>
           <input
             type="hidden"
             name={`todos[${index}].id`}
-            value={defaultValue.id}
+            value={item.value("id")}
             data-testid="todo-id"
           />
           <ControlledInput name={`todos[${index}].title`} label="Title" />
@@ -94,32 +88,38 @@ export default function FrontendValidation() {
           <button
             type="button"
             onClick={() => {
-              remove(index);
+              array.remove(index);
             }}
           >
             Delete todo
           </button>
         </div>
       ))}
-      <button type="button" onClick={() => swap(0, 2)}>
+      <button type="button" onClick={() => array.swap(0, 2)}>
         Swap
       </button>
-      <button type="button" onClick={() => move(0, 2)}>
+      <button type="button" onClick={() => array.move(0, 2)}>
         Move
       </button>
-      <button type="button" onClick={() => insert(1, { id: nanoid() })}>
+      <button
+        type="button"
+        onClick={() => array.insert(1, { id: nanoid(), title: "", notes: "" })}
+      >
         Insert
       </button>
-      <button type="button" onClick={() => pop()}>
+      <button type="button" onClick={() => array.pop()}>
         Pop
       </button>
-      <button type="button" onClick={() => unshift({ id: nanoid() })}>
+      <button
+        type="button"
+        onClick={() => array.unshift({ id: nanoid(), title: "", notes: "" })}
+      >
         Unshift
       </button>
       <button
         type="button"
         onClick={() =>
-          replace(1, {
+          array.replace(1, {
             id: nanoid(),
             title: "New title",
             notes: "New note",
@@ -131,7 +131,7 @@ export default function FrontendValidation() {
       <button
         type="button"
         onClick={() =>
-          push({
+          array.push({
             id: nanoid(),
             title: "New title",
             notes: "New note",
@@ -142,7 +142,7 @@ export default function FrontendValidation() {
       </button>
       <button type="reset">Reset</button>
       <button type="submit">Submit</button>
-      {error && <div>{error}</div>}
-    </ValidatedForm>
+      {array.error() && <div>{array.error()}</div>}
+    </form>
   );
 }
