@@ -15,7 +15,20 @@ import { useRvfOrContextInternal } from "./context";
 import { isFormControl } from "./inputs/logic/isFormControl";
 
 export interface RvfField<FormInputData> {
+  /**
+   * Returns props that can be spread onto native form controls or thin wrappers around them.
+   * It's important that the component you spread the props into accepts the `ref` prop.
+   * This allows the field to be focused when it has an error and also disables RVF's default
+   * behavior of automatically listening to changes in the field.
+   */
   getInputProps: GetInputProps;
+
+  /**
+   * Returns props that can be spread into controlled components to use as a field.
+   * It's important to pass the provided `ref` to something with a `focus` method.
+   * This allows the field to be focused when it has an error and also disables RVF's default
+   * behavior of automatically listening to changes in the field.
+   */
   getControlProps: (props?: {
     onChange?: (value: FormInputData) => void;
     onBlur?: () => void;
@@ -31,6 +44,11 @@ export interface RvfField<FormInputData> {
     controlled: () => RefCallback<HTMLElement>;
     transient: () => RefCallback<HTMLElement>;
   };
+
+  /**
+   * Gets the name of the field.
+   */
+  name: () => string;
 
   onChange: (value: FormInputData) => void;
   onBlur: () => void;
@@ -130,6 +148,8 @@ export const makeFieldImpl = <FormInputData,>({
       transient: createTransientRef,
       controlled: createControlledRef,
     },
+
+    name: () => fieldName,
 
     onChange,
     onBlur,

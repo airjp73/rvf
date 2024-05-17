@@ -7,6 +7,11 @@ import { useRvfOrContextInternal } from "./context";
 
 export interface RvfArray<FormInputData extends Array<any>> {
   /**
+   * Gets field name of the array.
+   */
+  name: () => string;
+
+  /**
    * Gets the length of the array.
    * @willRerender
    */
@@ -105,6 +110,7 @@ export const makeFieldArrayImpl = <FormInputData extends Array<any>>({
   // TODO: handle validation behavior
 
   return {
+    name: () => arrayFieldName,
     length,
     map: (callback) => {
       // getFieldArrayKeys doesn't subscribe to changes in length,
