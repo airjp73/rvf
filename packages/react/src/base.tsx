@@ -97,7 +97,7 @@ export interface RvfReact<FormInputData> {
 
   formOptions: {
     action?: string;
-    formId?: string;
+    formId: string;
   };
 
   formState: {
