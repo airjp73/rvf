@@ -1,6 +1,5 @@
 import React, { forwardRef } from "react";
-import { useField } from "@rvf/remix";
-import { Rvf } from "@rvf/core";
+import { useField, Rvf } from "@rvf/remix";
 
 type InputProps = {
   name: string | Rvf<string | boolean | string[]>;
@@ -27,9 +26,11 @@ export const Input = forwardRef(
     }: InputProps,
     ref: React.ForwardedRef<HTMLInputElement>,
   ) => {
-    // Not actually breaking rules here
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    const field = typeof name === "string" ? useField(name) : useField(name);
+    const field =
+      // Not actually breaking rules here
+      // eslint-disable-next-line react-hooks/rules-of-hooks
+      typeof name === "string" ? useField<string>(name) : useField(name);
+
     return (
       <div>
         <label htmlFor={field.name()}>{label}</label>

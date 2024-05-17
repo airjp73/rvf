@@ -1,4 +1,4 @@
-import { RefCallback, Ref } from "react";
+import { Ref } from "react";
 import * as R from "remeda";
 import {
   getCheckboxChecked,
@@ -26,7 +26,7 @@ type MinimalInputProps = {
   defaultChecked?: boolean | undefined;
   name?: string | undefined;
   type?: string | undefined;
-  ref?: RefCallback<any>;
+  ref?: Ref<any>;
   value?: string;
 };
 
