@@ -41,6 +41,22 @@ export interface RvfField<FormInputData> {
     ref: RefCallback<HTMLElement>;
   };
 
+  /**
+   * Returns props that can be spread into a native form control to use as a hidden field.
+   * This is useful in combination with `getControlProps`.
+   */
+  getHiddenInputProps: (opts?: {
+    /**
+     * Serializes the value of the field before setting the `value` prop of the hidden input.
+     */
+    serialize?: (value: FormInputData) => string;
+  }) => {
+    name: string;
+    value: string;
+    type: "hidden";
+    form: string;
+  };
+
   refs: {
     controlled: () => RefCallback<HTMLElement>;
     transient: () => RefCallback<HTMLElement>;
@@ -144,6 +160,15 @@ export const makeFieldImpl = <FormInputData,>({
       },
       value: getFieldValue(trackedState, fieldName) as never,
       ref: createControlledRef(),
+    }),
+
+    getHiddenInputProps: ({
+      serialize = (val: unknown) => val as string,
+    } = {}) => ({
+      name: fieldName,
+      value: serialize(getFieldValue(trackedState, fieldName)),
+      type: "hidden",
+      form: getFormId(trackedState),
     }),
 
     refs: {

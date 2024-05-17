@@ -25,7 +25,7 @@ type FormInit<FormInputData extends FieldValues, FormOutputData> = {
   validator: Validator<FormOutputData>;
   validationBehaviorConfig?: ValidationBehaviorConfig;
   onSubmit: (data: FormOutputData) => Promise<void>;
-  formProps?: StoreFormProps;
+  formProps: StoreFormProps;
 } & SubmitTypes<FormOutputData>;
 
 export interface Rvf<FormInputData> {
@@ -68,7 +68,7 @@ export const createRvf = <FormInputData extends FieldValues, FormOutputData>({
     submitSource,
     mutableImplStore,
     validationBehaviorConfig,
-    formProps: formProps ?? {},
+    formProps: formProps,
   });
   const subformCache = new Map<string, any>();
 

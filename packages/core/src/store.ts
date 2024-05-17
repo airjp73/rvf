@@ -50,7 +50,7 @@ export type RefStore = ReturnType<typeof createRefStore>;
 
 export type StoreFormProps = {
   action?: string;
-  id?: string;
+  id: string;
 };
 
 type StoreState = {

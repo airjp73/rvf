@@ -43,6 +43,7 @@ interface FormProps {
   onChange: (event: React.FormEvent<HTMLFormElement>) => void;
   onBlur: (event: React.FormEvent<HTMLFormElement>) => void;
   ref: React.Ref<HTMLFormElement>;
+  id: string;
 }
 
 export interface RvfReact<FormInputData> {
@@ -453,6 +454,7 @@ export const makeBaseRvfReact = <FormInputData,>({
 
     getFormProps: (formProps = {}) => ({
       ...formProps,
+      id: getFormId(trackedState),
       onSubmit: (event) => {
         formProps.onSubmit?.(event);
         if (event.defaultPrevented) return;

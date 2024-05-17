@@ -595,4 +595,40 @@ it("should naturally work with radio groups", async () => {
   expect(screen.getByTestId("render-count")).toHaveTextContent("1");
 });
 
+it("should auto-connect fields outside of the form", async () => {
+  const submit = vi.fn();
+
+  const TestComp = () => {
+    const form = useRvf({
+      defaultValues: {
+        foo: "bar",
+      },
+      validator: successValidator,
+      handleSubmit: submit,
+      submitSource: "dom",
+    });
+
+    return (
+      <>
+        <input data-testid="foo" {...form.field("foo").getInputProps()} />
+        <form {...form.getFormProps()} data-testid="form">
+          <button type="submit" data-testid="submit" />
+        </form>
+      </>
+    );
+  };
+
+  render(<TestComp />);
+  expect(screen.getByTestId("foo")).toHaveValue("bar");
+
+  await userEvent.type(screen.getByTestId("foo"), "testing 123");
+  await userEvent.click(screen.getByTestId("submit"));
+
+  expect(submit).toHaveBeenCalledTimes(1);
+  expect(submit).toHaveBeenCalledWith(
+    { foo: "bartesting 123" },
+    expect.any(FormData),
+  );
+});
+
 it.todo("should work with selects");
