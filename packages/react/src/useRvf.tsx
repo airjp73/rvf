@@ -9,14 +9,17 @@ import {
 import { RvfReact, useRvfInternal } from "./base";
 import { FieldErrors } from "@rvf/core";
 
-type SubmitTypes<FormOutputData> =
+export type RvfSubmitOpts<FormOutputData> =
   | {
       submitSource?: "state";
-      handleSubmit: (data: FormOutputData) => Promise<void>;
+      handleSubmit: (data: FormOutputData) => Promise<void> | void;
     }
   | {
       submitSource: "dom";
-      handleSubmit: (data: FormOutputData, formData: FormData) => Promise<void>;
+      handleSubmit: (
+        data: FormOutputData,
+        formData: FormData,
+      ) => Promise<void> | void;
     };
 
 export type RvfOpts<
@@ -69,7 +72,7 @@ export type RvfOpts<
    * `getInputProps` or `getControlProps`.
    */
   disableNativeValidation?: boolean;
-} & SubmitTypes<FormOutputData>;
+} & RvfSubmitOpts<FormOutputData>;
 
 const isRvf = (form: any): form is Rvf<any> =>
   "__brand__" in form && form.__brand__ === "rvf";

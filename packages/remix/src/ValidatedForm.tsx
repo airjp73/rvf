@@ -1,6 +1,6 @@
 import { FieldValues } from "@rvf/core";
 import { RvfRemixOpts, useRvf } from "./useRvf";
-import { RvfProvider, RvfReact } from "@rvf/react";
+import { RvfProvider, RvfReact, RvfSubmitOpts } from "@rvf/react";
 import { FORM_ID_FIELD_NAME } from "./constants";
 import {
   useDefaultValuesFromLoader,
@@ -11,7 +11,11 @@ import { useId } from "react";
 export type ValidatedFormProps<
   FormInputData extends FieldValues,
   FormOutputData,
-> = RvfRemixOpts<FormInputData, FormOutputData> &
+  Subaction extends string | undefined,
+> = Omit<
+  RvfRemixOpts<FormInputData, FormOutputData>,
+  "submitSource" | "handleSubmit"
+> &
   Omit<React.ComponentProps<"form">, "children"> & {
     /**
      * A ref to the form element.
@@ -22,16 +26,21 @@ export type ValidatedFormProps<
      * Adds a hidden input to the form with the name `subaction` and the value of the subaction.
      * This can be used to handle multiple forms in the same action function.
      */
-    subaction?: string;
+    subaction?: Subaction;
 
     children:
       | React.ReactNode
       | ((form: RvfReact<FormInputData>) => React.ReactNode);
-  };
+  } & RvfSubmitOpts<
+    Subaction extends undefined
+      ? FormOutputData
+      : FormOutputData & { subaction: Subaction }
+  >;
 
 export const ValidatedForm = <
   FormInputData extends FieldValues,
   FormOutputData,
+  Subaction extends string | undefined,
 >({
   validator,
   formRef,
@@ -53,7 +62,7 @@ export const ValidatedForm = <
   fetcher,
   subaction,
   ...rest
-}: ValidatedFormProps<FormInputData, FormOutputData>) => {
+}: ValidatedFormProps<FormInputData, FormOutputData, Subaction>) => {
   const defaultFormId = useId();
   const formId = id ?? defaultFormId;
 

@@ -17,10 +17,8 @@ const Switch = ({ name, label, "data-testid": dataTestId }: SwitchProps) => {
     <div>
       <input
         type="checkbox"
-        {...getInputProps({
-          type: "checkbox",
-          id: name,
-        })}
+        id={name}
+        {...getInputProps({ type: "checkbox" })}
       />
       <label>{label}</label>
       <pre data-testid={dataTestId}>
