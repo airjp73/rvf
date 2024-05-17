@@ -58,6 +58,7 @@ type StoreState = {
   fieldArrayKeys: Record<string, Array<string>>;
   validationBehaviorConfig: ValidationBehaviorConfig;
   submitSource: "state" | "dom";
+  action?: string;
 };
 
 type StoreEvents = {
@@ -100,6 +101,7 @@ type StoreActions = {
   syncOptions: (opts: {
     submitSource: "state" | "dom";
     validationBehaviorConfig?: ValidationBehaviorConfig | undefined;
+    action?: string;
   }) => void;
 
   reset: (nextValues?: FieldValues) => void;
@@ -140,6 +142,7 @@ export type FormStoreInit = {
   submitSource: "state" | "dom";
   mutableImplStore: MutableImplStore;
   validationBehaviorConfig?: ValidationBehaviorConfig;
+  action?: string;
 };
 
 const genKey = () => `${Math.round(Math.random() * 10_000)}-${Date.now()}`;
@@ -203,6 +206,7 @@ export const createFormStateStore = ({
   formRef,
   submitSource,
   validationBehaviorConfig = defaultValidationBehaviorConfig,
+  action,
 }: FormStoreInit) =>
   create<FormStoreValue>()(
     immer((set, get) => ({
@@ -216,6 +220,7 @@ export const createFormStateStore = ({
       submitStatus: "idle",
       validationBehaviorConfig,
       submitSource,
+      action,
 
       /////// Validation
       shouldValidate: (eventType, fieldName, behaviorOverride) => {
@@ -390,10 +395,12 @@ export const createFormStateStore = ({
       syncOptions: ({
         submitSource,
         validationBehaviorConfig = defaultValidationBehaviorConfig,
+        action,
       }) => {
         set((state) => {
           state.submitSource = submitSource;
           state.validationBehaviorConfig = validationBehaviorConfig;
+          state.action = action;
         });
       },
 

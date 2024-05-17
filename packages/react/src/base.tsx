@@ -89,6 +89,10 @@ export interface RvfReact<FormInputData> {
     fieldName: Field,
   ): ValueAtPath<FormInputData, StringToPathTuple<Field>>;
 
+  formOptions: {
+    action?: string;
+  };
+
   formState: {
     isSubmitting: boolean;
     hasBeenSubmitted: boolean;
@@ -338,6 +342,11 @@ export const makeBaseRvfReact = <FormInputData,>({
     dirty: (fieldName) => getFieldDirty(trackedState, f(fieldName)),
     error: (fieldName) => getFieldError(trackedState, f(fieldName)),
 
+    formOptions: {
+      get action() {
+        return trackedState.action;
+      },
+    },
     formState: {
       get isSubmitting() {
         return trackedState.submitStatus === "submitting";

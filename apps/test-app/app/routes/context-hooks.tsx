@@ -36,6 +36,9 @@ const DisplayContext = ({
         <dt>isValid</dt>
         <dd>{context.formState.isValid ? "true" : "false"}</dd>
 
+        <dt>action</dt>
+        <dd>{context.formOptions.action}</dd>
+
         <dt>fieldErrors</dt>
         <dd>
           <pre>{JSON.stringify(fieldErrors)}</pre>
@@ -43,7 +46,7 @@ const DisplayContext = ({
 
         <dt>defaultValues</dt>
         <dd>
-          <pre>{JSON.stringify(defaultValues)}</pre>
+          <pre>{JSON.stringify(context.defaultValue())}</pre>
         </dd>
 
         <dt>touchedFields</dt>

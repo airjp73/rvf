@@ -1,4 +1,3 @@
-- Accessing the `action` prop from form context
 - Accessing `defaultValues`/`fieldErrors`/`touchedFields` from form context
 - `disableFocusOnError` option
 - Add a `disableNativeValidation` option
@@ -8,3 +7,4 @@
 - Way to get the name from `useField` and `useFieldArray`
 - auto-add form id in `getInputProps` if it's passed as on option
   - (also give a default form id?)
+- `ValidatorData` type

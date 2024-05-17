@@ -38,6 +38,11 @@ export type RvfOpts<
    * Allows you to customize the validation behavior of the form.
    */
   validationBehaviorConfig?: ValidationBehaviorConfig;
+
+  /**
+   * The action prop of the form.
+   */
+  action?: string;
 } & SubmitTypes<FormOutputData>;
 
 const isRvf = (form: any): form is Rvf<any> =>
@@ -81,6 +86,7 @@ export function useRvf(
   const onSubmit = isRvf(optsOrForm) ? undefined : optsOrForm.handleSubmit;
   const isWholeForm = isRvf(optsOrForm);
   const submitSource = isRvf(optsOrForm) ? undefined : optsOrForm.submitSource;
+  const action = isRvf(optsOrForm) ? undefined : optsOrForm.action;
 
   const initial = isRvf(optsOrForm)
     ? undefined
@@ -114,6 +120,7 @@ export function useRvf(
               whenTouched,
             }
           : undefined,
+      action,
     });
   }, [
     form.__store__.store,
@@ -122,6 +129,7 @@ export function useRvf(
     submitSource,
     whenSubmitted,
     whenTouched,
+    action,
   ]);
 
   return useRvfInternal(form) as never;
