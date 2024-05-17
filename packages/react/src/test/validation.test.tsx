@@ -273,3 +273,8 @@ it.todo("should use validation adapters");
 it.todo(
   "changing a field with a validationBehavior of onChange should not show errors on another, touched field",
 );
+
+it.todo(
+  "should not focus the first invalid field if disableFocusOnError is true",
+);
+it.todo("should not use native validation if disableNativeValidation is true");
