@@ -43,7 +43,7 @@ export default function FrontendValidation() {
   const form = useRvf({
     validator: validator,
     method: "post",
-    id: "test-form",
+    formId: "test-form",
   });
   return (
     <>
