@@ -9,14 +9,14 @@ import {
 import { RvfReact, useRvfInternal } from "./base";
 import { FieldErrors } from "@rvf/core";
 
-export type RvfSubmitOpts<FormOutputData> =
+type RvfSubmitOpts<FormOutputData> =
   | {
       submitSource?: "state";
       handleSubmit: (data: FormOutputData) => Promise<void> | void;
     }
   | {
       submitSource: "dom";
-      handleSubmit: (
+      handleSubmit?: (
         data: FormOutputData,
         formData: FormData,
       ) => Promise<void> | void;

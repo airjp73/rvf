@@ -8,6 +8,26 @@ import {
 } from "./auto-server-hooks";
 import { useId } from "react";
 
+type ScopeToSubaction<
+  Data,
+  Subaction extends string | undefined,
+> = Subaction extends undefined ? Data : Data & { subaction: Subaction };
+
+type RvfRemixSubmitOpts<FormOutputData, Subaction extends string | undefined> =
+  | {
+      submitSource: "state";
+      handleSubmit: (
+        data: ScopeToSubaction<FormOutputData, Subaction>,
+      ) => Promise<void> | void;
+    }
+  | {
+      submitSource?: "dom";
+      handleSubmit?: (
+        data: ScopeToSubaction<FormOutputData, Subaction>,
+        formData: FormData,
+      ) => Promise<void> | void;
+    };
+
 export type ValidatedFormProps<
   FormInputData extends FieldValues,
   FormOutputData,
@@ -31,11 +51,7 @@ export type ValidatedFormProps<
     children:
       | React.ReactNode
       | ((form: RvfReact<FormInputData>) => React.ReactNode);
-  } & RvfSubmitOpts<
-    Subaction extends undefined
-      ? FormOutputData
-      : FormOutputData & { subaction: Subaction }
-  >;
+  } & RvfRemixSubmitOpts<FormOutputData, Subaction>;
 
 export const ValidatedForm = <
   FormInputData extends FieldValues,

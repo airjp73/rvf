@@ -15,7 +15,7 @@ export type {
   Rvf,
 } from "@rvf/core";
 export { type RvfReact, type FormFields } from "./base";
-export { useRvf, RvfOpts, RvfSubmitOpts } from "./useRvf";
+export { useRvf, RvfOpts } from "./useRvf";
 export {
   useField,
   RvfField,
