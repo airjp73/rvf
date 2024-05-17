@@ -27,18 +27,9 @@ export default function FrontendValidation() {
         validator={validator}
         method="post"
         id="test-form"
-        onSubmit={async (data, event) => {
-          await new Promise((resolve) => setTimeout(resolve, 500));
-          if (event.defaultPrevented)
-            throw new Error("defaultPrevented should start false");
-
-          if (data.shouldPreventDefault) {
-            event.preventDefault();
-            if (!event.defaultPrevented)
-              throw new Error(
-                "defaultPrevented should be true after calling preventDefault",
-              );
-          }
+        onSubmit={(event) => {
+          const data = new FormData(event.target as HTMLFormElement);
+          if (data.has("shouldPreventDefault")) event.preventDefault();
         }}
       >
         <Input

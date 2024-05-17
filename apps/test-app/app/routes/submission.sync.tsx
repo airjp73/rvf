@@ -1,7 +1,7 @@
 import { DataFunctionArgs, json } from "@remix-run/node";
 import { useActionData } from "@remix-run/react";
 import { withZod } from "@rvf/zod";
-import { ValidatedForm, useIsSubmitting, validationError } from "@rvf/remix";
+import { useRvf, validationError } from "@rvf/remix";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
 import { Input } from "~/components/Input";
@@ -23,10 +23,14 @@ export const action = async (args: DataFunctionArgs) => {
 };
 
 export default function FrontendValidation() {
-  const isSubmitting = useIsSubmitting("test-form");
+  const rvf = useRvf({
+    validator,
+    method: "post",
+    formId: "test-form",
+  });
   const data = useActionData<typeof action>();
   return (
-    <ValidatedForm validator={validator} id="test-form" method="post">
+    <form {...rvf.getFormProps()}>
       {data && "data" in data && (
         <>
           <p data-testid="willBeChangedResult">{data.data.willBeChanged}</p>
@@ -37,9 +41,9 @@ export default function FrontendValidation() {
       <Input
         label="Will be disabled"
         name="willBeDisabled"
-        disabled={isSubmitting}
+        disabled={rvf.formState.isSubmitting}
       />
       <SubmitButton label="Submit" submittingLabel="Submitting..." />
-    </ValidatedForm>
+    </form>
   );
 }

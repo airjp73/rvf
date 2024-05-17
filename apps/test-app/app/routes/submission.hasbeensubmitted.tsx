@@ -1,5 +1,5 @@
 import { withYup } from "@rvf/yup";
-import { useFormContext, ValidatedForm } from "@rvf/remix";
+import { useRvfContext, ValidatedForm } from "@rvf/remix";
 import * as yup from "yup";
 import { Input } from "~/components/Input";
 import { SubmitButton } from "~/components/SubmitButton";
@@ -11,7 +11,9 @@ const schema = yup.object({
 const validator = withYup(schema);
 
 const IsSubmitted = () => {
-  const { hasBeenSubmitted } = useFormContext();
+  const {
+    formState: { hasBeenSubmitted },
+  } = useRvfContext();
   return hasBeenSubmitted ? <h1>Submitted!</h1> : null;
 };
 

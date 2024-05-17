@@ -1,7 +1,7 @@
 import { DataFunctionArgs, json } from "@remix-run/node";
 import { useActionData } from "@remix-run/react";
 import { withZod } from "@rvf/zod";
-import { ValidatedForm } from "@rvf/remix";
+import { useRvf } from "@rvf/remix";
 import { z } from "zod";
 import { InputWithTouched } from "~/components/InputWithTouched";
 import { SubmitButton } from "~/components/SubmitButton";
@@ -20,11 +20,17 @@ export const action = async ({ request }: DataFunctionArgs) => {
 
 export default function FrontendValidation() {
   const actionData = useActionData<typeof action>();
+  const rvf = useRvf({
+    validator,
+    method: "post",
+    submitSource: "dom",
+  });
+
   return (
     <>
       {actionData?.message && <h1>{actionData.message}</h1>}
-      <SubmitButton form="test-form" name="mySubmit" value="submitVal" />
-      <ValidatedForm validator={validator} method="post" id="test-form">
+      <SubmitButton form={rvf.scope()} name="mySubmit" value="submitVal" />
+      <form {...rvf.getFormProps()}>
         <InputWithTouched name="firstName" label="First Name" />
         <InputWithTouched name="lastName" label="Last Name" />
         <SubmitButton
@@ -33,7 +39,7 @@ export default function FrontendValidation() {
           label="Submit 2"
           submittingLabel="Submitting 2"
         />
-      </ValidatedForm>
+      </form>
     </>
   );
 }

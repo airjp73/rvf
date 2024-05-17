@@ -3,7 +3,7 @@ import { useActionData } from "@remix-run/react";
 import { withZod } from "@rvf/zod";
 import { useEffect } from "react";
 import { useState } from "react";
-import { useFormContext, ValidatedForm } from "@rvf/remix";
+import { ValidatedForm, useRvf } from "@rvf/remix";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
 import { Input } from "~/components/Input";
@@ -20,7 +20,11 @@ export const action = async (args: DataFunctionArgs) => {
 };
 
 export default function FrontendValidation() {
-  const { submit, validate } = useFormContext("test-form");
+  const { submit, validate, getFormProps } = useRvf({
+    validator,
+    method: "post",
+    formId: "test-form",
+  });
 
   const data = useActionData<typeof action>();
   const [message, setMessage] = useState("");
@@ -30,7 +34,7 @@ export default function FrontendValidation() {
   return (
     <>
       {message && <h1>{message}</h1>}
-      <ValidatedForm validator={validator} method="post" id="test-form">
+      <form {...getFormProps()}>
         <Input type="checkbox" name="isValid" label="isValid" />
         <button
           type="button"
@@ -46,7 +50,7 @@ export default function FrontendValidation() {
         >
           Submit with helper
         </button>
-      </ValidatedForm>
+      </form>
     </>
   );
 }

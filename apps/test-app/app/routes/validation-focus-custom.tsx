@@ -14,12 +14,9 @@ const schema = yup.object({
 const validator = withYup(schema);
 
 const ControlledInput = ({ name, label }: { name: string; label: string }) => {
-  const searchInputRef = useRef<HTMLInputElement>(null);
   // This is super contrived, but you might end up in this situation with a select component.
   // There might be a hidden input for the real value, and a search input for the search value.
-  useField(name, {
-    handleReceiveFocus: () => searchInputRef.current?.focus(),
-  });
+  const field = useField(name);
   const [value, setValue] = useControlField<string>(name);
 
   return (
@@ -27,7 +24,7 @@ const ControlledInput = ({ name, label }: { name: string; label: string }) => {
       <input type="hidden" name={name} />
       <input
         data-testid={name}
-        ref={searchInputRef}
+        ref={field.refs.controlled}
         value={value}
         onChange={(e) => setValue(e.target.value)}
       />
