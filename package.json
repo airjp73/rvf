@@ -7,12 +7,12 @@
     "apps/*"
   ],
   "scripts": {
-    "build-docs": "turbo run build --scope=docs --include-dependencies --no-deps --force",
+    "build-docs": "turbo run build --filter=docs --include-dependencies --no-deps --force",
     "typecheck": "turbo run typecheck",
-    "sample-app": "bun dev --scope=sample-app",
-    "test-app": "bun dev --scope=test-app",
-    "docs": "bun dev --scope=docs",
-    "dev": "turbo run dev --parallel --include-dependencies --no-cache",
+    "sample-app": "bun dev --filter=sample-app",
+    "test-app": "bun dev --filter=test-app",
+    "docs": "bun dev --filter=docs",
+    "dev": "turbo run dev",
     "test": "turbo run test",
     "vitest": "vitest",
     "vitest:run": "vitest run",

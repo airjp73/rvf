@@ -23,13 +23,15 @@
     "url": "https://github.com/airjp73"
   },
   "license": "MIT",
+  "peerDependencies": {
+    "react": "^17.0.2 || ^18.0.0",
+    "react-dom": "^17.0.2 || ^18.0.0"
+  },
   "devDependencies": {
     "tsconfig": "*",
     "tsup-config": "*",
-    "typescript": "^5.4.5"
-  },
-  "dependencies": {
-    "@rvf/core": "*",
-    "set-get": "*"
+    "typescript": "^5.4.5",
+    "set-get": "*",
+    "@rvf/core": "*"
   }
 }
