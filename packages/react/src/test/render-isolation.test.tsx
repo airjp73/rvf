@@ -4,7 +4,8 @@ import { RenderCounter } from "./util/RenderCounter";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { successValidator } from "./util/successValidator";
-import { Field, Isolate } from "../isolation";
+import { Isolate } from "../isolation";
+import { Field } from "../field";
 
 describe("Isolate", () => {
   it("should be able to isloate rerenders on the fly", async () => {
@@ -86,15 +87,14 @@ describe("Field", () => {
           </pre>
           <RenderCounter data-testid="outer-render-count" />
 
-          <Field
-            form={form.scope("foo")}
-            render={(iso) => (
+          <Field scope={form.scope("foo")}>
+            {(iso) => (
               <>
                 <pre data-testid="iso-value">{iso.value()}</pre>
                 <RenderCounter data-testid="iso-render-count" />
               </>
             )}
-          />
+          </Field>
         </form>
       );
     };
