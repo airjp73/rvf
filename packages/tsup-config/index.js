@@ -8,7 +8,7 @@ exports.config = defineConfig({
   dts: true,
   format: ["esm", "cjs"],
   define: {
-    "import.meta.vitest": "undefined",
+    "import.meta": "{}",
   },
   outExtension({ format }) {
     return { js: `.${format}.js` };
