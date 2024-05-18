@@ -23,15 +23,18 @@
     "url": "https://github.com/airjp73"
   },
   "license": "MIT",
+  "peerDependencies": {
+    "react": "^17.0.2 || ^18.0.0"
+  },
   "devDependencies": {
+    "react-tracked": "^2.0.0",
+    "set-get": "*",
     "tsconfig": "*",
     "tsup-config": "*",
     "typescript": "^5.4.5",
-    "set-get": "*",
-    "zustand": "^4.5.2"
+    "zustand": "5.0.0-alpha.6"
   },
   "dependencies": {
-    "immer": "^10.0.4",
-    "react-tracked": "^1.7.14"
+    "immer": "^10.0.4"
   }
 }

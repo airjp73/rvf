@@ -1,5 +1,5 @@
 import { setPath, getPath } from "set-get";
-import { create } from "zustand";
+import { create } from "zustand/react";
 import { immer } from "./immer";
 import {
   setFormControlValue,
