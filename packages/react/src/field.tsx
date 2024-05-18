@@ -166,7 +166,7 @@ export const makeFieldImpl = <FormInputData,>({
       serialize = (val: unknown) => val as string,
     } = {}) => ({
       name: fieldName,
-      value: serialize(getFieldValue(trackedState, fieldName)),
+      value: serialize(getFieldValue(trackedState, fieldName) as never),
       type: "hidden",
       form: getFormId(trackedState),
     }),

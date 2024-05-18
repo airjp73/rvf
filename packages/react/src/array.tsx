@@ -2,6 +2,7 @@ import { ReactNode, useMemo } from "react";
 import {
   FormStoreValue,
   Rvf,
+  getFieldArrayKeys,
   getFieldError,
   getFieldValue,
   scopeRvf,
@@ -116,7 +117,7 @@ export const makeFieldArrayImpl = <FormInputData extends Array<any>>({
     }),
   );
 
-  const length = () => getFieldValue(trackedState, arrayFieldName).length;
+  const length = () => getFieldArrayKeys(trackedState, arrayFieldName).length;
 
   // TODO: handle validation behavior
 

@@ -50,7 +50,6 @@ export const ValidatedForm = <
           ref: formRef,
         })}
         {...rest}
-        ref={formRef}
       >
         {typeof children === "function" ? children(rvf) : children}
       </form>

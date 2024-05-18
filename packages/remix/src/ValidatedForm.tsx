@@ -116,7 +116,6 @@ export const ValidatedForm = <
           ref: formRef,
         })}
         {...rest}
-        ref={formRef}
       >
         <input type="hidden" name={FORM_ID_FIELD_NAME} value={formId} />
 

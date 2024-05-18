@@ -1,13 +1,15 @@
 import { getPath } from "set-get";
 import { FormStoreValue } from "./store";
 
-export const getFieldValue = (state: FormStoreValue, fieldName: string) =>
-  getPath(state.values, fieldName);
+export const getFieldValue = (
+  state: FormStoreValue,
+  fieldName: string,
+): unknown => getPath(state.values, fieldName);
 
 export const getFieldDefaultValue = (
   state: FormStoreValue,
   fieldName: string,
-) => getPath(state.defaultValues, fieldName);
+): unknown => getPath(state.defaultValues, fieldName);
 
 export const getFieldTouched = (state: FormStoreValue, fieldName: string) =>
   state.touchedFields[fieldName] ?? false;
