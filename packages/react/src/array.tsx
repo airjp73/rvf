@@ -117,7 +117,15 @@ export const makeFieldArrayImpl = <FormInputData extends Array<any>>({
     }),
   );
 
-  const length = () => getFieldArrayKeys(trackedState, arrayFieldName).length;
+  const length = () => {
+    const val = getFieldValue(trackedState, arrayFieldName);
+    if (val == null) return 0;
+    if (Array.isArray(val)) return val.length;
+    console.warn(
+      "Tried to treat a non-array as an array. Make sure you used the correct field name and set a default value.",
+    );
+    return 0;
+  };
 
   // TODO: handle validation behavior
 
