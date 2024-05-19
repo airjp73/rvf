@@ -18,7 +18,6 @@ const testStore = (init?: Partial<FormStoreInit>) =>
     },
     flags: {
       disableFocusOnError: false,
-      disableNativeValidation: false,
     },
     serverValidationErrors: {},
     formProps: {

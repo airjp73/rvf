@@ -55,7 +55,6 @@ export type StoreFormProps = {
 };
 
 export type StoreFlags = {
-  disableNativeValidation: boolean;
   disableFocusOnError: boolean;
 };
 
@@ -266,8 +265,6 @@ export const createFormStateStore = ({
       },
 
       validate: async (nextValues, shouldMarkSubmitted = false) => {
-        const { disableNativeValidation } = get().flags;
-
         const result = await mutableImplStore.validator.validate(
           nextValues ?? get().values,
         );
@@ -276,18 +273,6 @@ export const createFormStateStore = ({
           set((state) => {
             state.validationErrors = {};
           });
-          if (!disableNativeValidation) {
-            document.querySelectorAll("input,textarea,select").forEach((el) => {
-              if (
-                isFormControl(el) &&
-                el.form === formRef.current &&
-                !transientFieldRefs.has(el.name) &&
-                !controlledFieldRefs.has(el.name)
-              ) {
-                el.setCustomValidity("");
-              }
-            });
-          }
           return { data: result.data, errors: undefined };
         }
 
@@ -297,29 +282,6 @@ export const createFormStateStore = ({
           state.validationErrors = errors;
           if (shouldMarkSubmitted) state.submitStatus = "error";
         });
-
-        const state = get();
-
-        if (!disableNativeValidation) {
-          const nativeErrorFields = Object.keys(errors)
-            .filter((name) => !!getFieldError(state, name))
-            .filter(
-              (name) =>
-                !transientFieldRefs.has(name) && !controlledFieldRefs.has(name),
-            );
-
-          nativeErrorFields.forEach((name) => {
-            const el = formRef.current?.querySelector(`[name="${name}"]`);
-            if (!el) return;
-
-            if (
-              "setCustomValidity" in el &&
-              typeof el.setCustomValidity === "function"
-            ) {
-              el.setCustomValidity(errors[name]);
-            }
-          });
-        }
 
         return { errors, data: undefined };
       },
@@ -353,7 +315,7 @@ export const createFormStateStore = ({
       },
 
       onSubmit: async (submitterData) => {
-        const { disableFocusOnError, disableNativeValidation } = get().flags;
+        const { disableFocusOnError } = get().flags;
         set((state) => {
           state.submitStatus = "submitting";
         });
@@ -387,7 +349,7 @@ export const createFormStateStore = ({
             ])
             .filter((val): val is NonNullable<typeof val> => val != null);
 
-          if (formRef.current && !disableNativeValidation) {
+          if (formRef.current) {
             const unRegisteredNames = Object.keys(result.errors).filter(
               (name) =>
                 !transientFieldRefs.has(name) && !controlledFieldRefs.has(name),

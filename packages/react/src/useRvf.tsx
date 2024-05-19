@@ -66,12 +66,6 @@ export type RvfOpts<
    * Disables the default behavior of focusing the first invalid field when a submit fails due to validation errors.
    */
   disableFocusOnError?: boolean;
-
-  /**
-   * Disables the default behavior of using native browser validation for fields that haven't been registered with
-   * `getInputProps` or `getControlProps`.
-   */
-  disableNativeValidation?: boolean;
 } & RvfSubmitOpts<FormOutputData>;
 
 const isRvf = (form: any): form is Rvf<any> =>
@@ -105,9 +99,6 @@ export function useRvf(
   const disableFocusOnError = isRvf(optsOrForm)
     ? undefined
     : optsOrForm.disableFocusOnError;
-  const disableNativeValidation = isRvf(optsOrForm)
-    ? undefined
-    : optsOrForm.disableNativeValidation;
   const serverValidationErrors = isRvf(optsOrForm)
     ? undefined
     : optsOrForm.serverValidationErrors;
@@ -132,7 +123,6 @@ export function useRvf(
         id: providedFormId ?? defaultFormId,
       },
       flags: {
-        disableNativeValidation: disableNativeValidation ?? false,
         disableFocusOnError: disableFocusOnError ?? false,
       },
     });
@@ -175,7 +165,6 @@ export function useRvf(
         id: providedFormId ?? defaultFormId,
       },
       flags: {
-        disableNativeValidation: disableNativeValidation ?? false,
         disableFocusOnError: disableFocusOnError ?? false,
       },
     });
@@ -189,7 +178,6 @@ export function useRvf(
     action,
     providedFormId,
     defaultFormId,
-    disableNativeValidation,
     disableFocusOnError,
   ]);
 
