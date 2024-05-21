@@ -1,7 +1,7 @@
 import { DataFunctionArgs, json } from "@remix-run/node";
 import { useActionData } from "@remix-run/react";
 import { withYup } from "@rvf/yup";
-import { Rvf, useRvf, useRvfOrContext } from "@rvf/remix";
+import { Rvf, RvfProvider, useRvf, useRvfOrContext } from "@rvf/remix";
 import * as yup from "yup";
 import { Input } from "~/components/Input";
 import { SubmitButton } from "~/components/SubmitButton";
@@ -50,7 +50,7 @@ const DisplayContext = ({
 
         <dt>getValues</dt>
         <dd>
-          <pre>{JSON.stringify(Object.fromEntries(context.value()))}</pre>
+          <pre>{JSON.stringify(context.value())}</pre>
         </dd>
       </dl>
     </div>
@@ -76,11 +76,13 @@ export default function FrontendValidation() {
     <>
       {actionData?.message && <h1>{actionData.message}</h1>}
       <DisplayContext testid="external-values" form={form.scope()} />
-      <form {...form.getFormProps()}>
-        <Input name="firstName" label="First Name" />
-        <DisplayContext testid="internal-values" />
-        <SubmitButton />
-      </form>
+      <RvfProvider scope={form.scope()}>
+        <form {...form.getFormProps()}>
+          <Input name="firstName" label="First Name" />
+          <DisplayContext testid="internal-values" />
+          <SubmitButton />
+        </form>
+      </RvfProvider>
     </>
   );
 }
