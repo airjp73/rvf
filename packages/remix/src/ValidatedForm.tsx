@@ -1,12 +1,7 @@
 import { FieldValues } from "@rvf/core";
 import { RvfRemixOpts, useRvf } from "./useRvf";
 import { RvfProvider, RvfReact } from "@rvf/react";
-import { FORM_ID_FIELD_NAME } from "./constants";
-import {
-  useDefaultValuesFromLoader,
-  useErrorResponseForForm,
-} from "./auto-server-hooks";
-import { useId } from "react";
+import { useRemixFormResponse } from "./auto-server-hooks";
 
 type ScopeToSubaction<
   Data,
@@ -79,19 +74,15 @@ export const ValidatedForm = <
   subaction,
   ...rest
 }: ValidatedFormProps<FormInputData, FormOutputData, Subaction>) => {
-  const defaultFormId = useId();
-  const formId = id ?? defaultFormId;
-
-  const actualDefaultValues = useDefaultValuesFromLoader({ formId });
-  const errorsFromServer = useErrorResponseForForm({
+  const remix = useRemixFormResponse({
+    formId: id,
     fetcher,
     subaction,
-    formId,
+    defaultValues,
   });
 
   const rvf = useRvf<FormInputData, FormOutputData>({
-    defaultValues: actualDefaultValues ?? defaultValues,
-    serverValidationErrors: errorsFromServer?.fieldErrors,
+    ...remix.getRvfOpts(),
     validator,
     handleSubmit: handleSubmit as never,
     submitSource,
@@ -103,8 +94,6 @@ export const ValidatedForm = <
     relative,
     encType,
     state,
-    fetcher,
-    formId,
   });
 
   return (
@@ -117,11 +106,7 @@ export const ValidatedForm = <
         })}
         {...rest}
       >
-        <input type="hidden" name={FORM_ID_FIELD_NAME} value={formId} />
-
-        {!!subaction && (
-          <input type="hidden" name="subaction" value={subaction} />
-        )}
+        {remix.renderHiddenInputs()}
 
         {typeof children === "function" ? children(rvf) : children}
       </form>

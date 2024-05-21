@@ -36,3 +36,4 @@ export {
 export { useRvf, type RvfRemixOpts } from "./useRvf";
 export { ValidatedForm, type ValidatedFormProps } from "./ValidatedForm";
 export { validationError, setFormDefaults, type FormDefaults } from "./server";
+export { useRemixFormResponse } from "./auto-server-hooks";

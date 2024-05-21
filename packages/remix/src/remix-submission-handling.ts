@@ -4,7 +4,7 @@ import {
   useNavigation,
   useSubmit,
 } from "@remix-run/react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 
 export function useSubmitComplete(isSubmitting: boolean, callback: () => void) {
   const isPending = useRef(false);

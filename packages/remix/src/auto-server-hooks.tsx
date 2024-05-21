@@ -3,8 +3,9 @@ import {
   useActionData,
   useMatches,
 } from "@remix-run/react";
-import { formDefaultValuesKey } from "./constants";
-import { ValidationErrorResponseData } from "@rvf/core";
+import { FORM_ID_FIELD_NAME, formDefaultValuesKey } from "./constants";
+import { FieldValues, ValidationErrorResponseData } from "@rvf/core";
+import { useId } from "react";
 
 export const useDefaultValuesFromLoader = ({ formId }: { formId: string }) => {
   const matches = useMatches();
@@ -51,3 +52,39 @@ export function useErrorResponseForForm({
 
   return null;
 }
+
+export const useRemixFormResponse = <FormInputData extends FieldValues>(opts: {
+  formId?: string;
+  fetcher?: FetcherWithComponents<unknown>;
+  subaction?: string;
+  defaultValues?: FormInputData;
+}) => {
+  const defaultFormId = useId();
+  const formId = opts.formId ?? defaultFormId;
+
+  const actualDefaultValues = useDefaultValuesFromLoader({ formId });
+  const errorsFromServer = useErrorResponseForForm({
+    fetcher: opts.fetcher,
+    subaction: opts.subaction,
+    formId,
+  });
+
+  return {
+    getRvfOpts: () => ({
+      defaultValues: (actualDefaultValues ??
+        opts.defaultValues) as FormInputData,
+      serverValidationErrors: errorsFromServer?.fieldErrors,
+      formId,
+      fetcher: opts.fetcher,
+    }),
+    renderHiddenInputs: () => (
+      <>
+        <input type="hidden" name={FORM_ID_FIELD_NAME} value={formId} />
+
+        {!!opts.subaction && (
+          <input type="hidden" name="subaction" value={opts.subaction} />
+        )}
+      </>
+    ),
+  };
+};
