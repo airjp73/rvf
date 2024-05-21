@@ -143,8 +143,8 @@ export type MutableImplStore = {
 };
 
 const defaultValidationBehaviorConfig: ValidationBehaviorConfig = {
-  initial: "onSubmit",
-  whenTouched: "onSubmit",
+  initial: "onBlur",
+  whenTouched: "onChange",
   whenSubmitted: "onChange",
 };
 
