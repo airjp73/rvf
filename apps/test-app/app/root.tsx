@@ -51,6 +51,18 @@ export default function App() {
   );
 }
 
+function subscribe() {
+  return () => {};
+}
+
+export function useHydrated() {
+  return React.useSyncExternalStore(
+    subscribe,
+    () => true,
+    () => false,
+  );
+}
+
 function Document({
   children,
   title,
@@ -58,8 +70,7 @@ function Document({
   children: React.ReactNode;
   title?: string;
 }) {
-  const [hydrated, setHydrated] = React.useState(false);
-  React.useEffect(() => setHydrated(true), []);
+  const hydrated = useHydrated();
 
   return (
     <html lang="en">
