@@ -106,10 +106,7 @@ export function useRvf<FormInputData extends FieldValues, FormOutputData>(
     submitSource === "state" ? handleStateSubmit : handleDomSubmit;
 
   rvf = useRvfReact<FormInputData, FormOutputData>({
-    defaultValues: optsOrForm.defaultValues,
-    validator: optsOrForm.validator,
-    validationBehaviorConfig: optsOrForm.validationBehaviorConfig,
-
+    ...optsOrForm,
     submitSource,
     handleSubmit: handleSubmit as never,
   });

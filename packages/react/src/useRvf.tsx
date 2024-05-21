@@ -107,7 +107,7 @@ export function useRvf(
   const defaultFormId = useId();
 
   const [form] = useState<Rvf<unknown>>(() => {
-    if ("__brand__" in optsOrForm) return optsOrForm;
+    if (isRvf(optsOrForm)) return optsOrForm;
     return createRvf({
       defaultValues:
         "defaultValues" in optsOrForm && optsOrForm.defaultValues
