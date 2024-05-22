@@ -40,7 +40,10 @@ it("should be possible to use context to access the form", async () => {
   await waitFor(() => {
     expect(submit).toHaveBeenCalledTimes(1);
   });
-  expect(submit).toHaveBeenCalledWith({ name: "Bobtest" });
+  expect(submit).toHaveBeenCalledWith(
+    { name: "Bobtest" },
+    expect.any(FormData),
+  );
 });
 
 it("should be possible to scope a context provider", async () => {
@@ -77,8 +80,11 @@ it("should be possible to scope a context provider", async () => {
   await waitFor(() => {
     expect(submit).toHaveBeenCalledTimes(1);
   });
-  expect(submit).toHaveBeenCalledWith({
-    personA: { name: "Bob Ross" },
-    personB: { name: "Jane Doe" },
-  });
+  expect(submit).toHaveBeenCalledWith(
+    {
+      personA: { name: "Bob Ross" },
+      personB: { name: "Jane Doe" },
+    },
+    expect.any(FormData),
+  );
 });

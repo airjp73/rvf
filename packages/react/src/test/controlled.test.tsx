@@ -42,12 +42,15 @@ it("captures and submits with controlled fields", async () => {
   fireEvent.submit(screen.getByTestId("form"));
 
   await waitFor(() => expect(submit).toHaveBeenCalledTimes(1));
-  expect(submit).toHaveBeenCalledWith({
-    foo: "bartest",
-    baz: {
-      a: "quuxbob",
+  expect(submit).toHaveBeenCalledWith(
+    {
+      foo: "bartest",
+      baz: {
+        a: "quuxbob",
+      },
     },
-  });
+    expect.any(FormData),
+  );
 
   // Once for each keystroke + once for the initial render
   expect(screen.getByTestId("render-count")).toHaveTextContent("8");
@@ -84,10 +87,13 @@ it("shoud work correctly when no default values exist", async () => {
   fireEvent.submit(screen.getByTestId("form"));
 
   await waitFor(() => expect(submit).toHaveBeenCalledTimes(1));
-  expect(submit).toHaveBeenCalledWith({
-    foo: "test",
-    baz: { a: "bob" },
-  });
+  expect(submit).toHaveBeenCalledWith(
+    {
+      foo: "test",
+      baz: { a: "bob" },
+    },
+    expect.any(FormData),
+  );
 
   // Once for each keystroke + once for the initial render
   expect(screen.getByTestId("render-count")).toHaveTextContent("8");

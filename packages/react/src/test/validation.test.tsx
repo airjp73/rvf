@@ -5,10 +5,94 @@ import { RenderCounter } from "./util/RenderCounter";
 import { FieldErrors, Rvf, createValidator } from "@rvf/core";
 import { useField } from "../field";
 
-it("should validate on submit, then on change after that", async () => {
+it("should validate on onBlur, then on change after that", async () => {
   const submit = vi.fn();
   const TestComp = () => {
     const form = useRvf({
+      defaultValues: {
+        foo: "",
+        baz: { a: "" },
+      },
+      validator: createValidator({
+        validate: (data) => {
+          const errors: FieldErrors = {};
+          if (data.foo.length < 3) errors.foo = "too short";
+          if (data.baz.a.length > 3) errors["baz.a"] = "too long";
+          if (Object.keys(errors).length > 0)
+            return Promise.resolve({ data: undefined, error: errors });
+          return Promise.resolve({ data, error: undefined });
+        },
+      }),
+      handleSubmit: submit,
+    });
+
+    return (
+      <form {...form.getFormProps()} data-testid="form">
+        <input data-testid="foo" {...form.field("foo").getInputProps()} />
+        <pre data-testid="foo-error">{form.error("foo")}</pre>
+
+        <input data-testid="baz.a" {...form.field("baz.a").getInputProps()} />
+        <pre data-testid="baz.a-error">{form.error("baz.a")}</pre>
+
+        <RenderCounter data-testid="render-count" />
+      </form>
+    );
+  };
+
+  render(<TestComp />);
+  expect(screen.getByTestId("foo")).toHaveValue("");
+  expect(screen.getByTestId("foo-error")).toBeEmptyDOMElement();
+  expect(screen.getByTestId("baz.a")).toHaveValue("");
+  expect(screen.getByTestId("baz.a-error")).toBeEmptyDOMElement();
+  expect(screen.getByTestId("render-count")).toHaveTextContent("1");
+
+  await userEvent.type(screen.getByTestId("foo"), "bo");
+  await userEvent.type(screen.getByTestId("baz.a"), "test");
+  await userEvent.click(screen.getByTestId("form")); // blur
+
+  await waitFor(() =>
+    expect(screen.getByTestId("foo-error")).toHaveTextContent("too short"),
+  );
+  expect(screen.getByTestId("baz.a-error")).toHaveTextContent("too long");
+
+  await userEvent.type(screen.getByTestId("foo"), "b");
+  await userEvent.type(screen.getByTestId("baz.a"), "{Backspace}");
+
+  expect(screen.getByTestId("foo-error")).toBeEmptyDOMElement();
+  expect(screen.getByTestId("baz.a-error")).toBeEmptyDOMElement();
+
+  fireEvent.submit(screen.getByTestId("form"));
+
+  await waitFor(() => {
+    expect(submit).toHaveBeenCalledTimes(1);
+  });
+  expect(submit).toHaveBeenCalledWith(
+    {
+      foo: "bob",
+      baz: { a: "tes" },
+    },
+    expect.any(FormData),
+  );
+
+  expect(screen.getByTestId("foo-error")).toBeEmptyDOMElement();
+  expect(screen.getByTestId("baz.a-error")).toBeEmptyDOMElement();
+  await waitFor(() => {
+    expect(submit).toBeCalledTimes(1);
+  });
+  expect(screen.getByTestId("render-count").textContent).toMatchInlineSnapshot(
+    `"9"`,
+  );
+});
+
+it("should validate on onSubmit, if validationBehavior is onSubmit", async () => {
+  const submit = vi.fn();
+  const TestComp = () => {
+    const form = useRvf({
+      validationBehaviorConfig: {
+        initial: "onSubmit",
+        whenTouched: "onSubmit",
+        whenSubmitted: "onChange",
+      },
       defaultValues: {
         foo: "",
         baz: { a: "" },
@@ -75,10 +159,13 @@ it("should validate on submit, then on change after that", async () => {
   await waitFor(() => {
     expect(submit).toHaveBeenCalledTimes(1);
   });
-  expect(submit).toHaveBeenCalledWith({
-    foo: "bob",
-    baz: { a: "tes" },
-  });
+  expect(submit).toHaveBeenCalledWith(
+    {
+      foo: "bob",
+      baz: { a: "tes" },
+    },
+    expect.any(FormData),
+  );
 
   expect(screen.getByTestId("foo-error")).toBeEmptyDOMElement();
   expect(screen.getByTestId("baz.a-error")).toBeEmptyDOMElement();
@@ -151,10 +238,13 @@ it("should handle dependant validations", async () => {
   await waitFor(() => {
     expect(submit).toBeCalledTimes(1);
   });
-  expect(submit).toHaveBeenCalledWith({
-    password: "test",
-    confirmPassword: "test",
-  });
+  expect(submit).toHaveBeenCalledWith(
+    {
+      password: "test",
+      confirmPassword: "test",
+    },
+    expect.any(FormData),
+  );
 });
 
 it("should be possible to customize validation behavior", async () => {

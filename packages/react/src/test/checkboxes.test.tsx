@@ -78,7 +78,10 @@ it("should be able to set the value of an uncontrolled checkbox group when indiv
 
   await userEvent.click(screen.getByTestId("submit"));
   expect(submit).toHaveBeenCalledTimes(1);
-  expect(submit).toHaveBeenCalledWith({
-    foo: ["bar", "baz"],
-  });
+  expect(submit).toHaveBeenCalledWith(
+    {
+      foo: ["bar", "baz"],
+    },
+    expect.any(FormData),
+  );
 });

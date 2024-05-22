@@ -117,7 +117,7 @@ export function useRvf(
       validator: optsOrForm.validator,
       onSubmit: optsOrForm.handleSubmit as never,
       validationBehaviorConfig: optsOrForm.validationBehaviorConfig,
-      submitSource: optsOrForm.submitSource ?? "state",
+      submitSource: optsOrForm.submitSource ?? "dom",
       formProps: {
         action,
         id: providedFormId ?? defaultFormId,
@@ -151,7 +151,7 @@ export function useRvf(
     if (isWholeForm) return;
 
     form.__store__.store.getState().syncOptions({
-      submitSource: submitSource ?? "state",
+      submitSource: submitSource ?? "dom",
       validationBehaviorConfig:
         initial && whenSubmitted && whenTouched
           ? {

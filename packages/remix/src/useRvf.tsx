@@ -65,7 +65,6 @@ export function useRvf<FormInputData extends FieldValues, FormOutputData>(
     return rvf;
   }
 
-  // For remix, it makes sense to default to "dom" for submitSource
   const submitSource = optsOrForm.submitSource ?? ("dom" as const);
 
   const handleDomSubmit = (data: FormOutputData, formData: FormData) => {

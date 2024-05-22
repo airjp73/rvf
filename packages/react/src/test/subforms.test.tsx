@@ -51,11 +51,14 @@ it("should be able to create scoped subforms", async () => {
 
   fireEvent.submit(screen.getByTestId("form"));
   await waitFor(() => expect(submit).toHaveBeenCalledTimes(1));
-  expect(submit).toHaveBeenCalledWith({
-    person: {
-      name: "bob",
+  expect(submit).toHaveBeenCalledWith(
+    {
+      person: {
+        name: "bob",
+      },
     },
-  });
+    expect.any(FormData),
+  );
 });
 
 it("should be able to create subforms of arrays", async () => {
@@ -117,13 +120,16 @@ it("should be able to create subforms of arrays", async () => {
 
   fireEvent.submit(screen.getByTestId("form"));
   await waitFor(() => expect(submit).toHaveBeenCalledTimes(1));
-  expect(submit).toHaveBeenCalledWith({
-    people: [
-      {
-        name: "bob",
-      },
-    ],
-  });
+  expect(submit).toHaveBeenCalledWith(
+    {
+      people: [
+        {
+          name: "bob",
+        },
+      ],
+    },
+    expect.any(FormData),
+  );
 });
 
 it("should memoize subform creation", async () => {

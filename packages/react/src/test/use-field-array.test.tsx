@@ -36,9 +36,12 @@ it("should be possible to use useFieldArray with a scoped form", async () => {
   await userEvent.type(screen.getByTestId("foo"), "test");
   await userEvent.click(screen.getByTestId("submit"));
   expect(submit).toHaveBeenCalledTimes(1);
-  expect(submit).toHaveBeenCalledWith({
-    foo: ["footest"],
-  });
+  expect(submit).toHaveBeenCalledWith(
+    {
+      foo: ["footest"],
+    },
+    expect.any(FormData),
+  );
 });
 
 it("should be possible to use useFieldArray with context", async () => {
@@ -73,9 +76,12 @@ it("should be possible to use useFieldArray with context", async () => {
   await userEvent.type(screen.getByTestId("foo"), "test");
   await userEvent.click(screen.getByTestId("submit"));
   expect(submit).toHaveBeenCalledTimes(1);
-  expect(submit).toHaveBeenCalledWith({
-    foo: ["footest"],
-  });
+  expect(submit).toHaveBeenCalledWith(
+    {
+      foo: ["footest"],
+    },
+    expect.any(FormData),
+  );
 });
 
 it("should be possible to use useFieldArray with scoped context", async () => {
@@ -112,11 +118,14 @@ it("should be possible to use useFieldArray with scoped context", async () => {
   await userEvent.type(screen.getByTestId("foo"), "test");
   await userEvent.click(screen.getByTestId("submit"));
   expect(submit).toHaveBeenCalledTimes(1);
-  expect(submit).toHaveBeenCalledWith({
-    person: {
-      foo: ["footest"],
+  expect(submit).toHaveBeenCalledWith(
+    {
+      person: {
+        foo: ["footest"],
+      },
     },
-  });
+    expect.any(FormData),
+  );
 });
 
 it("should work naturally with DOM submit source", async () => {

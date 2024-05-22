@@ -40,6 +40,39 @@ it("should use the form itself as the source of truth for `dom` mode", async () 
   expect(submit).toHaveBeenCalledWith({ foo: "456" }, expect.any(FormData));
 });
 
+it("should use `dom` mode by default", async () => {
+  const submit = vi.fn();
+
+  const TestComp = () => {
+    const form = useRvf({
+      defaultValues: {
+        foo: 123,
+      },
+      validator: successValidator,
+      handleSubmit: submit,
+    });
+
+    return (
+      <form {...form.getFormProps()} data-testid="form">
+        <input readOnly data-testid="foo" value="456" name="foo" />
+        <button type="submit" data-testid="submit" />
+      </form>
+    );
+  };
+
+  render(<TestComp />);
+
+  await userEvent.click(screen.getByTestId("submit"));
+  expect(successValidator.validate).toHaveBeenCalledTimes(1);
+  expect(successValidator.validate).toHaveBeenCalledWith(expect.any(FormData));
+  expect(
+    preprocessFormData((successValidator.validate as Mock).mock.lastCall[0]),
+  ).toEqual({ foo: "456" });
+
+  expect(submit).toHaveBeenCalledTimes(1);
+  expect(submit).toHaveBeenCalledWith({ foo: "456" }, expect.any(FormData));
+});
+
 // This will have to be tested in cypress because jsdom doesn't handle it
 it.todo("should include data from the form submitter on submit in `dom` mode");
 
@@ -47,6 +80,7 @@ it("should use state as the source of truth for state mode", async () => {
   const submit = vi.fn();
   const TestComp = () => {
     const form = useRvf({
+      submitSource: "state",
       defaultValues: {
         foo: 123,
       },

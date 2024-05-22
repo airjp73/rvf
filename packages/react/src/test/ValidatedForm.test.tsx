@@ -46,12 +46,15 @@ it("provides a render prop to wire up the form", async () => {
   await userEvent.click(screen.getByTestId("submit"));
 
   expect(submit).toHaveBeenCalledTimes(1);
-  expect(submit).toHaveBeenCalledWith({
-    foo: "bartesting 123",
-    baz: {
-      a: "quuxanother value",
+  expect(submit).toHaveBeenCalledWith(
+    {
+      foo: "bartesting 123",
+      baz: {
+        a: "quuxanother value",
+      },
     },
-  });
+    expect.any(FormData),
+  );
 
   expect(screen.getByTestId("render-count")).toHaveTextContent("1");
 });
@@ -102,12 +105,15 @@ it("automatically provides context", async () => {
   await userEvent.click(screen.getByTestId("submit"));
 
   expect(submit).toHaveBeenCalledTimes(1);
-  expect(submit).toHaveBeenCalledWith({
-    foo: "bartesting 123",
-    baz: {
-      a: "quuxanother value",
+  expect(submit).toHaveBeenCalledWith(
+    {
+      foo: "bartesting 123",
+      baz: {
+        a: "quuxanother value",
+      },
     },
-  });
+    expect.any(FormData),
+  );
 
   expect(screen.getByTestId("render-count")).toHaveTextContent("1");
 });

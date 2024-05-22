@@ -43,12 +43,15 @@ it("captures and submits with uncontrolled fields", async () => {
   fireEvent.submit(screen.getByTestId("form"));
 
   await waitFor(() => expect(submit).toHaveBeenCalledTimes(1));
-  expect(submit).toHaveBeenCalledWith({
-    foo: "bartesting 123",
-    baz: {
-      a: "quuxanother value",
+  expect(submit).toHaveBeenCalledWith(
+    {
+      foo: "bartesting 123",
+      baz: {
+        a: "quuxanother value",
+      },
     },
-  });
+    expect.any(FormData),
+  );
 
   expect(screen.getByTestId("render-count")).toHaveTextContent("1");
 });
@@ -83,9 +86,12 @@ it("should work with the component version of Field", async () => {
   fireEvent.submit(screen.getByTestId("form"));
 
   await waitFor(() => expect(submit).toHaveBeenCalledTimes(1));
-  expect(submit).toHaveBeenCalledWith({
-    foo: "bartesting 123",
-  });
+  expect(submit).toHaveBeenCalledWith(
+    {
+      foo: "bartesting 123",
+    },
+    expect.any(FormData),
+  );
 
   expect(screen.getByTestId("render-count")).toHaveTextContent("1");
 });
@@ -126,12 +132,15 @@ it("captures and submits without registering uncontrolled inputs", async () => {
   await userEvent.click(screen.getByTestId("submit"));
 
   expect(submit).toHaveBeenCalledTimes(1);
-  expect(submit).toHaveBeenCalledWith({
-    foo: "testing 123",
-    baz: {
-      a: "another value",
+  expect(submit).toHaveBeenCalledWith(
+    {
+      foo: "testing 123",
+      baz: {
+        a: "another value",
+      },
     },
-  });
+    expect.any(FormData),
+  );
 
   expect(screen.getByTestId("render-count")).toHaveTextContent("1");
 });
@@ -167,9 +176,12 @@ it("should update `value` with auto-form", async () => {
 
   await userEvent.click(screen.getByTestId("submit"));
   expect(submit).toHaveBeenCalledTimes(1);
-  expect(submit).toHaveBeenCalledWith({
-    foo: "testing 123",
-  });
+  expect(submit).toHaveBeenCalledWith(
+    {
+      foo: "testing 123",
+    },
+    expect.any(FormData),
+  );
 });
 
 it("should validate with auto-form", async () => {
@@ -214,9 +226,12 @@ it("should validate with auto-form", async () => {
 
   await userEvent.click(screen.getByTestId("submit"));
   expect(submit).toHaveBeenCalledTimes(1);
-  expect(submit).toHaveBeenCalledWith({
-    foo: "testing 123bro",
-  });
+  expect(submit).toHaveBeenCalledWith(
+    {
+      foo: "testing 123bro",
+    },
+    expect.any(FormData),
+  );
 });
 
 it("shoud work correctly when no default values exist", async () => {
@@ -250,10 +265,13 @@ it("shoud work correctly when no default values exist", async () => {
   fireEvent.submit(screen.getByTestId("form"));
 
   await waitFor(() => expect(submit).toHaveBeenCalledTimes(1));
-  expect(submit).toHaveBeenCalledWith({
-    foo: "test",
-    baz: { a: "bob" },
-  });
+  expect(submit).toHaveBeenCalledWith(
+    {
+      foo: "test",
+      baz: { a: "bob" },
+    },
+    expect.any(FormData),
+  );
 
   // Once for each keystroke + once for the initial render
   expect(screen.getByTestId("render-count")).toHaveTextContent("1");
@@ -470,6 +488,7 @@ it("should naturally work with boolean checkboxes", async () => {
       <form {...form.getFormProps()} data-testid="form">
         <input
           data-testid="foo"
+          value="test-value"
           {...form.field("foo").getInputProps({ type: "checkbox" })}
         />
         <RenderCounter data-testid="render-count" />
@@ -488,12 +507,12 @@ it("should naturally work with boolean checkboxes", async () => {
   await userEvent.click(screen.getByTestId("foo"));
   expect(screen.getByTestId("foo")).toBeChecked();
 
-  await userEvent.click(screen.getByTestId("foo"));
   await userEvent.click(screen.getByTestId("submit"));
   await waitFor(() => expect(submit).toHaveBeenCalledTimes(1));
-  expect(submit).toHaveBeenCalledWith({
-    foo: false,
-  });
+  expect(submit).toHaveBeenCalledWith(
+    { foo: "test-value" },
+    expect.any(FormData),
+  );
 
   expect(screen.getByTestId("render-count")).toHaveTextContent("1");
 });
@@ -564,9 +583,12 @@ it("should naturally work with checkbox groups", async () => {
 
   await userEvent.click(screen.getByTestId("submit"));
   await waitFor(() => expect(submit).toHaveBeenCalledTimes(1));
-  expect(submit).toHaveBeenCalledWith({
-    foo: ["foo", "baz"],
-  });
+  expect(submit).toHaveBeenCalledWith(
+    {
+      foo: ["foo", "baz"],
+    },
+    expect.any(FormData),
+  );
 
   expect(screen.getByTestId("render-count")).toHaveTextContent("1");
 });
@@ -626,9 +648,12 @@ it("should naturally work with radio groups", async () => {
 
   await userEvent.click(screen.getByTestId("submit"));
   await waitFor(() => expect(submit).toHaveBeenCalledTimes(1));
-  expect(submit).toHaveBeenCalledWith({
-    foo: "bar",
-  });
+  expect(submit).toHaveBeenCalledWith(
+    {
+      foo: "bar",
+    },
+    expect.any(FormData),
+  );
 
   expect(screen.getByTestId("render-count")).toHaveTextContent("1");
 });
