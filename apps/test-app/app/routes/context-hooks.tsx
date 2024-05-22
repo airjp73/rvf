@@ -1,7 +1,13 @@
 import { DataFunctionArgs, json } from "@remix-run/node";
 import { useActionData } from "@remix-run/react";
 import { withYup } from "@rvf/yup";
-import { Rvf, RvfProvider, useRvf, useRvfOrContext } from "@rvf/remix";
+import {
+  Rvf,
+  RvfProvider,
+  useRemixFormResponse,
+  useRvf,
+  useRvfOrContext,
+} from "@rvf/remix";
 import * as yup from "yup";
 import { Input } from "~/components/Input";
 import { SubmitButton } from "~/components/SubmitButton";
@@ -60,16 +66,20 @@ const DisplayContext = ({
 export default function FrontendValidation() {
   const actionData = useActionData<typeof action>();
 
+  const server = useRemixFormResponse({
+    formId: "test-form",
+    defaultValues: { firstName: "defaultFirstName" },
+  });
   // Verify we don't get an infinite loop
   const form = useRvf({
+    ...server.getRvfOpts(),
     validator: withYup(
       yup.object({
         firstName: yup.string().label("First Name").required(),
       }),
     ),
-    method: "post",
     action: "/context-hooks",
-    defaultValues: { firstName: "defaultFirstName" },
+    method: "post",
   });
 
   return (
@@ -78,6 +88,7 @@ export default function FrontendValidation() {
       <DisplayContext testid="external-values" form={form.scope()} />
       <RvfProvider scope={form.scope()}>
         <form {...form.getFormProps()}>
+          {server.renderHiddenInputs()}
           <Input name="firstName" label="First Name" />
           <DisplayContext testid="internal-values" />
           <SubmitButton />
