@@ -14,7 +14,12 @@ import {
   createRefStore,
 } from "./store";
 import { createTrackedSelector } from "react-tracked";
-import { StringToPathTuple, ValidStringPaths, ValueAtPath } from "set-get";
+import {
+  StringToPathTuple,
+  ValidStringPaths,
+  ValueAtPath,
+  pathArrayToString,
+} from "set-get";
 
 type SubmitTypes<FormOutputData> =
   | {
@@ -106,7 +111,7 @@ const instantiateRvf = <FormInputData extends FieldValues>(
   __field_prefix__: prefix,
   __store__: store,
   scope(field) {
-    const newPrefix = [prefix, field].filter(Boolean).join(".");
+    const newPrefix = pathArrayToString([prefix, field].filter(Boolean));
     if (store.subformCache.has(newPrefix))
       return store.subformCache.get(newPrefix);
 

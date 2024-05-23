@@ -58,8 +58,8 @@ describe("getPath", () => {
         b: [1, 2, { c: 3 }],
       },
     };
-    expect(getPath(state, "a.b.1")).toBe(2);
-    expect(getPath(state, "a.b.2.c")).toBe(3);
-    expect(getPath(state, "a.b.3.e")).toBeUndefined();
+    expect(getPath(state, "a.b[1]")).toBe(2);
+    expect(getPath(state, "a.b[2].c")).toBe(3);
+    expect(getPath(state, "a.b[3].e")).toBeUndefined();
   });
 });

@@ -157,16 +157,16 @@ describe("arrays", () => {
         foo: ["bar", "baz"],
       },
       touchedFields: {
-        "foo.0": true,
+        "foo[0]": true,
       },
       dirtyFields: {
-        "foo.0": true,
+        "foo[0]": true,
       },
       validationErrors: {
-        "foo.1": "not equal",
+        "foo[1]": "not equal",
       },
       fieldArrayKeys: {
-        foo: ["foo.0", "foo.1"],
+        foo: ["foo[0]", "foo[1]"],
       },
     });
     store.getState().arrayPush("foo", "quux");
@@ -182,13 +182,13 @@ describe("arrays", () => {
         foo: ["bar", "baz", "quux"],
       },
       touchedFields: {
-        "foo.0": true,
+        "foo[0]": true,
       },
       dirtyFields: {
-        "foo.0": true,
+        "foo[0]": true,
       },
       validationErrors: {
-        "foo.1": "not equal",
+        "foo[1]": "not equal",
       },
     });
     expect(fieldArrayKeys.foo).toHaveLength(3);
@@ -246,19 +246,19 @@ describe("arrays", () => {
         foo: ["bar", "baz"],
       },
       touchedFields: {
-        "foo.0": true,
-        "foo.1": true,
+        "foo[0]": true,
+        "foo[1]": true,
       },
       dirtyFields: {
-        "foo.0": true,
-        "foo.1": true,
+        "foo[0]": true,
+        "foo[1]": true,
       },
       validationErrors: {
-        "foo.0": "not equal",
-        "foo.1": "not equal",
+        "foo[0]": "not equal",
+        "foo[1]": "not equal",
       },
       fieldArrayKeys: {
-        foo: ["foo.0", "foo.1"],
+        foo: ["foo[0]", "foo[1]"],
       },
     });
     store.getState().arrayPop("foo");
@@ -274,13 +274,13 @@ describe("arrays", () => {
         foo: ["bar"],
       },
       touchedFields: {
-        "foo.0": true,
+        "foo[0]": true,
       },
       dirtyFields: {
-        "foo.0": true,
+        "foo[0]": true,
       },
       validationErrors: {
-        "foo.0": "not equal",
+        "foo[0]": "not equal",
       },
     });
     expect(fieldArrayKeys.foo).toHaveLength(1);
@@ -293,19 +293,19 @@ describe("arrays", () => {
         foo: ["bar", "baz"],
       },
       touchedFields: {
-        "foo.0": false,
-        "foo.1": true,
+        "foo[0]": false,
+        "foo[1]": true,
       },
       dirtyFields: {
-        "foo.0": false,
-        "foo.1": true,
+        "foo[0]": false,
+        "foo[1]": true,
       },
       validationErrors: {
-        "foo.0": "equal",
-        "foo.1": "not equal",
+        "foo[0]": "equal",
+        "foo[1]": "not equal",
       },
       fieldArrayKeys: {
-        foo: ["foo.0", "foo.1"],
+        foo: ["foo[0]", "foo[1]"],
       },
     });
     store.getState().arrayShift("foo");
@@ -321,13 +321,13 @@ describe("arrays", () => {
         foo: ["baz"],
       },
       touchedFields: {
-        "foo.0": true,
+        "foo[0]": true,
       },
       dirtyFields: {
-        "foo.0": true,
+        "foo[0]": true,
       },
       validationErrors: {
-        "foo.0": "not equal",
+        "foo[0]": "not equal",
       },
     });
     expect(fieldArrayKeys.foo).toHaveLength(1);
@@ -340,19 +340,19 @@ describe("arrays", () => {
         foo: ["bar", "baz"],
       },
       touchedFields: {
-        "foo.0": true,
-        "foo.1": true,
+        "foo[0]": true,
+        "foo[1]": true,
       },
       dirtyFields: {
-        "foo.0": true,
-        "foo.1": true,
+        "foo[0]": true,
+        "foo[1]": true,
       },
       validationErrors: {
-        "foo.0": "not equal",
-        "foo.1": "not equal",
+        "foo[0]": "not equal",
+        "foo[1]": "not equal",
       },
       fieldArrayKeys: {
-        foo: ["foo.0", "foo.1"],
+        foo: ["foo[0]", "foo[1]"],
       },
     });
     store.getState().arrayUnshift("foo", "quux");
@@ -368,16 +368,16 @@ describe("arrays", () => {
         foo: ["quux", "bar", "baz"],
       },
       touchedFields: {
-        "foo.1": true,
-        "foo.2": true,
+        "foo[1]": true,
+        "foo[2]": true,
       },
       dirtyFields: {
-        "foo.1": true,
-        "foo.2": true,
+        "foo[1]": true,
+        "foo[2]": true,
       },
       validationErrors: {
-        "foo.1": "not equal",
-        "foo.2": "not equal",
+        "foo[1]": "not equal",
+        "foo[2]": "not equal",
       },
     });
     expect(fieldArrayKeys.foo).toHaveLength(3);
@@ -390,19 +390,19 @@ describe("arrays", () => {
         foo: ["bar", "baz"],
       },
       touchedFields: {
-        "foo.0": true,
-        "foo.1": true,
+        "foo[0]": true,
+        "foo[1]": true,
       },
       dirtyFields: {
-        "foo.0": true,
-        "foo.1": true,
+        "foo[0]": true,
+        "foo[1]": true,
       },
       validationErrors: {
-        "foo.0": "not equal",
-        "foo.1": "not equal",
+        "foo[0]": "not equal",
+        "foo[1]": "not equal",
       },
       fieldArrayKeys: {
-        foo: ["foo.0", "foo.1"],
+        foo: ["foo[0]", "foo[1]"],
       },
     });
     store.getState().arrayInsert("foo", 1, "quux");
@@ -418,16 +418,16 @@ describe("arrays", () => {
         foo: ["bar", "quux", "baz"],
       },
       touchedFields: {
-        "foo.0": true,
-        "foo.2": true,
+        "foo[0]": true,
+        "foo[2]": true,
       },
       dirtyFields: {
-        "foo.0": true,
-        "foo.2": true,
+        "foo[0]": true,
+        "foo[2]": true,
       },
       validationErrors: {
-        "foo.0": "not equal",
-        "foo.2": "not equal",
+        "foo[0]": "not equal",
+        "foo[2]": "not equal",
       },
     });
     expect(fieldArrayKeys.foo).toHaveLength(3);
@@ -440,23 +440,23 @@ describe("arrays", () => {
         foo: ["bar", "baz", "another", "value", "quux"],
       },
       touchedFields: {
-        "foo.0": true,
-        "foo.1": true,
-        "foo.2": true,
-        "foo.3": false,
+        "foo[0]": true,
+        "foo[1]": true,
+        "foo[2]": true,
+        "foo[3]": false,
       },
       dirtyFields: {
-        "foo.0": false,
-        "foo.1": true,
-        "foo.2": true,
+        "foo[0]": false,
+        "foo[1]": true,
+        "foo[2]": true,
       },
       validationErrors: {
-        "foo.0": "not equal",
-        "foo.1": "not equal",
-        "foo.4": "equal",
+        "foo[0]": "not equal",
+        "foo[1]": "not equal",
+        "foo[4]": "equal",
       },
       fieldArrayKeys: {
-        foo: ["foo.0", "foo.1", "foo.2", "foo.3", "foo.4"],
+        foo: ["foo[0]", "foo[1]", "foo[2]", "foo[3]", "foo[4]"],
       },
     });
     store.getState().arrayMove("foo", 3, 1);
@@ -472,20 +472,20 @@ describe("arrays", () => {
         foo: ["bar", "value", "baz", "another", "quux"],
       },
       touchedFields: {
-        "foo.0": true,
-        "foo.1": false,
-        "foo.2": true,
-        "foo.3": true,
+        "foo[0]": true,
+        "foo[1]": false,
+        "foo[2]": true,
+        "foo[3]": true,
       },
       dirtyFields: {
-        "foo.0": false,
-        "foo.2": true,
-        "foo.3": true,
+        "foo[0]": false,
+        "foo[2]": true,
+        "foo[3]": true,
       },
       validationErrors: {
-        "foo.0": "not equal",
-        "foo.2": "not equal",
-        "foo.4": "equal",
+        "foo[0]": "not equal",
+        "foo[2]": "not equal",
+        "foo[4]": "equal",
       },
     });
     expect(fieldArrayKeys.foo).toHaveLength(5);
@@ -498,23 +498,23 @@ describe("arrays", () => {
         foo: ["bar", "baz", "another", "value", "quux"],
       },
       touchedFields: {
-        "foo.0": true,
-        "foo.1": true,
-        "foo.2": true,
-        "foo.3": false,
+        "foo[0]": true,
+        "foo[1]": true,
+        "foo[2]": true,
+        "foo[3]": false,
       },
       dirtyFields: {
-        "foo.0": false,
-        "foo.1": true,
-        "foo.2": true,
+        "foo[0]": false,
+        "foo[1]": true,
+        "foo[2]": true,
       },
       validationErrors: {
-        "foo.0": "not equal",
-        "foo.1": "not equal",
-        "foo.4": "equal",
+        "foo[0]": "not equal",
+        "foo[1]": "not equal",
+        "foo[4]": "equal",
       },
       fieldArrayKeys: {
-        foo: ["foo.0", "foo.1", "foo.2", "foo.3", "foo.4"],
+        foo: ["foo[0]", "foo[1]", "foo[2]", "foo[3]", "foo[4]"],
       },
     });
     store.getState().arrayRemove("foo", 1);
@@ -530,17 +530,17 @@ describe("arrays", () => {
         foo: ["bar", "another", "value", "quux"],
       },
       touchedFields: {
-        "foo.0": true,
-        "foo.1": true,
-        "foo.2": false,
+        "foo[0]": true,
+        "foo[1]": true,
+        "foo[2]": false,
       },
       dirtyFields: {
-        "foo.0": false,
-        "foo.1": true,
+        "foo[0]": false,
+        "foo[1]": true,
       },
       validationErrors: {
-        "foo.0": "not equal",
-        "foo.3": "equal",
+        "foo[0]": "not equal",
+        "foo[3]": "equal",
       },
     });
     expect(fieldArrayKeys.foo).toHaveLength(4);
@@ -553,23 +553,23 @@ describe("arrays", () => {
         foo: ["bar", "baz", "another", "value", "quux"],
       },
       touchedFields: {
-        "foo.0": true,
-        "foo.1": true,
-        "foo.2": true,
-        "foo.3": false,
+        "foo[0]": true,
+        "foo[1]": true,
+        "foo[2]": true,
+        "foo[3]": false,
       },
       dirtyFields: {
-        "foo.0": false,
-        "foo.1": true,
-        "foo.2": true,
+        "foo[0]": false,
+        "foo[1]": true,
+        "foo[2]": true,
       },
       validationErrors: {
-        "foo.0": "not equal",
-        "foo.1": "not equal",
-        "foo.4": "equal",
+        "foo[0]": "not equal",
+        "foo[1]": "not equal",
+        "foo[4]": "equal",
       },
       fieldArrayKeys: {
-        foo: ["foo.0", "foo.1", "foo.2", "foo.3", "foo.4"],
+        foo: ["foo[0]", "foo[1]", "foo[2]", "foo[3]", "foo[4]"],
       },
     });
     store.getState().arraySwap("foo", 1, 3);
@@ -585,23 +585,53 @@ describe("arrays", () => {
         foo: ["bar", "value", "another", "baz", "quux"],
       },
       touchedFields: {
-        "foo.0": true,
-        "foo.1": false,
-        "foo.2": true,
-        "foo.3": true,
+        "foo[0]": true,
+        "foo[1]": false,
+        "foo[2]": true,
+        "foo[3]": true,
       },
       dirtyFields: {
-        "foo.0": false,
-        "foo.2": true,
-        "foo.3": true,
+        "foo[0]": false,
+        "foo[2]": true,
+        "foo[3]": true,
       },
       validationErrors: {
-        "foo.0": "not equal",
-        "foo.3": "not equal",
-        "foo.4": "equal",
+        "foo[0]": "not equal",
+        "foo[3]": "not equal",
+        "foo[4]": "equal",
       },
     });
     expect(fieldArrayKeys.foo).toHaveLength(5);
+  });
+
+  it("should swap items in nested arrays", () => {
+    const store = testStore();
+    store.setState({
+      values: {
+        foo: [
+          { name: "bar", notes: [{ text: "baz" }] },
+          { name: "value", notes: [{ text: "another" }, { text: "thing" }] },
+        ],
+      },
+      touchedFields: {},
+      dirtyFields: {},
+      validationErrors: {},
+      fieldArrayKeys: {},
+    });
+    store.getState().arraySwap("foo", 0, 1);
+    const { values, touchedFields, dirtyFields, validationErrors } =
+      store.getState();
+    expect({ values, touchedFields, dirtyFields, validationErrors }).toEqual({
+      values: {
+        foo: [
+          { name: "value", notes: [{ text: "another" }, { text: "thing" }] },
+          { name: "bar", notes: [{ text: "baz" }] },
+        ],
+      },
+      dirtyFields: {},
+      touchedFields: {},
+      validationErrors: {},
+    });
   });
 
   it("should replace items in arrays", () => {
@@ -611,23 +641,23 @@ describe("arrays", () => {
         foo: ["bar", "baz", "another", "value", "quux"],
       },
       touchedFields: {
-        "foo.0": true,
-        "foo.1": true,
-        "foo.2": true,
-        "foo.3": false,
+        "foo[0]": true,
+        "foo[1]": true,
+        "foo[2]": true,
+        "foo[3]": false,
       },
       dirtyFields: {
-        "foo.0": false,
-        "foo.1": true,
-        "foo.2": true,
+        "foo[0]": false,
+        "foo[1]": true,
+        "foo[2]": true,
       },
       validationErrors: {
-        "foo.0": "not equal",
-        "foo.1": "not equal",
-        "foo.4": "equal",
+        "foo[0]": "not equal",
+        "foo[1]": "not equal",
+        "foo[4]": "equal",
       },
       fieldArrayKeys: {
-        foo: ["foo.0", "foo.1", "foo.2", "foo.3", "foo.4"],
+        foo: ["foo[0]", "foo[1]", "foo[2]", "foo[3]", "foo[4]"],
       },
     });
     store.getState().arrayReplace("foo", 1, "quux");
@@ -643,20 +673,20 @@ describe("arrays", () => {
         foo: ["bar", "quux", "another", "value", "quux"],
       },
       touchedFields: {
-        "foo.0": true,
-        "foo.2": true,
-        "foo.3": false,
+        "foo[0]": true,
+        "foo[2]": true,
+        "foo[3]": false,
       },
       dirtyFields: {
-        "foo.0": false,
-        "foo.2": true,
+        "foo[0]": false,
+        "foo[2]": true,
       },
       validationErrors: {
-        "foo.0": "not equal",
-        "foo.4": "equal",
+        "foo[0]": "not equal",
+        "foo[4]": "equal",
       },
     });
     expect(fieldArrayKeys.foo).toHaveLength(5);
-    expect(fieldArrayKeys.foo[1]).not.toBe("foo.1");
+    expect(fieldArrayKeys.foo[1]).not.toBe("foo[1]");
   });
 });

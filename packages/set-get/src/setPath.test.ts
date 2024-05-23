@@ -136,7 +136,7 @@ describe("string path", () => {
     const state = {
       d: 2,
     };
-    setPath(state, "a.b.c.0", 3);
+    setPath(state, "a.b.c[0]", 3);
     expect(state).toEqual({
       a: {
         b: {

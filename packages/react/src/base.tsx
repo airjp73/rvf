@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import * as R from "remeda";
 import {
   Rvf,
   scopeRvf,
@@ -23,6 +24,7 @@ import {
   ValidStringPathsToArrays,
   ValueAtPath,
   getPath,
+  pathArrayToString,
 } from "set-get";
 import { RvfArray, makeFieldArrayImpl } from "./array";
 import { makeImplFactory } from "./implFactory";
@@ -321,7 +323,7 @@ export const makeBaseRvfReact = <FormInputData,>({
   form,
 }: BaseRvfReactParams<FormInputData>): RvfReact<FormInputData> => {
   const f = (fieldName?: string) =>
-    [prefix, fieldName].filter(Boolean).join(".");
+    pathArrayToString([prefix, fieldName].filter(R.isNonNullish));
   const transientState = () => form.__store__.store.getState();
 
   type WithOptionalField<T> = [string, T] | [T];

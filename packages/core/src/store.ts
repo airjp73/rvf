@@ -1,4 +1,9 @@
-import { setPath, getPath, stringToPathArray } from "set-get";
+import {
+  setPath,
+  getPath,
+  stringToPathArray,
+  pathArrayToString,
+} from "set-get";
 import { create } from "zustand/react";
 import { immer } from "./immer";
 import {
@@ -216,7 +221,7 @@ export const moveFieldArrayKeys = (
       if (Number.isNaN(index))
         throw new Error("Attempted to update a non-array field");
       const newIndex = updater(index);
-      return [fieldName, newIndex, ...parts].join(".");
+      return pathArrayToString([fieldName, newIndex, ...parts]);
     });
   });
 };
@@ -557,7 +562,7 @@ export const createFormStateStore = ({
           state.fieldArrayKeys[fieldName]?.pop();
           deleteFieldsWithPrefix(
             [state.touchedFields, state.validationErrors, state.dirtyFields],
-            `${fieldName}.${numItems - 1}`,
+            `${fieldName}[${numItems - 1}]`,
           );
         });
       },
@@ -574,7 +579,7 @@ export const createFormStateStore = ({
           // TODO: need to adjust touched, dirty, and validationErrors
           deleteFieldsWithPrefix(
             [state.touchedFields, state.validationErrors, state.dirtyFields],
-            `${fieldName}.0`,
+            `${fieldName}[0]`,
           );
           moveFieldArrayKeys(
             [state.touchedFields, state.validationErrors, state.dirtyFields],
@@ -662,7 +667,7 @@ export const createFormStateStore = ({
 
           deleteFieldsWithPrefix(
             [state.touchedFields, state.validationErrors, state.dirtyFields],
-            `${fieldName}.${removeIndex}`,
+            `${fieldName}[${removeIndex}]`,
           );
           moveFieldArrayKeys(
             [state.touchedFields, state.validationErrors, state.dirtyFields],
@@ -714,7 +719,7 @@ export const createFormStateStore = ({
           // Treat a replacement as a reset / new field at the same index.
           deleteFieldsWithPrefix(
             [state.touchedFields, state.validationErrors, state.dirtyFields],
-            `${fieldName}.${index}`,
+            `${fieldName}[${index}]`,
           );
         });
       },

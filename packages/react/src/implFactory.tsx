@@ -1,3 +1,6 @@
+import { pathArrayToString } from "set-get";
+import * as R from "remeda";
+
 export const makeImplFactory = <Item,>(
   prefix: string,
   create: (fieldName: string) => Item,
@@ -5,7 +8,9 @@ export const makeImplFactory = <Item,>(
   const implCache = new Map<string, Item>();
 
   return (fieldName?: string) => {
-    const fullName = [prefix, fieldName].filter(Boolean).join(".");
+    const fullName = pathArrayToString(
+      [prefix, fieldName].filter(R.isNonNullish),
+    );
 
     const existingImpl = implCache.get(fullName);
     if (existingImpl) return existingImpl;
