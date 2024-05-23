@@ -616,12 +616,27 @@ describe("arrays", () => {
       touchedFields: {},
       dirtyFields: {},
       validationErrors: {},
-      fieldArrayKeys: {},
+      fieldArrayKeys: {
+        foo: ["a", "b"],
+        "foo[0].notes": ["a"],
+        "foo[1].notes": ["b", "c"],
+      },
     });
     store.getState().arraySwap("foo", 0, 1);
-    const { values, touchedFields, dirtyFields, validationErrors } =
-      store.getState();
-    expect({ values, touchedFields, dirtyFields, validationErrors }).toEqual({
+    const {
+      values,
+      touchedFields,
+      dirtyFields,
+      validationErrors,
+      fieldArrayKeys,
+    } = store.getState();
+    expect({
+      values,
+      touchedFields,
+      dirtyFields,
+      validationErrors,
+      fieldArrayKeys,
+    }).toEqual({
       values: {
         foo: [
           { name: "value", notes: [{ text: "another" }, { text: "thing" }] },
@@ -631,6 +646,11 @@ describe("arrays", () => {
       dirtyFields: {},
       touchedFields: {},
       validationErrors: {},
+      fieldArrayKeys: {
+        foo: ["b", "a"],
+        "foo[0].notes": ["b", "c"],
+        "foo[1].notes": ["a"],
+      },
     });
   });
 

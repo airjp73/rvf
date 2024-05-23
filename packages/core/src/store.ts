@@ -561,7 +561,12 @@ export const createFormStateStore = ({
           val.pop();
           state.fieldArrayKeys[fieldName]?.pop();
           deleteFieldsWithPrefix(
-            [state.touchedFields, state.validationErrors, state.dirtyFields],
+            [
+              state.touchedFields,
+              state.validationErrors,
+              state.dirtyFields,
+              state.fieldArrayKeys,
+            ],
             `${fieldName}[${numItems - 1}]`,
           );
         });
@@ -576,13 +581,22 @@ export const createFormStateStore = ({
           val.shift();
           state.fieldArrayKeys[fieldName]?.shift();
 
-          // TODO: need to adjust touched, dirty, and validationErrors
           deleteFieldsWithPrefix(
-            [state.touchedFields, state.validationErrors, state.dirtyFields],
+            [
+              state.touchedFields,
+              state.validationErrors,
+              state.dirtyFields,
+              state.fieldArrayKeys,
+            ],
             `${fieldName}[0]`,
           );
           moveFieldArrayKeys(
-            [state.touchedFields, state.validationErrors, state.dirtyFields],
+            [
+              state.touchedFields,
+              state.validationErrors,
+              state.dirtyFields,
+              state.fieldArrayKeys,
+            ],
             fieldName,
             (index) => index - 1,
           );
@@ -599,7 +613,12 @@ export const createFormStateStore = ({
           val.unshift(value);
           state.fieldArrayKeys[fieldName]?.unshift(genKey());
           moveFieldArrayKeys(
-            [state.touchedFields, state.validationErrors, state.dirtyFields],
+            [
+              state.touchedFields,
+              state.validationErrors,
+              state.dirtyFields,
+              state.fieldArrayKeys,
+            ],
             fieldName,
             (index) => index + 1,
           );
@@ -616,7 +635,12 @@ export const createFormStateStore = ({
           val.splice(insertAtIndex, 0, value);
           state.fieldArrayKeys[fieldName]?.splice(insertAtIndex, 0, genKey());
           moveFieldArrayKeys(
-            [state.touchedFields, state.validationErrors, state.dirtyFields],
+            [
+              state.touchedFields,
+              state.validationErrors,
+              state.dirtyFields,
+              state.fieldArrayKeys,
+            ],
             fieldName,
             (index) => (index >= insertAtIndex ? index + 1 : index),
           );
@@ -642,7 +666,12 @@ export const createFormStateStore = ({
           }
 
           moveFieldArrayKeys(
-            [state.touchedFields, state.validationErrors, state.dirtyFields],
+            [
+              state.touchedFields,
+              state.validationErrors,
+              state.dirtyFields,
+              state.fieldArrayKeys,
+            ],
             fieldName,
             (index) => {
               if (index === fromIndex) return toIndex;
@@ -666,11 +695,21 @@ export const createFormStateStore = ({
           state.fieldArrayKeys[fieldName]?.splice(removeIndex, 1);
 
           deleteFieldsWithPrefix(
-            [state.touchedFields, state.validationErrors, state.dirtyFields],
+            [
+              state.touchedFields,
+              state.validationErrors,
+              state.dirtyFields,
+              state.fieldArrayKeys,
+            ],
             `${fieldName}[${removeIndex}]`,
           );
           moveFieldArrayKeys(
-            [state.touchedFields, state.validationErrors, state.dirtyFields],
+            [
+              state.touchedFields,
+              state.validationErrors,
+              state.dirtyFields,
+              state.fieldArrayKeys,
+            ],
             fieldName,
             (index) => (index > removeIndex ? index - 1 : index),
           );
@@ -696,7 +735,12 @@ export const createFormStateStore = ({
           }
 
           moveFieldArrayKeys(
-            [state.touchedFields, state.validationErrors, state.dirtyFields],
+            [
+              state.touchedFields,
+              state.validationErrors,
+              state.dirtyFields,
+              state.fieldArrayKeys,
+            ],
             fieldName,
             (index) => {
               if (index === fromIndex) return toIndex;
@@ -718,7 +762,12 @@ export const createFormStateStore = ({
           state.fieldArrayKeys[fieldName][index] = genKey();
           // Treat a replacement as a reset / new field at the same index.
           deleteFieldsWithPrefix(
-            [state.touchedFields, state.validationErrors, state.dirtyFields],
+            [
+              state.touchedFields,
+              state.validationErrors,
+              state.dirtyFields,
+              state.fieldArrayKeys,
+            ],
             `${fieldName}[${index}]`,
           );
         });
