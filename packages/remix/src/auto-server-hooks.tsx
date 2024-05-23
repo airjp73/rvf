@@ -53,12 +53,14 @@ export function useErrorResponseForForm({
   return null;
 }
 
-export const useRemixFormResponse = <FormInputData extends FieldValues>(opts: {
-  formId?: string;
-  fetcher?: FetcherWithComponents<unknown>;
-  subaction?: string;
-  defaultValues?: FormInputData;
-}) => {
+export const useRemixFormResponse = <FormInputData extends FieldValues>(
+  opts: {
+    formId?: string;
+    fetcher?: FetcherWithComponents<unknown>;
+    subaction?: string;
+    defaultValues?: FormInputData;
+  } = {},
+) => {
   const defaultFormId = useId();
   const formId = opts.formId ?? defaultFormId;
 

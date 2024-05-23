@@ -21,3 +21,4 @@ Alternately, a `clearOnUnmount` option could be added?
 # Breaking change notes
 
 - Unmounting controlled fields no longer clears the value.
+- `defaultValues` configured via `"path.fields"` no longer works. The default values object should be in the expected shape.

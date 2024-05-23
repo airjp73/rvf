@@ -29,10 +29,7 @@ type LoaderData = {
 export const loader = (args: DataFunctionArgs) => {
   return json<LoaderData>({
     defaultValues: {
-      "name.first": "Jane",
-      // @ts-expect-error
-      name: { last: "Doe" },
-      lastName: "Doe",
+      name: { first: "Jane", last: "Doe" },
       email: "jane.doe@example.com",
       age: 26,
       likesPizza: true,

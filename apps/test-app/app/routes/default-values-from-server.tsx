@@ -6,6 +6,8 @@ import {
   setFormDefaults,
   FormDefaults,
   useRvf,
+  RvfProvider,
+  useRemixFormResponse,
 } from "@rvf/remix";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
@@ -40,13 +42,16 @@ export const loader = (args: DataFunctionArgs) =>
   });
 
 export default function FrontendValidation() {
-  const form = useRvf({
-    validator: validator,
-    method: "post",
+  const server = useRemixFormResponse({
     formId: "test-form",
   });
+  const form = useRvf({
+    ...server.getRvfOpts(),
+    validator: validator,
+    method: "post",
+  });
   return (
-    <>
+    <RvfProvider scope={form.scope()}>
       <Input name="text1" type="text" form="test-form" label="Text 1" />
       <Input name="check1" type="checkbox" form="test-form" label="Check 1" />
       <Fieldset label="Radios" name="radios" rvf={form.scope("radios")}>
@@ -113,9 +118,10 @@ export default function FrontendValidation() {
       </Fieldset>
       <hr />
       <form {...form.getFormProps()}>
+        {server.renderHiddenInputs()}
         <Input name="text2" type="text" label="Text 2" />
         <SubmitButton />
       </form>
-    </>
+    </RvfProvider>
   );
 }
