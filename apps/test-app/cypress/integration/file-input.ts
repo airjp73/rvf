@@ -1,5 +1,5 @@
 // TODO: Update test to use stable file api
-describe.skip("File input", () => {
+describe("File input", () => {
   it("should support uploading files", () => {
     cy.visit("/file-input").waitForJs();
 
@@ -11,7 +11,7 @@ describe.skip("File input", () => {
 
     cy.findByText("Submit").click();
     cy.findByText(
-      "Uploaded testFile with description This is a description"
+      "Uploaded testFile with description This is a description",
     ).should("exist");
   });
 

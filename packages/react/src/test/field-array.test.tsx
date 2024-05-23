@@ -871,5 +871,99 @@ it("should default to an empty array if no default value is provided", async () 
   expect(screen.getByTestId("foo-1")).toHaveValue("bye");
 });
 
+it("should handle nested field arrays", async () => {
+  const Comp = () => {
+    const form = useRvf({
+      defaultValues: {
+        foo: [{ name: "bar", notes: [{ text: "baz" }] }],
+      },
+      validator: successValidator,
+      handleSubmit: vi.fn(),
+    });
+
+    return (
+      <form {...form.getFormProps()}>
+        {form.array("foo").map((key, fooItem, index) => (
+          <div key={key}>
+            <input
+              data-testid={`foo-${index}-name`}
+              {...fooItem.field("name").getInputProps()}
+            />
+
+            {fooItem.array("notes").map((key, noteItem, noteIndex) => (
+              <div key={key}>
+                <input
+                  data-testid={`foo-${index}-note-${noteIndex}-text`}
+                  {...noteItem.field("text").getInputProps()}
+                />
+              </div>
+            ))}
+
+            <button
+              type="button"
+              onClick={() =>
+                fooItem.array("notes").push({
+                  text: "",
+                })
+              }
+              data-testid={`foo-${index}-add-note`}
+            />
+          </div>
+        ))}
+
+        <button
+          type="button"
+          onClick={() =>
+            form.array("foo").push({
+              name: "",
+              notes: [{ text: "" }],
+            })
+          }
+          data-testid="add-foo"
+        />
+
+        <button
+          type="button"
+          onClick={() => form.array("foo").swap(1, 2)}
+          data-testid="swap-foo"
+        />
+      </form>
+    );
+  };
+
+  render(<Comp />);
+
+  await userEvent.click(screen.getByTestId("add-foo"));
+  await userEvent.click(screen.getByTestId("add-foo"));
+
+  // foo-0 has defaults
+
+  await userEvent.type(screen.getByTestId("foo-1-name"), "foo-1");
+  await userEvent.type(screen.getByTestId("foo-1-note-0-text"), "foo-1-note-0");
+  await userEvent.click(screen.getByTestId("foo-1-add-note"));
+  await userEvent.type(screen.getByTestId("foo-1-note-1-text"), "foo-1-note-1");
+
+  await userEvent.type(screen.getByTestId("foo-2-name"), "foo-2");
+  await userEvent.type(screen.getByTestId("foo-2-note-0-text"), "foo-2-note-0");
+
+  expect(screen.getByTestId("foo-0-name")).toHaveValue("bar");
+  expect(screen.getByTestId("foo-0-note-0-text")).toHaveValue("baz");
+  expect(screen.getByTestId("foo-1-name")).toHaveValue("foo-1");
+  expect(screen.getByTestId("foo-1-note-0-text")).toHaveValue("foo-1-note-0");
+  expect(screen.getByTestId("foo-1-note-1-text")).toHaveValue("foo-1-note-1");
+  expect(screen.getByTestId("foo-2-name")).toHaveValue("foo-2");
+  expect(screen.getByTestId("foo-2-note-0-text")).toHaveValue("foo-2-note-0");
+
+  await userEvent.click(screen.getByTestId("swap-foo"));
+  expect(screen.getByTestId("foo-0-name")).toHaveValue("bar");
+  expect(screen.getByTestId("foo-0-note-0-text")).toHaveValue("baz");
+  expect(screen.getByTestId("foo-1-name")).toHaveValue("foo-2");
+  expect(screen.getByTestId("foo-1-note-0-text")).toHaveValue("foo-2-note-0");
+  expect(screen.queryByTestId("foo-1-note-1-text")).not.toBeInTheDocument();
+  expect(screen.getByTestId("foo-2-name")).toHaveValue("foo-1");
+  expect(screen.getByTestId("foo-2-note-0-text")).toHaveValue("foo-1-note-0");
+  expect(screen.getByTestId("foo-2-note-1-text")).toHaveValue("foo-1-note-1");
+});
+
 it.todo("should validate on submit, then on change after that by default");
 it.todo("should support custom validation behavior");

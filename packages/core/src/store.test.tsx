@@ -194,6 +194,51 @@ describe("arrays", () => {
     expect(fieldArrayKeys.foo).toHaveLength(3);
   });
 
+  it("should push into nested arrays", () => {
+    const store = testStore();
+    store.setState({
+      values: {
+        foo: [{ name: "bar", notes: [{ text: "baz" }] }],
+      },
+      touchedFields: {
+        "foo[0].name": true,
+      },
+      dirtyFields: {
+        "foo[0].name": true,
+      },
+      validationErrors: {
+        "foo[0].notes[1]": "not equal",
+      },
+      fieldArrayKeys: {
+        foo: ["a"],
+        "foo[0].notes": ["a"],
+      },
+    });
+    store.getState().arrayPush("foo[0].notes", { text: "quux" });
+    const {
+      values,
+      touchedFields,
+      dirtyFields,
+      validationErrors,
+      fieldArrayKeys,
+    } = store.getState();
+    expect({ values, touchedFields, dirtyFields, validationErrors }).toEqual({
+      values: {
+        foo: [{ name: "bar", notes: [{ text: "baz" }, { text: "quux" }] }],
+      },
+      touchedFields: {
+        "foo[0].name": true,
+      },
+      dirtyFields: {
+        "foo[0].name": true,
+      },
+      validationErrors: {
+        "foo[0].notes[1]": "not equal",
+      },
+    });
+    expect(fieldArrayKeys["foo[0].notes"]).toHaveLength(2);
+  });
+
   it("should pop from arrays", () => {
     const store = testStore();
     store.setState({

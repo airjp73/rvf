@@ -161,6 +161,15 @@ export type FormStoreInit = {
 
 const genKey = () => `${Math.round(Math.random() * 10_000)}-${Date.now()}`;
 
+const setPathIfUndefined = (
+  obj: Record<string, any>,
+  path: string,
+  value: any,
+) => {
+  const val = getPath(obj, path);
+  if (val === undefined) setPath(obj, path, value);
+};
+
 export const renameFlatFieldStateKeys = <Obj extends Record<string, any>>(
   obj: Obj,
   path: string,
@@ -526,10 +535,9 @@ export const createFormStateStore = ({
 
       arrayPush: (fieldName, value) => {
         set((state) => {
-          if (state.values[fieldName] === undefined)
-            state.values[fieldName] = [];
+          setPathIfUndefined(state.values, fieldName, []);
+          const val = getPath(state.values, fieldName);
 
-          const val = state.values[fieldName];
           if (!Array.isArray(val)) throw new Error("Can't push to a non-array");
           val.push(value);
 
@@ -539,10 +547,9 @@ export const createFormStateStore = ({
       },
       arrayPop: (fieldName) => {
         set((state) => {
-          if (state.values[fieldName] === undefined)
-            state.values[fieldName] = [];
+          setPathIfUndefined(state.values, fieldName, []);
+          const val = getPath(state.values, fieldName);
 
-          const val = state.values[fieldName];
           if (!Array.isArray(val))
             throw new Error("Can't pop from a non-array");
           const numItems = val.length;
@@ -556,10 +563,9 @@ export const createFormStateStore = ({
       },
       arrayShift: (fieldName) => {
         set((state) => {
-          if (state.values[fieldName] === undefined)
-            state.values[fieldName] = [];
+          setPathIfUndefined(state.values, fieldName, []);
+          const val = getPath(state.values, fieldName);
 
-          const val = state.values[fieldName];
           if (!Array.isArray(val))
             throw new Error("Can't shift from a non-array");
           val.shift();
@@ -579,10 +585,9 @@ export const createFormStateStore = ({
       },
       arrayUnshift: (fieldName, value) => {
         set((state) => {
-          if (state.values[fieldName] === undefined)
-            state.values[fieldName] = [];
+          setPathIfUndefined(state.values, fieldName, []);
+          const val = getPath(state.values, fieldName);
 
-          const val = state.values[fieldName];
           if (!Array.isArray(val))
             throw new Error("Can't unshift to a non-array");
 
@@ -597,10 +602,9 @@ export const createFormStateStore = ({
       },
       arrayInsert: (fieldName, insertAtIndex, value) => {
         set((state) => {
-          if (state.values[fieldName] === undefined)
-            state.values[fieldName] = [];
+          setPathIfUndefined(state.values, fieldName, []);
+          const val = getPath(state.values, fieldName);
 
-          const val = state.values[fieldName];
           if (!Array.isArray(val))
             throw new Error("Can't insert to a non-array");
 
@@ -615,10 +619,9 @@ export const createFormStateStore = ({
       },
       arrayMove: (fieldName, fromIndex, toIndex) => {
         set((state) => {
-          if (state.values[fieldName] === undefined)
-            state.values[fieldName] = [];
+          setPathIfUndefined(state.values, fieldName, []);
+          const val = getPath(state.values, fieldName);
 
-          const val = state.values[fieldName];
           if (!Array.isArray(val))
             throw new Error("Can't move from a non-array");
 
@@ -648,10 +651,9 @@ export const createFormStateStore = ({
       },
       arrayRemove: (fieldName, removeIndex) => {
         set((state) => {
-          if (state.values[fieldName] === undefined)
-            state.values[fieldName] = [];
+          setPathIfUndefined(state.values, fieldName, []);
+          const val = getPath(state.values, fieldName);
 
-          const val = state.values[fieldName];
           if (!Array.isArray(val))
             throw new Error("Can't remove from a non-array");
 
@@ -671,10 +673,9 @@ export const createFormStateStore = ({
       },
       arraySwap: (fieldName, fromIndex, toIndex) => {
         set((state) => {
-          if (state.values[fieldName] === undefined)
-            state.values[fieldName] = [];
+          setPathIfUndefined(state.values, fieldName, []);
+          const val = getPath(state.values, fieldName);
 
-          const val = state.values[fieldName];
           if (!Array.isArray(val))
             throw new Error("Can't swap from a non-array");
 
@@ -702,10 +703,9 @@ export const createFormStateStore = ({
       },
       arrayReplace: (fieldName, index, value) => {
         set((state) => {
-          if (state.values[fieldName] === undefined)
-            state.values[fieldName] = [];
+          setPathIfUndefined(state.values, fieldName, []);
+          const val = getPath(state.values, fieldName);
 
-          const val = state.values[fieldName];
           if (!Array.isArray(val))
             throw new Error("Can't replace from a non-array");
 
