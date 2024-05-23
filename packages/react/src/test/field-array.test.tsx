@@ -7,6 +7,8 @@ import { describe, expect, it, vi } from "vitest";
 import { successValidator } from "./util/successValidator";
 import { controlInput } from "./util/controlInput";
 import { FieldArray } from "../array";
+import { RvfProvider } from "../context";
+import { FieldErrors, createValidator } from "@rvf/core";
 
 it("should only accept array values", () => {
   const Comp = () => {
@@ -788,6 +790,85 @@ it("should be able to replace", async () => {
   expect(screen.getByTestId("foo-1-touched")).toHaveTextContent("false");
   expect(screen.getByTestId("foo-2")).toHaveValue("quux");
   expect(screen.getByTestId("foo-2-touched")).toHaveTextContent("false");
+});
+
+it("should default to an empty array if no default value is provided", async () => {
+  let id = 0;
+  const Comp = () => {
+    const form = useRvf({
+      validator: createValidator({
+        validate: (data) => {
+          const errors: FieldErrors = {};
+          data.foo?.forEach((item, index) => {
+            if ((item?.name?.length ?? 0) < 3)
+              errors[`foo[${index}]`] = "too short";
+          });
+          if (Object.keys(errors).length > 0)
+            return Promise.resolve({
+              error: errors,
+              data: undefined,
+            });
+          return Promise.resolve({ data, error: undefined });
+        },
+      }),
+      handleSubmit: vi.fn(),
+    });
+
+    return (
+      <RvfProvider scope={form.scope()}>
+        <form {...form.getFormProps()}>
+          <FieldArray name="foo">
+            {({ map, push, remove }) => (
+              <>
+                {map((key, item, index) => {
+                  return (
+                    <div key={key}>
+                      <input
+                        key={key}
+                        data-testid={`foo-${index}`}
+                        name={`foo[${index}].name`}
+                      />
+                      <button
+                        type="button"
+                        data-testid={`remove-foo-${index}`}
+                        onClick={() => remove(index)}
+                      />
+                    </div>
+                  );
+                })}
+                <button
+                  type="button"
+                  data-testid="push"
+                  onClick={() => push({ id: id++ })}
+                />
+              </>
+            )}
+          </FieldArray>
+          <button type="submit" data-testid="submit" />
+        </form>
+      </RvfProvider>
+    );
+  };
+
+  render(<Comp />);
+  await userEvent.click(screen.getByTestId("push"));
+  expect(screen.getByTestId("foo-0")).toHaveValue("");
+
+  await userEvent.click(screen.getByTestId("push"));
+  expect(screen.getByTestId("foo-1")).toHaveValue("");
+
+  await userEvent.click(screen.getByTestId("push"));
+  expect(screen.getByTestId("foo-2")).toHaveValue("");
+
+  await userEvent.click(screen.getByTestId("submit"));
+
+  await userEvent.type(screen.getByTestId("foo-0"), "hello");
+  await userEvent.type(screen.getByTestId("foo-1"), "bye");
+  await userEvent.type(screen.getByTestId("foo-2"), "bye");
+  await userEvent.click(screen.getByTestId("remove-foo-1"));
+
+  expect(screen.queryByTestId("foo-2")).not.toBeInTheDocument();
+  expect(screen.getByTestId("foo-1")).toHaveValue("bye");
 });
 
 it.todo("should validate on submit, then on change after that by default");

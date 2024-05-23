@@ -1,10 +1,9 @@
-import { setPath, getPath } from "set-get";
+import { setPath, getPath, stringToPathArray } from "set-get";
 import { create } from "zustand/react";
 import { immer } from "./immer";
 import {
   setFormControlValue,
   focusOrReportFirst,
-  isFormControl,
   getElementsWithNames,
 } from "./dom";
 import {
@@ -17,7 +16,6 @@ import {
 } from "./types";
 import { GenericObject } from "./native-form-data/flatten";
 import { MultiValueMap } from "./native-form-data/MultiValueMap";
-import { getFieldError } from "./getters";
 
 export const createRefStore = () => {
   const elementRefs = new MultiValueMap<string, HTMLElement>();
@@ -203,8 +201,8 @@ export const moveFieldArrayKeys = (
   objs.forEach((obj) => {
     renameFlatFieldStateKeys(obj, fieldName, (key) => {
       if (key === fieldName) return key;
-      const suffix = key.replace(`${fieldName}.`, "");
-      const parts = suffix.split(".");
+      const suffix = key.replace(`${fieldName}`, "");
+      const parts = stringToPathArray(suffix);
       const index = Number(parts.shift());
       if (Number.isNaN(index))
         throw new Error("Attempted to update a non-array field");
@@ -506,7 +504,8 @@ export const createFormStateStore = ({
         const currentKeys = get().fieldArrayKeys[fieldName];
         if (currentKeys) return currentKeys;
 
-        const value = getPath(get().values, fieldName) as unknown;
+        const valueInState = getPath(get().values, fieldName) as unknown;
+        const value = valueInState === undefined ? [] : valueInState; // only default `undefined` to empty array, not `null`
         if (!Array.isArray(value)) {
           console.warn(
             "Tried to treat a non-array as an array. Make sure you used the correct field name and set a default value.",
@@ -527,6 +526,9 @@ export const createFormStateStore = ({
 
       arrayPush: (fieldName, value) => {
         set((state) => {
+          if (state.values[fieldName] === undefined)
+            state.values[fieldName] = [];
+
           const val = state.values[fieldName];
           if (!Array.isArray(val)) throw new Error("Can't push to a non-array");
           val.push(value);
@@ -537,6 +539,9 @@ export const createFormStateStore = ({
       },
       arrayPop: (fieldName) => {
         set((state) => {
+          if (state.values[fieldName] === undefined)
+            state.values[fieldName] = [];
+
           const val = state.values[fieldName];
           if (!Array.isArray(val))
             throw new Error("Can't pop from a non-array");
@@ -551,6 +556,9 @@ export const createFormStateStore = ({
       },
       arrayShift: (fieldName) => {
         set((state) => {
+          if (state.values[fieldName] === undefined)
+            state.values[fieldName] = [];
+
           const val = state.values[fieldName];
           if (!Array.isArray(val))
             throw new Error("Can't shift from a non-array");
@@ -571,6 +579,9 @@ export const createFormStateStore = ({
       },
       arrayUnshift: (fieldName, value) => {
         set((state) => {
+          if (state.values[fieldName] === undefined)
+            state.values[fieldName] = [];
+
           const val = state.values[fieldName];
           if (!Array.isArray(val))
             throw new Error("Can't unshift to a non-array");
@@ -586,6 +597,9 @@ export const createFormStateStore = ({
       },
       arrayInsert: (fieldName, insertAtIndex, value) => {
         set((state) => {
+          if (state.values[fieldName] === undefined)
+            state.values[fieldName] = [];
+
           const val = state.values[fieldName];
           if (!Array.isArray(val))
             throw new Error("Can't insert to a non-array");
@@ -601,6 +615,9 @@ export const createFormStateStore = ({
       },
       arrayMove: (fieldName, fromIndex, toIndex) => {
         set((state) => {
+          if (state.values[fieldName] === undefined)
+            state.values[fieldName] = [];
+
           const val = state.values[fieldName];
           if (!Array.isArray(val))
             throw new Error("Can't move from a non-array");
@@ -631,6 +648,9 @@ export const createFormStateStore = ({
       },
       arrayRemove: (fieldName, removeIndex) => {
         set((state) => {
+          if (state.values[fieldName] === undefined)
+            state.values[fieldName] = [];
+
           const val = state.values[fieldName];
           if (!Array.isArray(val))
             throw new Error("Can't remove from a non-array");
@@ -651,6 +671,9 @@ export const createFormStateStore = ({
       },
       arraySwap: (fieldName, fromIndex, toIndex) => {
         set((state) => {
+          if (state.values[fieldName] === undefined)
+            state.values[fieldName] = [];
+
           const val = state.values[fieldName];
           if (!Array.isArray(val))
             throw new Error("Can't swap from a non-array");
@@ -679,6 +702,9 @@ export const createFormStateStore = ({
       },
       arrayReplace: (fieldName, index, value) => {
         set((state) => {
+          if (state.values[fieldName] === undefined)
+            state.values[fieldName] = [];
+
           const val = state.values[fieldName];
           if (!Array.isArray(val))
             throw new Error("Can't replace from a non-array");
