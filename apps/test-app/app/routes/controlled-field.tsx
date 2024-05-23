@@ -9,6 +9,7 @@ import {
   useField,
   useUpdateControlledField,
   useRvf,
+  RvfProvider,
 } from "@rvf/remix";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
@@ -98,31 +99,38 @@ export default function ControlledField() {
     validator,
     method: "post",
     defaultValues: { myField: "green", text: "" },
+    validationBehaviorConfig: {
+      initial: "onChange",
+      whenTouched: "onChange",
+      whenSubmitted: "onChange",
+    },
   });
 
   return (
-    <form {...rvf.getFormProps()}>
-      {data && "message" in data && <div>{data.message}</div>}
-      <div style={{ margin: "1rem" }}>
-        <button type="button" onClick={() => setCount((prev) => prev + 1)}>
-          +
+    <RvfProvider scope={rvf.scope()}>
+      <form {...rvf.getFormProps()}>
+        {data && "message" in data && <div>{data.message}</div>}
+        <div style={{ margin: "1rem" }}>
+          <button type="button" onClick={() => setCount((prev) => prev + 1)}>
+            +
+          </button>
+          <button type="button" onClick={() => setCount((prev) => prev - 1)}>
+            -
+          </button>
+        </div>
+        {[...range(0, count)].map((_, i) => (
+          <Controlled key={i} />
+        ))}
+        <ControlledInput />
+        <button
+          onClick={() => rvf.setValue("text", "Hello from update hook")}
+          type="button"
+        >
+          Force Update
         </button>
-        <button type="button" onClick={() => setCount((prev) => prev - 1)}>
-          -
-        </button>
-      </div>
-      {[...range(0, count)].map((_, i) => (
-        <Controlled key={i} />
-      ))}
-      <ControlledInput />
-      <button
-        onClick={() => rvf.setValue("text", "Hello from update hook")}
-        type="button"
-      >
-        Force Update
-      </button>
-      <button type="reset">Reset</button>
-      <SubmitButton />
-    </form>
+        <button type="reset">Reset</button>
+        <SubmitButton />
+      </form>
+    </RvfProvider>
   );
 }

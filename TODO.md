@@ -17,3 +17,7 @@ Alternately, a `clearOnUnmount` option could be added?
   I think using validationBehaviorConfig will result in inconsistent behavior here.
 
 - Add a new bug repro template
+
+# Breaking change notes
+
+- Unmounting controlled fields no longer clears the value.

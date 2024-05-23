@@ -44,7 +44,6 @@ describe("Context hooks", () => {
       touchedFields: {},
       defaultValues: { firstName: "defaultFirstName" },
       getValues: {
-        __rvfInternalFormId: "test-form",
         firstName: "defaultFirstName",
       },
     });
@@ -57,7 +56,7 @@ describe("Context hooks", () => {
       fieldErrors: { firstName: "First Name is a required field" },
       touchedFields: { firstName: true },
       defaultValues: { firstName: "defaultFirstName" },
-      getValues: { __rvfInternalFormId: "test-form", firstName: "" },
+      getValues: { firstName: "" },
     });
 
     cy.findByText("Submit").click();
@@ -68,7 +67,7 @@ describe("Context hooks", () => {
       fieldErrors: { firstName: "First Name is a required field" },
       touchedFields: { firstName: true },
       defaultValues: { firstName: "defaultFirstName" },
-      getValues: { __rvfInternalFormId: "test-form", firstName: "" },
+      getValues: { firstName: "" },
     });
 
     cy.findByLabelText("First Name").type("something");
@@ -79,9 +78,7 @@ describe("Context hooks", () => {
       fieldErrors: {},
       touchedFields: { firstName: true },
       defaultValues: { firstName: "defaultFirstName" },
-      // This is only `s` because only the first keystroke should result in an update.
-      // i.e. this hook shouldn't rerender on every change, just when the errors change
-      getValues: { __rvfInternalFormId: "test-form", firstName: "s" },
+      getValues: { firstName: "something" },
     });
 
     cy.findByText("Submit").click();
@@ -92,7 +89,9 @@ describe("Context hooks", () => {
       fieldErrors: {},
       touchedFields: { firstName: true },
       defaultValues: { firstName: "defaultFirstName" },
-      getValues: { __rvfInternalFormId: "test-form", firstName: "something" },
+      getValues: {
+        firstName: "something",
+      },
     });
   });
 });

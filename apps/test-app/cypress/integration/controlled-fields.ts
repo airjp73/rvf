@@ -21,27 +21,11 @@ describe("Controlled fields", () => {
     cy.findByText("Force Update").click();
     cy.findByTestId("text-input").should(
       "have.value",
-      "Hello from update hook"
+      "Hello from update hook",
     );
 
     cy.findByText("Reset").click();
     cy.findByTestId("text-input").should("have.value", "");
-  });
-
-  it("should correctly unregsiter when no instances of the field are present", () => {
-    cy.visit("/controlled-field").waitForJs();
-
-    cy.findByTestId("blue").click().should("have.text", "Blue (selected)");
-
-    cy.findByText("+").click().click().click();
-    cy.findByText("-").click().click().click();
-
-    cy.findByTestId("blue").should("have.text", "Blue (selected)");
-
-    cy.findByText("-").click();
-    cy.findByText("+").click();
-    cy.findByTestId("blue").should("have.text", "Blue");
-    cy.findByTestId("green").should("have.text", "Green (selected)");
   });
 
   it("should show validation errors", () => {
@@ -51,7 +35,7 @@ describe("Controlled fields", () => {
     cy.findByTestId("text-error").should("exist");
   });
 
-  it("should validate against the correct value and resolve all promises along theway", () => {
+  it("should validate against the correct value and resolve all promises along the way", () => {
     cy.visit("/controlled-field").waitForJs();
     cy.findByTestId("text-input").type("some test text");
     cy.findByText('Invalid literal value, expected "bob"').should("exist");
