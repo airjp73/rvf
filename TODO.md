@@ -1,4 +1,3 @@
-- flesh-out store-level array tests to have checks for all operations for nested arrays
 - Make sure we can handle file inputs
 - State submit without handleSubmit on remix side? Looks like remix supports doing this as json _or_ serializing as form data.
 - Maybe have `validationError` construct a `Response` so we don't have to depend on `@remix-run/node`

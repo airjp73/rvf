@@ -677,7 +677,7 @@ export const createFormStateStore = ({
               if (index === fromIndex) return toIndex;
               let res = index;
               if (index > fromIndex) res--;
-              if (index >= toIndex) res++;
+              if (res >= toIndex) res++;
               return res;
             },
           );
