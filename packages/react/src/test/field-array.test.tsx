@@ -620,11 +620,18 @@ it("should be able to move within an array", async () => {
   await userEvent.click(screen.getByTestId("foo-1"));
   await userEvent.click(screen.getByTestId("foo-1-touched"));
 
+  expect(screen.getByTestId("foo-0")).toHaveValue("bar");
+  expect(screen.getByTestId("foo-0-touched")).toHaveTextContent("false");
+  expect(screen.getByTestId("foo-1")).toHaveValue("baz");
+  expect(screen.getByTestId("foo-1-touched")).toHaveTextContent("true");
+  expect(screen.getByTestId("foo-2")).toHaveValue("quux");
+  expect(screen.getByTestId("foo-2-touched")).toHaveTextContent("false");
+
   await userEvent.click(screen.getByTestId("move"));
   expect(screen.getByTestId("foo-0")).toHaveValue("baz");
-  expect(screen.getByTestId("foo-0-touched")).toHaveTextContent("false");
+  expect(screen.getByTestId("foo-0-touched")).toHaveTextContent("true");
   expect(screen.getByTestId("foo-1")).toHaveValue("bar");
-  expect(screen.getByTestId("foo-1-touched")).toHaveTextContent("true");
+  expect(screen.getByTestId("foo-1-touched")).toHaveTextContent("false");
   expect(screen.getByTestId("foo-2")).toHaveValue("quux");
   expect(screen.getByTestId("foo-2-touched")).toHaveTextContent("false");
 });
