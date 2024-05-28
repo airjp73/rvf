@@ -71,6 +71,7 @@ type StoreState = {
   validationErrors: Record<string, string>;
   submitStatus: SubmitStatus;
   fieldArrayKeys: Record<string, Array<string>>;
+  arrayUpdateKeys: Record<string, string>;
   validationBehaviorConfig: ValidationBehaviorConfig;
   submitSource: "state" | "dom";
   formProps: StoreFormProps;
@@ -252,6 +253,7 @@ export const createFormStateStore = ({
       submitStatus:
         Object.keys(serverValidationErrors).length > 0 ? "error" : "idle",
       fieldArrayKeys: {},
+      arrayUpdateKeys: {},
       validationBehaviorConfig,
       submitSource,
       formProps,
@@ -483,6 +485,7 @@ export const createFormStateStore = ({
           state.dirtyFields = {};
           state.validationErrors = {};
           state.fieldArrayKeys = {};
+          state.arrayUpdateKeys = {};
           state.submitStatus = "idle";
         });
 
@@ -507,6 +510,7 @@ export const createFormStateStore = ({
             ],
             fieldName,
           );
+          state.arrayUpdateKeys[fieldName] = genKey();
         });
 
         transientFieldRefs.forEach((fieldName, ref) => {
@@ -549,6 +553,7 @@ export const createFormStateStore = ({
           val.push(value);
 
           state.fieldArrayKeys[fieldName]?.push(genKey());
+          state.arrayUpdateKeys[fieldName] = genKey();
           // no change to touched, dirty, or validationErrors
         });
       },
@@ -562,6 +567,7 @@ export const createFormStateStore = ({
           const numItems = val.length;
           val.pop();
           state.fieldArrayKeys[fieldName]?.pop();
+          state.arrayUpdateKeys[fieldName] = genKey();
           deleteFieldsWithPrefix(
             [
               state.touchedFields,
@@ -582,6 +588,7 @@ export const createFormStateStore = ({
             throw new Error("Can't shift from a non-array");
           val.shift();
           state.fieldArrayKeys[fieldName]?.shift();
+          state.arrayUpdateKeys[fieldName] = genKey();
 
           deleteFieldsWithPrefix(
             [
@@ -614,6 +621,7 @@ export const createFormStateStore = ({
 
           val.unshift(value);
           state.fieldArrayKeys[fieldName]?.unshift(genKey());
+          state.arrayUpdateKeys[fieldName] = genKey();
           moveFieldArrayKeys(
             [
               state.touchedFields,
@@ -636,6 +644,7 @@ export const createFormStateStore = ({
 
           insert(val, insertAtIndex, value);
           insert(state.fieldArrayKeys[fieldName], insertAtIndex, genKey());
+          state.arrayUpdateKeys[fieldName] = genKey();
 
           moveFieldArrayKeys(
             [
@@ -659,6 +668,7 @@ export const createFormStateStore = ({
 
           move(val, fromIndex, toIndex);
           move(state.fieldArrayKeys[fieldName], fromIndex, toIndex);
+          state.arrayUpdateKeys[fieldName] = genKey();
 
           moveFieldArrayKeys(
             [
@@ -688,6 +698,7 @@ export const createFormStateStore = ({
 
           remove(val, removeIndex);
           remove(state.fieldArrayKeys[fieldName], removeIndex);
+          state.arrayUpdateKeys[fieldName] = genKey();
 
           deleteFieldsWithPrefix(
             [
@@ -728,6 +739,8 @@ export const createFormStateStore = ({
             );
           }
 
+          state.arrayUpdateKeys[fieldName] = genKey();
+
           moveFieldArrayKeys(
             [
               state.touchedFields,
@@ -754,6 +767,7 @@ export const createFormStateStore = ({
 
           replace(val, index, value);
           replace(state.fieldArrayKeys[fieldName], index, genKey());
+          state.arrayUpdateKeys[fieldName] = genKey();
 
           // Treat a replacement as a reset / new field at the same index.
           deleteFieldsWithPrefix(

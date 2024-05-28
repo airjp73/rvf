@@ -968,6 +968,7 @@ describe("arrays", () => {
       dirtyFields,
       validationErrors,
       fieldArrayKeys,
+      arrayUpdateKeys,
     } = store.getState();
     expect({
       values,
@@ -975,6 +976,7 @@ describe("arrays", () => {
       dirtyFields,
       validationErrors,
       fieldArrayKeys,
+      arrayUpdateKeys,
     }).toEqual({
       values: {
         foo: [
@@ -990,17 +992,27 @@ describe("arrays", () => {
         "foo[0].notes": ["a", "b"],
         "foo[1].notes": [],
       },
+      arrayUpdateKeys: {
+        foo: expect.any(String),
+      },
     });
 
     store.getState().arrayRemove("foo[0].notes", 1);
-    ({ values, touchedFields, dirtyFields, validationErrors, fieldArrayKeys } =
-      store.getState());
+    ({
+      values,
+      touchedFields,
+      dirtyFields,
+      validationErrors,
+      fieldArrayKeys,
+      arrayUpdateKeys,
+    } = store.getState());
     expect({
       values,
       touchedFields,
       dirtyFields,
       validationErrors,
       fieldArrayKeys,
+      arrayUpdateKeys,
     }).toEqual({
       values: {
         foo: [
@@ -1015,6 +1027,10 @@ describe("arrays", () => {
         foo: ["a", "c"],
         "foo[0].notes": ["a"],
         "foo[1].notes": [],
+      },
+      arrayUpdateKeys: {
+        foo: expect.any(String),
+        "foo[0].notes": expect.any(String),
       },
     });
   });
@@ -1052,8 +1068,15 @@ describe("arrays", () => {
       dirtyFields,
       validationErrors,
       fieldArrayKeys,
+      arrayUpdateKeys,
     } = store.getState();
-    expect({ values, touchedFields, dirtyFields, validationErrors }).toEqual({
+    expect({
+      values,
+      touchedFields,
+      dirtyFields,
+      validationErrors,
+      arrayUpdateKeys,
+    }).toEqual({
       values: {
         foo: ["bar", "value", "another", "baz", "quux"],
       },
@@ -1073,11 +1096,14 @@ describe("arrays", () => {
         "foo[3]": "not equal",
         "foo[4]": "equal",
       },
+      arrayUpdateKeys: {
+        foo: expect.any(String),
+      },
     });
     expect(fieldArrayKeys.foo).toHaveLength(5);
   });
 
-  it.only("should not do anything if swapping two non-existant items", () => {
+  it("should not do anything if swapping two non-existant items", () => {
     const store = testStore();
     store.setState({
       values: {
@@ -1282,6 +1308,7 @@ describe("arrays", () => {
       dirtyFields,
       validationErrors,
       fieldArrayKeys,
+      arrayUpdateKeys,
     } = store.getState();
     expect({
       values,
@@ -1289,6 +1316,7 @@ describe("arrays", () => {
       dirtyFields,
       validationErrors,
       fieldArrayKeys,
+      arrayUpdateKeys,
     }).toEqual({
       values: {
         foo: [
@@ -1302,6 +1330,9 @@ describe("arrays", () => {
       fieldArrayKeys: {
         foo: [expect.any(String), "b"],
         "foo[1].notes": ["a"],
+      },
+      arrayUpdateKeys: {
+        foo: expect.any(String),
       },
     });
 
@@ -1331,3 +1362,5 @@ describe("arrays", () => {
     });
   });
 });
+
+it.todo("should be able to `resetField` on a whole array");

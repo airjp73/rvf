@@ -20,15 +20,14 @@ const countArrayItems = (arr: any[]) => {
 describe("swap", () => {
   it("should swap two items", () => {
     const array = [1, 2, 3];
-    toSwapped(array, 0, 1);
-    expect(array).toEqual([2, 1, 3]);
+    expect(toSwapped(array, 0, 1)).toEqual([2, 1, 3]);
   });
 
   it("should work for sparse arrays", () => {
     // A bit of a sanity check for native array behavior
-    const arr = [] as any[];
+    let arr = [] as any[];
     arr[0] = true;
-    toSwapped(arr, 0, 2);
+    arr = toSwapped(arr, 0, 2);
 
     expect(countArrayItems(arr)).toEqual(1);
     expect(0 in arr).toBe(false);

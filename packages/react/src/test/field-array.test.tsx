@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import { useRvf } from "../useRvf";
 import userEvent from "@testing-library/user-event";
 import { Fragment } from "react/jsx-runtime";
@@ -9,6 +9,7 @@ import { controlInput } from "./util/controlInput";
 import { FieldArray } from "../array";
 import { RvfProvider } from "../context";
 import { FieldErrors, createValidator } from "@rvf/core";
+import { ComponentProps, useState } from "react";
 
 it("should only accept array values", () => {
   const Comp = () => {
@@ -273,15 +274,15 @@ describe("uncontrolled items", () => {
     await userEvent.type(screen.getByTestId("foo-0"), "test");
     expect(
       screen.getByTestId("root-render-count").textContent,
-    ).toMatchInlineSnapshot(`"2"`);
+    ).toMatchInlineSnapshot(`"1"`);
     expect(screen.getByTestId("foo-0")).toHaveValue("bartest");
     expect(
       screen.getByTestId("foo-0-render-count").textContent,
-    ).toMatchInlineSnapshot(`"2"`);
+    ).toMatchInlineSnapshot(`"1"`);
     expect(screen.getByTestId("foo-1")).toHaveValue("baz");
     expect(
       screen.getByTestId("foo-1-render-count").textContent,
-    ).toMatchInlineSnapshot(`"2"`);
+    ).toMatchInlineSnapshot(`"1"`);
   });
 });
 
@@ -974,3 +975,70 @@ it("should handle nested field arrays", async () => {
 
 it.todo("should validate on submit, then on change after that by default");
 it.todo("should support custom validation behavior");
+
+it("should retain state when doing operations", async () => {
+  const Counter = (props: ComponentProps<"button">) => {
+    const [count, setCount] = useState(0);
+    return (
+      <div>
+        <button
+          {...props}
+          type="button"
+          onClick={() => {
+            setCount(count + 1);
+          }}
+        >
+          {count}
+        </button>
+      </div>
+    );
+  };
+
+  const Comp = () => {
+    const form = useRvf({
+      defaultValues: {
+        foo: [{ name: "bar" }, { name: "baz" }],
+      },
+      validator: successValidator,
+      handleSubmit: vi.fn(),
+    });
+
+    return (
+      <div>
+        {form.array("foo").map((key, _, index) => {
+          return (
+            <div key={key}>
+              <div>{key}</div>
+              <Counter data-testid={`foo-${index}-count`} />
+            </div>
+          );
+        })}
+        <button
+          type="button"
+          data-testid="swap"
+          onClick={() => form.array("foo").swap(0, 1)}
+        />
+      </div>
+    );
+  };
+
+  render(<Comp />);
+  expect(screen.getByTestId("foo-0-count")).toHaveTextContent("0");
+  expect(screen.getByTestId("foo-1-count")).toHaveTextContent("0");
+
+  await userEvent.click(screen.getByTestId("foo-0-count"));
+  await userEvent.click(screen.getByTestId("foo-0-count"));
+  await userEvent.click(screen.getByTestId("foo-1-count"));
+
+  expect(screen.getByTestId("foo-0-count")).toHaveTextContent("2");
+  expect(screen.getByTestId("foo-1-count")).toHaveTextContent("1");
+
+  screen.debug();
+  await userEvent.click(screen.getByTestId("swap"));
+
+  await new Promise((resolve) => setTimeout(resolve, 100));
+  screen.debug();
+
+  expect(screen.getByTestId("foo-0-count")).toHaveTextContent("1");
+  expect(screen.getByTestId("foo-1-count")).toHaveTextContent("2");
+});

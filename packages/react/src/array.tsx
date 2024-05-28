@@ -6,6 +6,7 @@ import {
   getFieldError,
   getFieldValue,
   scopeRvf,
+  getArrayUpdateKey,
 } from "@rvf/core";
 import { makeImplFactory } from "./implFactory";
 import { RvfReact, makeBaseRvfReact } from "./base";
@@ -134,9 +135,7 @@ export const makeFieldArrayImpl = <FormInputData extends Array<any>>({
     error: () => getFieldError(trackedState, arrayFieldName),
     length,
     map: (callback) => {
-      // getFieldArrayKeys doesn't subscribe to changes in length,
-      // so we need to subscribe here
-      length();
+      getArrayUpdateKey(trackedState, arrayFieldName);
       return trackedState
         .getFieldArrayKeys(arrayFieldName)
         .map((key, index) => {

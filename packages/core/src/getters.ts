@@ -30,6 +30,9 @@ export const getFieldError = (state: FormStoreValue, fieldName: string) => {
 export const getFieldArrayKeys = (state: FormStoreValue, fieldName: string) =>
   state.fieldArrayKeys[fieldName];
 
+export const getArrayUpdateKey = (state: FormStoreValue, fieldName: string) =>
+  state.arrayUpdateKeys[fieldName];
+
 export const getAllTouched = (state: FormStoreValue) => state.touchedFields;
 
 export const getAllDirty = (state: FormStoreValue) => state.dirtyFields;
