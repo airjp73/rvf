@@ -1,4 +1,3 @@
-- Make sure we can handle file inputs
 - State submit without handleSubmit on remix side? Looks like remix supports doing this as json _or_ serializing as form data.
 - Maybe have `validationError` construct a `Response` so we don't have to depend on `@remix-run/node`
 - rename handleSubmit to action
