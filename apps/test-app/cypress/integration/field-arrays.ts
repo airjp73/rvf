@@ -44,7 +44,7 @@ describe("Field arrays", () => {
     cy.findAllByTestId("todo-id").should("have.length", 0);
   });
 
-  it("should sumbit the data correctly", () => {
+  it("should submit the data correctly", () => {
     cy.visit("/field-array/no-defaults").waitForJs();
 
     cy.findByText("Add todo").click();

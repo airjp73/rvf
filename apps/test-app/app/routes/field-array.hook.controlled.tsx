@@ -1,6 +1,12 @@
 import { withZod } from "@rvf/zod";
 import { nanoid } from "nanoid";
-import { useFieldArray, useControlField, useField, useRvf } from "@rvf/remix";
+import {
+  useFieldArray,
+  useControlField,
+  useField,
+  useRvf,
+  RvfProvider,
+} from "@rvf/remix";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
 
@@ -74,75 +80,79 @@ export default function FrontendValidation() {
   const array = useFieldArray(form.scope("todos"));
 
   return (
-    <form {...form.getFormProps()}>
-      {array.map((key, item, index) => (
-        <div key={key} data-testid={`todo-${index}`}>
-          <input
-            type="hidden"
-            name={`todos[${index}].id`}
-            value={item.value("id")}
-            data-testid="todo-id"
-          />
-          <ControlledInput name={`todos[${index}].title`} label="Title" />
-          <ControlledInput name={`todos[${index}].notes`} label="Notes" />
-          <button
-            type="button"
-            onClick={() => {
-              array.remove(index);
-            }}
-          >
-            Delete todo
-          </button>
-        </div>
-      ))}
-      <button type="button" onClick={() => array.swap(0, 2)}>
-        Swap
-      </button>
-      <button type="button" onClick={() => array.move(0, 2)}>
-        Move
-      </button>
-      <button
-        type="button"
-        onClick={() => array.insert(1, { id: nanoid(), title: "", notes: "" })}
-      >
-        Insert
-      </button>
-      <button type="button" onClick={() => array.pop()}>
-        Pop
-      </button>
-      <button
-        type="button"
-        onClick={() => array.unshift({ id: nanoid(), title: "", notes: "" })}
-      >
-        Unshift
-      </button>
-      <button
-        type="button"
-        onClick={() =>
-          array.replace(1, {
-            id: nanoid(),
-            title: "New title",
-            notes: "New note",
-          })
-        }
-      >
-        Replace
-      </button>
-      <button
-        type="button"
-        onClick={() =>
-          array.push({
-            id: nanoid(),
-            title: "New title",
-            notes: "New note",
-          })
-        }
-      >
-        Push
-      </button>
-      <button type="reset">Reset</button>
-      <button type="submit">Submit</button>
-      {array.error() && <div>{array.error()}</div>}
-    </form>
+    <RvfProvider scope={form}>
+      <form {...form.getFormProps()}>
+        {array.map((key, item, index) => (
+          <div key={key} data-testid={`todo-${index}`}>
+            <input
+              type="hidden"
+              name={`todos[${index}].id`}
+              value={item.value("id")}
+              data-testid="todo-id"
+            />
+            <ControlledInput name={`todos[${index}].title`} label="Title" />
+            <ControlledInput name={`todos[${index}].notes`} label="Notes" />
+            <button
+              type="button"
+              onClick={() => {
+                array.remove(index);
+              }}
+            >
+              Delete todo
+            </button>
+          </div>
+        ))}
+        <button type="button" onClick={() => array.swap(0, 2)}>
+          Swap
+        </button>
+        <button type="button" onClick={() => array.move(0, 2)}>
+          Move
+        </button>
+        <button
+          type="button"
+          onClick={() =>
+            array.insert(1, { id: nanoid(), title: "", notes: "" })
+          }
+        >
+          Insert
+        </button>
+        <button type="button" onClick={() => array.pop()}>
+          Pop
+        </button>
+        <button
+          type="button"
+          onClick={() => array.unshift({ id: nanoid(), title: "", notes: "" })}
+        >
+          Unshift
+        </button>
+        <button
+          type="button"
+          onClick={() =>
+            array.replace(1, {
+              id: nanoid(),
+              title: "New title",
+              notes: "New note",
+            })
+          }
+        >
+          Replace
+        </button>
+        <button
+          type="button"
+          onClick={() =>
+            array.push({
+              id: nanoid(),
+              title: "New title",
+              notes: "New note",
+            })
+          }
+        >
+          Push
+        </button>
+        <button type="reset">Reset</button>
+        <button type="submit">Submit</button>
+        {array.error() && <div>{array.error()}</div>}
+      </form>
+    </RvfProvider>
   );
 }
