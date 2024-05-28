@@ -1077,6 +1077,46 @@ describe("arrays", () => {
     expect(fieldArrayKeys.foo).toHaveLength(5);
   });
 
+  it.only("should not do anything if swapping two non-existant items", () => {
+    const store = testStore();
+    store.setState({
+      values: {
+        foo: [],
+      },
+      touchedFields: {},
+      dirtyFields: {},
+      validationErrors: {},
+      fieldArrayKeys: {
+        foo: [],
+      },
+    });
+    store.getState().arraySwap("foo", 1, 3);
+    const {
+      values,
+      touchedFields,
+      dirtyFields,
+      validationErrors,
+      fieldArrayKeys,
+    } = store.getState();
+    expect({
+      values,
+      touchedFields,
+      dirtyFields,
+      validationErrors,
+      fieldArrayKeys,
+    }).toEqual({
+      values: {
+        foo: [],
+      },
+      touchedFields: {},
+      dirtyFields: {},
+      validationErrors: {},
+      fieldArrayKeys: {
+        foo: [],
+      },
+    });
+  });
+
   it("should swap with nested arrays", () => {
     const store = testStore();
     store.setState({

@@ -6,6 +6,7 @@ import {
 } from "set-get";
 import { create } from "zustand/react";
 import { immer } from "./immer";
+import * as R from "remeda";
 import {
   setFormControlValue,
   focusOrReportFirst,
@@ -21,6 +22,7 @@ import {
 } from "./types";
 import { GenericObject } from "./native-form-data/flatten";
 import { MultiValueMap } from "./native-form-data/MultiValueMap";
+import { insert, move, remove, replace, toSwapped } from "./arrayUtil";
 
 export const createRefStore = () => {
   const elementRefs = new MultiValueMap<string, HTMLElement>();
@@ -632,8 +634,9 @@ export const createFormStateStore = ({
           if (!Array.isArray(val))
             throw new Error("Can't insert to a non-array");
 
-          val.splice(insertAtIndex, 0, value);
-          state.fieldArrayKeys[fieldName]?.splice(insertAtIndex, 0, genKey());
+          insert(val, insertAtIndex, value);
+          insert(state.fieldArrayKeys[fieldName], insertAtIndex, genKey());
+
           moveFieldArrayKeys(
             [
               state.touchedFields,
@@ -654,16 +657,8 @@ export const createFormStateStore = ({
           if (!Array.isArray(val))
             throw new Error("Can't move from a non-array");
 
-          const item = val.splice(fromIndex, 1)[0];
-          val.splice(toIndex, 0, item);
-
-          if (state.fieldArrayKeys[fieldName]) {
-            const [fromKey] = state.fieldArrayKeys[fieldName].splice(
-              fromIndex,
-              1,
-            );
-            state.fieldArrayKeys[fieldName].splice(toIndex, 0, fromKey);
-          }
+          move(val, fromIndex, toIndex);
+          move(state.fieldArrayKeys[fieldName], fromIndex, toIndex);
 
           moveFieldArrayKeys(
             [
@@ -691,8 +686,8 @@ export const createFormStateStore = ({
           if (!Array.isArray(val))
             throw new Error("Can't remove from a non-array");
 
-          val.splice(removeIndex, 1);
-          state.fieldArrayKeys[fieldName]?.splice(removeIndex, 1);
+          remove(val, removeIndex);
+          remove(state.fieldArrayKeys[fieldName], removeIndex);
 
           deleteFieldsWithPrefix(
             [
@@ -723,15 +718,14 @@ export const createFormStateStore = ({
           if (!Array.isArray(val))
             throw new Error("Can't swap from a non-array");
 
-          const item = val[fromIndex];
-          val[fromIndex] = val[toIndex];
-          val[toIndex] = item;
+          setPath(state.values, fieldName, toSwapped(val, fromIndex, toIndex));
 
           if (state.fieldArrayKeys[fieldName]) {
-            const keys = state.fieldArrayKeys[fieldName];
-            const item = keys[fromIndex];
-            keys[fromIndex] = keys[toIndex];
-            keys[toIndex] = item;
+            state.fieldArrayKeys[fieldName] = toSwapped(
+              state.fieldArrayKeys[fieldName],
+              fromIndex,
+              toIndex,
+            );
           }
 
           moveFieldArrayKeys(
@@ -758,8 +752,9 @@ export const createFormStateStore = ({
           if (!Array.isArray(val))
             throw new Error("Can't replace from a non-array");
 
-          val[index] = value;
-          state.fieldArrayKeys[fieldName][index] = genKey();
+          replace(val, index, value);
+          replace(state.fieldArrayKeys[fieldName], index, genKey());
+
           // Treat a replacement as a reset / new field at the same index.
           deleteFieldsWithPrefix(
             [
