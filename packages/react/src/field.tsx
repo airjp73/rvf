@@ -55,6 +55,7 @@ export interface RvfField<FormInputData> {
     value: string;
     type: "hidden";
     form: string;
+    ref: RefCallback<HTMLInputElement>;
   };
 
   refs: {
@@ -169,6 +170,12 @@ export const makeFieldImpl = <FormInputData,>({
       value: serialize(getFieldValue(trackedState, fieldName) as never),
       type: "hidden",
       form: getFormId(trackedState),
+      ref: (el) => {
+        form.__store__.fieldSerializerRefs.setRef(
+          fieldName,
+          serialize as never,
+        );
+      },
     }),
 
     refs: {

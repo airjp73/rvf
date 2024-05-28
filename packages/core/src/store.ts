@@ -24,11 +24,12 @@ import {
 import { GenericObject } from "./native-form-data/flatten";
 import { MultiValueMap } from "./native-form-data/MultiValueMap";
 import { insert, move, remove, replace, toSwapped } from "./arrayUtil";
-import { original } from "immer";
 
-export const createRefStore = () => {
-  const elementRefs = new MultiValueMap<string, HTMLElement>();
-  const symbolMaps = new Map<symbol, HTMLElement>();
+export type FieldSerializer = (value: unknown) => string;
+
+export const createRefStore = <Data>() => {
+  const elementRefs = new MultiValueMap<string, Data>();
+  const symbolMaps = new Map<symbol, Data>();
   return {
     has: (name: string) => elementRefs.has(name),
     getRefs: (fieldName: string) => elementRefs.getAll(fieldName),
@@ -43,18 +44,20 @@ export const createRefStore = () => {
       }
       elementRefs.delete(fieldName);
     },
-    setRef: (fieldName: string, ref: HTMLElement, symbol?: symbol) => {
+    setRef: (fieldName: string, ref: Data, symbol?: symbol) => {
       if (symbol) symbolMaps.set(symbol, ref);
       elementRefs.add(fieldName, ref);
     },
-    forEach: (callback: (fieldName: string, ref: HTMLElement | null) => void) =>
+    forEach: (callback: (fieldName: string, ref: Data | null) => void) =>
       [...elementRefs.entries()].forEach(([fieldName, refs]) =>
         refs.forEach((ref) => callback(fieldName, ref)),
       ),
     all: () => [...elementRefs.entries()],
   };
 };
-export type RefStore = ReturnType<typeof createRefStore>;
+export type RefStore<Data = HTMLElement> = ReturnType<
+  typeof createRefStore<Data>
+>;
 
 export type StoreFormProps = {
   action?: string;
@@ -215,6 +218,7 @@ export type FormStoreInit = {
   defaultValues: Record<PropertyKey, unknown>;
   transientFieldRefs: RefStore;
   controlledFieldRefs: RefStore;
+  fieldSerializerRefs: RefStore<FieldSerializer>;
   formRef: { current: HTMLFormElement | null };
   submitSource: "state" | "dom";
   mutableImplStore: MutableImplStore;

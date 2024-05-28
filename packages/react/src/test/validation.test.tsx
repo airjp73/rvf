@@ -346,6 +346,61 @@ it("should be posible to customize validation behavior at the field level", asyn
 });
 
 // Need to figure this out
-it.todo(
-  "should use the data from the form when validating in DOM mode, but with consideration for controlled fields",
-);
+it.only("should use the data from the form when validating in DOM mode, but with consideration for controlled fields", async () => {
+  const TextComp = () => {
+    const form = useRvf({
+      defaultValues: {
+        foo: "",
+        bar: "",
+      },
+      validator: createValidator({
+        validate: (data) => {
+          const errors: FieldErrors = {};
+          if (data.foo.length === 1) errors.foo = "only 1 char";
+          if (data.foo.length === 2) errors.foo = "only 2 chars";
+          if (data.foo.length === 3) errors.foo = "only 3 chars";
+          if (data.bar.length > 0) errors.bar = "must be empty";
+          if (Object.keys(errors).length > 0)
+            return Promise.resolve({ error: errors, data: undefined });
+          return Promise.resolve({ data, error: undefined });
+        },
+      }),
+      handleSubmit: vi.fn(),
+    });
+
+    const controlProps = form.field("foo").getControlProps();
+
+    return (
+      <form {...form.getFormProps()}>
+        <input
+          data-testid="foo"
+          ref={controlProps.ref}
+          onChange={(e) => controlProps.onChange(e.target.value)}
+          onBlur={() => controlProps.onBlur()}
+          value={controlProps.value}
+        />
+        <input {...form.field("bar").getHiddenInputProps()} />
+        <div data-testid="error">{form.error("foo")}</div>
+
+        <input name="bar" type="hidden" value="hello" />
+        <div data-testid="bar-error">{form.error("bar")}</div>
+
+        <button type="submit" data-testid="submit" />
+      </form>
+    );
+  };
+
+  render(<TextComp />);
+
+  await userEvent.click(screen.getByTestId("submit"));
+  expect(screen.getByTestId("bar-error")).toHaveTextContent("must be empty");
+
+  await userEvent.type(screen.getByTestId("foo"), "a");
+  expect(screen.getByTestId("error")).toHaveTextContent("only 1 char");
+
+  await userEvent.type(screen.getByTestId("foo"), "b");
+  expect(screen.getByTestId("error")).toHaveTextContent("only 2 chars");
+
+  await userEvent.type(screen.getByTestId("foo"), "c");
+  expect(screen.getByTestId("error")).toHaveTextContent("only 3 chars");
+});

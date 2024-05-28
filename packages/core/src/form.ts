@@ -5,6 +5,7 @@ import {
   Validator,
 } from "./types";
 import {
+  FieldSerializer,
   FormStoreValue,
   MutableImplStore,
   RefStore,
@@ -54,6 +55,7 @@ export interface Rvf<FormInputData> {
 interface RvfStore {
   transientFieldRefs: RefStore;
   controlledFieldRefs: RefStore;
+  fieldSerializerRefs: RefStore<FieldSerializer>;
   formRef: { current: HTMLFormElement | null };
   mutableImplStore: MutableImplStore;
   store: ReturnType<typeof createFormStateStore>;
@@ -71,8 +73,9 @@ export const createRvf = <FormInputData extends FieldValues, FormOutputData>({
   formProps,
   flags,
 }: FormInit<FormInputData, FormOutputData>): Rvf<FormInputData> => {
-  const transientFieldRefs = createRefStore();
-  const controlledFieldRefs = createRefStore();
+  const transientFieldRefs = createRefStore<HTMLElement>();
+  const controlledFieldRefs = createRefStore<HTMLElement>();
+  const fieldSerializerRefs = createRefStore<FieldSerializer>();
   const formRef = { current: null as HTMLFormElement | null };
   const mutableImplStore = { validator, onSubmit } satisfies MutableImplStore;
   const store = createFormStateStore({
@@ -80,6 +83,7 @@ export const createRvf = <FormInputData extends FieldValues, FormOutputData>({
     serverValidationErrors,
     transientFieldRefs,
     controlledFieldRefs,
+    fieldSerializerRefs,
     formRef,
     submitSource,
     mutableImplStore,
@@ -92,6 +96,7 @@ export const createRvf = <FormInputData extends FieldValues, FormOutputData>({
   const rvfStore: RvfStore = {
     transientFieldRefs,
     controlledFieldRefs,
+    fieldSerializerRefs,
     formRef,
     mutableImplStore,
     store,

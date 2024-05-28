@@ -8,6 +8,7 @@ const testStore = (init?: Partial<FormStoreInit>) =>
     defaultValues: {},
     controlledFieldRefs: createRefStore(),
     transientFieldRefs: createRefStore(),
+    fieldSerializerRefs: createRefStore(),
     formRef: { current: null },
     submitSource: "state",
     mutableImplStore: {

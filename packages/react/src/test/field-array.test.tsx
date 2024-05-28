@@ -807,7 +807,7 @@ it("should default to an empty array if no default value is provided", async () 
       validator: createValidator({
         validate: (data) => {
           const errors: FieldErrors = {};
-          data.foo?.forEach((item, index) => {
+          (data.foo as { name: string }[])?.forEach((item, index) => {
             if ((item?.name?.length ?? 0) < 3)
               errors[`foo[${index}]`] = "too short";
           });
