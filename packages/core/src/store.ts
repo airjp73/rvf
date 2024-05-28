@@ -439,11 +439,16 @@ export const createFormStateStore = ({
                 "RVF: Multiple serializers for a single field are not supported",
               );
             }
+
             const serializer = serializers[0];
             stubbedData[fieldName] = serializer(
               getFieldValue(state, fieldName),
             );
             controlledFieldNames.delete(fieldName);
+          });
+
+          controlledFieldNames.forEach((fieldName) => {
+            stubbedData[fieldName] = String(getFieldValue(state, fieldName));
           });
         }
 
