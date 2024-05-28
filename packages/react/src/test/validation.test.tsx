@@ -346,7 +346,7 @@ it("should be posible to customize validation behavior at the field level", asyn
 });
 
 // Need to figure this out
-it.only("should use the data from the form when validating in DOM mode, but with consideration for controlled fields", async () => {
+it("should use the data from the form when validating in DOM mode, but with consideration for controlled fields", async () => {
   const TextComp = () => {
     const form = useRvf({
       defaultValues: {
@@ -379,7 +379,8 @@ it.only("should use the data from the form when validating in DOM mode, but with
           onBlur={() => controlProps.onBlur()}
           value={controlProps.value}
         />
-        <input {...form.field("bar").getHiddenInputProps()} />
+
+        <input {...form.field("foo").getHiddenInputProps()} />
         <div data-testid="error">{form.error("foo")}</div>
 
         <input name="bar" type="hidden" value="hello" />
@@ -394,9 +395,10 @@ it.only("should use the data from the form when validating in DOM mode, but with
 
   await userEvent.click(screen.getByTestId("submit"));
   expect(screen.getByTestId("bar-error")).toHaveTextContent("must be empty");
+  expect(screen.getByTestId("error")).toBeEmptyDOMElement();
 
   await userEvent.type(screen.getByTestId("foo"), "a");
-  expect(screen.getByTestId("error")).toHaveTextContent("only 1 char");
+  expect(await screen.findByTestId("error")).toHaveTextContent("only 1 char");
 
   await userEvent.type(screen.getByTestId("foo"), "b");
   expect(screen.getByTestId("error")).toHaveTextContent("only 2 chars");

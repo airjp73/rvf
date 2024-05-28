@@ -1,5 +1,6 @@
 import { RefCallback, useMemo } from "react";
 import {
+  FieldSerializer,
   FormStoreValue,
   Rvf,
   ValidationBehaviorConfig,
@@ -137,6 +138,20 @@ export const makeFieldImpl = <FormInputData,>({
     };
   };
 
+  const createSerializerRef = (
+    serialize: FieldSerializer,
+  ): RefCallback<HTMLElement> => {
+    const sym = Symbol(fieldName);
+    return (el) => {
+      if (el == null) {
+        form.__store__.fieldSerializerRefs.removeRef(fieldName, sym);
+        return;
+      }
+
+      form.__store__.fieldSerializerRefs.setRef(fieldName, serialize, sym);
+    };
+  };
+
   return {
     getInputProps: createGetInputProps({
       onChange,
@@ -170,12 +185,7 @@ export const makeFieldImpl = <FormInputData,>({
       value: serialize(getFieldValue(trackedState, fieldName) as never),
       type: "hidden",
       form: getFormId(trackedState),
-      ref: (el) => {
-        form.__store__.fieldSerializerRefs.setRef(
-          fieldName,
-          serialize as never,
-        );
-      },
+      ref: createSerializerRef(serialize as never),
     }),
 
     refs: {

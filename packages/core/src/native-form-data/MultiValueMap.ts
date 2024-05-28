@@ -29,6 +29,8 @@ export class MultiValueMap<Key, Value> {
 
   entries = (): IterableIterator<[Key, Value[]]> => this.dict.entries();
 
+  keys = (): IterableIterator<Key> => this.dict.keys();
+
   values = (): IterableIterator<Value[]> => this.dict.values();
 
   has = (key: Key): boolean => this.dict.has(key);

@@ -10,6 +10,7 @@ import {
   setFormControlValue,
   focusOrReportFirst,
   getElementsWithNames,
+  isFormControl,
 } from "./dom";
 import {
   FieldArrayValidationBehavior,
@@ -24,6 +25,7 @@ import {
 import { GenericObject } from "./native-form-data/flatten";
 import { MultiValueMap } from "./native-form-data/MultiValueMap";
 import { insert, move, remove, replace, toSwapped } from "./arrayUtil";
+import { getFieldValue } from "./getters";
 
 export type FieldSerializer = (value: unknown) => string;
 
@@ -53,6 +55,7 @@ export const createRefStore = <Data>() => {
         refs.forEach((ref) => callback(fieldName, ref)),
       ),
     all: () => [...elementRefs.entries()],
+    names: () => [...elementRefs.keys()],
   };
 };
 export type RefStore<Data = HTMLElement> = ReturnType<
@@ -107,9 +110,10 @@ type StoreActions = {
   setAllDirty: (data: Record<string, boolean>) => void;
   setAllErrors: (data: Record<string, string>) => void;
 
-  getFormValuesForValidation: (
-    submitterData?: Record<string, string>,
-  ) => GenericObject | FormData;
+  getFormValuesForValidation: (opts?: {
+    submitterData?: Record<string, string>;
+    overrideData?: Record<string, string>;
+  }) => GenericObject | FormData;
   shouldValidate: (
     eventType: ValidationBehavior,
     fieldName: string,
@@ -307,6 +311,7 @@ export const createFormStateStore = ({
   defaultValues,
   controlledFieldRefs,
   transientFieldRefs,
+  fieldSerializerRefs,
   mutableImplStore,
   formRef,
   submitSource,
@@ -334,7 +339,7 @@ export const createFormStateStore = ({
       flags,
 
       /////// Validation
-      getFormValuesForValidation: (submitterData) => {
+      getFormValuesForValidation: ({ submitterData, overrideData } = {}) => {
         if (get().submitSource === "state") return get().values;
 
         const form = formRef.current;
@@ -349,6 +354,13 @@ export const createFormStateStore = ({
             formData.append(key, value);
           });
         }
+
+        if (overrideData) {
+          Object.entries(overrideData).forEach(([key, value]) => {
+            formData.set(key, value);
+          });
+        }
+
         return formData;
       },
       shouldValidate: (eventType, fieldName, behaviorOverride) => {
@@ -416,8 +428,29 @@ export const createFormStateStore = ({
       },
 
       validateField: async ({ alwaysIncludeErrorsFromFields }) => {
+        const stubbedData: Record<string, string> = {};
+        if (get().submitSource === "dom") {
+          const state = get();
+          const controlledFieldNames = new Set(controlledFieldRefs.names());
+
+          fieldSerializerRefs.all().forEach(([fieldName, serializers]) => {
+            if (serializers.length > 1) {
+              console.error(
+                "RVF: Multiple serializers for a single field are not supported",
+              );
+            }
+            const serializer = serializers[0];
+            stubbedData[fieldName] = serializer(
+              getFieldValue(state, fieldName),
+            );
+            controlledFieldNames.delete(fieldName);
+          });
+        }
+
         const validationResult = await mutableImplStore.validator.validate(
-          get().getFormValuesForValidation(),
+          get().getFormValuesForValidation({
+            overrideData: stubbedData,
+          }),
         );
 
         if (validationResult.data) {
@@ -536,7 +569,7 @@ export const createFormStateStore = ({
           state.submitStatus = "submitting";
         });
 
-        const rawValues = get().getFormValuesForValidation(submitterData);
+        const rawValues = get().getFormValuesForValidation({ submitterData });
         const result = await get().validate(rawValues, true);
 
         if (result.errors && !disableFocusOnError) {
