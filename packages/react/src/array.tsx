@@ -2,11 +2,11 @@ import { ReactNode, useMemo } from "react";
 import {
   FormStoreValue,
   Rvf,
-  getFieldArrayKeys,
   getFieldError,
   getFieldValue,
   scopeRvf,
   getArrayUpdateKey,
+  FieldArrayValidationBehaviorConfig,
 } from "@rvf/core";
 import { makeImplFactory } from "./implFactory";
 import { RvfReact, makeBaseRvfReact } from "./base";
@@ -93,22 +93,18 @@ export interface RvfArray<FormInputData extends Array<any>> {
   replace: (index: number, value: FormInputData[number]) => void;
 }
 
-export type FieldArrayValidationConfig = Pick<
-  ValidationBehaviorConfig,
-  "initial" | "whenSubmitted"
->;
-
 export type FieldArrayParams<FormInputData> = {
   form: Rvf<FormInputData>;
   arrayFieldName: string;
   trackedState: FormStoreValue;
-  validationBehavior?: FieldArrayValidationConfig;
+  validationBehavior?: FieldArrayValidationBehaviorConfig;
 };
 
 export const makeFieldArrayImpl = <FormInputData extends Array<any>>({
   form,
   arrayFieldName,
   trackedState,
+  validationBehavior,
 }: FieldArrayParams<FormInputData>): RvfArray<FormInputData> => {
   const itemImpl = makeImplFactory(arrayFieldName, (itemFieldName) =>
     makeBaseRvfReact({
@@ -143,24 +139,47 @@ export const makeFieldArrayImpl = <FormInputData extends Array<any>>({
           return callback(key, itemRvf, index);
         });
     },
-    push: (value) => trackedState.arrayPush(arrayFieldName, value),
-    pop: () => trackedState.arrayPop(arrayFieldName),
-    shift: () => trackedState.arrayShift(arrayFieldName),
-    unshift: (value) => trackedState.arrayUnshift(arrayFieldName, value),
+    push: (value) =>
+      trackedState.arrayPush(arrayFieldName, value, validationBehavior),
+    pop: () => trackedState.arrayPop(arrayFieldName, validationBehavior),
+    shift: () => trackedState.arrayShift(arrayFieldName, validationBehavior),
+    unshift: (value) =>
+      trackedState.arrayUnshift(arrayFieldName, value, validationBehavior),
     insert: (index, value) =>
-      trackedState.arrayInsert(arrayFieldName, index, value),
+      trackedState.arrayInsert(
+        arrayFieldName,
+        index,
+        value,
+        validationBehavior,
+      ),
     move: (fromIndex, toIndex) =>
-      trackedState.arrayMove(arrayFieldName, fromIndex, toIndex),
-    remove: (index) => trackedState.arrayRemove(arrayFieldName, index),
+      trackedState.arrayMove(
+        arrayFieldName,
+        fromIndex,
+        toIndex,
+        validationBehavior,
+      ),
+    remove: (index) =>
+      trackedState.arrayRemove(arrayFieldName, index, validationBehavior),
     swap: (fromIndex, toIndex) =>
-      trackedState.arraySwap(arrayFieldName, fromIndex, toIndex),
+      trackedState.arraySwap(
+        arrayFieldName,
+        fromIndex,
+        toIndex,
+        validationBehavior,
+      ),
     replace: (index, value) =>
-      trackedState.arrayReplace(arrayFieldName, index, value),
+      trackedState.arrayReplace(
+        arrayFieldName,
+        index,
+        value,
+        validationBehavior,
+      ),
   };
 };
 
 export type UseFieldArrayOpts = {
-  validationBehavior?: FieldArrayValidationConfig;
+  validationBehavior?: FieldArrayValidationBehaviorConfig;
 };
 export function useFieldArray<FormInputData extends any[]>(
   form: Rvf<FormInputData>,

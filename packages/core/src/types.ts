@@ -42,6 +42,20 @@ export type ValidationBehaviorConfig = {
   whenSubmitted: ValidationBehavior;
 };
 
+export type FieldArrayValidationBehavior = "onSubmit" | "onChange";
+
+export type FieldArrayValidationBehaviorConfig = {
+  /**
+   * When the form first mounts, when should the validation be triggered?
+   */
+  initial: FieldArrayValidationBehavior;
+
+  /**
+   * Once the form has been submitted unnsuccessfully, when should the validation be triggered?
+   */
+  whenSubmitted: FieldArrayValidationBehavior;
+};
+
 /**
  * An RVF `Validator`. Can be used by `useRvf` or by calling it directly.
  */

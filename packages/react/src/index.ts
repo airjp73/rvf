@@ -6,6 +6,8 @@ export type {
   ValidationResult,
   ValidationBehavior,
   ValidationBehaviorConfig,
+  FieldArrayValidationBehavior,
+  FieldArrayValidationBehaviorConfig,
   ValidatorData,
   ValidationErrorResponseData,
   ValidatorError,

@@ -6,13 +6,14 @@ import {
 } from "set-get";
 import { create } from "zustand/react";
 import { immer } from "./immer";
-import * as R from "remeda";
 import {
   setFormControlValue,
   focusOrReportFirst,
   getElementsWithNames,
 } from "./dom";
 import {
+  FieldArrayValidationBehavior,
+  FieldArrayValidationBehaviorConfig,
   FieldErrors,
   FieldValues,
   SubmitStatus,
@@ -23,6 +24,7 @@ import {
 import { GenericObject } from "./native-form-data/flatten";
 import { MultiValueMap } from "./native-form-data/MultiValueMap";
 import { insert, move, remove, replace, toSwapped } from "./arrayUtil";
+import { original } from "immer";
 
 export const createRefStore = () => {
   const elementRefs = new MultiValueMap<string, HTMLElement>();
@@ -102,15 +104,32 @@ type StoreActions = {
   setAllDirty: (data: Record<string, boolean>) => void;
   setAllErrors: (data: Record<string, string>) => void;
 
+  getFormValuesForValidation: (
+    submitterData?: Record<string, string>,
+  ) => GenericObject | FormData;
   shouldValidate: (
     eventType: ValidationBehavior,
     fieldName: string,
     validationBehaviorConfig?: ValidationBehaviorConfig,
   ) => boolean;
+  shouldValidateArray: (
+    eventType: FieldArrayValidationBehavior,
+    validationBehaviorConfig?: FieldArrayValidationBehaviorConfig,
+  ) => boolean;
+  maybeValidateArrayOperation: (
+    fieldName: string,
+    validationBehaviorConfig?: FieldArrayValidationBehaviorConfig,
+  ) => void;
   validate: (
     nextValues?: FieldValues,
     shouldMarkSubmitted?: boolean,
   ) => Promise<
+    | { data: GenericObject; errors: undefined }
+    | { errors: Record<string, string>; data: undefined }
+  >;
+  validateField: (opts: {
+    alwaysIncludeErrorsFromFields: string[];
+  }) => Promise<
     | { data: GenericObject; errors: undefined }
     | { errors: Record<string, string>; data: undefined }
   >;
@@ -128,15 +147,53 @@ type StoreActions = {
   resetField: (fieldName: string, nextValue?: unknown) => void;
 
   getFieldArrayKeys: (fieldName: string) => Array<string>;
-  arrayPush: (fieldName: string, value: unknown) => void;
-  arrayPop: (fieldName: string) => void;
-  arrayShift: (fieldName: string) => void;
-  arrayUnshift: (fieldName: string, value: unknown) => void;
-  arrayInsert: (fieldName: string, index: number, value: unknown) => void;
-  arrayMove: (fieldName: string, fromIndex: number, toIndex: number) => void;
-  arrayRemove: (fieldName: string, index: number) => void;
-  arraySwap: (fieldName: string, fromIndex: number, toIndex: number) => void;
-  arrayReplace: (fieldName: string, index: number, value: unknown) => void;
+  arrayPush: (
+    fieldName: string,
+    value: unknown,
+    validationBehavior?: FieldArrayValidationBehaviorConfig,
+  ) => void;
+  arrayPop: (
+    fieldName: string,
+    validationBehavior?: FieldArrayValidationBehaviorConfig,
+  ) => void;
+  arrayShift: (
+    fieldName: string,
+    validationBehavior?: FieldArrayValidationBehaviorConfig,
+  ) => void;
+  arrayUnshift: (
+    fieldName: string,
+    value: unknown,
+    validationBehavior?: FieldArrayValidationBehaviorConfig,
+  ) => void;
+  arrayInsert: (
+    fieldName: string,
+    index: number,
+    value: unknown,
+    validationBehavior?: FieldArrayValidationBehaviorConfig,
+  ) => void;
+  arrayMove: (
+    fieldName: string,
+    fromIndex: number,
+    toIndex: number,
+    validationBehavior?: FieldArrayValidationBehaviorConfig,
+  ) => void;
+  arrayRemove: (
+    fieldName: string,
+    index: number,
+    validationBehavior?: FieldArrayValidationBehaviorConfig,
+  ) => void;
+  arraySwap: (
+    fieldName: string,
+    fromIndex: number,
+    toIndex: number,
+    validationBehavior?: FieldArrayValidationBehaviorConfig,
+  ) => void;
+  arrayReplace: (
+    fieldName: string,
+    index: number,
+    value: unknown,
+    validationBehavior?: FieldArrayValidationBehaviorConfig,
+  ) => void;
 };
 
 export type FormStoreValue = StoreState & StoreEvents & StoreActions;
@@ -229,6 +286,19 @@ export const moveFieldArrayKeys = (
   });
 };
 
+export const toArrayBehavior = (
+  config?: ValidationBehaviorConfig,
+): FieldArrayValidationBehaviorConfig => {
+  return {
+    initial:
+      config?.initial === "onBlur" ? "onSubmit" : config?.initial ?? "onSubmit",
+    whenSubmitted:
+      config?.whenSubmitted === "onBlur"
+        ? "onSubmit"
+        : config?.whenSubmitted ?? "onChange",
+  };
+};
+
 export const createFormStateStore = ({
   defaultValues,
   controlledFieldRefs,
@@ -260,6 +330,23 @@ export const createFormStateStore = ({
       flags,
 
       /////// Validation
+      getFormValuesForValidation: (submitterData) => {
+        if (get().submitSource === "state") return get().values;
+
+        const form = formRef.current;
+        if (!form)
+          throw new Error(
+            "`submitSource` is set to `dom`, but no form is registered with RVF.",
+          );
+
+        const formData = new FormData(form);
+        if (submitterData) {
+          Object.entries(submitterData).forEach(([key, value]) => {
+            formData.append(key, value);
+          });
+        }
+        return formData;
+      },
       shouldValidate: (eventType, fieldName, behaviorOverride) => {
         if (eventType === "onSubmit") return true;
 
@@ -280,9 +367,31 @@ export const createFormStateStore = ({
         return currentValidationBehavior === "onChange";
       },
 
+      shouldValidateArray: (eventType, behaviorOverride) => {
+        if (eventType === "onSubmit") return true;
+
+        const config =
+          behaviorOverride ?? toArrayBehavior(get().validationBehaviorConfig);
+
+        const currentValidationBehavior =
+          get().submitStatus !== "idle" ? config.whenSubmitted : config.initial;
+
+        return currentValidationBehavior === "onChange";
+      },
+
+      maybeValidateArrayOperation: (fieldName, behaviorOverride) => {
+        if (get().shouldValidateArray("onChange", behaviorOverride)) {
+          get().validateField({
+            alwaysIncludeErrorsFromFields: [fieldName],
+          });
+        } else {
+          get().setError(fieldName, null);
+        }
+      },
+
       validate: async (nextValues, shouldMarkSubmitted = false) => {
         const result = await mutableImplStore.validator.validate(
-          nextValues ?? get().values,
+          nextValues ?? get().getFormValuesForValidation(),
         );
 
         if (result.data) {
@@ -302,6 +411,93 @@ export const createFormStateStore = ({
         return { errors, data: undefined };
       },
 
+      validateField: async ({ alwaysIncludeErrorsFromFields }) => {
+        const validationResult = await mutableImplStore.validator.validate(
+          get().getFormValuesForValidation(),
+        );
+
+        if (validationResult.data) {
+          // Only update the field errors if it hasn't changed
+          if (Object.keys(get().validationErrors).length > 0) {
+            set((state) => {
+              state.validationErrors = {};
+            });
+          }
+          return { data: validationResult.data, errors: undefined };
+        }
+
+        const fieldErrors = validationResult.error?.fieldErrors ?? {};
+        const errorFields = new Set<string>();
+        const incomingErrors = new Set<string>();
+        const prevErrors = new Set<string>();
+
+        Object.keys(fieldErrors).forEach((field) => {
+          errorFields.add(field);
+          incomingErrors.add(field);
+        });
+
+        Object.keys(get().validationErrors).forEach((field) => {
+          errorFields.add(field);
+          prevErrors.add(field);
+        });
+
+        const fieldsToUpdate = new Set<string>();
+        const fieldsToDelete = new Set<string>();
+
+        errorFields.forEach((field) => {
+          // If an error has been cleared, remove it.
+          if (!incomingErrors.has(field)) {
+            fieldsToDelete.add(field);
+            return;
+          }
+
+          // If an error has changed, we should update it.
+          if (prevErrors.has(field) && incomingErrors.has(field)) {
+            // Only update if the error has changed to avoid unnecessary rerenders
+            if (fieldErrors[field] !== get().validationErrors[field])
+              fieldsToUpdate.add(field);
+            return;
+          }
+
+          // If the error is always included, then we should update it.
+          if (alwaysIncludeErrorsFromFields.includes(field)) {
+            fieldsToUpdate.add(field);
+            return;
+          }
+
+          // If the error is new, then only update if the field has
+          // or if the form has been submitted
+          if (!prevErrors.has(field)) {
+            get().shouldValidate;
+            const fieldTouched = get().touchedFields[field];
+            const formHasBeenSubmitted = get().submitStatus !== "idle";
+            if (fieldTouched || formHasBeenSubmitted) fieldsToUpdate.add(field);
+            return;
+          }
+        });
+        if (fieldsToDelete.size === 0 && fieldsToUpdate.size === 0) {
+          return {
+            ...validationResult,
+            error: { fieldErrors: get().validationErrors },
+          };
+        }
+
+        set((state) => {
+          fieldsToDelete.forEach((field) => {
+            delete state.validationErrors[field];
+          });
+
+          fieldsToUpdate.forEach((field) => {
+            state.validationErrors[field] = fieldErrors[field];
+          });
+        });
+
+        return {
+          ...validationResult,
+          error: { fieldErrors: get().validationErrors },
+        };
+      },
+
       /////// Events
       onFieldChange: (fieldName, value, validationBehaviorConfig) => {
         set((state) => {
@@ -312,7 +508,7 @@ export const createFormStateStore = ({
         if (
           get().shouldValidate("onChange", fieldName, validationBehaviorConfig)
         ) {
-          get().validate();
+          get().validateField({ alwaysIncludeErrorsFromFields: [fieldName] });
         } else {
           get().setError(fieldName, null);
         }
@@ -326,7 +522,7 @@ export const createFormStateStore = ({
         if (
           get().shouldValidate("onBlur", fieldName, validationBehaviorConfig)
         ) {
-          get().validate();
+          get().validateField({ alwaysIncludeErrorsFromFields: [fieldName] });
         }
       },
 
@@ -336,25 +532,7 @@ export const createFormStateStore = ({
           state.submitStatus = "submitting";
         });
 
-        const getValues = (): GenericObject | FormData => {
-          if (get().submitSource === "state") return get().values;
-
-          const form = formRef.current;
-          if (!form)
-            throw new Error(
-              "`submitSource` is set to `dom`, but no form is registered with RVF.",
-            );
-
-          const formData = new FormData(form);
-          if (submitterData) {
-            Object.entries(submitterData).forEach(([key, value]) => {
-              formData.append(key, value);
-            });
-          }
-          return formData;
-        };
-
-        const rawValues = getValues();
+        const rawValues = get().getFormValuesForValidation(submitterData);
         const result = await get().validate(rawValues, true);
 
         if (result.errors && !disableFocusOnError) {
@@ -544,7 +722,7 @@ export const createFormStateStore = ({
         return newKeys;
       },
 
-      arrayPush: (fieldName, value) => {
+      arrayPush: (fieldName, value, validationBehaviorConfig) => {
         set((state) => {
           setPathIfUndefined(state.values, fieldName, []);
           const val = getPath(state.values, fieldName);
@@ -556,8 +734,10 @@ export const createFormStateStore = ({
           state.arrayUpdateKeys[fieldName] = genKey();
           // no change to touched, dirty, or validationErrors
         });
+
+        get().maybeValidateArrayOperation(fieldName, validationBehaviorConfig);
       },
-      arrayPop: (fieldName) => {
+      arrayPop: (fieldName, validationBehaviorConfig) => {
         set((state) => {
           setPathIfUndefined(state.values, fieldName, []);
           const val = getPath(state.values, fieldName);
@@ -578,8 +758,9 @@ export const createFormStateStore = ({
             `${fieldName}[${numItems - 1}]`,
           );
         });
+        get().maybeValidateArrayOperation(fieldName, validationBehaviorConfig);
       },
-      arrayShift: (fieldName) => {
+      arrayShift: (fieldName, validationBehaviorConfig) => {
         set((state) => {
           setPathIfUndefined(state.values, fieldName, []);
           const val = getPath(state.values, fieldName);
@@ -610,8 +791,9 @@ export const createFormStateStore = ({
             (index) => index - 1,
           );
         });
+        get().maybeValidateArrayOperation(fieldName, validationBehaviorConfig);
       },
-      arrayUnshift: (fieldName, value) => {
+      arrayUnshift: (fieldName, value, validationBehaviorConfig) => {
         set((state) => {
           setPathIfUndefined(state.values, fieldName, []);
           const val = getPath(state.values, fieldName);
@@ -633,8 +815,14 @@ export const createFormStateStore = ({
             (index) => index + 1,
           );
         });
+        get().maybeValidateArrayOperation(fieldName, validationBehaviorConfig);
       },
-      arrayInsert: (fieldName, insertAtIndex, value) => {
+      arrayInsert: (
+        fieldName,
+        insertAtIndex,
+        value,
+        validationBehaviorConfig,
+      ) => {
         set((state) => {
           setPathIfUndefined(state.values, fieldName, []);
           const val = getPath(state.values, fieldName);
@@ -657,8 +845,9 @@ export const createFormStateStore = ({
             (index) => (index >= insertAtIndex ? index + 1 : index),
           );
         });
+        get().maybeValidateArrayOperation(fieldName, validationBehaviorConfig);
       },
-      arrayMove: (fieldName, fromIndex, toIndex) => {
+      arrayMove: (fieldName, fromIndex, toIndex, validationBehaviorConfig) => {
         set((state) => {
           setPathIfUndefined(state.values, fieldName, []);
           const val = getPath(state.values, fieldName);
@@ -687,8 +876,9 @@ export const createFormStateStore = ({
             },
           );
         });
+        get().maybeValidateArrayOperation(fieldName, validationBehaviorConfig);
       },
-      arrayRemove: (fieldName, removeIndex) => {
+      arrayRemove: (fieldName, removeIndex, validationBehaviorConfig) => {
         set((state) => {
           setPathIfUndefined(state.values, fieldName, []);
           const val = getPath(state.values, fieldName);
@@ -720,8 +910,9 @@ export const createFormStateStore = ({
             (index) => (index > removeIndex ? index - 1 : index),
           );
         });
+        get().maybeValidateArrayOperation(fieldName, validationBehaviorConfig);
       },
-      arraySwap: (fieldName, fromIndex, toIndex) => {
+      arraySwap: (fieldName, fromIndex, toIndex, validationBehaviorConfig) => {
         set((state) => {
           setPathIfUndefined(state.values, fieldName, []);
           const val = getPath(state.values, fieldName);
@@ -756,8 +947,9 @@ export const createFormStateStore = ({
             },
           );
         });
+        get().maybeValidateArrayOperation(fieldName, validationBehaviorConfig);
       },
-      arrayReplace: (fieldName, index, value) => {
+      arrayReplace: (fieldName, index, value, validationBehaviorConfig) => {
         set((state) => {
           setPathIfUndefined(state.values, fieldName, []);
           const val = getPath(state.values, fieldName);
@@ -780,6 +972,7 @@ export const createFormStateStore = ({
             `${fieldName}[${index}]`,
           );
         });
+        get().maybeValidateArrayOperation(fieldName, validationBehaviorConfig);
       },
     })),
   );

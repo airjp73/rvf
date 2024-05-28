@@ -47,7 +47,7 @@ describe("controlled items", () => {
       });
 
       return (
-        <div>
+        <form {...form.getFormProps()}>
           {form.array("foo").map((key, item, index) => {
             return (
               <input
@@ -57,7 +57,7 @@ describe("controlled items", () => {
               />
             );
           })}
-        </div>
+        </form>
       );
     };
 
@@ -80,7 +80,7 @@ describe("controlled items", () => {
       });
 
       return (
-        <div>
+        <form {...form.getFormProps()}>
           {form.array("foo").map((key, item, index) => (
             <Fragment key={key}>
               <input
@@ -91,7 +91,7 @@ describe("controlled items", () => {
             </Fragment>
           ))}
           <RenderCounter data-testid="root-render-count" />
-        </div>
+        </form>
       );
     };
 
@@ -135,7 +135,7 @@ describe("uncontrolled items", () => {
       });
 
       return (
-        <div>
+        <form {...form.getFormProps()}>
           {form.array("foo").map((key, item, index) => (
             <input
               key={key}
@@ -143,7 +143,7 @@ describe("uncontrolled items", () => {
               {...item.field("name").getInputProps()}
             />
           ))}
-        </div>
+        </form>
       );
     };
 
@@ -166,7 +166,7 @@ describe("uncontrolled items", () => {
       });
 
       return (
-        <div>
+        <form {...form.getFormProps()}>
           <FieldArray scope={form.scope("foo")}>
             {(array) =>
               array.map((key, item, index) => (
@@ -178,7 +178,7 @@ describe("uncontrolled items", () => {
               ))
             }
           </FieldArray>
-        </div>
+        </form>
       );
     };
 
@@ -201,7 +201,7 @@ describe("uncontrolled items", () => {
       });
 
       return (
-        <div>
+        <form {...form.getFormProps()}>
           {form.array("foo").map((key, item, index) => {
             return (
               <input
@@ -220,7 +220,7 @@ describe("uncontrolled items", () => {
               arr.push({ name: "quux" });
             }}
           />
-        </div>
+        </form>
       );
     };
 
@@ -298,7 +298,7 @@ it("should work with a pre-scoped form", async () => {
     const array = useRvf(form.scope("foo"));
 
     return (
-      <div>
+      <form {...form.getFormProps()}>
         {array.array().map((key, item, index) => {
           return (
             <input
@@ -308,7 +308,7 @@ it("should work with a pre-scoped form", async () => {
             />
           );
         })}
-      </div>
+      </form>
     );
   };
 
@@ -349,7 +349,7 @@ it("should be able to push to an array", async () => {
     });
 
     return (
-      <div>
+      <form {...form.getFormProps()}>
         {form.array("foo").map((key, item, index) => {
           return (
             <input
@@ -364,7 +364,7 @@ it("should be able to push to an array", async () => {
           data-testid="push"
           onClick={() => form.array("foo").push({ name: "quux" })}
         />
-      </div>
+      </form>
     );
   };
 
@@ -388,7 +388,7 @@ it("should be able to pop from an array", async () => {
     });
 
     return (
-      <div>
+      <form {...form.getFormProps()}>
         {form.array("foo").map((key, item, index) => {
           return (
             <input
@@ -403,7 +403,7 @@ it("should be able to pop from an array", async () => {
           data-testid="pop"
           onClick={() => form.array("foo").pop()}
         />
-      </div>
+      </form>
     );
   };
 
@@ -427,7 +427,7 @@ it("should be able to shift from an array", async () => {
     });
 
     return (
-      <div>
+      <form {...form.getFormProps()}>
         {form.array("foo").map((key, item, index) => {
           return (
             <div key={key}>
@@ -446,7 +446,7 @@ it("should be able to shift from an array", async () => {
           data-testid="shift"
           onClick={() => form.array("foo").shift()}
         />
-      </div>
+      </form>
     );
   };
 
@@ -479,7 +479,7 @@ it("should be able to unshift to an array", async () => {
     });
 
     return (
-      <div>
+      <form {...form.getFormProps()}>
         {form.array("foo").map((key, item, index) => {
           return (
             <div key={key}>
@@ -498,7 +498,7 @@ it("should be able to unshift to an array", async () => {
           data-testid="unshift"
           onClick={() => form.array("foo").unshift({ name: "quux" })}
         />
-      </div>
+      </form>
     );
   };
 
@@ -533,7 +533,7 @@ it("should be able to insert into an array", async () => {
     });
 
     return (
-      <div>
+      <form {...form.getFormProps()}>
         {form.array("foo").map((key, item, index) => {
           return (
             <div key={key}>
@@ -553,7 +553,7 @@ it("should be able to insert into an array", async () => {
           data-testid="insert"
           onClick={() => form.array("foo").insert(1, { name: "quux" })}
         />
-      </div>
+      </form>
     );
   };
 
@@ -586,7 +586,7 @@ it("should be able to move within an array", async () => {
     });
 
     return (
-      <div>
+      <form {...form.getFormProps()}>
         {form.array("foo").map((key, item, index) => {
           return (
             <div key={key}>
@@ -606,7 +606,7 @@ it("should be able to move within an array", async () => {
           data-testid="move"
           onClick={() => form.array("foo").move(0, 1)}
         />
-      </div>
+      </form>
     );
   };
 
@@ -648,7 +648,7 @@ it("should be able to swap within an array", async () => {
     });
 
     return (
-      <div>
+      <form {...form.getFormProps()}>
         {form.array("foo").map((key, item, index) => {
           return (
             <div key={key}>
@@ -668,7 +668,7 @@ it("should be able to swap within an array", async () => {
           data-testid="swap"
           onClick={() => form.array("foo").swap(0, 2)}
         />
-      </div>
+      </form>
     );
   };
 
@@ -703,7 +703,7 @@ it("should be able to remove from an array", async () => {
     });
 
     return (
-      <div>
+      <form {...form.getFormProps()}>
         {form.array("foo").map((key, item, index) => {
           return (
             <div key={key}>
@@ -723,7 +723,7 @@ it("should be able to remove from an array", async () => {
           data-testid="remove"
           onClick={() => form.array("foo").remove(1)}
         />
-      </div>
+      </form>
     );
   };
 
@@ -756,7 +756,7 @@ it("should be able to replace", async () => {
     });
 
     return (
-      <div>
+      <form {...form.getFormProps()}>
         {form.array("foo").map((key, item, index) => {
           return (
             <div key={key}>
@@ -776,7 +776,7 @@ it("should be able to replace", async () => {
           data-testid="replace"
           onClick={() => form.array("foo").replace(1, { name: "jimbo" })}
         />
-      </div>
+      </form>
     );
   };
 
@@ -973,7 +973,77 @@ it("should handle nested field arrays", async () => {
   expect(screen.getByTestId("foo-2-note-1-text")).toHaveValue("foo-1-note-1");
 });
 
-it.todo("should validate on submit, then on change after that by default");
+it("should validate on submit, then on change after that by default", async () => {
+  const Comp = () => {
+    const form = useRvf({
+      submitSource: "state",
+      defaultValues: {
+        foo: [] as string[],
+      },
+      validator: createValidator({
+        validate: (d) => {
+          const data: { foo: string[] } = d as any;
+          const errors: FieldErrors = {};
+          if (data.foo.length < 3) errors.foo = "too short";
+          data.foo.forEach((val, index) => {
+            if (val) errors[`foo[${index}]`] = "too short";
+          });
+          if (Object.keys(errors).length > 0)
+            return Promise.resolve({ error: errors, data: undefined });
+          return Promise.resolve({ data, error: undefined });
+        },
+      }),
+      handleSubmit: vi.fn(),
+    });
+
+    return (
+      <form {...form.getFormProps()}>
+        <div data-testid="array-error">{form.error("foo")}</div>
+        {form.array("foo").map((key, item, index) => {
+          return (
+            <div key={key}>
+              <input
+                data-testid={`foo-${index}`}
+                {...controlInput(item.field())}
+              />
+              <div data-testid={`foo-${index}-error`}>{item.error()}</div>
+              <button
+                data-testid={`foo-${index}-remove`}
+                type="button"
+                onClick={() => form.array("foo").remove(index)}
+              >
+                Remove
+              </button>
+            </div>
+          );
+        })}
+        <button
+          type="button"
+          data-testid="add"
+          onClick={() => form.array("foo").push("jo")}
+        />
+        <button type="submit" data-testid="submit" />
+      </form>
+    );
+  };
+
+  render(<Comp />);
+  await userEvent.click(screen.getByTestId("add"));
+  await userEvent.click(screen.getByTestId("add"));
+
+  expect(screen.queryAllByText("too short")).toHaveLength(0);
+  await userEvent.click(screen.getByTestId("submit"));
+  expect(screen.getAllByText("too short")).toHaveLength(3);
+
+  await userEvent.click(screen.getByTestId("add"));
+  expect(screen.getByTestId("array-error")).toBeEmptyDOMElement();
+  expect(screen.getAllByText("too short")).toHaveLength(3);
+
+  await userEvent.click(screen.getByTestId("foo-0-remove"));
+  expect(screen.getAllByText("too short")).toHaveLength(3);
+  expect(screen.getByTestId("array-error")).toHaveTextContent("too short");
+});
+
 it.todo("should support custom validation behavior");
 
 it("should retain state when doing operations", async () => {
@@ -1004,7 +1074,7 @@ it("should retain state when doing operations", async () => {
     });
 
     return (
-      <div>
+      <form {...form.getFormProps()}>
         {form.array("foo").map((key, _, index) => {
           return (
             <div key={key}>
@@ -1018,7 +1088,7 @@ it("should retain state when doing operations", async () => {
           data-testid="swap"
           onClick={() => form.array("foo").swap(0, 1)}
         />
-      </div>
+      </form>
     );
   };
 
@@ -1033,11 +1103,7 @@ it("should retain state when doing operations", async () => {
   expect(screen.getByTestId("foo-0-count")).toHaveTextContent("2");
   expect(screen.getByTestId("foo-1-count")).toHaveTextContent("1");
 
-  screen.debug();
   await userEvent.click(screen.getByTestId("swap"));
-
-  await new Promise((resolve) => setTimeout(resolve, 100));
-  screen.debug();
 
   expect(screen.getByTestId("foo-0-count")).toHaveTextContent("1");
   expect(screen.getByTestId("foo-1-count")).toHaveTextContent("2");

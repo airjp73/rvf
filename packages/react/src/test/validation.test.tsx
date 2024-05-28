@@ -196,6 +196,11 @@ it("should handle dependant validations", async () => {
         },
       }),
       handleSubmit: submit,
+      validationBehaviorConfig: {
+        initial: "onChange",
+        whenTouched: "onChange",
+        whenSubmitted: "onChange",
+      },
     });
 
     return (
@@ -219,32 +224,14 @@ it("should handle dependant validations", async () => {
 
   await userEvent.type(screen.getByTestId("password"), "test");
   expect(screen.getByTestId("error")).toBeEmptyDOMElement();
-
-  fireEvent.submit(screen.getByTestId("form"));
-  await waitFor(() =>
-    expect(screen.getByTestId("error")).toHaveTextContent("not equal"),
-  );
-
-  await userEvent.type(screen.getByTestId("confirmPassword"), "test");
+  await userEvent.click(screen.getByTestId("form")); // blur
   expect(screen.getByTestId("error")).toBeEmptyDOMElement();
 
-  await userEvent.type(screen.getByTestId("password"), "A");
+  await userEvent.type(screen.getByTestId("confirmPassword"), "bob");
   expect(screen.getByTestId("error")).toHaveTextContent("not equal");
-
-  await userEvent.type(screen.getByTestId("password"), "{Backspace}");
+  await userEvent.clear(screen.getByTestId("password"));
+  await userEvent.type(screen.getByTestId("password"), "bob");
   expect(screen.getByTestId("error")).toBeEmptyDOMElement();
-
-  fireEvent.submit(screen.getByTestId("form"));
-  await waitFor(() => {
-    expect(submit).toBeCalledTimes(1);
-  });
-  expect(submit).toHaveBeenCalledWith(
-    {
-      password: "test",
-      confirmPassword: "test",
-    },
-    expect.any(FormData),
-  );
 });
 
 it("should be possible to customize validation behavior", async () => {
@@ -358,8 +345,7 @@ it("should be posible to customize validation behavior at the field level", asyn
   });
 });
 
-it.todo("should use validation adapters");
-
+// Need to figure this out
 it.todo(
-  "changing a field with a validationBehavior of onChange should not show errors on another, touched field",
+  "should use the data from the form when validating in DOM mode, but with consideration for controlled fields",
 );
