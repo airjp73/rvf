@@ -358,7 +358,7 @@ export const createFormStateStore = ({
         const formData = new FormData(form);
         if (injectedData) {
           Object.entries(injectedData).forEach(([key, value]) => {
-            formData.append(key, value);
+            formData.set(key, value);
           });
         }
 
@@ -441,24 +441,25 @@ export const createFormStateStore = ({
 
         if (get().submitSource === "dom") {
           const state = get();
+          const controlledFieldNames = new Set(controlledFieldRefs.names());
 
-          if (controlledFieldRefs.has(fieldName)) {
-            if (fieldSerializerRefs.has(fieldName)) {
-              const serializers = fieldSerializerRefs.getRefs(fieldName);
-              if (serializers.length > 1) {
-                console.error(
-                  "RVF: Multiple serializers for a single field are not supported",
-                );
-              }
-
-              const serializer = serializers[0];
-              serializedData[fieldName] = serializer(
-                getFieldValue(state, fieldName),
+          fieldSerializerRefs.all().forEach(([fieldName, serializers]) => {
+            if (serializers.length > 1) {
+              console.error(
+                "RVF: Multiple serializers for a single field are not supported",
               );
-            } else {
-              overrideData[fieldName] = getFieldValue(state, fieldName);
             }
-          }
+
+            const serializer = serializers[0];
+            serializedData[fieldName] = serializer(
+              getFieldValue(state, fieldName),
+            );
+            controlledFieldNames.delete(fieldName);
+          });
+
+          controlledFieldNames.forEach((fieldName) => {
+            overrideData[fieldName] = getFieldValue(state, fieldName);
+          });
         }
 
         const [values] = get().getFormValuesForValidation({
