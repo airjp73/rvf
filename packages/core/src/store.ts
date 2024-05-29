@@ -22,7 +22,7 @@ import {
   ValidationBehaviorConfig,
   Validator,
 } from "./types";
-import { GenericObject } from "./native-form-data/flatten";
+import { GenericObject, preprocessFormData } from "./native-form-data/flatten";
 import { MultiValueMap } from "./native-form-data/MultiValueMap";
 import { insert, move, remove, replace, toSwapped } from "./arrayUtil";
 import { getFieldValue } from "./getters";
@@ -111,9 +111,16 @@ type StoreActions = {
   setAllErrors: (data: Record<string, string>) => void;
 
   getFormValuesForValidation: (opts?: {
-    submitterData?: Record<string, string>;
-    overrideData?: Record<string, string>;
-  }) => GenericObject | FormData;
+    /**
+     * String data that should be injected into the `FormData` object in DOM mode.
+     */
+    injectedData?: Record<string, string>;
+
+    /**
+     * Object data that should override the result from preprocessing the form data in DOM mode.
+     */
+    overrideData?: Record<string, unknown>;
+  }) => [GenericObject, FormData] | [GenericObject];
   shouldValidate: (
     eventType: ValidationBehavior,
     fieldName: string,
@@ -134,9 +141,9 @@ type StoreActions = {
     | { data: GenericObject; errors: undefined }
     | { errors: Record<string, string>; data: undefined }
   >;
-  validateField: (opts: {
-    alwaysIncludeErrorsFromFields: string[];
-  }) => Promise<
+  validateField: (
+    fieldName: string,
+  ) => Promise<
     | { data: GenericObject; errors: undefined }
     | { errors: Record<string, string>; data: undefined }
   >;
@@ -339,8 +346,8 @@ export const createFormStateStore = ({
       flags,
 
       /////// Validation
-      getFormValuesForValidation: ({ submitterData, overrideData } = {}) => {
-        if (get().submitSource === "state") return get().values;
+      getFormValuesForValidation: ({ injectedData, overrideData } = {}) => {
+        if (get().submitSource === "state") return [get().values];
 
         const form = formRef.current;
         if (!form)
@@ -349,19 +356,22 @@ export const createFormStateStore = ({
           );
 
         const formData = new FormData(form);
-        if (submitterData) {
-          Object.entries(submitterData).forEach(([key, value]) => {
+        if (injectedData) {
+          Object.entries(injectedData).forEach(([key, value]) => {
             formData.append(key, value);
           });
         }
 
+        const preprocessed = preprocessFormData(formData);
+
+        // For
         if (overrideData) {
           Object.entries(overrideData).forEach(([key, value]) => {
-            formData.set(key, value);
+            setPath(preprocessed, key, value);
           });
         }
 
-        return formData;
+        return [preprocessed, formData] as const;
       },
       shouldValidate: (eventType, fieldName, behaviorOverride) => {
         if (eventType === "onSubmit") return true;
@@ -397,9 +407,7 @@ export const createFormStateStore = ({
 
       maybeValidateArrayOperation: (fieldName, behaviorOverride) => {
         if (get().shouldValidateArray("onChange", behaviorOverride)) {
-          get().validateField({
-            alwaysIncludeErrorsFromFields: [fieldName],
-          });
+          get().validateField(fieldName);
         } else {
           get().setError(fieldName, null);
         }
@@ -407,7 +415,7 @@ export const createFormStateStore = ({
 
       validate: async (nextValues, shouldMarkSubmitted = false) => {
         const result = await mutableImplStore.validator.validate(
-          nextValues ?? get().getFormValuesForValidation(),
+          nextValues ?? get().getFormValuesForValidation()[0],
         );
 
         if (result.data) {
@@ -427,36 +435,38 @@ export const createFormStateStore = ({
         return { errors, data: undefined };
       },
 
-      validateField: async ({ alwaysIncludeErrorsFromFields }) => {
-        const stubbedData: Record<string, string> = {};
+      validateField: async (fieldName) => {
+        const serializedData: Record<string, string> = {};
+        const overrideData: Record<string, unknown> = {};
+
         if (get().submitSource === "dom") {
           const state = get();
-          const controlledFieldNames = new Set(controlledFieldRefs.names());
 
-          fieldSerializerRefs.all().forEach(([fieldName, serializers]) => {
-            if (serializers.length > 1) {
-              console.error(
-                "RVF: Multiple serializers for a single field are not supported",
+          if (controlledFieldRefs.has(fieldName)) {
+            if (fieldSerializerRefs.has(fieldName)) {
+              const serializers = fieldSerializerRefs.getRefs(fieldName);
+              if (serializers.length > 1) {
+                console.error(
+                  "RVF: Multiple serializers for a single field are not supported",
+                );
+              }
+
+              const serializer = serializers[0];
+              serializedData[fieldName] = serializer(
+                getFieldValue(state, fieldName),
               );
+            } else {
+              overrideData[fieldName] = getFieldValue(state, fieldName);
             }
-
-            const serializer = serializers[0];
-            stubbedData[fieldName] = serializer(
-              getFieldValue(state, fieldName),
-            );
-            controlledFieldNames.delete(fieldName);
-          });
-
-          controlledFieldNames.forEach((fieldName) => {
-            stubbedData[fieldName] = String(getFieldValue(state, fieldName));
-          });
+          }
         }
 
-        const validationResult = await mutableImplStore.validator.validate(
-          get().getFormValuesForValidation({
-            overrideData: stubbedData,
-          }),
-        );
+        const [values] = get().getFormValuesForValidation({
+          injectedData: serializedData,
+          overrideData,
+        });
+        const validationResult =
+          await mutableImplStore.validator.validate(values);
 
         if (validationResult.data) {
           // Only update the field errors if it hasn't changed
@@ -502,7 +512,7 @@ export const createFormStateStore = ({
           }
 
           // If the error is always included, then we should update it.
-          if (alwaysIncludeErrorsFromFields.includes(field)) {
+          if (fieldName === field) {
             fieldsToUpdate.add(field);
             return;
           }
@@ -550,7 +560,7 @@ export const createFormStateStore = ({
         if (
           get().shouldValidate("onChange", fieldName, validationBehaviorConfig)
         ) {
-          get().validateField({ alwaysIncludeErrorsFromFields: [fieldName] });
+          get().validateField(fieldName);
         } else {
           get().setError(fieldName, null);
         }
@@ -564,7 +574,7 @@ export const createFormStateStore = ({
         if (
           get().shouldValidate("onBlur", fieldName, validationBehaviorConfig)
         ) {
-          get().validateField({ alwaysIncludeErrorsFromFields: [fieldName] });
+          get().validateField(fieldName);
         }
       },
 
@@ -574,7 +584,9 @@ export const createFormStateStore = ({
           state.submitStatus = "submitting";
         });
 
-        const rawValues = get().getFormValuesForValidation({ submitterData });
+        const [rawValues, formData] = get().getFormValuesForValidation({
+          injectedData: submitterData,
+        });
         const result = await get().validate(rawValues, true);
 
         if (result.errors && !disableFocusOnError) {
@@ -605,11 +617,14 @@ export const createFormStateStore = ({
         try {
           if (get().submitSource === "state") {
             await (mutableImplStore.onSubmit as StateSubmitter)(result.data);
-          } else
+          } else {
+            if (!formData)
+              throw new Error("Missing form data. This is likely a bug in RVF");
             await (mutableImplStore.onSubmit as DomSubmitter)(
               result.data,
-              rawValues as FormData, // should be FormData in this case
+              formData,
             );
+          }
           set((state) => {
             state.submitStatus = "success";
           });

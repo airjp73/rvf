@@ -13,6 +13,8 @@
 
 - Add a new bug repro template
 
+- Maybe add a `validatePlainObject` method to `createValidator` to be more efficient
+
 # Breaking change notes
 
 - Unmounting controlled fields no longer clears the value.

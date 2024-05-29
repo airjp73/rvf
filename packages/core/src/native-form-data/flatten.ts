@@ -20,5 +20,10 @@ export const preprocessFormData = (
   // since node doesn't really have FormData
   if ("entries" in data && typeof data.entries === "function")
     return objectFromPathEntries([...data.entries()]);
-  return objectFromPathEntries(Object.entries(data));
+
+  // Only need to unflatten if it has object/array syntax
+  if (Object.keys(data).some((key) => /[\[\]\.]/.test(key)))
+    return objectFromPathEntries(Object.entries(data));
+
+  return data;
 };

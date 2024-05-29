@@ -31,7 +31,6 @@ it("should use the form itself as the source of truth for `dom` mode", async () 
 
   await userEvent.click(screen.getByTestId("submit"));
   expect(successValidator.validate).toHaveBeenCalledTimes(1);
-  expect(successValidator.validate).toHaveBeenCalledWith(expect.any(FormData));
   expect(
     preprocessFormData((successValidator.validate as Mock).mock.lastCall[0]),
   ).toEqual({ foo: "456" });
@@ -64,7 +63,6 @@ it("should use `dom` mode by default", async () => {
 
   await userEvent.click(screen.getByTestId("submit"));
   expect(successValidator.validate).toHaveBeenCalledTimes(1);
-  expect(successValidator.validate).toHaveBeenCalledWith(expect.any(FormData));
   expect(
     preprocessFormData((successValidator.validate as Mock).mock.lastCall[0]),
   ).toEqual({ foo: "456" });
