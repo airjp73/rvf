@@ -527,11 +527,12 @@ it("should use the data from the form when validating in DOM mode, but with cons
     foo: [{ hatesPizza: "on" }],
   });
   expect(screen.getByTestId("error-0")).toHaveTextContent("how dare you");
-  checkData.mockClear();
 
   await userEvent.click(screen.getByTestId("add"));
-  expect(checkData).toHaveBeenLastCalledWith({
-    foo: [{ hatesPizza: "on" }, { hatesPizza: "on" }],
+  await waitFor(() => {
+    expect(checkData).toHaveBeenLastCalledWith({
+      foo: [{ hatesPizza: "on" }, { hatesPizza: "on" }],
+    });
   });
   expect(screen.getByTestId("error-0")).toHaveTextContent("how dare you");
   expect(screen.getByTestId("error-1")).toHaveTextContent("how dare you");
