@@ -471,3 +471,68 @@ it("should use the data from the form when validating in DOM mode, but with cons
   await userEvent.type(screen.getByTestId("foo"), "c");
   expect(screen.getByTestId("error")).toHaveTextContent("only 3 chars");
 });
+
+it("should use the data from the form when validating in DOM mode, but with consideration for field arrays", async () => {
+  const checkData = vi.fn();
+  const TextComp = () => {
+    const form = useRvf({
+      defaultValues: {
+        foo: [{ hatesPizza: true }],
+      },
+      validator: createValidator({
+        validate: (data) => {
+          checkData(data);
+          const errors: FieldErrors = {};
+          if (data.foo[0].hatesPizza === "on")
+            errors["foo[0].hatesPizza"] = "how dare your";
+          if (data.foo[1]?.hatesPizza === "on")
+            errors["foo[1].hatesPizza"] = "how dare your";
+          if (Object.keys(errors).length > 0)
+            return Promise.resolve({ error: errors, data: undefined });
+          return Promise.resolve({ data, error: undefined });
+        },
+      }),
+      handleSubmit: vi.fn(),
+    });
+
+    return (
+      <form {...form.getFormProps()}>
+        {form.array("foo").map((key, item, index) => (
+          <div key={key}>
+            <input
+              {...item.field("hatesPizza").getInputProps({
+                type: "checkbox",
+              })}
+            />
+            <div data-testid={`error-${index}`}>
+              {form.error("foo[0].hatesPizza")}
+            </div>
+          </div>
+        ))}
+
+        <button
+          type="button"
+          data-testid="add"
+          onClick={() => form.array("foo").push({ hatesPizza: true })}
+        />
+        <button type="submit" data-testid="submit" />
+      </form>
+    );
+  };
+
+  render(<TextComp />);
+
+  await userEvent.click(screen.getByTestId("submit"));
+  expect(checkData).toHaveBeenLastCalledWith({
+    foo: [{ hatesPizza: "on" }],
+  });
+  expect(screen.getByTestId("error-0")).toHaveTextContent("how dare you");
+  checkData.mockClear();
+
+  await userEvent.click(screen.getByTestId("add"));
+  expect(checkData).toHaveBeenLastCalledWith({
+    foo: [{ hatesPizza: "on" }, { hatesPizza: "on" }],
+  });
+  expect(screen.getByTestId("error-0")).toHaveTextContent("how dare you");
+  expect(screen.getByTestId("error-1")).toHaveTextContent("how dare you");
+});
