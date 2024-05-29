@@ -6,7 +6,7 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { RenderCounter } from "./util/RenderCounter";
 import { successValidator } from "./util/successValidator";
 import { controlNumberInput } from "./util/controlInput";
-import { createValidator } from "@rvf/core";
+import { FieldErrors, createValidator } from "@rvf/core";
 import { Field } from "../field";
 
 it("captures and submits with uncontrolled fields", async () => {
@@ -139,6 +139,61 @@ it("captures and submits without registering uncontrolled inputs", async () => {
         a: "another value",
       },
     },
+    expect.any(FormData),
+  );
+
+  expect(screen.getByTestId("render-count")).toHaveTextContent("1");
+});
+
+it("validates and submits without registering uncontrolled inputs outside a form", async () => {
+  const submit = vi.fn();
+
+  const TestComp = () => {
+    const form = useRvf({
+      defaultValues: {
+        foo: "",
+      },
+      validator: createValidator({
+        validate: (data) => {
+          const errors: FieldErrors = {};
+          if (data.foo == "") errors.foo = "required";
+          if (Object.keys(errors).length > 0)
+            return Promise.resolve({ data: undefined, error: errors });
+          return Promise.resolve({ data, error: undefined });
+        },
+      }),
+      handleSubmit: submit,
+      formId: "test",
+    });
+
+    return (
+      <>
+        <input data-testid="foo" name={form.name("foo")} form="test" />
+        <div data-testid="foo-error">{form.error("foo")}</div>
+        <form {...form.getFormProps()} data-testid="form">
+          <button type="submit" data-testid="submit" />
+          <RenderCounter data-testid="render-count" />
+        </form>
+      </>
+    );
+  };
+
+  render(<TestComp />);
+  // Default values don't work for thi case
+  expect(screen.getByTestId("foo")).toHaveValue("");
+  expect(screen.getByTestId("render-count")).toHaveTextContent("1");
+
+  await userEvent.click(screen.getByTestId("submit"));
+  expect(screen.getByTestId("foo-error")).toHaveTextContent("required");
+
+  await userEvent.type(screen.getByTestId("foo"), "testing 123");
+  expect(screen.getByTestId("foo-error")).toBeEmptyDOMElement();
+
+  await userEvent.click(screen.getByTestId("submit"));
+
+  expect(submit).toHaveBeenCalledTimes(1);
+  expect(submit).toHaveBeenCalledWith(
+    { foo: "testing 123" },
     expect.any(FormData),
   );
 
