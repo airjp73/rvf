@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import * as R from "remeda";
 import {
   Rvf,
@@ -573,8 +573,13 @@ export const makeBaseRvfReact = <FormInputData,>({
 
 export const useRvfInternal = <FormInputData,>(form: Rvf<FormInputData>) => {
   const prefix = form.__field_prefix__;
-  const { useStoreState } = form.__store__;
+  const { useStoreState, resolvers } = form.__store__;
   const trackedState = useStoreState();
+
+  // Flush on every update
+  useEffect(() => {
+    resolvers.flush();
+  });
 
   // Accessing _something_ is required. Otherwise, it will rerender on every state update.
   // I saw this done in one of the dia-shi's codebases, too, but I can't find it now.

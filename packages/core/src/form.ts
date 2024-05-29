@@ -9,10 +9,12 @@ import {
   FormStoreValue,
   MutableImplStore,
   RefStore,
+  ResolverQueue,
   StoreFlags,
   StoreFormProps,
   createFormStateStore,
   createRefStore,
+  createResolverQueue,
 } from "./store";
 import { createTrackedSelector } from "react-tracked";
 import {
@@ -56,6 +58,7 @@ interface RvfStore {
   transientFieldRefs: RefStore;
   controlledFieldRefs: RefStore;
   fieldSerializerRefs: RefStore<FieldSerializer>;
+  resolvers: ResolverQueue;
   formRef: { current: HTMLFormElement | null };
   mutableImplStore: MutableImplStore;
   store: ReturnType<typeof createFormStateStore>;
@@ -76,6 +79,7 @@ export const createRvf = <FormInputData extends FieldValues, FormOutputData>({
   const transientFieldRefs = createRefStore<HTMLElement>();
   const controlledFieldRefs = createRefStore<HTMLElement>();
   const fieldSerializerRefs = createRefStore<FieldSerializer>();
+  const resolvers = createResolverQueue();
   const formRef = { current: null as HTMLFormElement | null };
   const mutableImplStore = { validator, onSubmit } satisfies MutableImplStore;
   const store = createFormStateStore({
@@ -84,6 +88,7 @@ export const createRvf = <FormInputData extends FieldValues, FormOutputData>({
     transientFieldRefs,
     controlledFieldRefs,
     fieldSerializerRefs,
+    resolvers,
     formRef,
     submitSource,
     mutableImplStore,
@@ -97,6 +102,7 @@ export const createRvf = <FormInputData extends FieldValues, FormOutputData>({
     transientFieldRefs,
     controlledFieldRefs,
     fieldSerializerRefs,
+    resolvers,
     formRef,
     mutableImplStore,
     store,

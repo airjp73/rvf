@@ -4,6 +4,7 @@ import {
   type PropsWithChildren,
   useMemo,
   useContext,
+  useEffect,
 } from "react";
 import { useRvf } from "./useRvf";
 import { RvfReact } from "./base";
@@ -37,6 +38,12 @@ export const useRvfOrContextInternal = (
   rvfOrName?: Rvf<any> | string,
 ): Rvf<unknown> => {
   const value = useContext(RvfContext);
+
+  // Flush on every update
+  useEffect(() => {
+    value?.scope.__store__.resolvers.flush();
+  });
+
   if (rvfOrName == null) {
     if (!value)
       throw new Error("useRvfContext must be used within a RvfProvider");

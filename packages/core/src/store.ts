@@ -10,7 +10,6 @@ import {
   setFormControlValue,
   focusOrReportFirst,
   getElementsWithNames,
-  isFormControl,
 } from "./dom";
 import {
   FieldArrayValidationBehavior,
@@ -58,9 +57,36 @@ export const createRefStore = <Data>() => {
     names: () => [...elementRefs.keys()],
   };
 };
+
 export type RefStore<Data = HTMLElement> = ReturnType<
   typeof createRefStore<Data>
 >;
+
+export const createResolverQueue = () => {
+  const resolvers = new Set<() => void>();
+
+  const queueResolver = () => {
+    const { promise, resolve } = Promise.withResolvers<void>();
+    resolvers.add(resolve);
+    return promise;
+  };
+
+  return {
+    queue: queueResolver,
+    flush: () => {
+      resolvers.forEach((resolve) => resolve());
+      resolvers.clear();
+    },
+
+    /**
+     * Waits for any pending updates to resolve if there are any.
+     * Does not queue any resolvers if there are none.
+     */
+    await: () => (resolvers.size > 0 ? queueResolver() : Promise.resolve()),
+  };
+};
+
+export type ResolverQueue = ReturnType<typeof createResolverQueue>;
 
 export type StoreFormProps = {
   action?: string;
@@ -230,6 +256,7 @@ export type FormStoreInit = {
   transientFieldRefs: RefStore;
   controlledFieldRefs: RefStore;
   fieldSerializerRefs: RefStore<FieldSerializer>;
+  resolvers: ResolverQueue;
   formRef: { current: HTMLFormElement | null };
   submitSource: "state" | "dom";
   mutableImplStore: MutableImplStore;
@@ -319,6 +346,7 @@ export const createFormStateStore = ({
   controlledFieldRefs,
   transientFieldRefs,
   fieldSerializerRefs,
+  resolvers,
   mutableImplStore,
   formRef,
   submitSource,
@@ -405,7 +433,10 @@ export const createFormStateStore = ({
         return currentValidationBehavior === "onChange";
       },
 
-      maybeValidateArrayOperation: (fieldName, behaviorOverride) => {
+      maybeValidateArrayOperation: async (fieldName, behaviorOverride) => {
+        if (get().submitSource === "dom") {
+          await resolvers.queue();
+        }
         if (get().shouldValidateArray("onChange", behaviorOverride)) {
           get().validateField(fieldName);
         } else {
@@ -414,6 +445,10 @@ export const createFormStateStore = ({
       },
 
       validate: async (nextValues, shouldMarkSubmitted = false) => {
+        if (get().submitSource === "dom") {
+          await resolvers.await();
+        }
+
         const result = await mutableImplStore.validator.validate(
           nextValues ?? get().getFormValuesForValidation()[0],
         );
@@ -457,9 +492,7 @@ export const createFormStateStore = ({
             controlledFieldNames.delete(fieldName);
           });
 
-          controlledFieldNames.forEach((fieldName) => {
-            overrideData[fieldName] = getFieldValue(state, fieldName);
-          });
+          await resolvers.await();
         }
 
         const [values] = get().getFormValuesForValidation({
@@ -557,6 +590,14 @@ export const createFormStateStore = ({
           setPath(state.values, fieldName, value);
           state.dirtyFields[fieldName] = true;
         });
+
+        if (
+          get().submitSource === "dom" &&
+          controlledFieldRefs.has(fieldName) &&
+          !fieldSerializerRefs.has(fieldName)
+        ) {
+          void resolvers.queue();
+        }
 
         if (
           get().shouldValidate("onChange", fieldName, validationBehaviorConfig)
@@ -664,6 +705,14 @@ export const createFormStateStore = ({
           else state.values = value as any;
         });
 
+        if (
+          get().submitSource === "dom" &&
+          controlledFieldRefs.has(fieldName) &&
+          !fieldSerializerRefs.has(fieldName)
+        ) {
+          void resolvers.queue();
+        }
+
         transientFieldRefs.getRefs(fieldName).forEach((ref) => {
           setFormControlValue(ref, value);
         });
@@ -673,6 +722,10 @@ export const createFormStateStore = ({
         set((state) => {
           state.values = data;
         });
+
+        if (get().submitSource === "dom") {
+          void resolvers.queue();
+        }
       },
 
       setTouched: (fieldName, value) => {
@@ -725,6 +778,10 @@ export const createFormStateStore = ({
           state.submitStatus = "idle";
         });
 
+        if (get().submitSource === "dom") {
+          void resolvers.queue();
+        }
+
         transientFieldRefs.forEach((fieldName, ref) => {
           if (!ref) return;
           setFormControlValue(ref, getPath(nextValues, fieldName));
@@ -748,6 +805,14 @@ export const createFormStateStore = ({
           );
           state.arrayUpdateKeys[fieldName] = genKey();
         });
+
+        if (
+          get().submitSource === "dom" &&
+          controlledFieldRefs.has(fieldName) &&
+          !fieldSerializerRefs.has(fieldName)
+        ) {
+          void resolvers.queue();
+        }
 
         transientFieldRefs.forEach((fieldName, ref) => {
           if (!ref) return;
@@ -793,7 +858,10 @@ export const createFormStateStore = ({
           // no change to touched, dirty, or validationErrors
         });
 
-        get().maybeValidateArrayOperation(fieldName, validationBehaviorConfig);
+        void get().maybeValidateArrayOperation(
+          fieldName,
+          validationBehaviorConfig,
+        );
       },
       arrayPop: (fieldName, validationBehaviorConfig) => {
         set((state) => {
@@ -816,7 +884,10 @@ export const createFormStateStore = ({
             `${fieldName}[${numItems - 1}]`,
           );
         });
-        get().maybeValidateArrayOperation(fieldName, validationBehaviorConfig);
+        void get().maybeValidateArrayOperation(
+          fieldName,
+          validationBehaviorConfig,
+        );
       },
       arrayShift: (fieldName, validationBehaviorConfig) => {
         set((state) => {
@@ -849,7 +920,10 @@ export const createFormStateStore = ({
             (index) => index - 1,
           );
         });
-        get().maybeValidateArrayOperation(fieldName, validationBehaviorConfig);
+        void get().maybeValidateArrayOperation(
+          fieldName,
+          validationBehaviorConfig,
+        );
       },
       arrayUnshift: (fieldName, value, validationBehaviorConfig) => {
         set((state) => {
@@ -873,7 +947,10 @@ export const createFormStateStore = ({
             (index) => index + 1,
           );
         });
-        get().maybeValidateArrayOperation(fieldName, validationBehaviorConfig);
+        void get().maybeValidateArrayOperation(
+          fieldName,
+          validationBehaviorConfig,
+        );
       },
       arrayInsert: (
         fieldName,
@@ -903,7 +980,10 @@ export const createFormStateStore = ({
             (index) => (index >= insertAtIndex ? index + 1 : index),
           );
         });
-        get().maybeValidateArrayOperation(fieldName, validationBehaviorConfig);
+        void get().maybeValidateArrayOperation(
+          fieldName,
+          validationBehaviorConfig,
+        );
       },
       arrayMove: (fieldName, fromIndex, toIndex, validationBehaviorConfig) => {
         set((state) => {
@@ -934,7 +1014,10 @@ export const createFormStateStore = ({
             },
           );
         });
-        get().maybeValidateArrayOperation(fieldName, validationBehaviorConfig);
+        void get().maybeValidateArrayOperation(
+          fieldName,
+          validationBehaviorConfig,
+        );
       },
       arrayRemove: (fieldName, removeIndex, validationBehaviorConfig) => {
         set((state) => {
@@ -968,7 +1051,10 @@ export const createFormStateStore = ({
             (index) => (index > removeIndex ? index - 1 : index),
           );
         });
-        get().maybeValidateArrayOperation(fieldName, validationBehaviorConfig);
+        void get().maybeValidateArrayOperation(
+          fieldName,
+          validationBehaviorConfig,
+        );
       },
       arraySwap: (fieldName, fromIndex, toIndex, validationBehaviorConfig) => {
         set((state) => {
@@ -1005,7 +1091,10 @@ export const createFormStateStore = ({
             },
           );
         });
-        get().maybeValidateArrayOperation(fieldName, validationBehaviorConfig);
+        void get().maybeValidateArrayOperation(
+          fieldName,
+          validationBehaviorConfig,
+        );
       },
       arrayReplace: (fieldName, index, value, validationBehaviorConfig) => {
         set((state) => {
@@ -1030,7 +1119,10 @@ export const createFormStateStore = ({
             `${fieldName}[${index}]`,
           );
         });
-        get().maybeValidateArrayOperation(fieldName, validationBehaviorConfig);
+        void get().maybeValidateArrayOperation(
+          fieldName,
+          validationBehaviorConfig,
+        );
       },
     })),
   );
