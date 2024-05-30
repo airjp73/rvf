@@ -1,4 +1,4 @@
-import { json } from "@remix-run/server-runtime";
+import { type TypedResponse } from "@remix-run/server-runtime";
 import { ValidationErrorResponseData, ValidatorError } from "@rvf/core";
 import { FormDefaultsKey, formDefaultValuesKey } from "./constants";
 
@@ -24,15 +24,21 @@ export function validationError(
   repopulateFields?: unknown,
   init?: ResponseInit,
 ) {
-  return json<ValidationErrorResponseData>(
-    {
+  return new Response(
+    JSON.stringify({
       fieldErrors: error.fieldErrors,
       subaction: error.subaction,
       repopulateFields,
       formId: error.formId,
+    }),
+    {
+      status: 422,
+      ...init,
+      headers: {
+        "Content-Type": "application/json; utf-8",
+      },
     },
-    { status: 422, ...init },
-  );
+  ) as TypedResponse<ValidationErrorResponseData>;
 }
 
 export type FormDefaults = {
