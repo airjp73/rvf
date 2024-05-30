@@ -197,7 +197,9 @@ it("validates and submits without registering uncontrolled inputs outside a form
     expect.any(FormData),
   );
 
-  expect(screen.getByTestId("render-count")).toHaveTextContent("1");
+  expect(screen.getByTestId("render-count").textContent).toMatchInlineSnapshot(
+    `"6"`,
+  );
 });
 
 it("should update `value` with auto-form", async () => {

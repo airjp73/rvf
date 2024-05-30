@@ -23,6 +23,7 @@ import {
   ValueAtPath,
   pathArrayToString,
 } from "set-get";
+import { registerFormElementEvents } from "../dist";
 
 type SubmitTypes<FormOutputData> =
   | {
@@ -54,7 +55,7 @@ export interface Rvf<FormInputData> {
   ): Rvf<ValueAtPath<FormInputData, StringToPathTuple<Path>>>;
 }
 
-interface RvfStore {
+export interface RvfStore {
   transientFieldRefs: RefStore;
   controlledFieldRefs: RefStore;
   fieldSerializerRefs: RefStore<FieldSerializer>;

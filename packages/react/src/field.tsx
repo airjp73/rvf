@@ -11,10 +11,10 @@ import {
   getFieldValue,
   getFormId,
   setFormControlValue,
+  isFormControl,
 } from "@rvf/core";
 import { GetInputProps, createGetInputProps } from "./inputs/getInputProps";
 import { useRvfOrContextInternal } from "./context";
-import { isFormControl } from "./inputs/logic/isFormControl";
 
 export interface RvfField<FormInputData> {
   /**

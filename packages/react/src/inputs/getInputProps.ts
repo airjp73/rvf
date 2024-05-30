@@ -3,9 +3,9 @@ import * as R from "remeda";
 import {
   getCheckboxChecked,
   getNextCheckboxValue,
-} from "./logic/getCheckboxChecked";
-import { getRadioChecked } from "./logic/getRadioChecked";
-import { getEventValue } from "../event";
+  getRadioChecked,
+  getEventValue,
+} from "@rvf/core";
 
 export type CreateGetInputPropsOptions = {
   onChange: (value: unknown) => void;

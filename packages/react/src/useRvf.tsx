@@ -1,10 +1,11 @@
-import { useEffect, useState, useId } from "react";
+import { useEffect, useState, useId, useLayoutEffect } from "react";
 import {
   FieldValues,
   ValidationBehaviorConfig,
   Validator,
   Rvf,
   createRvf,
+  registerFormElementEvents,
 } from "@rvf/core";
 import { RvfReact, useRvfInternal } from "./base";
 import { FieldErrors } from "@rvf/core";
@@ -127,6 +128,10 @@ export function useRvf(
       },
     });
   });
+
+  useEffect(() => {
+    return registerFormElementEvents(form.__store__);
+  }, [form.__store__]);
 
   const initial = isRvf(optsOrForm)
     ? undefined

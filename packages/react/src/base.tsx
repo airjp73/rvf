@@ -11,12 +11,12 @@ import {
   getFieldDirty,
   getFieldError,
   focusFirst,
-  getFormControlValue,
   getAllTouched,
   getAllDirty,
   getAllErrors,
   getFormAction,
   getFormId,
+  registerFormElementEvents,
 } from "@rvf/core";
 import {
   StringToPathTuple,
@@ -29,8 +29,6 @@ import {
 import { RvfArray, makeFieldArrayImpl } from "./array";
 import { makeImplFactory } from "./implFactory";
 import { RvfField, makeFieldImpl } from "./field";
-import { isFormControl } from "./inputs/logic/isFormControl";
-import { getNextCheckboxValue } from "./inputs/logic/getCheckboxChecked";
 
 type MinimalRvf<FieldPaths extends string> = {
   resetField: (fieldName: FieldPaths, nextValue?: any) => void;
@@ -42,8 +40,6 @@ export type FormFields<Form> =
 interface FormProps {
   onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
   onReset: (event: React.FormEvent<HTMLFormElement>) => void;
-  onChange: (event: React.FormEvent<HTMLFormElement>) => void;
-  onBlur: (event: React.FormEvent<HTMLFormElement>) => void;
   ref: React.Ref<HTMLFormElement>;
   id: string;
 }
@@ -485,75 +481,6 @@ export const makeBaseRvfReact = <FormInputData,>({
         formProps.onReset?.(event);
         if (event.defaultPrevented) return;
         transientState().reset();
-      },
-      onChange: (event) => {
-        formProps.onChange?.(event);
-        if (event.defaultPrevented) return;
-
-        const changed = event.target;
-        const formEl = form.__store__.formRef.current;
-
-        if (
-          !formEl ||
-          !changed ||
-          !isFormControl(changed) ||
-          !changed.form ||
-          changed.form !== formEl
-        )
-          return;
-
-        const name = changed.name;
-        if (
-          form.__store__.transientFieldRefs.has(name) ||
-          form.__store__.controlledFieldRefs.has(name)
-        )
-          return;
-
-        const getValue = () => {
-          const derivedValue = getFormControlValue(changed);
-
-          if (changed.type === "checkbox") {
-            const nextValue = getNextCheckboxValue({
-              currentValue: getFieldValue(transientState(), name),
-              derivedValue,
-              valueProp: changed.value,
-            });
-            return nextValue;
-          }
-
-          if (changed.type === "radio") {
-            return changed.value;
-          }
-
-          return derivedValue;
-        };
-
-        transientState().onFieldChange(name, getValue());
-      },
-      onBlur: (event) => {
-        formProps.onBlur?.(event);
-        if (event.defaultPrevented) return;
-
-        const changed = event.target;
-        const formEl = form.__store__.formRef.current;
-
-        if (
-          !formEl ||
-          !changed ||
-          !isFormControl(changed) ||
-          !changed.form ||
-          changed.form !== formEl
-        )
-          return;
-
-        const name = changed.name;
-        if (
-          form.__store__.transientFieldRefs.has(name) ||
-          form.__store__.controlledFieldRefs.has(name)
-        )
-          return;
-
-        transientState().onFieldBlur(name);
       },
       ref: (el) => {
         if (typeof formProps.ref === "function") formProps.ref(el);

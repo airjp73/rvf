@@ -1,3 +1,7 @@
+import { Rvf, RvfStore } from "../form";
+import { getFieldValue } from "../getters";
+import { getNextCheckboxValue } from "./getCheckboxChecked";
+
 export const setFormControlValue = (element: HTMLElement, value: unknown) => {
   if (element instanceof HTMLInputElement) {
     switch (element.type) {
@@ -99,4 +103,85 @@ export const getElementsWithNames = (
   return [...els].filter(
     (el) => isFormControl(el) && el.form === formElement,
   ) as HTMLElement[];
+};
+
+export const registerFormElementEvents = (store: RvfStore) => {
+  const transientState = () => store.store.getState();
+
+  const onChange = (event: Event) => {
+    if (event.defaultPrevented) return;
+
+    const changed = event.target;
+    const formEl = store.formRef.current;
+
+    if (
+      !formEl ||
+      !changed ||
+      !isFormControl(changed) ||
+      !changed.form ||
+      changed.form !== formEl
+    )
+      return;
+
+    const name = changed.name;
+    if (
+      store.transientFieldRefs.has(name) ||
+      store.controlledFieldRefs.has(name)
+    )
+      return;
+
+    const getValue = () => {
+      const derivedValue = getFormControlValue(changed);
+
+      if (changed.type === "checkbox") {
+        const nextValue = getNextCheckboxValue({
+          currentValue: getFieldValue(transientState(), name),
+          derivedValue,
+          valueProp: changed.value,
+        });
+        return nextValue;
+      }
+
+      if (changed.type === "radio") {
+        return changed.value;
+      }
+
+      return derivedValue;
+    };
+
+    transientState().onFieldChange(name, getValue());
+  };
+
+  const onBlur = (event: FocusEvent) => {
+    if (event.defaultPrevented) return;
+
+    const changed = event.target;
+    const formEl = store.formRef.current;
+
+    if (
+      !formEl ||
+      !changed ||
+      !isFormControl(changed) ||
+      !changed.form ||
+      changed.form !== formEl
+    )
+      return;
+
+    const name = changed.name;
+    if (
+      store.transientFieldRefs.has(name) ||
+      store.controlledFieldRefs.has(name)
+    )
+      return;
+
+    transientState().onFieldBlur(name);
+  };
+
+  document.addEventListener("input", onChange);
+  document.addEventListener("focusout", onBlur);
+
+  return () => {
+    document.removeEventListener("input", onChange);
+    document.removeEventListener("focusout", onBlur);
+  };
 };

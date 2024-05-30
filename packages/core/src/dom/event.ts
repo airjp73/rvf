@@ -1,4 +1,4 @@
-import { getFormControlValue } from "@rvf/core";
+import { getFormControlValue } from "./dom";
 
 export const getEventValue = (eventOrValue: unknown) => {
   if (

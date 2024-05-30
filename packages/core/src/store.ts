@@ -10,7 +10,7 @@ import {
   setFormControlValue,
   focusOrReportFirst,
   getElementsWithNames,
-} from "./dom";
+} from "./dom/dom";
 import {
   FieldArrayValidationBehavior,
   FieldArrayValidationBehaviorConfig,
