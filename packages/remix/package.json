@@ -30,6 +30,7 @@
     "react": "^17.0.2 || ^18.0.0"
   },
   "devDependencies": {
+    "@remix-run/testing": "^2.9.2",
     "@rvf/react": "*",
     "tsconfig": "*",
     "tsup-config": "*",

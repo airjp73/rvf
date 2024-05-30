@@ -1,5 +1,9 @@
 import { type TypedResponse } from "@remix-run/server-runtime";
-import { ValidationErrorResponseData, ValidatorError } from "@rvf/core";
+import {
+  GenericObject,
+  ValidationErrorResponseData,
+  ValidatorError,
+} from "@rvf/core";
 import { FormDefaultsKey, formDefaultValuesKey } from "./constants";
 
 /**
@@ -40,6 +44,10 @@ export function validationError(
     },
   ) as TypedResponse<ValidationErrorResponseData>;
 }
+
+export const isValidationErrorResponse = <T extends GenericObject>(
+  response: T | ValidationErrorResponseData,
+): response is ValidationErrorResponseData => "fieldErrors" in response;
 
 export type FormDefaults = {
   [formDefaultsKey: FormDefaultsKey]: any;

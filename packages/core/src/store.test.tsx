@@ -1,5 +1,10 @@
 import { describe, expect, it, vi } from "vitest";
-import { FormStoreInit, createFormStateStore, createRefStore } from "./store";
+import {
+  FormStoreInit,
+  createFormStateStore,
+  createRefStore,
+  createResolverQueue,
+} from "./store";
 import { ValidationBehavior } from "./types";
 import { createValidator } from "./createValidator";
 
@@ -9,6 +14,7 @@ const testStore = (init?: Partial<FormStoreInit>) =>
     controlledFieldRefs: createRefStore(),
     transientFieldRefs: createRefStore(),
     fieldSerializerRefs: createRefStore(),
+    resolvers: createResolverQueue(),
     formRef: { current: null },
     submitSource: "state",
     mutableImplStore: {
