@@ -4,6 +4,7 @@ import {
   useNavigation,
   useSubmit,
 } from "@remix-run/react";
+import { GenericObject } from "@rvf/core";
 import { useEffect, useRef } from "react";
 
 export function useSubmitComplete(isSubmitting: boolean, callback: () => void) {
@@ -38,7 +39,7 @@ export const useRemixSubmit = (fetcher?: FetcherWithComponents<unknown>) => {
   const submit = useSubmit();
 
   const handleSubmit = (
-    modifiedFormData: FormData,
+    modifiedFormData: FormData | GenericObject,
     submitOptions?: SubmitOptions,
   ) => {
     const { promise, resolve } = Promise.withResolvers<void>();

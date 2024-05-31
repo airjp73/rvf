@@ -6,11 +6,14 @@ import {
   RvfReact,
 } from "@rvf/react";
 import {
+  stateToFormData,
   useHasActiveFormSubmit,
   useRemixSubmit,
   useSubmitComplete,
 } from "./remix-submission-handling";
 import { FetcherWithComponents, SubmitOptions } from "@remix-run/react";
+import { toPathObject } from "../../set-get";
+import { GenericObject } from "@rvf/core";
 
 type PartialProps<T, Props extends keyof T> = Omit<T, Props> &
   Partial<Pick<T, Props>>;
@@ -44,10 +47,10 @@ export function useRvf<FormInputData>(
 export function useRvf<FormInputData extends FieldValues, FormOutputData>(
   optsOrForm: RvfRemixOpts<FormInputData, FormOutputData> | Rvf<FormInputData>,
 ): RvfReact<FormInputData> {
-  const submitWithRemix = useRemixSubmit();
   let rvf: RvfReact<FormInputData>;
 
   const fetcher = "fetcher" in optsOrForm ? optsOrForm.fetcher : undefined;
+  const submitWithRemix = useRemixSubmit(fetcher);
   const resetAfterSubmit =
     "resetAfterSubmit" in optsOrForm ? optsOrForm.resetAfterSubmit : undefined;
   const hasActiveSubmission = useHasActiveFormSubmit(fetcher);
@@ -67,17 +70,29 @@ export function useRvf<FormInputData extends FieldValues, FormOutputData>(
 
   const submitSource = optsOrForm.submitSource ?? ("dom" as const);
 
-  const handleDomSubmit = (data: FormOutputData, formData: FormData) => {
+  const handleSubmission = (data: FormOutputData, formData?: FormData) => {
     const handleSubmit = optsOrForm.handleSubmit as
       | ((data: FormOutputData, formData: FormData) => Promise<void>)
       | undefined;
 
     // when the user provides a handleSubmit, we should use that instead
     if (handleSubmit) {
-      return handleSubmit(data, formData);
+      return handleSubmit(data, formData as never);
     }
 
-    return submitWithRemix(formData, {
+    const getData = () => {
+      if (submitSource === "dom") {
+        if (!formData)
+          throw new Error("Missing form data. This is likely a bug in RVF");
+        return formData;
+      }
+
+      if (optsOrForm.encType === "application/json")
+        return data as GenericObject;
+      return toPathObject(data as GenericObject);
+    };
+
+    return submitWithRemix(getData(), {
       method: optsOrForm.method,
       replace: optsOrForm.replace,
       preventScrollReset: optsOrForm.preventScrollReset,
@@ -87,27 +102,10 @@ export function useRvf<FormInputData extends FieldValues, FormOutputData>(
     });
   };
 
-  const handleStateSubmit = (data: FormOutputData) => {
-    const handleSubmit = optsOrForm.handleSubmit as
-      | ((data: FormOutputData) => Promise<void>)
-      | undefined;
-
-    if (!handleSubmit) {
-      throw new Error(
-        "`state` submit source is only supported with `handleSubmit`",
-      );
-    }
-
-    return handleSubmit(data);
-  };
-
-  const handleSubmit =
-    submitSource === "state" ? handleStateSubmit : handleDomSubmit;
-
   rvf = useRvfReact<FormInputData, FormOutputData>({
     ...optsOrForm,
     submitSource,
-    handleSubmit: handleSubmit as never,
+    handleSubmit: handleSubmission as never,
   });
   return rvf;
   /* eslint-enable */

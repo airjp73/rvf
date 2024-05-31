@@ -23,7 +23,6 @@ import {
   ValueAtPath,
   pathArrayToString,
 } from "set-get";
-import { registerFormElementEvents } from "../dist";
 
 type SubmitTypes<FormOutputData> =
   | {
