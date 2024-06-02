@@ -751,4 +751,42 @@ it("should auto-connect fields outside of the form", async () => {
   );
 });
 
-it.todo("should work with selects");
+it("should work with selects", async () => {
+  const submit = vi.fn();
+
+  const TestComp = () => {
+    const form = useRvf({
+      submitSource: "state",
+      defaultValues: {
+        foo: "bar",
+      },
+      validator: successValidator,
+      handleSubmit: submit,
+    });
+
+    return (
+      <>
+        <form {...form.getFormProps()}>
+          <select data-testid="foo" {...form.field("foo").getInputProps()}>
+            <option value="bar">Bar</option>
+            <option value="baz">Baz</option>
+          </select>
+          <pre data-testid="foo-value">{form.value("foo")}</pre>
+          <button type="submit" data-testid="submit" />
+        </form>
+      </>
+    );
+  };
+
+  render(<TestComp />);
+
+  await userEvent.selectOptions(screen.getByTestId("foo"), "baz");
+  expect(screen.getByTestId("foo")).toHaveValue("baz");
+  expect(screen.getByTestId("foo-value")).toHaveTextContent("baz");
+
+  await userEvent.click(screen.getByTestId("submit"));
+  expect(submit).toHaveBeenCalledTimes(1);
+  expect(submit).toHaveBeenCalledWith({ foo: "baz" });
+});
+
+it.todo("should be able to set the value of an uncontrolled select");

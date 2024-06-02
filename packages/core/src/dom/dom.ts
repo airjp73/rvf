@@ -38,6 +38,14 @@ export const getFormControlValue = (element: HTMLElement) => {
     }
   }
 
+  if (element instanceof HTMLSelectElement) {
+    return element.value;
+  }
+
+  if (element instanceof HTMLTextAreaElement) {
+    return element.value;
+  }
+
   // TODO: maybe we can eventually support other form controls
   return undefined;
 };
