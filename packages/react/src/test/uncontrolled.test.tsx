@@ -789,4 +789,43 @@ it("should work with selects", async () => {
   expect(submit).toHaveBeenCalledWith({ foo: "baz" });
 });
 
-it.todo("should be able to set the value of an uncontrolled select");
+it("should be able to set the value of an uncontrolled select", async () => {
+  const submit = vi.fn();
+
+  const TestComp = () => {
+    const form = useRvf({
+      submitSource: "state",
+      defaultValues: {
+        foo: "bar",
+      },
+      validator: successValidator,
+      handleSubmit: submit,
+    });
+
+    return (
+      <>
+        <form {...form.getFormProps()}>
+          <select data-testid="foo" {...form.field("foo").getInputProps()}>
+            <option value="bar">Bar</option>
+            <option value="baz">Baz</option>
+          </select>
+          <button
+            type="button"
+            data-testid="set-foo"
+            onClick={() => form.setValue("foo", "baz")}
+          />
+          <button type="submit" data-testid="submit" />
+        </form>
+      </>
+    );
+  };
+
+  render(<TestComp />);
+
+  await userEvent.click(screen.getByTestId("set-foo"));
+  expect(screen.getByTestId("foo")).toHaveValue("bar");
+
+  await userEvent.click(screen.getByTestId("submit"));
+  expect(submit).toHaveBeenCalledTimes(1);
+  expect(submit).toHaveBeenCalledWith({ foo: "baz" });
+});
