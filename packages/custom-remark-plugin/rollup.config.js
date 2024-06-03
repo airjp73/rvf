@@ -1,6 +1,6 @@
-import resolve from "@rollup/plugin-node-resolve";
+const { default: resolve } = require("@rollup/plugin-node-resolve");
 
-export default {
+module.exports = {
   input: "src/index.js",
   output: {
     file: "dist/index.js",
