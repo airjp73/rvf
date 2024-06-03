@@ -829,3 +829,5 @@ it("should be able to set the value of an uncontrolled select", async () => {
   expect(submit).toHaveBeenCalledTimes(1);
   expect(submit).toHaveBeenCalledWith({ foo: "baz" });
 });
+
+it.todo("should handle multiple uncontrolled text inputs with the same name");

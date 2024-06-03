@@ -32,3 +32,7 @@ it("should be able to submit file inputs", async () => {
   expect(submit).toHaveBeenCalledTimes(1);
   expect(submit).toHaveBeenCalledWith({ file }, expect.any(FormData));
 });
+
+it.todo("should gracefully handle setValue and resetField for file inputs");
+
+it.todo("should not blow up when a file has a default value");
