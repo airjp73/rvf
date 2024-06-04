@@ -33,14 +33,6 @@ const RenderCounter = () => {
   return (
     <>
       <p data-testid="render-count">{renderCount.current + 1}</p>
-      <button
-        type="button"
-        onClick={() => {
-          renderCount.current = 0;
-        }}
-      >
-        Reset render count
-      </button>
     </>
   );
 };
