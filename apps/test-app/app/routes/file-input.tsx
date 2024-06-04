@@ -1,10 +1,7 @@
-import {
-  DataFunctionArgs,
-  unstable_parseMultipartFormData,
-  json,
-} from "@remix-run/node";
+import { unstable_parseMultipartFormData, json } from "@remix-run/node";
 import { useActionData } from "@remix-run/react";
 import {
+  ActionFunctionArgs,
   unstable_composeUploadHandlers,
   unstable_createMemoryUploadHandler,
 } from "@remix-run/server-runtime";
@@ -47,7 +44,7 @@ const testUploadHandler = unstable_composeUploadHandlers(async ({ name }) => {
   return "testFile";
 }, unstable_createMemoryUploadHandler());
 
-export const action = async ({ request }: DataFunctionArgs) => {
+export const action = async ({ request }: ActionFunctionArgs) => {
   const result = await serverValidator.validate(
     await unstable_parseMultipartFormData(request, testUploadHandler),
   );
