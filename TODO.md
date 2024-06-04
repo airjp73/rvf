@@ -1,5 +1,5 @@
-- State submit without handleSubmit on remix side? Looks like remix supports doing this as json _or_ serializing as form data.
-- rename handleSubmit to action
+- Maybe replace `resetAfterSubmit` with `onSubmitSuccess` and `onSubmitFailure` callbacks
+- Consider adding a `beforeSubmit` callback
 
 // follows
 
