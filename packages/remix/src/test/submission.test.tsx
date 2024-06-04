@@ -161,3 +161,5 @@ it("should be able to submit state directly as form data", async () => {
   // Because we submitted as form data
   expect(a).toHaveBeenCalledWith({ foo: "bar", bar: { baz: ["123123"] } });
 });
+
+it.todo("should respect the formMethod of the submitter");
