@@ -145,7 +145,7 @@ describe("Submission", () => {
     cy.visit("/submission/action").waitForJs();
     cy.findByText("Submit").click();
     cy.findByText(
-      "Submitted to action prop action from form: Not in a dialog"
+      "Submitted to action prop action from form: Not in a dialog",
     ).should("exist");
     cy.findByText("Submitted to in-route action.").should("not.exist");
   });
@@ -163,7 +163,7 @@ describe("Submission", () => {
     cy.findByText("Open Dialog").click();
     cy.findByTestId("dialog-submit").click();
     cy.findByText(
-      "Submitted to action prop action from form: In a dialog"
+      "Submitted to action prop action from form: In a dialog",
     ).should("exist");
     cy.findByText("Submitted to in-route action.").should("not.exist");
   });
@@ -212,7 +212,7 @@ describe("Submission", () => {
     cy.url().should("include", "submitter=viaget");
     cy.get("code").should(
       "contain.text",
-      JSON.stringify({ method: "GET", submitter: "viaget" })
+      JSON.stringify({ method: "GET", submitter: "viaget" }),
     );
   });
 
@@ -223,7 +223,7 @@ describe("Submission", () => {
     cy.url().should("include", "submitter=viaget");
     cy.get("code").should(
       "contain.text",
-      JSON.stringify({ method: "GET", submitter: "viaget" })
+      JSON.stringify({ method: "GET", submitter: "viaget" }),
     );
   });
 
@@ -232,9 +232,9 @@ describe("Submission", () => {
       cy.visit("submission/onsubmit").waitForJs();
       cy.findByText("shouldPreventDefault").click();
       cy.findByText("Submit").click();
-      cy.findByText("Submitting...").should("exist");
-      cy.findByText("Submit").should("exist");
+      cy.findByText("Submitting...").should("not.exist");
       cy.findByText("Submitted!").should("not.exist");
+      cy.findByText("Submit").should("exist");
     });
 
     it("should continue with submit as normal if default not prevented", () => {
@@ -284,7 +284,7 @@ describe("Submission", () => {
     cy.findByTestId("willBeChangedResult").should("contain.text", "Original");
     cy.findByTestId("willBeDisabledResult").should(
       "contain.text",
-      "Should be submitted"
+      "Should be submitted",
     );
   });
 });

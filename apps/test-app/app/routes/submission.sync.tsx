@@ -1,7 +1,7 @@
 import { DataFunctionArgs, json } from "@remix-run/node";
 import { useActionData } from "@remix-run/react";
 import { withZod } from "@rvf/zod";
-import { useRvf, validationError } from "@rvf/remix";
+import { RvfProvider, useRvf, validationError } from "@rvf/remix";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
 import { Input } from "~/components/Input";
@@ -30,20 +30,22 @@ export default function FrontendValidation() {
   });
   const data = useActionData<typeof action>();
   return (
-    <form {...rvf.getFormProps()}>
-      {data && "data" in data && (
-        <>
-          <p data-testid="willBeChangedResult">{data.data.willBeChanged}</p>
-          <p data-testid="willBeDisabledResult">{data.data.willBeDisabled}</p>
-        </>
-      )}
-      <Input label="Will be changed" name="willBeChanged" />
-      <Input
-        label="Will be disabled"
-        name="willBeDisabled"
-        disabled={rvf.formState.isSubmitting}
-      />
-      <SubmitButton label="Submit" submittingLabel="Submitting..." />
-    </form>
+    <RvfProvider scope={rvf.scope()}>
+      <form {...rvf.getFormProps()}>
+        {data && "data" in data && (
+          <>
+            <p data-testid="willBeChangedResult">{data.data.willBeChanged}</p>
+            <p data-testid="willBeDisabledResult">{data.data.willBeDisabled}</p>
+          </>
+        )}
+        <Input label="Will be changed" name="willBeChanged" />
+        <Input
+          label="Will be disabled"
+          name="willBeDisabled"
+          disabled={rvf.formState.isSubmitting}
+        />
+        <SubmitButton label="Submit" submittingLabel="Submitting..." />
+      </form>
+    </RvfProvider>
   );
 }
