@@ -385,9 +385,11 @@ export const createFormStateStore = ({
 
         const formData = new FormData(form);
         if (injectedData) {
-          Object.entries(injectedData).forEach(([key, value]) => {
-            formData.set(key, value);
-          });
+          Object.entries(injectedData)
+            .filter(([key, value]) => !!key && !!value)
+            .forEach(([key, value]) => {
+              formData.set(key, value);
+            });
         }
 
         const preprocessed = preprocessFormData(formData);
