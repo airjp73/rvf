@@ -1,7 +1,7 @@
 import { DataFunctionArgs, json } from "@remix-run/node";
 import { useActionData } from "@remix-run/react";
 import { withZod } from "@rvf/zod";
-import { useRvf } from "@rvf/remix";
+import { RvfProvider, useRvf } from "@rvf/remix";
 import { z } from "zod";
 import { InputWithTouched } from "~/components/InputWithTouched";
 import { SubmitButton } from "~/components/SubmitButton";
@@ -30,16 +30,18 @@ export default function FrontendValidation() {
     <>
       {actionData?.message && <h1>{actionData.message}</h1>}
       <SubmitButton form={rvf.scope()} name="mySubmit" value="submitVal" />
-      <form {...rvf.getFormProps()}>
-        <InputWithTouched name="firstName" label="First Name" />
-        <InputWithTouched name="lastName" label="Last Name" />
-        <SubmitButton
-          name="mySubmit"
-          value="internalVal"
-          label="Submit 2"
-          submittingLabel="Submitting 2"
-        />
-      </form>
+      <RvfProvider scope={rvf.scope()}>
+        <form {...rvf.getFormProps()}>
+          <InputWithTouched name="firstName" label="First Name" />
+          <InputWithTouched name="lastName" label="Last Name" />
+          <SubmitButton
+            name="mySubmit"
+            value="internalVal"
+            label="Submit 2"
+            submittingLabel="Submitting 2"
+          />
+        </form>
+      </RvfProvider>
     </>
   );
 }

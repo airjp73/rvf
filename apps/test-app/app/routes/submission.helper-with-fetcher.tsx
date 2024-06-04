@@ -1,6 +1,6 @@
 import { useFetcher } from "@remix-run/react";
 import { withYup } from "@rvf/yup";
-import { ValidatedForm, useRvf } from "@rvf/remix";
+import { RvfProvider, ValidatedForm, useRvf } from "@rvf/remix";
 import * as yup from "yup";
 import { Input } from "~/components/Input";
 
@@ -22,7 +22,7 @@ export default function FrontendValidation() {
   });
 
   return (
-    <>
+    <RvfProvider scope={rvf.scope()}>
       {fetcher.data && "message" in fetcher.data && fetcher.data?.message && (
         <p>From fetcher: {fetcher.data.message}</p>
       )}
@@ -37,6 +37,6 @@ export default function FrontendValidation() {
       >
         Submit with helper
       </button>
-    </>
+    </RvfProvider>
   );
 }

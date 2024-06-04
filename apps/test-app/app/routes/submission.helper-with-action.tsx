@@ -1,5 +1,5 @@
 import { withYup } from "@rvf/yup";
-import { ValidatedForm, useRvf, useRvfContext } from "@rvf/remix";
+import { RvfProvider, ValidatedForm, useRvf, useRvfContext } from "@rvf/remix";
 import * as yup from "yup";
 import { Input } from "~/components/Input";
 
@@ -15,7 +15,7 @@ export default function FrontendValidation() {
     action: "/submission/helper-with-action/action",
   });
   return (
-    <>
+    <RvfProvider scope={rvf.scope()}>
       <form {...rvf.getFormProps()}>
         <Input name="name" label="Name" />
         <button
@@ -27,6 +27,6 @@ export default function FrontendValidation() {
           Submit with helper
         </button>
       </form>
-    </>
+    </RvfProvider>
   );
 }
