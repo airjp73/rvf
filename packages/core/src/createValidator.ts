@@ -1,5 +1,6 @@
 import { CreateValidatorArg, Validator } from "./types";
 import { preprocessFormData } from "./native-form-data/flatten";
+import { FORM_ID_FIELD_NAME } from "./constants";
 
 /**
  * Used to create a validator for a form.
@@ -13,14 +14,18 @@ export function createValidator<T>(
     validate: async (value) => {
       const data = preprocessFormData(value);
       const result = await validator.validate(data);
+      const formId = data[FORM_ID_FIELD_NAME];
 
       if (result.error) {
         return {
           data: undefined,
           error: {
             fieldErrors: result.error,
+            subaction: data.subaction,
+            formId,
           },
           submittedData: data,
+          formId,
         };
       }
 
@@ -28,6 +33,7 @@ export function createValidator<T>(
         data: result.data,
         error: undefined,
         submittedData: data,
+        formId,
       };
     },
   };

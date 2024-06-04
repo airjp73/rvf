@@ -1,4 +1,4 @@
-import { DataFunctionArgs, json } from "@remix-run/node";
+import { ActionFunctionArgs, json } from "@remix-run/node";
 import { useActionData } from "@remix-run/react";
 import { withZod } from "@rvf/zod";
 import { ValidatedForm } from "@rvf/remix";
@@ -7,7 +7,7 @@ import { SubmitButton } from "~/components/SubmitButton";
 
 const validator = withZod(z.object({}));
 
-export const action = async ({ request }: DataFunctionArgs) => {
+export const action = async ({ request }: ActionFunctionArgs) => {
   const result = await validator.validate(await request.formData());
   return json({ message: `Form has id: ${result.formId}` });
 };
