@@ -16,6 +16,10 @@ export const setFormControlValue = (element: HTMLElement, value: unknown) => {
       case "number":
         element.valueAsNumber = Number(value);
         break;
+      case "file":
+        if (!value) element.value = "";
+        // Can't set the value other than to clear it
+        break;
       default:
         element.value = String(value);
         break;

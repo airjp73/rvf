@@ -79,9 +79,13 @@ export const createGetInputProps = ({
       inputProps.defaultChecked = getCheckboxChecked(props.value, defaultValue);
     } else if (props.type === "radio") {
       inputProps.defaultChecked = getRadioChecked(props.value, defaultValue);
-    } else if (props.value === undefined) {
+    } else if (props.value === undefined && inputProps.type !== "file") {
       // We should only set the defaultValue if the input is uncontrolled.
       inputProps.defaultValue = defaultValue;
+    }
+
+    if (props.type === "file" && !!defaultValue) {
+      console.warn("File inputs cannot have a default value.");
     }
 
     return R.omitBy(inputProps, (value) => value === undefined) as T;

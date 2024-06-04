@@ -33,6 +33,67 @@ it("should be able to submit file inputs", async () => {
   expect(submit).toHaveBeenCalledWith({ file }, expect.any(FormData));
 });
 
-it.todo("should gracefully handle setValue and resetField for file inputs");
+it("should be able to reset file inputs", async () => {
+  const submit = vi.fn();
+  const TestComp = () => {
+    const form = useRvf({
+      defaultValues: {
+        file: undefined as File | undefined,
+      },
+      validator: successValidator,
+      handleSubmit: submit,
+    });
 
-it.todo("should not blow up when a file has a default value");
+    return (
+      <form {...form.getFormProps()}>
+        <input
+          data-testid="file"
+          {...form.field("file").getInputProps({ type: "file" })}
+        />
+        <button type="reset" data-testid="reset" />
+        <button data-testid="submit" type="submit" />
+      </form>
+    );
+  };
+
+  render(<TestComp />);
+
+  const file = new File(["test"], "test.txt", { type: "text/plain" });
+  const fileInput = screen.getByTestId("file") as HTMLInputElement;
+  await userEvent.upload(fileInput, file);
+  expect(fileInput.files).toHaveLength(1);
+
+  await userEvent.click(screen.getByTestId("reset"));
+  expect(fileInput.files).toHaveLength(0);
+});
+
+it("should not blow up when a file has a default value", async () => {
+  const submit = vi.fn();
+  const TestComp = () => {
+    const form = useRvf({
+      defaultValues: {
+        file: "hi",
+      },
+      validator: successValidator,
+      handleSubmit: submit,
+    });
+
+    const props = form.field("file").getInputProps({ type: "file" });
+    return (
+      <form {...form.getFormProps()} encType="multipart/form-data">
+        <input data-testid="file" {...props} />
+        <button data-testid="submit" type="submit" />
+      </form>
+    );
+  };
+
+  render(<TestComp />);
+
+  const file = new File(["test"], "test.txt", { type: "text/plain" });
+  await userEvent.upload(screen.getByTestId("file"), file);
+
+  await userEvent.click(screen.getByTestId("submit"));
+
+  expect(submit).toHaveBeenCalledTimes(1);
+  expect(submit).toHaveBeenCalledWith({ file }, expect.any(FormData));
+});

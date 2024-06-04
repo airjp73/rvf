@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useRvf } from "../useRvf";
 import { successValidator } from "./util/successValidator";
@@ -263,6 +263,39 @@ it("should reset the whole form when a reset button is clicked", async () => {
   expect(screen.getByTestId("foo")).toHaveValue("bar");
   expect(screen.getByTestId("foo-touched")).toHaveTextContent("false");
   expect(screen.getByTestId("baz.a-touched")).toHaveTextContent("false");
+});
+
+it("should reset inputs not registered with RVF", async () => {
+  const submit = vi.fn();
+  const TestComp = () => {
+    const form = useRvf({
+      defaultValues: {
+        foo: "",
+        baz: { a: "" },
+      },
+      validator: successValidator,
+      handleSubmit: submit,
+    });
+
+    return (
+      <form {...form.getFormProps()} data-testid="form">
+        <input data-testid="foo" name="foo" />
+        <input data-testid="baz.a" name="baz.a" />
+        <button type="reset" data-testid="reset" />
+      </form>
+    );
+  };
+
+  render(<TestComp />);
+  await userEvent.type(screen.getByTestId("foo"), "test");
+  expect(screen.getByTestId("foo")).toHaveValue("test");
+
+  await userEvent.type(screen.getByTestId("baz.a"), "test");
+  expect(screen.getByTestId("baz.a")).toHaveValue("test");
+
+  await userEvent.click(screen.getByTestId("reset"));
+  expect(screen.getByTestId("baz.a")).toHaveValue("");
+  expect(screen.getByTestId("foo")).toHaveValue("");
 });
 
 it.todo(
