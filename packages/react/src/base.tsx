@@ -481,12 +481,16 @@ export const makeBaseRvfReact = <FormInputData,>({
             ? { [submitter.name]: submitter.value }
             : undefined;
 
-        const submitterOptions = {
-          formEnctype: submitter?.formEnctype,
-          formMethod: submitter?.formMethod,
-          formNoValidate: submitter?.formNoValidate,
-          formAction: submitter?.formAction,
-        } satisfies SubmitterOptions;
+        // Don't include option at all if the aren't provided
+        const submitterOptions: SubmitterOptions = {};
+        if (submitter?.formEnctype)
+          submitterOptions.formEnctype = submitter.formEnctype;
+        if (submitter?.formMethod)
+          submitterOptions.formMethod = submitter.formMethod;
+        if (submitter?.formNoValidate)
+          submitterOptions.formNoValidate = submitter.formNoValidate;
+        if (submitter?.formAction)
+          submitterOptions.formAction = submitter.formAction;
 
         transientState().onSubmit(submitterData, submitterOptions);
       },

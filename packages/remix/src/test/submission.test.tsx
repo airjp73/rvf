@@ -1,4 +1,4 @@
-import { json, useActionData } from "@remix-run/react";
+import { json, redirect, useActionData } from "@remix-run/react";
 import { createRemixStub } from "@remix-run/testing";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -214,6 +214,52 @@ it("should respect the formMethod of the submitter", async () => {
 
   await userEvent.click(await screen.findByTestId("submit-loader"));
   expect(l).toHaveBeenCalledTimes(1);
+  await userEvent.click(screen.getByTestId("submit-action"));
+  expect(a).toHaveBeenCalledTimes(1);
+});
+
+it("should correctly strip down fully qualified urls", async () => {
+  const validator = createValidator({
+    validate: (data) => Promise.resolve({ data, error: undefined }),
+  });
+  const a = vi.fn();
+
+  const Stub = createRemixStub([
+    {
+      path: "/",
+      Component: () => {
+        const form = useRvf({
+          validator,
+          method: "post",
+        });
+        return (
+          <form {...form.getFormProps()}>
+            <button
+              type="button"
+              data-testid="submit-action"
+              onClick={() => {
+                // jsdom doesn't handle submitters, so we'll do this manually
+                form.submit({
+                  formAction: "https://example.com/action",
+                });
+              }}
+            />
+          </form>
+        );
+      },
+    },
+    {
+      path: "/action",
+      async action({ request }) {
+        a();
+        await request.json();
+        return redirect("/");
+      },
+    },
+  ]);
+
+  render(<Stub />);
+
   await userEvent.click(screen.getByTestId("submit-action"));
   expect(a).toHaveBeenCalledTimes(1);
 });

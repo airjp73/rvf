@@ -110,11 +110,18 @@ export function useRvf<FormInputData extends FieldValues, FormOutputData>(
       return toPathObject(data as GenericObject);
     };
 
+    const getFormAction = () => {
+      if (!options?.formAction) return optsOrForm.action;
+      const url = new URL(options.formAction);
+      // https://github.com/remix-run/remix/issues/4423#issuecomment-1293015814
+      return url.pathname + url.search;
+    };
+
     return submitWithRemix(getData(), {
       replace: optsOrForm.replace,
       preventScrollReset: optsOrForm.preventScrollReset,
       relative: optsOrForm.relative,
-      action: options?.formAction ?? optsOrForm.action,
+      action: getFormAction(),
 
       // Technically not type safe, but it isn't really possible to make it so.
       // Can't really validate because remix doesn't provide a validator for it
