@@ -263,3 +263,5 @@ it("should correctly strip down fully qualified urls", async () => {
   await userEvent.click(screen.getByTestId("submit-action"));
   expect(a).toHaveBeenCalledTimes(1);
 });
+
+it.todo("should correctly handle submitting with a fetcher");
