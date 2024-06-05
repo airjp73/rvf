@@ -71,6 +71,9 @@ it("should use `dom` mode by default", async () => {
   expect(submit).toHaveBeenCalledWith({ foo: "456" }, expect.any(FormData), {});
 });
 
+// Maybe we need to do a manual fetch?
+it("should be possible to rely on 'native' form submission in DOM mode");
+
 it("should include data from the form submitter on submit", async () => {
   const submit = vi.fn();
   const TestComp = () => {
