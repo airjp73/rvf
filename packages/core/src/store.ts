@@ -112,6 +112,13 @@ type StoreState = {
   flags: StoreFlags;
 };
 
+export type SubmitterOptions = {
+  formEnctype?: string;
+  formMethod?: string;
+  formNoValidate?: boolean;
+  formAction?: string;
+};
+
 type StoreEvents = {
   onFieldChange: (
     fieldName: string,
@@ -122,7 +129,10 @@ type StoreEvents = {
     fieldName: string,
     validationBehaviorConfig?: ValidationBehaviorConfig,
   ) => void;
-  onSubmit: (submitterData?: Record<string, string>) => void;
+  onSubmit: (
+    submitterData?: Record<string, string>,
+    submitterOptions?: SubmitterOptions,
+  ) => void;
 };
 
 type StoreActions = {
@@ -138,14 +148,9 @@ type StoreActions = {
 
   getFormValuesForValidation: (opts?: {
     /**
-     * String data that should be injected into the `FormData` object in DOM mode.
+     * String data that should be injected into the form data object before preprocessing.
      */
     injectedData?: Record<string, string>;
-
-    /**
-     * Object data that should override the result from preprocessing the form data in DOM mode.
-     */
-    overrideData?: Record<string, unknown>;
   }) => [GenericObject, FormData] | [GenericObject];
   shouldValidate: (
     eventType: ValidationBehavior,
@@ -238,11 +243,18 @@ type StoreActions = {
 
 export type FormStoreValue = StoreState & StoreEvents & StoreActions;
 
-type StateSubmitter = (data: any) => void | Promise<void>;
-type DomSubmitter = (data: any, formData: FormData) => void | Promise<void>;
+export type StateSubmitHandler<Data = any> = (
+  data: Data,
+  submitterOptions: SubmitterOptions,
+) => void | Promise<void>;
+export type DomSubmitHandler<Data = any> = (
+  data: Data,
+  formData: FormData,
+  submitterOptions: SubmitterOptions,
+) => void | Promise<void>;
 export type MutableImplStore = {
   validator: Validator<any>;
-  onSubmit: StateSubmitter | DomSubmitter;
+  onSubmit: StateSubmitHandler | DomSubmitHandler;
 };
 
 const defaultValidationBehaviorConfig: ValidationBehaviorConfig = {
@@ -374,8 +386,9 @@ export const createFormStateStore = ({
       flags,
 
       /////// Validation
-      getFormValuesForValidation: ({ injectedData, overrideData } = {}) => {
-        if (get().submitSource === "state") return [get().values];
+      getFormValuesForValidation: ({ injectedData } = {}) => {
+        if (get().submitSource === "state")
+          return [{ ...get().values, ...injectedData }];
 
         const form = formRef.current;
         if (!form)
@@ -393,13 +406,6 @@ export const createFormStateStore = ({
         }
 
         const preprocessed = preprocessFormData(formData);
-
-        // For
-        if (overrideData) {
-          Object.entries(overrideData).forEach(([key, value]) => {
-            setPath(preprocessed, key, value);
-          });
-        }
 
         return [preprocessed, formData] as const;
       },
@@ -474,7 +480,6 @@ export const createFormStateStore = ({
 
       validateField: async (fieldName) => {
         const serializedData: Record<string, string> = {};
-        const overrideData: Record<string, unknown> = {};
 
         if (get().submitSource === "dom") {
           const state = get();
@@ -499,7 +504,6 @@ export const createFormStateStore = ({
 
         const [values] = get().getFormValuesForValidation({
           injectedData: serializedData,
-          overrideData,
         });
         const validationResult =
           await mutableImplStore.validator.validate(values);
@@ -622,7 +626,7 @@ export const createFormStateStore = ({
         }
       },
 
-      onSubmit: async (submitterData) => {
+      onSubmit: async (submitterData, submitterOptions = {}) => {
         const { disableFocusOnError } = get().flags;
         set((state) => {
           state.submitStatus = "submitting";
@@ -660,13 +664,17 @@ export const createFormStateStore = ({
 
         try {
           if (get().submitSource === "state") {
-            await (mutableImplStore.onSubmit as StateSubmitter)(result.data);
+            await (mutableImplStore.onSubmit as StateSubmitHandler)(
+              result.data,
+              submitterOptions,
+            );
           } else {
             if (!formData)
               throw new Error("Missing form data. This is likely a bug in RVF");
-            await (mutableImplStore.onSubmit as DomSubmitter)(
+            await (mutableImplStore.onSubmit as DomSubmitHandler)(
               result.data,
               formData,
+              submitterOptions,
             );
           }
           set((state) => {

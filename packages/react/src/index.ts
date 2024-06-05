@@ -15,6 +15,8 @@ export type {
   FieldValues,
   SubmitStatus,
   Rvf,
+  StateSubmitHandler,
+  DomSubmitHandler,
 } from "@rvf/core";
 export { type RvfReact, type FormFields } from "./base";
 export { useRvf, RvfOpts } from "./useRvf";

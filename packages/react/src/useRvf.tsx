@@ -6,6 +6,8 @@ import {
   Rvf,
   createRvf,
   registerFormElementEvents,
+  StateSubmitHandler,
+  DomSubmitHandler,
 } from "@rvf/core";
 import { RvfReact, useRvfInternal } from "./base";
 import { FieldErrors } from "@rvf/core";
@@ -13,14 +15,11 @@ import { FieldErrors } from "@rvf/core";
 type RvfSubmitOpts<FormOutputData> =
   | {
       submitSource?: "state";
-      handleSubmit: (data: FormOutputData) => Promise<void> | void;
+      handleSubmit: StateSubmitHandler<FormOutputData>;
     }
   | {
       submitSource: "dom";
-      handleSubmit?: (
-        data: FormOutputData,
-        formData: FormData,
-      ) => Promise<void> | void;
+      handleSubmit?: DomSubmitHandler<FormOutputData>;
     };
 
 export type RvfOpts<

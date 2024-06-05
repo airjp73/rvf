@@ -43,6 +43,7 @@ it("should be possible to use context to access the form", async () => {
   expect(submit).toHaveBeenCalledWith(
     { name: "Bobtest" },
     expect.any(FormData),
+    {},
   );
 });
 
@@ -86,5 +87,6 @@ it("should be possible to scope a context provider", async () => {
       personB: { name: "Jane Doe" },
     },
     expect.any(FormData),
+    {},
   );
 });

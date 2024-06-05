@@ -51,6 +51,7 @@ it("captures and submits with uncontrolled fields", async () => {
       },
     },
     expect.any(FormData),
+    {},
   );
 
   expect(screen.getByTestId("render-count")).toHaveTextContent("1");
@@ -91,6 +92,7 @@ it("should work with the component version of Field", async () => {
       foo: "bartesting 123",
     },
     expect.any(FormData),
+    {},
   );
 
   expect(screen.getByTestId("render-count")).toHaveTextContent("1");
@@ -140,6 +142,7 @@ it("captures and submits without registering uncontrolled inputs", async () => {
       },
     },
     expect.any(FormData),
+    {},
   );
 
   expect(screen.getByTestId("render-count")).toHaveTextContent("1");
@@ -195,6 +198,7 @@ it("validates and submits without registering uncontrolled inputs outside a form
   expect(submit).toHaveBeenCalledWith(
     { foo: "testing 123" },
     expect.any(FormData),
+    {},
   );
 
   expect(screen.getByTestId("render-count").textContent).toMatchInlineSnapshot(
@@ -238,6 +242,7 @@ it("should update `value` with auto-form", async () => {
       foo: "testing 123",
     },
     expect.any(FormData),
+    {},
   );
 });
 
@@ -288,6 +293,7 @@ it("should validate with auto-form", async () => {
       foo: "testing 123bro",
     },
     expect.any(FormData),
+    {},
   );
 });
 
@@ -328,6 +334,7 @@ it("shoud work correctly when no default values exist", async () => {
       baz: { a: "bob" },
     },
     expect.any(FormData),
+    {},
   );
 
   // Once for each keystroke + once for the initial render
@@ -569,6 +576,7 @@ it("should naturally work with boolean checkboxes", async () => {
   expect(submit).toHaveBeenCalledWith(
     { foo: "test-value" },
     expect.any(FormData),
+    {},
   );
 
   expect(screen.getByTestId("render-count")).toHaveTextContent("1");
@@ -645,6 +653,7 @@ it("should naturally work with checkbox groups", async () => {
       foo: ["foo", "baz"],
     },
     expect.any(FormData),
+    {},
   );
 
   expect(screen.getByTestId("render-count")).toHaveTextContent("1");
@@ -710,6 +719,7 @@ it("should naturally work with radio groups", async () => {
       foo: "bar",
     },
     expect.any(FormData),
+    {},
   );
 
   expect(screen.getByTestId("render-count")).toHaveTextContent("1");
@@ -748,6 +758,7 @@ it("should auto-connect fields outside of the form", async () => {
   expect(submit).toHaveBeenCalledWith(
     { foo: "bartesting 123" },
     expect.any(FormData),
+    {},
   );
 });
 
@@ -786,7 +797,7 @@ it("should work with selects", async () => {
 
   await userEvent.click(screen.getByTestId("submit"));
   expect(submit).toHaveBeenCalledTimes(1);
-  expect(submit).toHaveBeenCalledWith({ foo: "baz" });
+  expect(submit).toHaveBeenCalledWith({ foo: "baz" }, {});
 });
 
 it("should be able to set the value of an uncontrolled select", async () => {
@@ -827,7 +838,7 @@ it("should be able to set the value of an uncontrolled select", async () => {
 
   await userEvent.click(screen.getByTestId("submit"));
   expect(submit).toHaveBeenCalledTimes(1);
-  expect(submit).toHaveBeenCalledWith({ foo: "baz" });
+  expect(submit).toHaveBeenCalledWith({ foo: "baz" }, {});
 });
 
 it.todo("should handle multiple uncontrolled text inputs with the same name");

@@ -17,6 +17,7 @@ import {
   getFormAction,
   getFormId,
   registerFormElementEvents,
+  SubmitterOptions,
 } from "@rvf/core";
 import {
   StringToPathTuple,
@@ -43,6 +44,11 @@ interface FormProps {
   ref: React.Ref<HTMLFormElement>;
   id: string;
 }
+
+export type ManualSubmitOption = SubmitterOptions & {
+  name?: string;
+  value?: string;
+};
 
 export interface RvfReact<FormInputData> {
   /**
@@ -304,7 +310,7 @@ export interface RvfReact<FormInputData> {
   /**
    * Pass this to your form's `onSubmit` handler.
    */
-  submit: () => void;
+  submit: (option?: ManualSubmitOption) => void;
 }
 
 export type BaseRvfReactParams<FormInputData> = {
@@ -475,7 +481,14 @@ export const makeBaseRvfReact = <FormInputData,>({
             ? { [submitter.name]: submitter.value }
             : undefined;
 
-        transientState().onSubmit(submitterData);
+        const submitterOptions = {
+          formEnctype: submitter?.formEnctype,
+          formMethod: submitter?.formMethod,
+          formNoValidate: submitter?.formNoValidate,
+          formAction: submitter?.formAction,
+        } satisfies SubmitterOptions;
+
+        transientState().onSubmit(submitterData, submitterOptions);
       },
       onReset: (event) => {
         formProps.onReset?.(event);
@@ -492,8 +505,19 @@ export const makeBaseRvfReact = <FormInputData,>({
       },
     }),
 
-    submit: () => {
-      trackedState.onSubmit();
+    submit: (options) => {
+      const submitterData =
+        options?.name && options?.value
+          ? { [options.name]: options.value }
+          : undefined;
+
+      const submitterOptions = {
+        formEnctype: options?.formEnctype,
+        formMethod: options?.formMethod,
+        formNoValidate: options?.formNoValidate,
+        formAction: options?.formAction,
+      };
+      trackedState.onSubmit(submitterData, submitterOptions);
     },
   };
 };

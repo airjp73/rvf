@@ -10,9 +10,13 @@ import {
   useRemixSubmit,
   useSubmitComplete,
 } from "./remix-submission-handling";
-import { FetcherWithComponents, SubmitOptions } from "@remix-run/react";
+import {
+  FetcherWithComponents,
+  FormEncType,
+  SubmitOptions,
+} from "@remix-run/react";
 import { toPathObject } from "../../set-get";
-import { GenericObject } from "@rvf/core";
+import { GenericObject, SubmitterOptions } from "@rvf/core";
 
 type PartialProps<T, Props extends keyof T> = Omit<T, Props> &
   Partial<Pick<T, Props>>;
@@ -69,7 +73,22 @@ export function useRvf<FormInputData extends FieldValues, FormOutputData>(
 
   const submitSource = optsOrForm.submitSource ?? ("dom" as const);
 
-  const handleSubmission = (data: FormOutputData, formData?: FormData) => {
+  const handleSubmission = (
+    data: FormOutputData,
+    formDataOrOptions?: FormData | SubmitterOptions,
+    maybeOptions?: SubmitterOptions,
+  ) => {
+    const { formData, options } =
+      submitSource === "state"
+        ? {
+            formData: undefined,
+            options: formDataOrOptions as SubmitterOptions,
+          }
+        : {
+            formData: formDataOrOptions as FormData,
+            options: maybeOptions,
+          };
+
     const handleSubmit = optsOrForm.handleSubmit as
       | ((data: FormOutputData, formData: FormData) => Promise<void>)
       | undefined;
@@ -92,12 +111,17 @@ export function useRvf<FormInputData extends FieldValues, FormOutputData>(
     };
 
     return submitWithRemix(getData(), {
-      method: optsOrForm.method,
       replace: optsOrForm.replace,
       preventScrollReset: optsOrForm.preventScrollReset,
       relative: optsOrForm.relative,
-      action: optsOrForm.action,
-      encType: optsOrForm.encType,
+      action: options?.formAction ?? optsOrForm.action,
+
+      // Technically not type safe, but it isn't really possible to make it so.
+      // Can't really validate because remix doesn't provide a validator for it
+      // and I don't want to hardcode the types.
+      method:
+        (options?.formMethod as typeof optsOrForm.method) ?? optsOrForm.method,
+      encType: (options?.formEnctype as FormEncType) ?? optsOrForm.encType,
     });
   };
 

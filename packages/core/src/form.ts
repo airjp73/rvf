@@ -5,11 +5,13 @@ import {
   Validator,
 } from "./types";
 import {
+  DomSubmitHandler,
   FieldSerializer,
   FormStoreValue,
   MutableImplStore,
   RefStore,
   ResolverQueue,
+  StateSubmitHandler,
   StoreFlags,
   StoreFormProps,
   createFormStateStore,
@@ -39,7 +41,7 @@ type FormInit<FormInputData extends FieldValues, FormOutputData> = {
   serverValidationErrors: FieldErrors;
   validator: Validator<FormOutputData>;
   validationBehaviorConfig?: ValidationBehaviorConfig;
-  onSubmit: (data: FormOutputData) => Promise<void>;
+  onSubmit: StateSubmitHandler | DomSubmitHandler;
   formProps: StoreFormProps;
   flags: StoreFlags;
 } & SubmitTypes<FormOutputData>;

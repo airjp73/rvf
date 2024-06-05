@@ -35,6 +35,7 @@ it("should be possible to use useField with a scoped form", async () => {
       foo: "footest",
     },
     expect.any(FormData),
+    {},
   );
 });
 
@@ -73,6 +74,7 @@ it("should be possible to use useField with context", async () => {
       foo: "footest",
     },
     expect.any(FormData),
+    {},
   );
 });
 
@@ -115,6 +117,7 @@ it("should be possible to use useField with scoped context", async () => {
       },
     },
     expect.any(FormData),
+    {},
   );
 });
 
@@ -144,5 +147,9 @@ it("should work naturally with DOM submit source", async () => {
   await userEvent.type(screen.getByTestId("foo"), "test");
   await userEvent.click(screen.getByTestId("submit"));
   expect(submit).toHaveBeenCalledTimes(1);
-  expect(submit).toHaveBeenCalledWith({ foo: "footest" }, expect.any(FormData));
+  expect(submit).toHaveBeenCalledWith(
+    { foo: "footest" },
+    expect.any(FormData),
+    {},
+  );
 });

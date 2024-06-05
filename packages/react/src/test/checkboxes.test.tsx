@@ -83,5 +83,6 @@ it("should be able to set the value of an uncontrolled checkbox group when indiv
       foo: ["bar", "baz"],
     },
     expect.any(FormData),
+    {},
   );
 });

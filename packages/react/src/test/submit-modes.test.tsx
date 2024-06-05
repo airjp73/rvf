@@ -36,7 +36,7 @@ it("should use the form itself as the source of truth for `dom` mode", async () 
   ).toEqual({ foo: "456" });
 
   expect(submit).toHaveBeenCalledTimes(1);
-  expect(submit).toHaveBeenCalledWith({ foo: "456" }, expect.any(FormData));
+  expect(submit).toHaveBeenCalledWith({ foo: "456" }, expect.any(FormData), {});
 });
 
 it("should use `dom` mode by default", async () => {
@@ -68,11 +68,56 @@ it("should use `dom` mode by default", async () => {
   ).toEqual({ foo: "456" });
 
   expect(submit).toHaveBeenCalledTimes(1);
-  expect(submit).toHaveBeenCalledWith({ foo: "456" }, expect.any(FormData));
+  expect(submit).toHaveBeenCalledWith({ foo: "456" }, expect.any(FormData), {});
 });
 
-// This will have to be tested in cypress because jsdom doesn't handle it
-it.todo("should include data from the form submitter on submit in `dom` mode");
+it("should include data from the form submitter on submit", async () => {
+  const submit = vi.fn();
+  const TestComp = () => {
+    const form = useRvf({
+      submitSource: "state",
+      defaultValues: {
+        foo: 123,
+      },
+      validator: successValidator,
+      handleSubmit: submit,
+    });
+
+    return (
+      <form {...form.getFormProps()} data-testid="form">
+        <input readOnly data-testid="foo" value="456" name="foo" />
+        <button
+          type="button"
+          data-testid="submit"
+          onClick={() => {
+            // Submitting manually because jsdom doesn't handle submitters
+            form.submit({
+              name: "submitterValue",
+              value: "foobar",
+            });
+          }}
+        />
+      </form>
+    );
+  };
+
+  render(<TestComp />);
+
+  await userEvent.click(screen.getByTestId("submit"));
+  expect(successValidator.validate).toHaveBeenCalledTimes(1);
+  expect(successValidator.validate).toHaveBeenCalledWith({
+    foo: 123,
+    submitterValue: "foobar",
+  });
+  expect(submit).toHaveBeenCalledTimes(1);
+  expect(submit).toHaveBeenCalledWith(
+    {
+      foo: 123,
+      submitterValue: "foobar",
+    },
+    {},
+  );
+});
 
 it("should use state as the source of truth for state mode", async () => {
   const submit = vi.fn();
@@ -102,9 +147,12 @@ it("should use state as the source of truth for state mode", async () => {
     foo: 123,
   });
   expect(submit).toHaveBeenCalledTimes(1);
-  expect(submit).toHaveBeenCalledWith({
-    foo: 123,
-  });
+  expect(submit).toHaveBeenCalledWith(
+    {
+      foo: 123,
+    },
+    {},
+  );
 });
 
 it("should respect changes to the submit source", async () => {
@@ -140,12 +188,19 @@ it("should respect changes to the submit source", async () => {
 
   await userEvent.click(screen.getByTestId("submit"));
   expect(submit).toHaveBeenCalledTimes(1);
-  expect(submit).toHaveBeenCalledWith({
-    foo: 123,
-  });
+  expect(submit).toHaveBeenCalledWith(
+    {
+      foo: 123,
+    },
+    {},
+  );
 
   await userEvent.click(screen.getByTestId("switch"));
   await userEvent.click(screen.getByTestId("submit"));
   expect(submit).toHaveBeenCalledTimes(2);
-  expect(submit).toHaveBeenLastCalledWith({ foo: "456" }, expect.any(FormData));
+  expect(submit).toHaveBeenLastCalledWith(
+    { foo: "456" },
+    expect.any(FormData),
+    {},
+  );
 });

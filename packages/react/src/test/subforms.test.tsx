@@ -58,6 +58,7 @@ it("should be able to create scoped subforms", async () => {
       },
     },
     expect.any(FormData),
+    {},
   );
 });
 
@@ -129,6 +130,7 @@ it("should be able to create subforms of arrays", async () => {
       ],
     },
     expect.any(FormData),
+    {},
   );
 });
 

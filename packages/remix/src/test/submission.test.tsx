@@ -1,15 +1,11 @@
-import { useActionData } from "@remix-run/react";
+import { json, useActionData } from "@remix-run/react";
 import { createRemixStub } from "@remix-run/testing";
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { createValidator } from "@rvf/core";
 import { useRvf } from "../useRvf";
 import { isValidationErrorResponse, validationError } from "../server";
-import {
-  ActionFunctionArgs,
-  unstable_createFileUploadHandler,
-  unstable_parseMultipartFormData,
-} from "@remix-run/node";
+import { ActionFunctionArgs } from "@remix-run/node";
 
 it("should submit data to the action in dom mode", async () => {
   const validator = createValidator({
@@ -162,4 +158,62 @@ it("should be able to submit state directly as form data", async () => {
   expect(a).toHaveBeenCalledWith({ foo: "bar", bar: { baz: ["123123"] } });
 });
 
-it.todo("should respect the formMethod of the submitter");
+it("should respect the formMethod of the submitter", async () => {
+  const validator = createValidator({
+    validate: (data) => Promise.resolve({ data, error: undefined }),
+  });
+  const a = vi.fn();
+  const l = vi.fn();
+
+  const Stub = createRemixStub([
+    {
+      path: "/",
+      Component: () => {
+        const form = useRvf({
+          validator,
+        });
+        return (
+          <form {...form.getFormProps()}>
+            <button
+              type="button"
+              data-testid="submit-action"
+              onClick={() => {
+                // jsdom doesn't handle submitters, so we'll do this manually
+                form.submit({
+                  formMethod: "post",
+                  formEnctype: "application/json",
+                });
+              }}
+            />
+            <button
+              type="button"
+              data-testid="submit-loader"
+              onClick={() => {
+                form.submit({ formMethod: "get" });
+              }}
+            />
+          </form>
+        );
+      },
+      async action({ request }) {
+        a();
+        await request.json();
+        return json({ message: "Action called" });
+      },
+      async loader() {
+        l();
+        return json({ message: "Loader called" });
+      },
+    },
+  ]);
+
+  render(<Stub />);
+
+  // This get's called once on linitial load
+  l.mockClear();
+
+  await userEvent.click(await screen.findByTestId("submit-loader"));
+  expect(l).toHaveBeenCalledTimes(1);
+  await userEvent.click(screen.getByTestId("submit-action"));
+  expect(a).toHaveBeenCalledTimes(1);
+});

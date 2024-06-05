@@ -54,6 +54,7 @@ it("provides a render prop to wire up the form", async () => {
       },
     },
     expect.any(FormData),
+    {},
   );
 
   expect(screen.getByTestId("render-count")).toHaveTextContent("1");
@@ -113,6 +114,7 @@ it("automatically provides context", async () => {
       },
     },
     expect.any(FormData),
+    {},
   );
 
   expect(screen.getByTestId("render-count")).toHaveTextContent("1");

@@ -30,7 +30,7 @@ it("should be able to submit file inputs", async () => {
   await userEvent.click(screen.getByTestId("submit"));
 
   expect(submit).toHaveBeenCalledTimes(1);
-  expect(submit).toHaveBeenCalledWith({ file }, expect.any(FormData));
+  expect(submit).toHaveBeenCalledWith({ file }, expect.any(FormData), {});
 });
 
 it("should be able to reset file inputs", async () => {
@@ -95,5 +95,5 @@ it("should not blow up when a file has a default value", async () => {
   await userEvent.click(screen.getByTestId("submit"));
 
   expect(submit).toHaveBeenCalledTimes(1);
-  expect(submit).toHaveBeenCalledWith({ file }, expect.any(FormData));
+  expect(submit).toHaveBeenCalledWith({ file }, expect.any(FormData), {});
 });

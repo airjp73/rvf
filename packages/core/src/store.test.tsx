@@ -85,7 +85,7 @@ describe("validation", () => {
     await new Promise((resolve) => setTimeout(resolve, 0));
     expect(store.getState().validationErrors).toEqual({});
     expect(onSubmit).toHaveBeenCalledTimes(1);
-    expect(onSubmit).toHaveBeenCalledWith({ transformed: "data" });
+    expect(onSubmit).toHaveBeenCalledWith({ transformed: "data" }, {});
   });
 
   it("should be possible to set the validation behavior on demand for a given event", async () => {

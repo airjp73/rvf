@@ -72,6 +72,7 @@ it("should validate on onBlur, then on change after that", async () => {
       baz: { a: "tes" },
     },
     expect.any(FormData),
+    {},
   );
 
   expect(screen.getByTestId("foo-error")).toBeEmptyDOMElement();
@@ -165,6 +166,7 @@ it("should validate on onSubmit, if validationBehavior is onSubmit", async () =>
       baz: { a: "tes" },
     },
     expect.any(FormData),
+    {},
   );
 
   expect(screen.getByTestId("foo-error")).toBeEmptyDOMElement();

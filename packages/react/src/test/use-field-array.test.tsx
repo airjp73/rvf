@@ -41,6 +41,7 @@ it("should be possible to use useFieldArray with a scoped form", async () => {
       foo: ["footest"],
     },
     expect.any(FormData),
+    {},
   );
 });
 
@@ -81,6 +82,7 @@ it("should be possible to use useFieldArray with context", async () => {
       foo: ["footest"],
     },
     expect.any(FormData),
+    {},
   );
 });
 
@@ -125,6 +127,7 @@ it("should be possible to use useFieldArray with scoped context", async () => {
       },
     },
     expect.any(FormData),
+    {},
   );
 });
 
@@ -163,5 +166,6 @@ it("should work naturally with DOM submit source", async () => {
   expect(submit).toHaveBeenCalledWith(
     { foo: ["footest"] },
     expect.any(FormData),
+    {},
   );
 });

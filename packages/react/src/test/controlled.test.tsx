@@ -50,6 +50,7 @@ it("captures and submits with controlled fields", async () => {
       },
     },
     expect.any(FormData),
+    {},
   );
 
   // Once for each keystroke + once for the initial render
@@ -93,6 +94,7 @@ it("shoud work correctly when no default values exist", async () => {
       baz: { a: "bob" },
     },
     expect.any(FormData),
+    {},
   );
 
   // Once for each keystroke + once for the initial render
