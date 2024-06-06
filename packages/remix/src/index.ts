@@ -32,6 +32,7 @@ export {
   type RvfProviderProps,
   useRvfContext,
   useRvfOrContext,
+  isValidationErrorResponse,
 } from "@rvf/react";
 export { useRvf, type RvfRemixOpts } from "./useRvf";
 export { ValidatedForm, type ValidatedFormProps } from "./ValidatedForm";

@@ -42,6 +42,8 @@ type FormInit<FormInputData extends FieldValues, FormOutputData> = {
   validator: Validator<FormOutputData>;
   validationBehaviorConfig?: ValidationBehaviorConfig;
   onSubmit: StateSubmitHandler | DomSubmitHandler;
+  onSubmitSuccess: (responseData: unknown) => void;
+  onSubmitFailure: (error: unknown) => void;
   formProps: StoreFormProps;
   flags: StoreFlags;
 } & SubmitTypes<FormOutputData>;
@@ -73,6 +75,8 @@ export const createRvf = <FormInputData extends FieldValues, FormOutputData>({
   serverValidationErrors,
   validator,
   onSubmit,
+  onSubmitSuccess,
+  onSubmitFailure,
   validationBehaviorConfig,
   submitSource,
   formProps,
@@ -83,7 +87,12 @@ export const createRvf = <FormInputData extends FieldValues, FormOutputData>({
   const fieldSerializerRefs = createRefStore<FieldSerializer>();
   const resolvers = createResolverQueue();
   const formRef = { current: null as HTMLFormElement | null };
-  const mutableImplStore = { validator, onSubmit } satisfies MutableImplStore;
+  const mutableImplStore = {
+    validator,
+    onSubmit,
+    onSubmitSuccess,
+    onSubmitFailure,
+  } satisfies MutableImplStore;
   const store = createFormStateStore({
     defaultValues,
     serverValidationErrors,

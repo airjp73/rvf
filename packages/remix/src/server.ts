@@ -45,10 +45,6 @@ export function validationError(
   ) as TypedResponse<ValidationErrorResponseData>;
 }
 
-export const isValidationErrorResponse = <T extends GenericObject>(
-  response: T | ValidationErrorResponseData,
-): response is ValidationErrorResponseData => "fieldErrors" in response;
-
 export type FormDefaults = {
   [formDefaultsKey: FormDefaultsKey]: any;
 };

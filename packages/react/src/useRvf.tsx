@@ -12,19 +12,22 @@ import {
 import { RvfReact, useRvfInternal } from "./base";
 import { FieldErrors } from "@rvf/core";
 
-type RvfSubmitOpts<FormOutputData> =
+const noOp = () => {};
+
+type RvfSubmitOpts<FormOutputData, ResponseData> =
   | {
       submitSource?: "state";
-      handleSubmit: StateSubmitHandler<FormOutputData>;
+      handleSubmit: StateSubmitHandler<FormOutputData, ResponseData>;
     }
   | {
       submitSource: "dom";
-      handleSubmit?: DomSubmitHandler<FormOutputData>;
+      handleSubmit?: DomSubmitHandler<FormOutputData, ResponseData>;
     };
 
 export type RvfOpts<
   FormInputData extends FieldValues = FieldValues,
   FormOutputData = never,
+  SubmitResponseData = unknown,
 > = {
   /**
    * The initial values of the form.
@@ -66,7 +69,18 @@ export type RvfOpts<
    * Disables the default behavior of focusing the first invalid field when a submit fails due to validation errors.
    */
   disableFocusOnError?: boolean;
-} & RvfSubmitOpts<FormOutputData>;
+
+  /**
+   * Called when the form is successfully submitted using `handleSubmit`.
+   */
+  onSubmitSuccess?: (handleSubmitResponse: NoInfer<SubmitResponseData>) => void;
+
+  /**
+   * Called when handleSubmit throws an error, and provides the error from the handleSubmit function.
+   * This will not be called if the validator prevents the submission from happening.
+   */
+  onSubmitFailure?: (error: unknown) => void;
+} & RvfSubmitOpts<FormOutputData, SubmitResponseData>;
 
 const isRvf = (form: any): form is Rvf<any> =>
   "__brand__" in form && form.__brand__ === "rvf";
@@ -93,6 +107,12 @@ export function useRvf(
 ): RvfReact<any> {
   const validator = isRvf(optsOrForm) ? undefined : optsOrForm.validator;
   const onSubmit = isRvf(optsOrForm) ? undefined : optsOrForm.handleSubmit;
+  const onSubmitSuccess = isRvf(optsOrForm)
+    ? undefined
+    : optsOrForm.onSubmitSuccess;
+  const onSubmitFailure = isRvf(optsOrForm)
+    ? undefined
+    : optsOrForm.onSubmitFailure;
   const isWholeForm = isRvf(optsOrForm);
   const submitSource = isRvf(optsOrForm) ? undefined : optsOrForm.submitSource;
   const action = isRvf(optsOrForm) ? undefined : optsOrForm.action;
@@ -116,6 +136,8 @@ export function useRvf(
       serverValidationErrors: serverValidationErrors ?? {},
       validator: optsOrForm.validator,
       onSubmit: optsOrForm.handleSubmit as never,
+      onSubmitSuccess: optsOrForm.onSubmitSuccess ?? noOp,
+      onSubmitFailure: optsOrForm.onSubmitFailure ?? noOp,
       validationBehaviorConfig: optsOrForm.validationBehaviorConfig,
       submitSource: optsOrForm.submitSource ?? "dom",
       formProps: {
@@ -148,8 +170,17 @@ export function useRvf(
     Object.assign(form.__store__.mutableImplStore, {
       validator: validator as any,
       onSubmit,
+      onSubmitSuccess,
+      onSubmitFailure,
     });
-  }, [validator, onSubmit, isWholeForm, form.__store__.mutableImplStore]);
+  }, [
+    validator,
+    onSubmit,
+    isWholeForm,
+    form.__store__.mutableImplStore,
+    onSubmitSuccess,
+    onSubmitFailure,
+  ]);
 
   useEffect(() => {
     if (isWholeForm) return;

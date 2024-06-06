@@ -1,5 +1,9 @@
-import { CreateValidatorArg, Validator } from "./types";
-import { preprocessFormData } from "./native-form-data/flatten";
+import {
+  CreateValidatorArg,
+  ValidationErrorResponseData,
+  Validator,
+} from "./types";
+import { GenericObject, preprocessFormData } from "./native-form-data/flatten";
 import { FORM_ID_FIELD_NAME } from "./constants";
 
 /**
@@ -38,3 +42,7 @@ export function createValidator<T>(
     },
   };
 }
+
+export const isValidationErrorResponse = <T extends GenericObject>(
+  response: T | ValidationErrorResponseData,
+): response is ValidationErrorResponseData => "fieldErrors" in response;

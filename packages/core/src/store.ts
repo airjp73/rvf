@@ -243,18 +243,21 @@ type StoreActions = {
 
 export type FormStoreValue = StoreState & StoreEvents & StoreActions;
 
-export type StateSubmitHandler<Data = any> = (
+export type StateSubmitHandler<Data = any, ResponseData = any> = (
   data: Data,
   submitterOptions: SubmitterOptions,
-) => void | Promise<void>;
-export type DomSubmitHandler<Data = any> = (
+) => void | Promise<ResponseData>;
+export type DomSubmitHandler<Data = any, ResponseData = any> = (
   data: Data,
   formData: FormData,
   submitterOptions: SubmitterOptions,
-) => void | Promise<void>;
+) => void | Promise<ResponseData>;
+
 export type MutableImplStore = {
   validator: Validator<any>;
   onSubmit: StateSubmitHandler | DomSubmitHandler;
+  onSubmitSuccess: (responseData: unknown) => void;
+  onSubmitFailure: (error: unknown) => void;
 };
 
 const defaultValidationBehaviorConfig: ValidationBehaviorConfig = {
@@ -663,27 +666,32 @@ export const createFormStateStore = ({
         }
 
         try {
+          let response: unknown;
           if (get().submitSource === "state") {
-            await (mutableImplStore.onSubmit as StateSubmitHandler)(
+            response = await (mutableImplStore.onSubmit as StateSubmitHandler)(
               result.data,
               submitterOptions,
             );
           } else {
+            console.log("submitting");
             if (!formData)
               throw new Error("Missing form data. This is likely a bug in RVF");
-            await (mutableImplStore.onSubmit as DomSubmitHandler)(
+            response = await (mutableImplStore.onSubmit as DomSubmitHandler)(
               result.data,
               formData,
               submitterOptions,
             );
           }
+
           set((state) => {
             state.submitStatus = "success";
           });
+          mutableImplStore.onSubmitSuccess?.(response);
         } catch (err) {
           set((state) => {
             state.submitStatus = "error";
           });
+          mutableImplStore.onSubmitFailure?.(err);
         }
       },
 
