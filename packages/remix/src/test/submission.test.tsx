@@ -1,4 +1,4 @@
-import { json, redirect, useActionData } from "@remix-run/react";
+import { json, redirect, useActionData, useFetcher } from "@remix-run/react";
 import { createRemixStub } from "@remix-run/testing";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -264,4 +264,46 @@ it("should correctly strip down fully qualified urls", async () => {
   expect(a).toHaveBeenCalledTimes(1);
 });
 
-it.todo("should correctly handle submitting with a fetcher");
+it("should correctly handle submitting with a fetcher", async () => {
+  const validator = createValidator({
+    validate: (data) => Promise.resolve({ data, error: undefined }),
+  });
+
+  const action = async ({ request }: ActionFunctionArgs) => {
+    const data = await validator.validate(await request.formData());
+    if (data.error) return validationError(data.error);
+    return { message: `You said: ${data.data.foo}` };
+  };
+
+  const Stub = createRemixStub([
+    {
+      path: "/",
+      Component: () => {
+        const fetcher = useFetcher<typeof action>();
+        const form = useRvf({
+          fetcher,
+          defaultValues: { foo: "" },
+          validator,
+          method: "post",
+        });
+        return (
+          <form {...form.getFormProps()}>
+            {fetcher.data && !isValidationErrorResponse(fetcher.data) && (
+              <p>{fetcher.data.message}</p>
+            )}
+            <input data-testid="foo" {...form.field("foo").getInputProps()} />
+            <button type="submit" data-testid="submit" />
+          </form>
+        );
+      },
+      action,
+    },
+  ]);
+
+  render(<Stub />);
+
+  await userEvent.type(screen.getByTestId("foo"), "bar");
+  await userEvent.click(screen.getByTestId("submit"));
+
+  expect(await screen.findByText("You said: bar")).toBeInTheDocument();
+});
