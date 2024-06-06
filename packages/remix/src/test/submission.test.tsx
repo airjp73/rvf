@@ -6,6 +6,7 @@ import { createValidator } from "@rvf/core";
 import { useRvf } from "../useRvf";
 import { isValidationErrorResponse, validationError } from "../server";
 import { ActionFunctionArgs } from "@remix-run/node";
+import { ValidatedForm } from "../ValidatedForm";
 
 it("should submit data to the action in dom mode", async () => {
   const validator = createValidator({
@@ -214,6 +215,77 @@ it("should respect the formMethod of the submitter", async () => {
 
   await userEvent.click(await screen.findByTestId("submit-loader"));
   expect(l).toHaveBeenCalledTimes(1);
+  await userEvent.click(screen.getByTestId("submit-action"));
+  expect(a).toHaveBeenCalledTimes(1);
+});
+
+it("should respect the specified action", async () => {
+  const validator = createValidator({
+    validate: (data) => Promise.resolve({ data, error: undefined }),
+  });
+  const a = vi.fn();
+
+  const Stub = createRemixStub([
+    {
+      path: "/",
+      Component: () => {
+        const form = useRvf({
+          validator,
+          method: "post",
+          action: "/action",
+        });
+        return (
+          <form {...form.getFormProps()}>
+            <button type="submit" data-testid="submit-action" />
+          </form>
+        );
+      },
+    },
+    {
+      path: "/action",
+      async action({ request }) {
+        a();
+        await request.json();
+        return redirect("/");
+      },
+    },
+  ]);
+
+  render(<Stub />);
+
+  await userEvent.click(screen.getByTestId("submit-action"));
+  expect(a).toHaveBeenCalledTimes(1);
+});
+
+it("should respect the specified action with the ValidatedForm component", async () => {
+  const validator = createValidator({
+    validate: (data) => Promise.resolve({ data, error: undefined }),
+  });
+  const a = vi.fn();
+
+  const Stub = createRemixStub([
+    {
+      path: "/",
+      Component: () => {
+        return (
+          <ValidatedForm validator={validator} method="post" action="/action">
+            <button type="submit" data-testid="submit-action" />
+          </ValidatedForm>
+        );
+      },
+    },
+    {
+      path: "/action",
+      async action({ request }) {
+        a();
+        await request.json();
+        return redirect("/");
+      },
+    },
+  ]);
+
+  render(<Stub />);
+
   await userEvent.click(screen.getByTestId("submit-action"));
   expect(a).toHaveBeenCalledTimes(1);
 });
