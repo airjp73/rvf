@@ -336,6 +336,44 @@ it("should correctly strip down fully qualified urls", async () => {
   expect(a).toHaveBeenCalledTimes(1);
 });
 
+it("should function correctly with nested urls", async () => {
+  const validator = createValidator({
+    validate: (data) => Promise.resolve({ data, error: undefined }),
+  });
+  const a = vi.fn();
+
+  const Stub = createRemixStub([
+    {
+      path: "/test/action",
+      Component: () => {
+        const form = useRvf({
+          validator,
+          method: "post",
+          action: "/test/action/route",
+        });
+        return (
+          <form {...form.getFormProps()}>
+            <button type="submit" data-testid="submit-action" />
+          </form>
+        );
+      },
+    },
+    {
+      path: "/test/action/route",
+      async action({ request }) {
+        a();
+        await request.json();
+        return redirect("/");
+      },
+    },
+  ]);
+
+  render(<Stub initialEntries={["/test/action"]} />);
+
+  await userEvent.click(screen.getByTestId("submit-action"));
+  expect(a).toHaveBeenCalledTimes(1);
+});
+
 it("should correctly handle submitting with a fetcher", async () => {
   const validator = createValidator({
     validate: (data) => Promise.resolve({ data, error: undefined }),

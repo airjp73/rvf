@@ -459,6 +459,7 @@ export const makeBaseRvfReact = <FormInputData,>({
     getFormProps: (formProps = {}) => ({
       ...formProps,
       id: getFormId(trackedState),
+      action: getFormAction(trackedState),
       onSubmit: (event) => {
         formProps.onSubmit?.(event);
         if (event.defaultPrevented) return;
@@ -489,8 +490,11 @@ export const makeBaseRvfReact = <FormInputData,>({
           submitterOptions.formMethod = submitter.formMethod;
         if (submitter?.formNoValidate)
           submitterOptions.formNoValidate = submitter.formNoValidate;
-        if (submitter?.formAction)
-          submitterOptions.formAction = submitter.formAction;
+
+        // The button will always have a `formAction` and it may be different from the form's `action`.
+        // What we really want to check is if the button has an explicit `formAction` attribute.
+        const buttonFormAction = submitter?.getAttribute("formAction");
+        if (buttonFormAction) submitterOptions.formAction = buttonFormAction;
 
         transientState().onSubmit(submitterData, submitterOptions);
       },
