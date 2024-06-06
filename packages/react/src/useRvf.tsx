@@ -88,8 +88,12 @@ const isRvf = (form: any): form is Rvf<any> =>
 /**
  * Create and use an `Rvf`.
  */
-export function useRvf<FormInputData extends FieldValues, FormOutputData>(
-  options: RvfOpts<FormInputData, FormOutputData>,
+export function useRvf<
+  FormInputData extends FieldValues,
+  FormOutputData,
+  SubmitResponseData,
+>(
+  options: RvfOpts<FormInputData, FormOutputData, SubmitResponseData>,
 ): RvfReact<FormInputData>;
 
 /**
