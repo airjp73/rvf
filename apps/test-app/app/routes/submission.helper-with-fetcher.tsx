@@ -19,6 +19,7 @@ export default function FrontendValidation() {
     method: "post",
     fetcher,
     formId: "test-form",
+    action: "/submission/helper-with-action/action",
   });
 
   return (

@@ -1,7 +1,7 @@
 import { DataFunctionArgs, json } from "@remix-run/node";
 import { useActionData } from "@remix-run/react";
 import { withYup } from "@rvf/yup";
-import { ValidatedForm, useRvf, validationError } from "@rvf/remix";
+import { RvfProvider, useRvf, validationError } from "@rvf/remix";
 import * as yup from "yup";
 import { Input } from "~/components/Input";
 
@@ -28,7 +28,7 @@ export default function FrontendValidation() {
   const data = useActionData<typeof action>();
 
   return (
-    <>
+    <RvfProvider scope={rvf.scope()}>
       {data && "message" in data && <h1>{data.message}</h1>}
       <form {...rvf.getFormProps()}>
         <Input name="name" label="Name" />
@@ -41,6 +41,6 @@ export default function FrontendValidation() {
           Submit with helper
         </button>
       </form>
-    </>
+    </RvfProvider>
   );
 }

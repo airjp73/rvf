@@ -36,7 +36,7 @@ export default function FrontendValidation() {
       <ValidatedForm
         validator={validator}
         method="post"
-        action="/submission/fetcher"
+        action="/submission/fetcher/action"
         fetcher={fetcher as any}
       >
         <SubmitButton
