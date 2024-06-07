@@ -31,13 +31,17 @@ export const ValidatedForm = <
   children,
   onSubmit,
   onReset,
+  onSubmitSuccess,
+  onSubmitFailure,
   ...rest
 }: ValidatedFormProps<FormInputData, FormOutputData>) => {
-  const rvf = useRvf<FormInputData, FormOutputData>({
+  const rvf = useRvf<FormInputData, FormOutputData, void>({
     defaultValues: defaultValues,
     validator,
     handleSubmit: handleSubmit as never,
     submitSource,
+    onSubmitSuccess,
+    onSubmitFailure,
     validationBehaviorConfig,
   });
 

@@ -30,7 +30,6 @@ export type RvfRemixOpts<
 > &
   SubmitOptions & {
     fetcher?: FetcherWithComponents<unknown>;
-    resetAfterSubmit?: boolean;
     onSubmitSuccess?: () => void;
     onSubmitFailure?: () => void;
   };
@@ -56,14 +55,6 @@ export function useRvf<FormInputData extends FieldValues, FormOutputData>(
 
   const fetcher = "fetcher" in optsOrForm ? optsOrForm.fetcher : undefined;
   const submitWithRemix = useRemixSubmit(fetcher);
-  const resetAfterSubmit =
-    "resetAfterSubmit" in optsOrForm ? optsOrForm.resetAfterSubmit : undefined;
-  const hasActiveSubmission = useHasActiveFormSubmit(fetcher);
-  useSubmitComplete(hasActiveSubmission, () => {
-    if (resetAfterSubmit) {
-      rvf.resetForm();
-    }
-  });
 
   // We're not actually breaking the rules here, because both branches have the same hook calls.
   // it's just easier for the types to put the whole hook call in the conditional.
