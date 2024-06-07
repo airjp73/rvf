@@ -673,7 +673,6 @@ export const createFormStateStore = ({
               submitterOptions,
             );
           } else {
-            console.log("submitting");
             if (!formData)
               throw new Error("Missing form data. This is likely a bug in RVF");
             response = await (mutableImplStore.onSubmit as DomSubmitHandler)(
