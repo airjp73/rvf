@@ -7,6 +7,7 @@ import { useRvf } from "../useRvf";
 import { validationError } from "../server";
 import { ActionFunctionArgs } from "@remix-run/node";
 import { ValidatedForm } from "../ValidatedForm";
+import { useRemixFormResponse } from "../auto-server-hooks";
 
 it("should submit data to the action in dom mode", async () => {
   const validator = createValidator({
@@ -416,4 +417,99 @@ it("should correctly handle submitting with a fetcher", async () => {
   await userEvent.click(screen.getByTestId("submit"));
 
   expect(await screen.findByText("You said: bar")).toBeInTheDocument();
+});
+
+it("should call onSubmitSuccess when the call is complete", async () => {
+  const success = vi.fn();
+  const validator = createValidator({
+    validate: (data) => Promise.resolve({ data, error: undefined }),
+  });
+
+  const action = async ({ request }: ActionFunctionArgs) => {
+    const data = await validator.validate(await request.formData());
+    if (data.error) return validationError(data.error);
+    return { message: `You said: ${data.data.foo}` };
+  };
+
+  const Stub = createRemixStub([
+    {
+      path: "/",
+      Component: () => {
+        const fetcher = useFetcher<typeof action>();
+        const form = useRvf({
+          fetcher,
+          defaultValues: { foo: "" },
+          validator,
+          method: "post",
+          onSubmitSuccess: success,
+        });
+        return (
+          <form {...form.getFormProps()}>
+            {fetcher.data && !isValidationErrorResponse(fetcher.data) && (
+              <p>{fetcher.data.message}</p>
+            )}
+            <input data-testid="foo" {...form.field("foo").getInputProps()} />
+            <button type="submit" data-testid="submit" />
+          </form>
+        );
+      },
+      action,
+    },
+  ]);
+
+  render(<Stub />);
+
+  await userEvent.type(screen.getByTestId("foo"), "bar");
+  await userEvent.click(screen.getByTestId("submit"));
+
+  expect(await screen.findByText("You said: bar")).toBeInTheDocument();
+  expect(success).toHaveBeenCalledTimes(1);
+});
+
+it("should call onSubmitSucces even when the call returns a validation error", async () => {
+  const success = vi.fn();
+  const failure = vi.fn();
+  const validator = createValidator({
+    validate: (data) => Promise.resolve({ data, error: undefined }),
+  });
+
+  const action = async () => {
+    return validationError({
+      fieldErrors: { foo: "validation error" },
+    });
+  };
+
+  const Stub = createRemixStub([
+    {
+      path: "/",
+      Component: () => {
+        const response = useRemixFormResponse();
+        const form = useRvf({
+          ...response.getRvfOpts(),
+          defaultValues: { foo: "" },
+          validator,
+          method: "post",
+          onSubmitSuccess: success,
+          onSubmitFailure: failure,
+        });
+        return (
+          <form {...form.getFormProps()}>
+            <input data-testid="foo" {...form.field("foo").getInputProps()} />
+            <pre>{form.error("foo")}</pre>
+            <button type="submit" data-testid="submit" />
+          </form>
+        );
+      },
+      action,
+    },
+  ]);
+
+  render(<Stub />);
+
+  await userEvent.type(screen.getByTestId("foo"), "bar");
+  await userEvent.click(screen.getByTestId("submit"));
+
+  expect(await screen.findByText("validation error")).toBeInTheDocument();
+  expect(success).toHaveBeenCalledTimes(1);
+  expect(failure).not.toHaveBeenCalled();
 });

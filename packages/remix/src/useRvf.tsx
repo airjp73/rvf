@@ -26,11 +26,13 @@ export type RvfRemixOpts<
   FormOutputData,
 > = PartialProps<
   Omit<RvfOpts<FormInputData, FormOutputData>, keyof SubmitOptions>,
-  "handleSubmit"
+  "handleSubmit" | "onSubmitSuccess" | "onSubmitFailure"
 > &
   SubmitOptions & {
     fetcher?: FetcherWithComponents<unknown>;
     resetAfterSubmit?: boolean;
+    onSubmitSuccess?: () => void;
+    onSubmitFailure?: () => void;
   };
 
 /**
@@ -132,10 +134,11 @@ export function useRvf<FormInputData extends FieldValues, FormOutputData>(
     });
   };
 
-  rvf = useRvfReact<FormInputData, FormOutputData>({
+  rvf = useRvfReact<FormInputData, FormOutputData, void>({
     ...optsOrForm,
     submitSource,
-    handleSubmit: handleSubmission as never,
+    handleSubmit:
+      (optsOrForm.handleSubmit as never) ?? (handleSubmission as never),
   });
   return rvf;
   /* eslint-enable */

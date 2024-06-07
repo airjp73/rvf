@@ -10,7 +10,7 @@ it("should call onSubmitSuccess", async () => {
 
   const TestComp = () => {
     const form = useRvf({
-      submitSource: "state",
+      submitSource: "dom",
       defaultValues: { foo: 123 },
       validator: successValidator as Validator<{ foo: number }>,
 
