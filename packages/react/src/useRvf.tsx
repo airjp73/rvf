@@ -73,7 +73,7 @@ export type RvfOpts<
   /**
    * Called when the form is successfully submitted using `handleSubmit`.
    */
-  onSubmitSuccess?: (handleSubmitResponse: NoInfer<SubmitResponseData>) => void;
+  onSubmitSuccess?: (handleSubmitResponse: SubmitResponseData) => void;
 
   /**
    * Called when handleSubmit throws an error, and provides the error from the handleSubmit function.

@@ -14,14 +14,14 @@ it("should call onSubmitSuccess", async () => {
       defaultValues: { foo: 123 },
       validator: successValidator as Validator<{ foo: number }>,
 
-      onSubmitSuccess: (res) => {
-        expectTypeOf(res).toEqualTypeOf<{ bar: string }>();
-        submitSuccess(res);
-      },
       handleSubmit: async (data) => {
         return {
           bar: "baz",
         };
+      },
+      onSubmitSuccess: (res) => {
+        expectTypeOf(res).toEqualTypeOf<{ bar: string }>();
+        submitSuccess(res);
       },
     });
 
