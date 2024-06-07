@@ -6,8 +6,10 @@ import { RvfProvider } from "./context";
 export type ValidatedFormProps<
   FormInputData extends FieldValues,
   FormOutputData,
-> = RvfOpts<FormInputData, FormOutputData> &
+> = Omit<RvfOpts<FormInputData, FormOutputData>, "formId"> &
   Omit<React.ComponentProps<"form">, "children"> & {
+    id?: string;
+
     /**
      * A ref to the form element.
      */
@@ -25,6 +27,10 @@ export const ValidatedForm = <
   validator,
   formRef,
   defaultValues,
+  serverValidationErrors,
+  action,
+  id,
+  disableFocusOnError,
   handleSubmit,
   submitSource,
   validationBehaviorConfig,
@@ -37,6 +43,10 @@ export const ValidatedForm = <
 }: ValidatedFormProps<FormInputData, FormOutputData>) => {
   const rvf = useRvf<FormInputData, FormOutputData, void>({
     defaultValues: defaultValues,
+    serverValidationErrors,
+    action,
+    formId: id,
+    disableFocusOnError,
     validator,
     handleSubmit: handleSubmit as never,
     submitSource,

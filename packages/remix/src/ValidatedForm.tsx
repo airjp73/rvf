@@ -29,7 +29,7 @@ export type ValidatedFormProps<
   Subaction extends string | undefined,
 > = Omit<
   RvfRemixOpts<FormInputData, FormOutputData>,
-  "submitSource" | "handleSubmit"
+  "submitSource" | "handleSubmit" | "serverValidationErrors"
 > &
   Omit<React.ComponentProps<"form">, "children"> & {
     /**
@@ -72,6 +72,9 @@ export const ValidatedForm = <
   state,
   fetcher,
   subaction,
+  onSubmitSuccess,
+  onSubmitFailure,
+  disableFocusOnError,
   ...rest
 }: ValidatedFormProps<FormInputData, FormOutputData, Subaction>) => {
   const remix = useRemixFormResponse({
@@ -83,11 +86,16 @@ export const ValidatedForm = <
 
   const rvf = useRvf<FormInputData, FormOutputData>({
     ...remix.getRvfOpts(),
+    defaultValues: defaultValues,
+    action,
+    formId: id,
+    disableFocusOnError,
     validator,
     handleSubmit: handleSubmit as never,
     submitSource,
+    onSubmitSuccess,
+    onSubmitFailure,
     validationBehaviorConfig,
-    action,
     method,
     replace,
     preventScrollReset,
