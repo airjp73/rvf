@@ -22,7 +22,8 @@ body:
     attributes:
       label: Which packages are impacted?
       options:
-        - label: "`remix-validated-form`"
+        - label: "`@rvf/react`"
+        - label: "`@rvf/remix`"
         - label: "`@rvf/zod`"
         - label: "`@rvf/yup`"
         - label: "`zod-form-data`"
@@ -30,7 +31,8 @@ body:
     attributes:
       label: What version of these packages are you using?
       placeholder: |
-        - `remix-validated-form`: ^0.0.0
+        - `@rvf/react`: ^0.0.0
+        - `@rvf/remix`: ^0.0.0
         - `@rvf/zod`: ^0.0.0
         - `@rvf/yup`: ^0.0.0
         - `zod-form-data`: ^0.0.0
