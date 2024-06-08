@@ -1,9 +1,8 @@
 import { DataFunctionArgs, json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import { withYup } from "@rvf/yup";
-import { ValidatedForm, useRvf } from "@rvf/remix";
+import { useRvf } from "@rvf/remix";
 import * as yup from "yup";
-import { SubmitButton } from "~/components/SubmitButton";
 import { useEffect, useRef } from "react";
 
 const schema = yup.object({});
@@ -19,7 +18,7 @@ export const loader = async ({ request }: DataFunctionArgs) => {
     return json({ message: "Submitted!", shouldReload });
   }
 
-  return json({ shouldReload, message: undefined });
+  return json({ shouldReload, message: undefined as string | undefined });
 };
 
 export default function FrontendValidation() {
