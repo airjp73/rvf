@@ -4,10 +4,24 @@ import { successValidator } from "./util/successValidator";
 import { useEffect, useRef } from "react";
 import { createValidator } from "@rvf/core";
 
+const withResolvers = () => {
+  let resolve;
+  let reject;
+  const promise = new Promise((_resolve, _reject) => {
+    resolve = _resolve;
+    reject = _reject;
+  });
+  return {
+    promise,
+    resolve: resolve as never as () => void,
+    reject: reject as never as () => void,
+  };
+};
+
 it("should return submit state", async () => {
   let prom: PromiseWithResolvers<any> | null = null;
   const submission = () => {
-    prom = Promise.withResolvers<any>();
+    prom = withResolvers();
     return prom.promise;
   };
 
@@ -77,7 +91,7 @@ it("should return form dirty/touched/valid state", async () => {
   let prom: PromiseWithResolvers<any> | null = null;
   const validator = createValidator({
     validate: () => {
-      prom = Promise.withResolvers<any>();
+      prom = withResolvers();
       return prom.promise;
     },
   });
@@ -199,7 +213,7 @@ it("should be possible to set the dirty state of a field", async () => {
   let prom: PromiseWithResolvers<any> | null = null;
   const validator = createValidator({
     validate: () => {
-      prom = Promise.withResolvers<any>();
+      prom = withResolvers();
       return prom.promise;
     },
   });

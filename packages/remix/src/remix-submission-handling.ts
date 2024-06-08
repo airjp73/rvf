@@ -7,6 +7,20 @@ import {
 import { FieldErrors, GenericObject } from "@rvf/core";
 import { useEffect, useRef } from "react";
 
+const withResolvers = () => {
+  let resolve;
+  let reject;
+  const promise = new Promise((_resolve, _reject) => {
+    resolve = _resolve;
+    reject = _reject;
+  });
+  return {
+    promise,
+    resolve: resolve as never as () => void,
+    reject: reject as never as () => void,
+  };
+};
+
 export function useSubmitComplete(isSubmitting: boolean, callback: () => void) {
   const isPending = useRef(false);
   useEffect(() => {
@@ -36,7 +50,7 @@ export const useRemixSubmit = (
   serverValidationErrors?: FieldErrors,
 ) => {
   const hasActiveSubmission = useHasActiveFormSubmit(fetcher);
-  const resolver = useRef<PromiseWithResolvers<void>>();
+  const resolver = useRef<ReturnType<typeof withResolvers>>();
   useSubmitComplete(hasActiveSubmission, () => {
     if (serverValidationErrors) {
       resolver.current?.reject();
@@ -51,7 +65,7 @@ export const useRemixSubmit = (
     modifiedFormData: FormData | GenericObject,
     submitOptions?: SubmitOptions,
   ) => {
-    const resolvers = Promise.withResolvers<void>();
+    const resolvers = withResolvers();
     resolver.current = resolvers;
 
     if (fetcher) fetcher.submit(modifiedFormData, submitOptions);

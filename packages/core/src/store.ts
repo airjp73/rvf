@@ -62,11 +62,25 @@ export type RefStore<Data = HTMLElement> = ReturnType<
   typeof createRefStore<Data>
 >;
 
+const withResolvers = () => {
+  let resolve;
+  let reject;
+  const promise = new Promise((_resolve, _reject) => {
+    resolve = _resolve;
+    reject = _reject;
+  });
+  return {
+    promise,
+    resolve: resolve as never as () => void,
+    reject: reject as never as () => void,
+  };
+};
+
 export const createResolverQueue = () => {
   const resolvers = new Set<() => void>();
 
   const queueResolver = () => {
-    const { promise, resolve } = Promise.withResolvers<void>();
+    const { promise, resolve } = withResolvers();
     resolvers.add(resolve);
     return promise;
   };
