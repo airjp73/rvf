@@ -21,13 +21,8 @@ const ControlledInput = ({ name, label }: { name: string; label: string }) => {
 
   return (
     <>
-      <input type="hidden" name={name} />
-      <input
-        data-testid={name}
-        ref={field.refs.controlled}
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
-      />
+      <input {...field.getHiddenInputProps()} />
+      <input data-testid={name} {...(field.getControlProps() as any)} />
     </>
   );
 };
