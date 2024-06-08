@@ -74,10 +74,12 @@ export const useRemixFormResponse = <FormInputData extends FieldValues>(
     subaction: opts.subaction,
     formId,
   });
+  const errorDefaultValues = errorsFromServer?.repopulateFields;
 
   return {
     getRvfOpts: () => ({
-      defaultValues: (actualDefaultValues ??
+      defaultValues: (errorDefaultValues ??
+        actualDefaultValues ??
         opts.defaultValues) as FormInputData,
       serverValidationErrors: errorsFromServer?.fieldErrors,
       formId,
