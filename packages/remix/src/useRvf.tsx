@@ -5,11 +5,7 @@ import {
   RvfOpts,
   RvfReact,
 } from "@rvf/react";
-import {
-  useHasActiveFormSubmit,
-  useRemixSubmit,
-  useSubmitComplete,
-} from "./remix-submission-handling";
+import { useRemixSubmit } from "./remix-submission-handling";
 import {
   FetcherWithComponents,
   FormEncType,
@@ -24,21 +20,38 @@ type PartialProps<T, Props extends keyof T> = Omit<T, Props> &
 export type RvfRemixOpts<
   FormInputData extends FieldValues,
   FormOutputData,
+  FormResponseData,
 > = PartialProps<
-  Omit<RvfOpts<FormInputData, FormOutputData>, keyof SubmitOptions>,
-  "handleSubmit" | "onSubmitSuccess" | "onSubmitFailure"
+  Omit<
+    RvfOpts<FormInputData, FormOutputData, FormResponseData>,
+    keyof SubmitOptions
+  >,
+  "handleSubmit"
 > &
-  SubmitOptions & {
+  Pick<
+    SubmitOptions,
+    | "method"
+    | "action"
+    | "encType"
+    | "fetcherKey"
+    | "replace"
+    | "state"
+    | "navigate"
+    | "preventScrollReset"
+    | "relative"
+  > & {
     fetcher?: FetcherWithComponents<unknown>;
-    onSubmitSuccess?: () => void;
-    onSubmitFailure?: () => void;
   };
 
 /**
  * Create and use an `Rvf`.
  */
-export function useRvf<FormInputData extends FieldValues, FormOutputData>(
-  options: RvfRemixOpts<FormInputData, FormOutputData>,
+export function useRvf<
+  FormInputData extends FieldValues,
+  FormOutputData,
+  FormResponseData,
+>(
+  options: RvfRemixOpts<FormInputData, FormOutputData, FormResponseData>,
 ): RvfReact<FormInputData>;
 
 /**
@@ -48,8 +61,14 @@ export function useRvf<FormInputData>(
   form: Rvf<FormInputData>,
 ): RvfReact<FormInputData>;
 
-export function useRvf<FormInputData extends FieldValues, FormOutputData>(
-  optsOrForm: RvfRemixOpts<FormInputData, FormOutputData> | Rvf<FormInputData>,
+export function useRvf<
+  FormInputData extends FieldValues,
+  FormOutputData,
+  FormResponseData,
+>(
+  optsOrForm:
+    | RvfRemixOpts<FormInputData, FormOutputData, FormResponseData>
+    | Rvf<FormInputData>,
 ): RvfReact<FormInputData> {
   let rvf: RvfReact<FormInputData>;
 
@@ -111,6 +130,9 @@ export function useRvf<FormInputData extends FieldValues, FormOutputData>(
     };
 
     return submitWithRemix(getData(), {
+      fetcherKey: optsOrForm.fetcherKey,
+      state: optsOrForm.state,
+      navigate: optsOrForm.navigate,
       replace: optsOrForm.replace,
       preventScrollReset: optsOrForm.preventScrollReset,
       relative: optsOrForm.relative,
@@ -125,7 +147,7 @@ export function useRvf<FormInputData extends FieldValues, FormOutputData>(
     });
   };
 
-  rvf = useRvfReact<FormInputData, FormOutputData, void>({
+  rvf = useRvfReact<FormInputData, FormOutputData, FormResponseData>({
     ...optsOrForm,
     submitSource,
     handleSubmit:

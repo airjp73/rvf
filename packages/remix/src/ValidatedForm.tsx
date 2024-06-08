@@ -1,4 +1,4 @@
-import { FieldValues } from "@rvf/core";
+import { AllProps, FieldValues } from "@rvf/core";
 import { RvfRemixOpts, useRvf } from "./useRvf";
 import { RvfProvider, RvfReact } from "@rvf/react";
 import { useRemixFormResponse } from "./auto-server-hooks";
@@ -26,9 +26,10 @@ type RvfRemixSubmitOpts<FormOutputData, Subaction extends string | undefined> =
 export type ValidatedFormProps<
   FormInputData extends FieldValues,
   FormOutputData,
+  FormResponseData,
   Subaction extends string | undefined,
 > = Omit<
-  RvfRemixOpts<FormInputData, FormOutputData>,
+  RvfRemixOpts<FormInputData, FormOutputData, FormResponseData>,
   "submitSource" | "handleSubmit" | "serverValidationErrors"
 > &
   Omit<React.ComponentProps<"form">, "children"> & {
@@ -51,6 +52,7 @@ export type ValidatedFormProps<
 export const ValidatedForm = <
   FormInputData extends FieldValues,
   FormOutputData,
+  FormResponseData,
   Subaction extends string | undefined,
 >({
   validator,
@@ -75,8 +77,16 @@ export const ValidatedForm = <
   onSubmitSuccess,
   onSubmitFailure,
   disableFocusOnError,
+  resetAfterSubmit,
+  fetcherKey,
+  navigate,
   ...rest
-}: ValidatedFormProps<FormInputData, FormOutputData, Subaction>) => {
+}: ValidatedFormProps<
+  FormInputData,
+  FormOutputData,
+  FormResponseData,
+  Subaction
+>) => {
   const remix = useRemixFormResponse({
     formId: id,
     fetcher,
@@ -84,7 +94,7 @@ export const ValidatedForm = <
     defaultValues,
   });
 
-  const rvf = useRvf<FormInputData, FormOutputData>({
+  const rvf = useRvf<FormInputData, FormOutputData, FormResponseData>({
     ...remix.getRvfOpts(),
     defaultValues: defaultValues,
     action,
@@ -102,7 +112,12 @@ export const ValidatedForm = <
     relative,
     encType,
     state,
-  });
+    resetAfterSubmit,
+    fetcherKey,
+    navigate,
+  } satisfies AllProps<
+    RvfRemixOpts<FormInputData, FormOutputData, FormResponseData>
+  >);
 
   return (
     <RvfProvider scope={rvf.scope()}>

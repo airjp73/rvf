@@ -1,4 +1,4 @@
-import { FieldValues } from "@rvf/core";
+import { FieldValues, AllProps } from "@rvf/core";
 import { RvfOpts, useRvf } from "./useRvf";
 import { RvfReact } from "./base";
 import { RvfProvider } from "./context";
@@ -19,12 +19,6 @@ export type ValidatedFormProps<
       | React.ReactNode
       | ((form: RvfReact<FormInputData>) => React.ReactNode);
   };
-
-type Complete<T> = {
-  [P in keyof Required<T>]: Pick<T, P> extends Required<Pick<T, P>>
-    ? T[P]
-    : T[P] | undefined;
-};
 
 export const ValidatedForm = <
   FormInputData extends FieldValues,
@@ -61,7 +55,7 @@ export const ValidatedForm = <
     onSubmitFailure,
     validationBehaviorConfig,
     resetAfterSubmit,
-  } satisfies Complete<RvfOpts<FormInputData, FormOutputData, void>>);
+  } satisfies AllProps<RvfOpts<FormInputData, FormOutputData, void>>);
 
   return (
     <RvfProvider scope={rvf.scope()}>

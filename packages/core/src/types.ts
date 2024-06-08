@@ -86,3 +86,9 @@ export type ValidationErrorResponseData = {
   fieldErrors: FieldErrors;
   repopulateFields?: unknown;
 };
+
+export type AllProps<T> = {
+  [P in keyof Required<T>]: Pick<T, P> extends Required<Pick<T, P>>
+    ? T[P]
+    : T[P] | undefined;
+};
