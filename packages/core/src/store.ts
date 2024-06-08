@@ -178,6 +178,7 @@ type StoreActions = {
     | { data: GenericObject; errors: undefined }
     | { errors: Record<string, string>; data: undefined }
   >;
+  focusFirstInvalidField: () => void;
 
   syncOptions: (opts: {
     submitSource: "state" | "dom";
@@ -186,7 +187,7 @@ type StoreActions = {
     flags: StoreFlags;
   }) => void;
 
-  syncServerValidtionErrors: (errors: FieldErrors) => void;
+  syncServerValidationErrors: (errors: FieldErrors) => void;
 
   reset: (nextValues?: FieldValues) => void;
   resetField: (fieldName: string, nextValue?: unknown) => void;
@@ -593,6 +594,35 @@ export const createFormStateStore = ({
         };
       },
 
+      focusFirstInvalidField: () => {
+        const {
+          validationErrors,
+          flags: { disableFocusOnError },
+        } = get();
+        if (disableFocusOnError) return;
+
+        const refElementsWithErrors = Object.keys(validationErrors)
+          .flatMap((fieldName) => [
+            ...transientFieldRefs.getRefs(fieldName),
+            ...controlledFieldRefs.getRefs(fieldName),
+          ])
+          .filter((val): val is NonNullable<typeof val> => val != null);
+
+        if (formRef.current) {
+          const unRegisteredNames = Object.keys(validationErrors).filter(
+            (name) =>
+              !transientFieldRefs.has(name) && !controlledFieldRefs.has(name),
+          );
+          const otherErrorElements = getElementsWithNames(
+            unRegisteredNames,
+            formRef.current!,
+          );
+          refElementsWithErrors.push(...otherErrorElements);
+        }
+
+        focusOrReport(refElementsWithErrors);
+      },
+
       /////// Events
       onFieldChange: (fieldName, value, validationBehaviorConfig) => {
         set((state) => {
@@ -630,7 +660,6 @@ export const createFormStateStore = ({
       },
 
       onSubmit: async (submitterData, submitterOptions = {}) => {
-        const { disableFocusOnError } = get().flags;
         set((state) => {
           state.submitStatus = "submitting";
         });
@@ -641,29 +670,7 @@ export const createFormStateStore = ({
         const result = await get().validate(rawValues, true);
 
         if (result.errors) {
-          if (disableFocusOnError) return;
-
-          const refElementsWithErrors = Object.keys(result.errors)
-            .flatMap((fieldName) => [
-              ...transientFieldRefs.getRefs(fieldName),
-              ...controlledFieldRefs.getRefs(fieldName),
-            ])
-            .filter((val): val is NonNullable<typeof val> => val != null);
-
-          if (formRef.current) {
-            const unRegisteredNames = Object.keys(result.errors).filter(
-              (name) =>
-                !transientFieldRefs.has(name) && !controlledFieldRefs.has(name),
-            );
-            const otherErrorElements = getElementsWithNames(
-              unRegisteredNames,
-              formRef.current!,
-            );
-            refElementsWithErrors.push(...otherErrorElements);
-          }
-
-          focusOrReport(refElementsWithErrors);
-
+          get().focusFirstInvalidField();
           return;
         }
 
@@ -711,11 +718,14 @@ export const createFormStateStore = ({
         });
       },
 
-      syncServerValidtionErrors: (errors) => {
+      syncServerValidationErrors: (errors) => {
+        if (errors === get().validationErrors) return;
+
         set((state) => {
           state.validationErrors = errors;
           state.submitStatus = "error";
         });
+        get().focusFirstInvalidField();
       },
 
       setValue: (fieldName, value) => {

@@ -262,7 +262,7 @@ export function useRvf(
     if (isWholeForm || !serverValidationErrors) return;
     form.__store__.store
       .getState()
-      .syncServerValidtionErrors(serverValidationErrors);
+      .syncServerValidationErrors(serverValidationErrors);
   }, [serverValidationErrors, form.__store__.store, isWholeForm]);
 
   return useRvfInternal(form) as never;
