@@ -640,7 +640,9 @@ export const createFormStateStore = ({
         });
         const result = await get().validate(rawValues, true);
 
-        if (result.errors && !disableFocusOnError) {
+        if (result.errors) {
+          if (disableFocusOnError) return;
+
           const refElementsWithErrors = Object.keys(result.errors)
             .flatMap((fieldName) => [
               ...transientFieldRefs.getRefs(fieldName),
