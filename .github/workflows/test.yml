@@ -34,5 +34,7 @@ jobs:
       - name: Vitest
         run: bun run vitest:run
 
-      - name: Test
-        run: bun run test
+      - name: Cypress tests
+        run: |
+          cd ./apps/test-app
+          bun run test
