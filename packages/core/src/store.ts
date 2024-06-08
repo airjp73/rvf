@@ -25,7 +25,6 @@ import { GenericObject, preprocessFormData } from "./native-form-data/flatten";
 import { MultiValueMap } from "./native-form-data/MultiValueMap";
 import { insert, move, remove, replace, toSwapped } from "./arrayUtil";
 import { getFieldValue } from "./getters";
-import { useThree } from "@react-three/fiber";
 
 export type FieldSerializer = (value: unknown) => string;
 
