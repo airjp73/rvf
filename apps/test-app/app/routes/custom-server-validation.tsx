@@ -1,6 +1,11 @@
 import { DataFunctionArgs } from "@remix-run/node";
 import { withYup } from "@rvf/yup";
-import { validationError, ValidatedForm } from "@rvf/remix";
+import {
+  validationError,
+  RvfProvider,
+  useRvf,
+  useRemixFormResponse,
+} from "@rvf/remix";
 import * as yup from "yup";
 import { Input } from "~/components/Input";
 import { SubmitButton } from "~/components/SubmitButton";
@@ -20,13 +25,21 @@ export const action = async (args: DataFunctionArgs) => {
 };
 
 export default function CustomServerValidation() {
+  const response = useRemixFormResponse({
+    formId: "test-form",
+  });
+  const form = useRvf({
+    ...response.getRvfOpts(),
+    validator,
+    method: "post",
+  });
   return (
-    <>
+    <RvfProvider scope={form.scope()}>
       <Input name="firstName" label="First Name" form="test-form" />
-      <ValidatedForm validator={validator} method="post" id="test-form">
+      <form {...form.getFormProps()}>
         <Input name="lastName" label="Last Name" />
         <SubmitButton />
-      </ValidatedForm>
-    </>
+      </form>
+    </RvfProvider>
   );
 }

@@ -40,7 +40,7 @@ export default function FrontendValidation() {
           type="button"
           onClick={async () => {
             const result = await validate();
-            if (result.error) {
+            if (Object.keys(result).length > 0) {
               setMessage("Invalid");
               return;
             }

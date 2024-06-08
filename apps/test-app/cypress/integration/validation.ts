@@ -209,6 +209,8 @@ describe("Validation", () => {
     cy.findByText("Name of a contact is a required field").should("exist");
     cy.findByText("Comment is a required field").should("exist");
 
+    // sometimes there's a weird race condition where the blur runs after the click
+    cy.focused().blur();
     cy.findByText("Reset").click();
 
     cy.findByText("Email is a required field").should("not.exist");
