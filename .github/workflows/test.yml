@@ -38,5 +38,5 @@ jobs:
         uses: cypress-io/github-action@v2
         with:
           working-directory: ./apps/test-app
-          start: bun run dev
+          start: npm run dev
           wait-on: http://localhost:3000
