@@ -33,7 +33,7 @@ export default function FrontendValidation() {
   return (
     <>
       <ValidatedForm
-        formId="adf"
+        id="adf"
         validator={validator}
         method="post"
         resetAfterSubmit
