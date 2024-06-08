@@ -466,7 +466,7 @@ it("should call onSubmitSuccess when the call is complete", async () => {
   expect(success).toHaveBeenCalledTimes(1);
 });
 
-it("should call onSubmitSucces even when the call returns a validation error", async () => {
+it("should call onSubmitFailure if the call returns a validation error", async () => {
   const success = vi.fn();
   const failure = vi.fn();
   const validator = createValidator({
@@ -510,8 +510,8 @@ it("should call onSubmitSucces even when the call returns a validation error", a
   await userEvent.click(screen.getByTestId("submit"));
 
   expect(await screen.findByText("validation error")).toBeInTheDocument();
-  expect(success).toHaveBeenCalledTimes(1);
-  expect(failure).not.toHaveBeenCalled();
+  expect(success).not.toHaveBeenCalledTimes(1);
+  expect(failure).toHaveBeenCalled();
 });
 
 it("should reset the form after a successful submission when resetAfterSubmit is true", async () => {

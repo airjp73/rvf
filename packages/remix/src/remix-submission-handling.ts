@@ -4,7 +4,7 @@ import {
   useNavigation,
   useSubmit,
 } from "@remix-run/react";
-import { GenericObject } from "@rvf/core";
+import { FieldErrors, GenericObject } from "@rvf/core";
 import { useEffect, useRef } from "react";
 
 export function useSubmitComplete(isSubmitting: boolean, callback: () => void) {
@@ -31,10 +31,19 @@ export const useHasActiveFormSubmit = (
   return hasActiveSubmission;
 };
 
-export const useRemixSubmit = (fetcher?: FetcherWithComponents<unknown>) => {
+export const useRemixSubmit = (
+  fetcher?: FetcherWithComponents<unknown>,
+  serverValidationErrors?: FieldErrors,
+) => {
   const hasActiveSubmission = useHasActiveFormSubmit(fetcher);
-  const resolver = useRef<() => void>();
-  useSubmitComplete(hasActiveSubmission, () => resolver.current?.());
+  const resolver = useRef<PromiseWithResolvers<void>>();
+  useSubmitComplete(hasActiveSubmission, () => {
+    if (serverValidationErrors) {
+      resolver.current?.reject();
+    } else {
+      resolver.current?.resolve();
+    }
+  });
 
   const submit = useSubmit();
 
@@ -42,13 +51,13 @@ export const useRemixSubmit = (fetcher?: FetcherWithComponents<unknown>) => {
     modifiedFormData: FormData | GenericObject,
     submitOptions?: SubmitOptions,
   ) => {
-    const { promise, resolve } = Promise.withResolvers<void>();
-    resolver.current = resolve;
+    const resolvers = Promise.withResolvers<void>();
+    resolver.current = resolvers;
 
     if (fetcher) fetcher.submit(modifiedFormData, submitOptions);
     else submit(modifiedFormData, submitOptions);
 
-    return promise;
+    return resolvers.promise;
   };
 
   return handleSubmit;

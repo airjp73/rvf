@@ -72,8 +72,10 @@ export function useRvf<
 ): RvfReact<FormInputData> {
   let rvf: RvfReact<FormInputData>;
 
-  const fetcher = "fetcher" in optsOrForm ? optsOrForm.fetcher : undefined;
-  const submitWithRemix = useRemixSubmit(fetcher);
+  const fetcher = "__brand__" in optsOrForm ? undefined : optsOrForm.fetcher;
+  const serverErrors =
+    "__brand__" in optsOrForm ? undefined : optsOrForm.serverValidationErrors;
+  const submitWithRemix = useRemixSubmit(fetcher, serverErrors);
 
   // We're not actually breaking the rules here, because both branches have the same hook calls.
   // it's just easier for the types to put the whole hook call in the conditional.
