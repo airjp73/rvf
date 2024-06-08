@@ -10,7 +10,7 @@ function extractLines(
   fromLine,
   hasDash,
   toLine,
-  preserveTrailingNewline = false
+  preserveTrailingNewline = false,
 ) {
   const lines = content.split(EOL);
   const start = fromLine || 1;
@@ -60,7 +60,7 @@ export default function codeImport(options = {}) {
 
       const res =
         /^file=(?<path>.+?)(?:(?:#(?:L(?<from>\d+)(?<dash>-)?)?)(?:L(?<to>\d+))?)?$/.exec(
-          fileMeta
+          fileMeta,
         );
       if (!res || !res.groups || !res.groups.path) {
         throw new Error(`Unable to parse file path ${fileMeta}`);
@@ -75,7 +75,7 @@ export default function codeImport(options = {}) {
       // Modified from the original to use ~/ style imports
       // because file.dirname doesn't seem to be supported
       const fileAbsPath = path.resolve(
-        path.join(file.cwd, "app", filePath.replace("~", "."))
+        path.join(file.cwd, "app", filePath.replace("~", ".")),
       );
 
       const fileContent = fs.readFileSync(fileAbsPath, "utf8");
@@ -85,7 +85,7 @@ export default function codeImport(options = {}) {
         fromLine,
         hasDash,
         toLine,
-        options.preserveTrailingNewline
+        options.preserveTrailingNewline,
       );
       if (options.removeRedundantIndentations) {
         node.value = removeRedundantIndentations(node.value);
