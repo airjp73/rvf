@@ -97,7 +97,6 @@ export const ValidatedForm = <
 
   const rvf = useRvf<FormInputData, FormOutputData, FormResponseData>({
     ...remix.getRvfOpts(),
-    defaultValues: defaultValues,
     action,
     formId: id,
     disableFocusOnError,
