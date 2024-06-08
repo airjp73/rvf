@@ -1,6 +1,10 @@
 import { Rvf, RvfStore } from "../form";
 import { getFieldValue } from "../getters";
+import { MultiValueMap } from "../native-form-data/MultiValueMap";
+import * as R from "remeda";
+import { FieldErrors } from "../types";
 import { getNextCheckboxValue } from "./getCheckboxChecked";
+import { RefStore } from "../store";
 
 export const setFormControlValue = (element: HTMLElement, value: unknown) => {
   if (element instanceof HTMLInputElement) {
@@ -65,8 +69,8 @@ export const isFormControl = (el: EventTarget): el is FormControl =>
   el instanceof HTMLSelectElement ||
   el instanceof HTMLTextAreaElement;
 
-const getFirst = (elements: HTMLElement[]) => {
-  const sorted = elements.toSorted((a, b) => {
+const sortByPosition = (elements: HTMLElement[]) => {
+  return elements.toSorted((a, b) => {
     const comparison = a.compareDocumentPosition(b);
     if (comparison & Node.DOCUMENT_POSITION_FOLLOWING) {
       return -1;
@@ -75,15 +79,30 @@ const getFirst = (elements: HTMLElement[]) => {
     }
     return 0;
   });
-  const firstFocusable = sorted.find(
-    (element): element is typeof element & { focus: () => void } =>
-      "focus" in element,
+};
+const getElementToFocus = (elements: HTMLElement[]) => {
+  const sorted = sortByPosition(elements).filter(isFormControl);
+
+  if (sorted.length === 0) return undefined;
+
+  const firstElement = sorted[0];
+  const endOfFirstFieldsElements = sorted.findIndex(
+    (el) => el.name !== firstElement.name,
   );
-  return firstFocusable;
+  const firstFieldElements = sorted.slice(0, endOfFirstFieldsElements);
+
+  if (firstFieldElements.every((el) => el.type === "radio")) {
+    const checkedElement = elements.find(
+      (el) => el instanceof HTMLInputElement && el.checked,
+    );
+    return checkedElement ?? firstElement;
+  }
+
+  return firstElement;
 };
 
-export const focusOrReportFirst = (elements: HTMLElement[]) => {
-  const firstFocusable = getFirst(elements);
+export const focusOrReport = (elements: HTMLElement[]) => {
+  const firstFocusable = getElementToFocus(elements);
   if (
     firstFocusable &&
     "checkValidity" in firstFocusable &&
@@ -99,7 +118,10 @@ export const focusOrReportFirst = (elements: HTMLElement[]) => {
 };
 
 export const focusFirst = (elements: HTMLElement[]) => {
-  const firstFocusable = getFirst(elements);
+  const firstFocusable = sortByPosition(elements).find(
+    (element): element is typeof element & { focus: () => void } =>
+      "focus" in element,
+  );
   firstFocusable?.focus();
 };
 

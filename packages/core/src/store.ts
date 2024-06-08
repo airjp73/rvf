@@ -8,7 +8,7 @@ import { create } from "zustand/react";
 import { immer } from "./immer";
 import {
   setFormControlValue,
-  focusOrReportFirst,
+  focusOrReport,
   getElementsWithNames,
 } from "./dom/dom";
 import {
@@ -660,7 +660,7 @@ export const createFormStateStore = ({
             refElementsWithErrors.push(...otherErrorElements);
           }
 
-          focusOrReportFirst(refElementsWithErrors);
+          focusOrReport(refElementsWithErrors);
 
           return;
         }
