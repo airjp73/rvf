@@ -34,7 +34,9 @@ jobs:
       - name: Vitest
         run: bun run vitest:run
 
-      - name: Cypress tests
-        run: |
-          cd ./apps/test-app
-          bun run test
+      - name: Cypress Tests
+        uses: cypress-io/github-action@v2
+        with:
+          working-directory: ./apps/test-app
+          start: bun run dev
+          wait-on: http://localhost:3000
