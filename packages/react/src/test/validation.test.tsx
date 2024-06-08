@@ -81,7 +81,7 @@ it("should validate on onBlur, then on change after that", async () => {
     expect(submit).toBeCalledTimes(1);
   });
   expect(screen.getByTestId("render-count").textContent).toMatchInlineSnapshot(
-    `"9"`,
+    `"5"`,
   );
 });
 
@@ -139,7 +139,7 @@ it("should validate on onSubmit, if validationBehavior is onSubmit", async () =>
   expect(screen.getByTestId("foo-error")).toBeEmptyDOMElement();
   expect(screen.getByTestId("baz.a-error")).toBeEmptyDOMElement();
   expect(screen.getByTestId("render-count").textContent).toMatchInlineSnapshot(
-    `"3"`,
+    `"1"`,
   );
 
   fireEvent.submit(screen.getByTestId("form"));
@@ -175,7 +175,7 @@ it("should validate on onSubmit, if validationBehavior is onSubmit", async () =>
     expect(submit).toBeCalledTimes(1);
   });
   expect(screen.getByTestId("render-count").textContent).toMatchInlineSnapshot(
-    `"9"`,
+    `"4"`,
   );
 });
 

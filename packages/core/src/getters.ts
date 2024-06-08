@@ -18,13 +18,7 @@ export const getFieldDirty = (state: FormStoreValue, fieldName: string) =>
   state.dirtyFields[fieldName] ?? false;
 
 export const getFieldError = (state: FormStoreValue, fieldName: string) => {
-  if (
-    state.submitStatus !== "idle" ||
-    state.touchedFields[fieldName] ||
-    state.validationBehaviorConfig.initial === "onChange"
-  )
-    return state.validationErrors[fieldName] ?? null;
-  return null;
+  return state.validationErrors[fieldName] ?? null;
 };
 
 export const getFieldArrayKeys = (state: FormStoreValue, fieldName: string) =>

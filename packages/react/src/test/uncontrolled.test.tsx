@@ -202,7 +202,7 @@ it("validates and submits without registering uncontrolled inputs outside a form
   );
 
   expect(screen.getByTestId("render-count").textContent).toMatchInlineSnapshot(
-    `"6"`,
+    `"3"`,
   );
 });
 
