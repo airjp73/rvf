@@ -49,4 +49,6 @@ export const getAllErrors = (state: FormStoreValue) => {
 
 export const getFormId = (state: FormStoreValue) => state.formProps.id;
 
+export const getFormProps = (state: FormStoreValue) => state.formProps;
+
 export const getFormAction = (state: FormStoreValue) => state.formProps.action;

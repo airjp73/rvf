@@ -80,6 +80,7 @@ export const ValidatedForm = <
   resetAfterSubmit,
   fetcherKey,
   navigate,
+  otherFormProps,
   ...rest
 }: ValidatedFormProps<
   FormInputData,
@@ -115,6 +116,7 @@ export const ValidatedForm = <
     resetAfterSubmit,
     fetcherKey,
     navigate,
+    otherFormProps,
   } satisfies AllProps<
     RvfRemixOpts<FormInputData, FormOutputData, FormResponseData>
   >);

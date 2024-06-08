@@ -1,4 +1,10 @@
-import { useEffect, useState, useId, useLayoutEffect } from "react";
+import {
+  useEffect,
+  useState,
+  useId,
+  useLayoutEffect,
+  ComponentProps,
+} from "react";
 import {
   FieldValues,
   ValidationBehaviorConfig,
@@ -71,6 +77,13 @@ export type RvfOpts<
   disableFocusOnError?: boolean;
 
   /**
+   * Optionally, you can pass other props to the form element here.
+   * This is primarily useful for writing custom hooks around `useRvf`.
+   * For most use-cases, you can simply pass the props directly to the form element.
+   */
+  otherFormProps?: Omit<ComponentProps<"form">, "id" | "action">;
+
+  /**
    * Called when the form is successfully submitted using `handleSubmit`.
    */
   onSubmitSuccess?: (handleSubmitResponse: NoInfer<SubmitResponseData>) => void;
@@ -135,6 +148,9 @@ export function useRvf(
   const resetAfterSubmit = isRvf(optsOrForm)
     ? undefined
     : optsOrForm.resetAfterSubmit;
+  const otherFormProps = isRvf(optsOrForm)
+    ? undefined
+    : optsOrForm.otherFormProps;
 
   const providedFormId = isRvf(optsOrForm) ? undefined : optsOrForm.formId;
   const defaultFormId = useId();
@@ -159,6 +175,7 @@ export function useRvf(
       formProps: {
         action,
         id: providedFormId ?? defaultFormId,
+        ...otherFormProps,
       },
       flags: {
         disableFocusOnError: disableFocusOnError ?? false,
@@ -221,6 +238,7 @@ export function useRvf(
       formProps: {
         action,
         id: providedFormId ?? defaultFormId,
+        ...otherFormProps,
       },
       flags: {
         disableFocusOnError: disableFocusOnError ?? false,
@@ -237,6 +255,7 @@ export function useRvf(
     providedFormId,
     defaultFormId,
     disableFocusOnError,
+    otherFormProps,
   ]);
 
   useEffect(() => {

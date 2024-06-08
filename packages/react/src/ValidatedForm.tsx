@@ -40,6 +40,7 @@ export const ValidatedForm = <
   onSubmitSuccess,
   onSubmitFailure,
   resetAfterSubmit,
+  otherFormProps,
   ...rest
 }: ValidatedFormProps<FormInputData, FormOutputData>) => {
   const rvf = useRvf({
@@ -55,6 +56,7 @@ export const ValidatedForm = <
     onSubmitFailure,
     validationBehaviorConfig,
     resetAfterSubmit,
+    otherFormProps,
   } satisfies AllProps<RvfOpts<FormInputData, FormOutputData, void>>);
 
   return (

@@ -2,6 +2,7 @@ import { render, screen } from "@testing-library/react";
 import { useRvf } from "../useRvf";
 import { successValidator } from "./util/successValidator";
 import userEvent from "@testing-library/user-event";
+import { RenderCounter } from "./util/RenderCounter";
 
 it("should cancel submission if the native onSubmit calls preventDefault", async () => {
   const submit = vi.fn();
@@ -63,4 +64,33 @@ it("should cancel reset if the native onReset calls preventDefault", async () =>
   await userEvent.click(screen.getByTestId("reset"));
 
   expect(screen.getByTestId("foo")).toHaveValue("bartesting 123");
+});
+
+it("should not over-rerender when using otherFormProps", async () => {
+  const submit = vi.fn();
+
+  const TestComp = () => {
+    const form = useRvf({
+      defaultValues: {
+        foo: "bar",
+      },
+      otherFormProps: {
+        "data-testid": "form",
+      },
+      validator: successValidator,
+      handleSubmit: submit,
+    });
+    return (
+      <form {...form.getFormProps()}>
+        <input data-testid="foo" {...form.field("foo").getInputProps()} />
+        <button type="reset" data-testid="reset" />
+        <RenderCounter data-testid="render-count" />
+      </form>
+    );
+  };
+
+  render(<TestComp />);
+  expect(screen.getByTestId("foo")).toHaveValue("bar");
+  await userEvent.type(screen.getByTestId("foo"), "testing 123");
+  expect(screen.getByTestId("render-count")).toHaveTextContent("1");
 });

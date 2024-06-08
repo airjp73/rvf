@@ -149,6 +149,11 @@ export function useRvf<
 
   rvf = useRvfReact<FormInputData, FormOutputData, FormResponseData>({
     ...optsOrForm,
+    otherFormProps: {
+      method: optsOrForm.method,
+      encType: optsOrForm.encType,
+      ...optsOrForm.otherFormProps,
+    },
     submitSource,
     handleSubmit:
       (optsOrForm.handleSubmit as never) ?? (handleSubmission as never),

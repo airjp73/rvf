@@ -16,7 +16,7 @@ import {
   getAllErrors,
   getFormAction,
   getFormId,
-  registerFormElementEvents,
+  getFormProps,
   SubmitterOptions,
 } from "@rvf/core";
 import {
@@ -43,6 +43,7 @@ interface FormProps {
   onReset: (event: React.FormEvent<HTMLFormElement>) => void;
   ref: React.Ref<HTMLFormElement>;
   id: string;
+  action?: string;
 }
 
 export type ManualSubmitOption = SubmitterOptions & {
@@ -458,8 +459,7 @@ export const makeBaseRvfReact = <FormInputData,>({
 
     getFormProps: (formProps = {}) => ({
       ...formProps,
-      id: getFormId(trackedState),
-      action: getFormAction(trackedState),
+      ...getFormProps(trackedState),
       onSubmit: (event) => {
         formProps.onSubmit?.(event);
         if (event.defaultPrevented) return;
