@@ -14,30 +14,26 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 20
-          cache: "yarn"
+      - uses: oven-sh/setup-bun@v1
 
       - name: Install Deps
-        run: yarn install --frozen-lockfile
+        run: bun install
 
       - name: Lint
-        run: yarn run lint
+        run: bun run lint
 
       - name: Typecheck
-        run: yarn run typecheck
+        run: bun run typecheck
 
       - name: Build
-        run: yarn run build
+        run: bun run build
 
       - name: Vitest
-        run: yarn run vitest:run
+        run: bun run vitest:run
 
       - name: Cypress Tests
         uses: cypress-io/github-action@v2
         with:
           working-directory: ./apps/test-app
-          start: yarn dev
+          start: bun run dev
           wait-on: http://localhost:3000
