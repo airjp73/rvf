@@ -70,7 +70,7 @@ export const isFormControl = (el: EventTarget): el is FormControl =>
   el instanceof HTMLTextAreaElement;
 
 const sortByPosition = (elements: HTMLElement[]) => {
-  return elements.toSorted((a, b) => {
+  return [...elements].sort((a, b) => {
     const comparison = a.compareDocumentPosition(b);
     if (comparison & Node.DOCUMENT_POSITION_FOLLOWING) {
       return -1;
