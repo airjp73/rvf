@@ -138,6 +138,7 @@ it("should focus the selected radio if that is the first invalid field", async (
             data: undefined,
             error: {
               foo: "invalid",
+              "another-field": "invalid",
             },
           });
         },
@@ -162,6 +163,7 @@ it("should focus the selected radio if that is the first invalid field", async (
           data-testid="foo-3"
         />
         <pre data-testid="error">{form.error("foo")}</pre>
+        <input name="another-field" type="text" data-testid="another-field" />
         <button type="submit" data-testid="submit" />
       </form>
     );
