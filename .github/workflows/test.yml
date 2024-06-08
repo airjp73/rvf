@@ -22,11 +22,11 @@ jobs:
       - name: Lint
         run: bun run lint
 
-      - name: Typecheck
-        run: bun run typecheck
-
       - name: Build
         run: bun run build
+
+      - name: Typecheck
+        run: bun run typecheck
 
       - name: Vitest
         run: bun run vitest:run
