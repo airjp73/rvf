@@ -513,3 +513,50 @@ it("should call onSubmitSucces even when the call returns a validation error", a
   expect(success).toHaveBeenCalledTimes(1);
   expect(failure).not.toHaveBeenCalled();
 });
+
+it("should reset the form after a successful submission when resetAfterSubmit is true", async () => {
+  const validator = createValidator({
+    validate: (data) => Promise.resolve({ data, error: undefined }),
+  });
+
+  const action = async ({ request }: ActionFunctionArgs) => {
+    const data = await validator.validate(await request.formData());
+    if (data.error) return validationError(data.error);
+    return { message: `You said: ${data.data.foo}` };
+  };
+
+  const Stub = createRemixStub([
+    {
+      path: "/",
+      Component: () => {
+        const fetcher = useFetcher<typeof action>();
+        const form = useRvf({
+          fetcher,
+          defaultValues: { foo: "" },
+          validator,
+          method: "post",
+          resetAfterSubmit: true,
+        });
+        return (
+          <form {...form.getFormProps()}>
+            {fetcher.data && !isValidationErrorResponse(fetcher.data) && (
+              <p>{fetcher.data.message}</p>
+            )}
+            <input data-testid="foo" {...form.field("foo").getInputProps()} />
+            <button type="submit" data-testid="submit" />
+          </form>
+        );
+      },
+      action,
+    },
+  ]);
+
+  render(<Stub />);
+
+  await userEvent.type(screen.getByTestId("foo"), "bar");
+  expect(screen.getByTestId("foo")).toHaveValue("bar");
+  await userEvent.click(screen.getByTestId("submit"));
+
+  expect(await screen.findByText("You said: bar")).toBeInTheDocument();
+  expect(screen.getByTestId("foo")).toHaveValue("");
+});

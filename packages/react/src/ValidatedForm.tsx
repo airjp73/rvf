@@ -20,6 +20,12 @@ export type ValidatedFormProps<
       | ((form: RvfReact<FormInputData>) => React.ReactNode);
   };
 
+type Complete<T> = {
+  [P in keyof Required<T>]: Pick<T, P> extends Required<Pick<T, P>>
+    ? T[P]
+    : T[P] | undefined;
+};
+
 export const ValidatedForm = <
   FormInputData extends FieldValues,
   FormOutputData,
@@ -39,9 +45,10 @@ export const ValidatedForm = <
   onReset,
   onSubmitSuccess,
   onSubmitFailure,
+  resetAfterSubmit,
   ...rest
 }: ValidatedFormProps<FormInputData, FormOutputData>) => {
-  const rvf = useRvf<FormInputData, FormOutputData, void>({
+  const rvf = useRvf({
     defaultValues: defaultValues,
     serverValidationErrors,
     action,
@@ -53,7 +60,8 @@ export const ValidatedForm = <
     onSubmitSuccess,
     onSubmitFailure,
     validationBehaviorConfig,
-  });
+    resetAfterSubmit,
+  } satisfies Complete<RvfOpts<FormInputData, FormOutputData, void>>);
 
   return (
     <RvfProvider scope={rvf.scope()}>

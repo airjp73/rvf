@@ -73,13 +73,19 @@ export type RvfOpts<
   /**
    * Called when the form is successfully submitted using `handleSubmit`.
    */
-  onSubmitSuccess?: (handleSubmitResponse: SubmitResponseData) => void;
+  onSubmitSuccess?: (handleSubmitResponse: NoInfer<SubmitResponseData>) => void;
 
   /**
    * Called when handleSubmit throws an error, and provides the error from the handleSubmit function.
    * This will not be called if the validator prevents the submission from happening.
    */
   onSubmitFailure?: (error: unknown) => void;
+
+  /**
+   * A shortcut setting that resets the form to the default values after the form has been successfully submitted.
+   * This is equivalent to calling `resetForm` in the `onSubmitSuccess` callback.
+   */
+  resetAfterSubmit?: boolean;
 } & RvfSubmitOpts<FormOutputData, SubmitResponseData>;
 
 const isRvf = (form: any): form is Rvf<any> =>
@@ -126,13 +132,16 @@ export function useRvf(
   const serverValidationErrors = isRvf(optsOrForm)
     ? undefined
     : optsOrForm.serverValidationErrors;
+  const resetAfterSubmit = isRvf(optsOrForm)
+    ? undefined
+    : optsOrForm.resetAfterSubmit;
 
   const providedFormId = isRvf(optsOrForm) ? undefined : optsOrForm.formId;
   const defaultFormId = useId();
 
   const [form] = useState<Rvf<unknown>>(() => {
     if (isRvf(optsOrForm)) return optsOrForm;
-    return createRvf({
+    const rvf = createRvf({
       defaultValues:
         "defaultValues" in optsOrForm && optsOrForm.defaultValues
           ? optsOrForm.defaultValues
@@ -140,7 +149,10 @@ export function useRvf(
       serverValidationErrors: serverValidationErrors ?? {},
       validator: optsOrForm.validator,
       onSubmit: optsOrForm.handleSubmit as never,
-      onSubmitSuccess: optsOrForm.onSubmitSuccess ?? noOp,
+      onSubmitSuccess: (data) => {
+        optsOrForm.onSubmitSuccess?.(data);
+        if (resetAfterSubmit) rvf.__store__.store.getState().reset();
+      },
       onSubmitFailure: optsOrForm.onSubmitFailure ?? noOp,
       validationBehaviorConfig: optsOrForm.validationBehaviorConfig,
       submitSource: optsOrForm.submitSource ?? "dom",
@@ -152,6 +164,7 @@ export function useRvf(
         disableFocusOnError: disableFocusOnError ?? false,
       },
     });
+    return rvf;
   });
 
   useEffect(() => {
@@ -174,7 +187,10 @@ export function useRvf(
     Object.assign(form.__store__.mutableImplStore, {
       validator: validator as any,
       onSubmit,
-      onSubmitSuccess,
+      onSubmitSuccess: (data: unknown) => {
+        optsOrForm.onSubmitSuccess?.(data);
+        if (resetAfterSubmit) form.__store__.store.getState().reset();
+      },
       onSubmitFailure,
     });
   }, [
@@ -184,6 +200,9 @@ export function useRvf(
     form.__store__.mutableImplStore,
     onSubmitSuccess,
     onSubmitFailure,
+    form.__store__.store,
+    resetAfterSubmit,
+    optsOrForm,
   ]);
 
   useEffect(() => {
