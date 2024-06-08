@@ -201,7 +201,7 @@ it("should be possible to turn off focus on error using the `disableFocusOnError
           return Promise.resolve({ data, error: undefined });
         },
       }),
-      handleSubmt: submit,
+      handleSubmit: submit,
       disableFocusOnError: true,
     });
 

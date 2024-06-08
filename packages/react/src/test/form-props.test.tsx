@@ -76,7 +76,7 @@ it("should not over-rerender when using otherFormProps", async () => {
       },
       otherFormProps: {
         "data-testid": "form",
-      },
+      } as any,
       validator: successValidator,
       handleSubmit: submit,
     });

@@ -80,7 +80,7 @@ export default function FrontendValidation() {
   const array = useFieldArray(form.scope("todos"));
 
   return (
-    <RvfProvider scope={form}>
+    <RvfProvider scope={form.scope()}>
       <form {...form.getFormProps()}>
         {array.map((key, item, index) => (
           <div key={key} data-testid={`todo-${index}`}>
