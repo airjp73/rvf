@@ -7,21 +7,22 @@ export const setFormControlValue = (element: HTMLElement, value: unknown) => {
     switch (element.type) {
       case "checkbox":
         element.checked = Array.isArray(value)
-          ? value.includes(element.value)
+          ? value?.includes(element.value)
           : Boolean(value);
         break;
       case "radio":
         element.checked = value === element.value;
         break;
       case "number":
-        element.valueAsNumber = Number(value);
+        if (value === undefined) element.value = "";
+        else element.valueAsNumber = Number(value);
         break;
       case "file":
         if (!value) element.value = "";
         // Can't set the value other than to clear it
         break;
       default:
-        element.value = String(value);
+        element.value = value ? String(value) : "";
         break;
     }
   }

@@ -32,7 +32,12 @@ export default function FrontendValidation() {
   const inputRef = useRef<HTMLInputElement>(null);
   return (
     <>
-      <ValidatedForm validator={validator} method="post" resetAfterSubmit>
+      <ValidatedForm
+        formId="adf"
+        validator={validator}
+        method="post"
+        resetAfterSubmit
+      >
         <Input name="testinput" label="Test input" ref={inputRef} />
         <SubmitButton label="Submit" submittingLabel="Submitting" />
       </ValidatedForm>

@@ -298,6 +298,50 @@ it("should reset inputs not registered with RVF", async () => {
   expect(screen.getByTestId("foo")).toHaveValue("");
 });
 
-it.todo(
-  "should be possible to reset automatically on submit success with `resetAfterSubmit` option",
-);
+it("should reset even with no default values", async () => {
+  const submit = vi.fn();
+  const TestComp = () => {
+    const form = useRvf({
+      validator: successValidator,
+      handleSubmit: submit,
+    });
+
+    return (
+      <form {...form.getFormProps()} data-testid="form">
+        <input data-testid="foo" {...form.field("foo").getInputProps()} />
+        <pre data-testid="foo-touched">
+          {form.touched("foo") ? "true" : "false"}
+        </pre>
+
+        <input data-testid="baz.a" {...form.field("baz.a").getInputProps()} />
+        <pre data-testid="baz.a-touched">
+          {form.touched("baz.a") ? "true" : "false"}
+        </pre>
+
+        <button
+          type="button"
+          data-testid="reset"
+          onClick={() => form.resetForm()}
+        />
+      </form>
+    );
+  };
+
+  render(<TestComp />);
+  expect(screen.getByTestId("foo-touched")).toHaveTextContent("false");
+  expect(screen.getByTestId("baz.a-touched")).toHaveTextContent("false");
+
+  await userEvent.type(screen.getByTestId("foo"), "test");
+  expect(screen.getByTestId("foo")).toHaveValue("test");
+
+  await userEvent.type(screen.getByTestId("baz.a"), "test");
+  expect(screen.getByTestId("baz.a")).toHaveValue("test");
+  expect(screen.getByTestId("foo-touched")).toHaveTextContent("true");
+  expect(screen.getByTestId("baz.a-touched")).toHaveTextContent("false");
+
+  await userEvent.click(screen.getByTestId("reset"));
+  expect(screen.getByTestId("foo")).toHaveValue("");
+  expect(screen.getByTestId("baz.a")).toHaveValue("");
+  expect(screen.getByTestId("foo-touched")).toHaveTextContent("false");
+  expect(screen.getByTestId("baz.a-touched")).toHaveTextContent("false");
+});
