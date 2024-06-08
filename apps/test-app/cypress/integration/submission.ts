@@ -287,4 +287,36 @@ describe("Submission", () => {
       "Should be submitted",
     );
   });
+
+  it("should not do a full page reload when submitting a form with `reloadDocument` set to false", () => {
+    cy.visit("submission/reload-document").waitForJs();
+    cy.findByTestId("reload-message")
+      .then((el) => el.text())
+      .as("startingText");
+    cy.findByText("Submit").click();
+    cy.findByText("Submitted!").should("exist");
+    cy.waitForJs();
+    cy.findByTestId("reload-message").then((el) => {
+      const textA = el.text();
+      cy.get("@startingText").then((el) => {
+        expect(textA).equal(el);
+      });
+    });
+  });
+
+  it("should do a full page reload when submitting a form with `reloadDocument` set to true", () => {
+    cy.visit("submission/reload-document?reload=true").waitForJs();
+    cy.findByTestId("reload-message")
+      .then((el) => el.text())
+      .as("startingText");
+    cy.findByText("Submit").click();
+    cy.findByText("Submitted!").should("exist");
+    cy.waitForJs();
+    cy.findByTestId("reload-message").then((el) => {
+      const textA = el.text();
+      cy.get("@startingText").then((el) => {
+        expect(textA).not.equal(el);
+      });
+    });
+  });
 });

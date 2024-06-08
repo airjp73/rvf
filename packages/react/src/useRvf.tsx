@@ -77,6 +77,12 @@ export type RvfOpts<
   disableFocusOnError?: boolean;
 
   /**
+   * When set to true, a valid form will be submitted natively with a full page reload.
+   * _Note_: This is only supported in the `dom` submit source.
+   */
+  reloadDocument?: boolean;
+
+  /**
    * Optionally, you can pass other props to the form element here.
    * This is primarily useful for writing custom hooks around `useRvf`.
    * For most use-cases, you can simply pass the props directly to the form element.
@@ -151,6 +157,9 @@ export function useRvf(
   const otherFormProps = isRvf(optsOrForm)
     ? undefined
     : optsOrForm.otherFormProps;
+  const reloadDocument = isRvf(optsOrForm)
+    ? undefined
+    : optsOrForm.reloadDocument;
 
   const providedFormId = isRvf(optsOrForm) ? undefined : optsOrForm.formId;
   const defaultFormId = useId();
@@ -179,6 +188,7 @@ export function useRvf(
       },
       flags: {
         disableFocusOnError: disableFocusOnError ?? false,
+        reloadDocument: reloadDocument ?? false,
       },
     });
     return rvf;
@@ -242,6 +252,7 @@ export function useRvf(
       },
       flags: {
         disableFocusOnError: disableFocusOnError ?? false,
+        reloadDocument: reloadDocument ?? false,
       },
     });
   }, [
@@ -256,6 +267,7 @@ export function useRvf(
     defaultFormId,
     disableFocusOnError,
     otherFormProps,
+    reloadDocument,
   ]);
 
   useEffect(() => {

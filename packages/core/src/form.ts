@@ -29,11 +29,11 @@ import {
 type SubmitTypes<FormOutputData> =
   | {
       submitSource: "state";
-      onSubmit: (data: FormOutputData) => Promise<void>;
+      onSubmit?: (data: FormOutputData) => Promise<void>;
     }
   | {
       submitSource: "dom";
-      onSubmit: (data: FormOutputData, formData: FormData) => Promise<void>;
+      onSubmit?: (data: FormOutputData, formData: FormData) => Promise<void>;
     };
 
 type FormInit<FormInputData extends FieldValues, FormOutputData> = {

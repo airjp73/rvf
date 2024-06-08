@@ -25,6 +25,7 @@ import { GenericObject, preprocessFormData } from "./native-form-data/flatten";
 import { MultiValueMap } from "./native-form-data/MultiValueMap";
 import { insert, move, remove, replace, toSwapped } from "./arrayUtil";
 import { getFieldValue } from "./getters";
+import { useThree } from "@react-three/fiber";
 
 export type FieldSerializer = (value: unknown) => string;
 
@@ -95,6 +96,7 @@ export type StoreFormProps = {
 
 export type StoreFlags = {
   disableFocusOnError: boolean;
+  reloadDocument: boolean;
 };
 
 type StoreState = {
@@ -671,6 +673,22 @@ export const createFormStateStore = ({
 
         if (result.errors) {
           get().focusFirstInvalidField();
+          return;
+        }
+
+        if (get().flags.reloadDocument) {
+          const form = formRef.current;
+
+          if (!form)
+            throw new Error(
+              "Can't use reloadDocument without a native form element",
+            );
+          if (submitSource !== "dom")
+            throw new Error(
+              "Can't use reloadDocument with the state submit source",
+            );
+
+          form.submit();
           return;
         }
 

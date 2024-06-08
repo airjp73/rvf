@@ -27,6 +27,7 @@ const testStore = (init?: Partial<FormStoreInit>) =>
     },
     flags: {
       disableFocusOnError: false,
+      reloadDocument: false,
     },
     serverValidationErrors: {},
     formProps: {

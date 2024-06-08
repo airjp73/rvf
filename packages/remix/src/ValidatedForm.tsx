@@ -81,6 +81,7 @@ export const ValidatedForm = <
   fetcherKey,
   navigate,
   otherFormProps,
+  reloadDocument,
   ...rest
 }: ValidatedFormProps<
   FormInputData,
@@ -116,6 +117,7 @@ export const ValidatedForm = <
     fetcherKey,
     navigate,
     otherFormProps,
+    reloadDocument,
   } satisfies AllProps<
     RvfRemixOpts<FormInputData, FormOutputData, FormResponseData>
   >);
