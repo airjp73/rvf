@@ -3,7 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { useRef } from "react";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { successValidator } from "./util/successValidator";
-import { controlInput } from "./util/controlInput";
+import { controlInput, controlInputProps } from "./util/controlInput";
 
 it("captures and submits with controlled fields", async () => {
   const submit = vi.fn();
@@ -27,6 +27,64 @@ it("captures and submits with controlled fields", async () => {
       <form {...form.getFormProps()} data-testid="form">
         <input data-testid="foo" {...controlInput(form.field("foo"))} />
         <input data-testid="baz.a" {...controlInput(form.field("baz.a"))} />
+        <pre data-testid="render-count">{renderCounter.current}</pre>
+      </form>
+    );
+  };
+
+  render(<TestComp />);
+  expect(screen.getByTestId("foo")).toHaveValue("bar");
+  expect(screen.getByTestId("baz.a")).toHaveValue("quux");
+  expect(screen.getByTestId("render-count")).toHaveTextContent("1");
+
+  await userEvent.type(screen.getByTestId("foo"), "test");
+  await userEvent.type(screen.getByTestId("baz.a"), "bob");
+  fireEvent.submit(screen.getByTestId("form"));
+
+  await waitFor(() => expect(submit).toHaveBeenCalledTimes(1));
+  expect(submit).toHaveBeenCalledWith(
+    {
+      foo: "bartest",
+      baz: {
+        a: "quuxbob",
+      },
+    },
+    expect.any(FormData),
+    {},
+  );
+
+  // Once for each keystroke + once for the initial render
+  expect(screen.getByTestId("render-count")).toHaveTextContent("8");
+});
+
+it("works with form-level getControlProps", async () => {
+  const submit = vi.fn();
+
+  const TestComp = () => {
+    const form = useRvf({
+      defaultValues: {
+        foo: "bar",
+        baz: {
+          a: "quux",
+        },
+      },
+      validator: successValidator,
+      handleSubmit: submit,
+    });
+
+    const renderCounter = useRef(0);
+    renderCounter.current++;
+
+    return (
+      <form {...form.getFormProps()} data-testid="form">
+        <input
+          data-testid="foo"
+          {...controlInputProps(form.getControlProps("foo"))}
+        />
+        <input
+          data-testid="baz.a"
+          {...controlInputProps(form.getControlProps("baz.a"))}
+        />
         <pre data-testid="render-count">{renderCounter.current}</pre>
       </form>
     );
@@ -190,11 +248,13 @@ it("should work with custom components", async () => {
     return (
       <form {...form.getFormProps()} data-testid="form">
         <Input {...control} />
+        <input {...form.getHiddenInputProps("foo")} />
         <button
           type="button"
           data-testid="set-foo"
           onClick={() => form.setValue("foo", "bob")}
         />
+        <button type="submit" data-testid="submit" />
       </form>
     );
   };
@@ -205,4 +265,7 @@ it("should work with custom components", async () => {
   expect(screen.getByTestId("foo")).toHaveValue("barbob");
   await userEvent.click(screen.getByTestId("set-foo"));
   expect(screen.getByTestId("foo")).toHaveValue("bob");
+  await userEvent.click(screen.getByTestId("submit"));
+  expect(submit).toHaveBeenCalledTimes(1);
+  expect(submit).toHaveBeenCalledWith({ foo: "bob" }, expect.any(FormData), {});
 });

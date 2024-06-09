@@ -16,6 +16,31 @@ import {
 import { GetInputProps, createGetInputProps } from "./inputs/getInputProps";
 import { useRvfOrContextInternal } from "./context";
 
+export type GetControlPropsParam<FieldValue> = {
+  onChange?: (value: FieldValue) => void;
+  onBlur?: () => void;
+};
+
+export type GetControlPropsResult<FieldValue> = {
+  name: string;
+  onChange: (value: FieldValue) => void;
+  onBlur: () => void;
+  value: FieldValue;
+  ref: RefCallback<HTMLElement>;
+};
+
+export type GetHiddenInputPropsParam<FieldValue> = {
+  serialize?: (value: FieldValue) => string;
+};
+
+export type GetHiddenInputPropsResult = {
+  name: string;
+  value: string;
+  type: "hidden";
+  form: string;
+  ref: RefCallback<HTMLInputElement>;
+};
+
 export interface RvfField<FormInputData> {
   /**
    * Returns props that can be spread onto native form controls or thin wrappers around them.
@@ -31,33 +56,17 @@ export interface RvfField<FormInputData> {
    * This allows the field to be focused when it has an error and also disables RVF's default
    * behavior of automatically listening to changes in the field.
    */
-  getControlProps: (props?: {
-    onChange?: (value: FormInputData) => void;
-    onBlur?: () => void;
-  }) => {
-    name: string;
-    onChange: (value: FormInputData) => void;
-    onBlur: () => void;
-    value: FormInputData;
-    ref: RefCallback<HTMLElement>;
-  };
+  getControlProps: (
+    props?: GetControlPropsParam<FormInputData>,
+  ) => GetControlPropsResult<FormInputData>;
 
   /**
    * Returns props that can be spread into a native form control to use as a hidden field.
    * This is useful in combination with `getControlProps`.
    */
-  getHiddenInputProps: (opts?: {
-    /**
-     * Serializes the value of the field before setting the `value` prop of the hidden input.
-     */
-    serialize?: (value: FormInputData) => string;
-  }) => {
-    name: string;
-    value: string;
-    type: "hidden";
-    form: string;
-    ref: RefCallback<HTMLInputElement>;
-  };
+  getHiddenInputProps: (
+    opts?: GetHiddenInputPropsParam<FormInputData>,
+  ) => GetHiddenInputPropsResult;
 
   refs: {
     controlled: () => RefCallback<HTMLElement>;

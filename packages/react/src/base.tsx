@@ -29,7 +29,14 @@ import {
 } from "set-get";
 import { RvfArray, makeFieldArrayImpl } from "./array";
 import { makeImplFactory } from "./implFactory";
-import { RvfField, makeFieldImpl } from "./field";
+import {
+  GetControlPropsParam,
+  GetControlPropsResult,
+  GetHiddenInputPropsParam,
+  GetHiddenInputPropsResult,
+  RvfField,
+  makeFieldImpl,
+} from "./field";
 import {
   GetInputProps,
   GetInputPropsParam,
@@ -301,6 +308,12 @@ export interface RvfReact<FormInputData> {
    */
   name(): string;
 
+  /**
+   * Returns props that can be spread onto native form controls or thin wrappers around them.
+   * It's important that the component you spread the props into accepts the `ref` prop.
+   * This allows RVF to set the value of the field when setValue is called, and is used
+   * to focus the field when it has an error.
+   */
   getInputProps: <
     Field extends ValidStringPaths<FormInputData, ValidInputPropsValues>,
     T extends MinimalInputProps,
@@ -308,6 +321,34 @@ export interface RvfReact<FormInputData> {
     fieldName: Field,
     props?: GetInputPropsParam<T>,
   ) => T;
+
+  /**
+   * Returns props that can be spread into controlled components to use as a field.
+   * It's important to pass the provided `ref` to something with a `focus` method.
+   * This allows the field to be focused when it has an error and also disables RVF's default
+   * behavior of automatically listening to changes in the field.
+   * @willRerender
+   */
+  getControlProps: <Field extends ValidStringPaths<FormInputData>>(
+    name: Field,
+    props?: GetControlPropsParam<
+      ValueAtPath<FormInputData, StringToPathTuple<Field>>
+    >,
+  ) => GetControlPropsResult<
+    ValueAtPath<FormInputData, StringToPathTuple<Field>>
+  >;
+
+  /**
+   * Returns props that can be spread into a native form control to use as a hidden field.
+   * This is useful in combination with `getControlProps`.
+   * @willRerender
+   */
+  getHiddenInputProps: <Field extends ValidStringPaths<FormInputData>>(
+    name: Field,
+    opts?: GetHiddenInputPropsParam<
+      ValueAtPath<FormInputData, StringToPathTuple<Field>>
+    >,
+  ) => GetHiddenInputPropsResult;
 
   /**
    * Get field helpers for the specified field.
@@ -529,6 +570,12 @@ export const makeBaseRvfReact = <FormInputData,>({
 
     getInputProps: (fieldName, props) =>
       fieldImpl(fieldName).getInputProps(props),
+
+    getControlProps: (fieldName, props) =>
+      fieldImpl(fieldName).getControlProps(props as never) as never,
+
+    getHiddenInputProps: (fieldName, props) =>
+      fieldImpl(fieldName).getHiddenInputProps(props as never),
 
     submit: (options) => {
       const submitterData =
