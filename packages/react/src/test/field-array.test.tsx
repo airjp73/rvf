@@ -10,6 +10,7 @@ import { FieldArray, useFieldArray } from "../array";
 import { RvfProvider } from "../context";
 import { FieldErrors, Rvf, createValidator } from "@rvf/core";
 import { ComponentProps, useState } from "react";
+import { useFormScope } from "../useFormScope";
 
 it("should only accept array values", () => {
   const Comp = () => {
@@ -24,7 +25,7 @@ it("should only accept array values", () => {
 
     form.array("foo");
 
-    const arrForm = useRvf(form.scope("foo"));
+    const arrForm = useFormScope(form.scope("foo"));
     arrForm.array();
 
     // @ts-expect-error
@@ -295,7 +296,7 @@ it("should work with a pre-scoped form", async () => {
       validator: successValidator,
       handleSubmit: vi.fn(),
     });
-    const array = useRvf(form.scope("foo"));
+    const array = useFormScope(form.scope("foo"));
 
     return (
       <form {...form.getFormProps()}>

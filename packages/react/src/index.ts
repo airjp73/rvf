@@ -43,3 +43,4 @@ export {
   useRvfContext,
   useRvfOrContext,
 } from "./context";
+export { useFormScope } from "./useFormScope";

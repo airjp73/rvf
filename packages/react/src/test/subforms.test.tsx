@@ -4,11 +4,12 @@ import { useRvf } from "../useRvf";
 import userEvent from "@testing-library/user-event";
 import { successValidator } from "./util/successValidator";
 import { controlInput } from "./util/controlInput";
+import { useFormScope } from "../useFormScope";
 
 it("should be able to create scoped subforms", async () => {
   const submit = vi.fn();
   const NameForm = ({ form }: { form: Rvf<{ name: string }> }) => {
-    const iso = useRvf(form);
+    const iso = useFormScope(form);
 
     return (
       <div>
@@ -65,7 +66,7 @@ it("should be able to create scoped subforms", async () => {
 it("should be able to create subforms of arrays", async () => {
   const submit = vi.fn();
   const NameForm = ({ form }: { form: Rvf<{ name: string }> }) => {
-    const iso = useRvf(form);
+    const iso = useFormScope(form);
 
     return (
       <div>
@@ -102,7 +103,7 @@ it("should be able to create subforms of arrays", async () => {
       Rvf<{ name: string }>
     >();
 
-    const peopleForm = useRvf(form.scope("people"));
+    const peopleForm = useFormScope(form.scope("people"));
     expectTypeOf(peopleForm.scope(`${0 as number}`)).toEqualTypeOf<
       Rvf<{ name: string }>
     >();
@@ -150,16 +151,16 @@ it("should memoize subform creation", async () => {
     expect(form.scope("foo.bar.baz")).toBe(form.scope("foo.bar.baz"));
     expect(form.scope("foo.bar.baz.bap")).toBe(form.scope("foo.bar.baz.bap"));
 
-    const fooForm = useRvf(form.scope("foo"));
+    const fooForm = useFormScope(form.scope("foo"));
     expect(fooForm.scope("bar")).toBe(form.scope("foo.bar"));
     expect(fooForm.scope("bar.baz")).toBe(form.scope("foo.bar.baz"));
     expect(fooForm.scope("bar.baz.bap")).toBe(form.scope("foo.bar.baz.bap"));
 
-    const barForm = useRvf(form.scope("foo.bar"));
+    const barForm = useFormScope(form.scope("foo.bar"));
     expect(barForm.scope("baz")).toBe(form.scope("foo.bar.baz"));
     expect(barForm.scope("baz.bap")).toBe(form.scope("foo.bar.baz.bap"));
 
-    const bazForm = useRvf(form.scope("foo.bar.baz"));
+    const bazForm = useFormScope(form.scope("foo.bar.baz"));
     expect(bazForm.scope("bap")).toBe(form.scope("foo.bar.baz.bap"));
 
     return null;

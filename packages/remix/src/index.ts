@@ -33,6 +33,7 @@ export {
   useRvfContext,
   useRvfOrContext,
   isValidationErrorResponse,
+  useFormScope,
 } from "@rvf/react";
 export { useRvf, type RvfRemixOpts } from "./useRvf";
 export { ValidatedForm, type ValidatedFormProps } from "./ValidatedForm";

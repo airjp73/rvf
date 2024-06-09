@@ -8,6 +8,7 @@ import {
 } from "react";
 import { useRvf } from "./useRvf";
 import { RvfReact } from "./base";
+import { useFormScope } from "./useFormScope";
 
 type RvfContextValue = {
   scope: Rvf<unknown>;
@@ -31,7 +32,7 @@ export const useRvfContext = <TData,>() => {
   const value = useContext(RvfContext);
   if (!value)
     throw new Error("useRvfContext must be used within a RvfProvider");
-  return useRvf(value.scope) as RvfReact<TData>;
+  return useFormScope(value.scope) as RvfReact<TData>;
 };
 
 export const useRvfOrContextInternal = (
@@ -72,5 +73,5 @@ export const useRvfOrContext = <TData,>(rvf?: Rvf<TData>): RvfReact<TData> => {
       "useRvfOrContext must be passed an Rvf or be used within a RvfProvider",
     );
 
-  return useRvf(scope) as RvfReact<TData>;
+  return useFormScope(scope) as RvfReact<TData>;
 };

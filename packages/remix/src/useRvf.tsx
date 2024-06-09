@@ -51,59 +51,34 @@ export function useRvf<
   FormOutputData,
   FormResponseData,
 >(
-  options: RvfRemixOpts<FormInputData, FormOutputData, FormResponseData>,
-): RvfReact<FormInputData>;
-
-/**
- * Interprets an `Rvf` created via `form.scope`, for use in a subcomponent.
- */
-export function useRvf<FormInputData>(
-  form: Rvf<FormInputData>,
-): RvfReact<FormInputData>;
-
-export function useRvf<
-  FormInputData extends FieldValues,
-  FormOutputData,
-  FormResponseData,
->(
-  optsOrForm:
-    | RvfRemixOpts<FormInputData, FormOutputData, FormResponseData>
-    | Rvf<FormInputData>,
+  rvfOpts: RvfRemixOpts<FormInputData, FormOutputData, FormResponseData>,
 ): RvfReact<FormInputData> {
   let rvf: RvfReact<FormInputData>;
 
-  const fetcher = "__brand__" in optsOrForm ? undefined : optsOrForm.fetcher;
-  const serverErrors =
-    "__brand__" in optsOrForm ? undefined : optsOrForm.serverValidationErrors;
+  const {
+    fetcher,
+    serverValidationErrors: serverErrors,
+    submitSource = "dom",
+  } = rvfOpts;
   const submitWithRemix = useRemixSubmit(fetcher, serverErrors);
-
-  // We're not actually breaking the rules here, because both branches have the same hook calls.
-  // it's just easier for the types to put the whole hook call in the conditional.
-  /* eslint-disable react-hooks/rules-of-hooks */
-  if ("__brand__" in optsOrForm) {
-    rvf = useRvfReact(optsOrForm);
-    return rvf;
-  }
-
-  const submitSource = optsOrForm.submitSource ?? ("dom" as const);
 
   const handleSubmission = (
     data: FormOutputData,
     formDataOrOptions?: FormData | SubmitterOptions,
     maybeOptions?: SubmitterOptions,
   ) => {
-    const { formData, options } =
+    const { formData, submitterOpts } =
       submitSource === "state"
         ? {
             formData: undefined,
-            options: formDataOrOptions as SubmitterOptions,
+            submitterOpts: formDataOrOptions as SubmitterOptions,
           }
         : {
             formData: formDataOrOptions as FormData,
-            options: maybeOptions,
+            submitterOpts: maybeOptions,
           };
 
-    const handleSubmit = optsOrForm.handleSubmit as
+    const handleSubmit = rvfOpts?.handleSubmit as
       | ((data: FormOutputData, formData: FormData) => Promise<void>)
       | undefined;
 
@@ -119,47 +94,45 @@ export function useRvf<
         return formData;
       }
 
-      if (optsOrForm.encType === "application/json")
-        return data as GenericObject;
+      if (rvfOpts.encType === "application/json") return data as GenericObject;
       return toPathObject(data as GenericObject);
     };
 
     const getFormAction = () => {
-      if (!options?.formAction) return optsOrForm.action;
-      const url = new URL(options.formAction);
+      if (!submitterOpts?.formAction) return rvfOpts.action;
+      const url = new URL(submitterOpts.formAction);
       // https://github.com/remix-run/remix/issues/4423#issuecomment-1293015814
       return url.pathname + url.search;
     };
 
     return submitWithRemix(getData(), {
-      fetcherKey: optsOrForm.fetcherKey,
-      state: optsOrForm.state,
-      navigate: optsOrForm.navigate,
-      replace: optsOrForm.replace,
-      preventScrollReset: optsOrForm.preventScrollReset,
-      relative: optsOrForm.relative,
+      fetcherKey: rvfOpts.fetcherKey,
+      state: rvfOpts.state,
+      navigate: rvfOpts.navigate,
+      replace: rvfOpts.replace,
+      preventScrollReset: rvfOpts.preventScrollReset,
+      relative: rvfOpts.relative,
       action: getFormAction(),
 
       // Technically not type safe, but it isn't really possible to make it so.
       // Can't really validate because remix doesn't provide a validator for it
       // and I don't want to hardcode the types.
       method:
-        (options?.formMethod as typeof optsOrForm.method) ?? optsOrForm.method,
-      encType: (options?.formEnctype as FormEncType) ?? optsOrForm.encType,
+        (submitterOpts?.formMethod as typeof rvfOpts.method) ?? rvfOpts.method,
+      encType: (submitterOpts?.formEnctype as FormEncType) ?? rvfOpts.encType,
     });
   };
 
   rvf = useRvfReact<FormInputData, FormOutputData, FormResponseData>({
-    ...optsOrForm,
+    ...rvfOpts,
     otherFormProps: {
-      method: optsOrForm.method,
-      encType: optsOrForm.encType,
-      ...optsOrForm.otherFormProps,
+      method: rvfOpts.method,
+      encType: rvfOpts.encType,
+      ...rvfOpts.otherFormProps,
     },
     submitSource,
     handleSubmit:
-      (optsOrForm.handleSubmit as never) ?? (handleSubmission as never),
+      (rvfOpts.handleSubmit as never) ?? (handleSubmission as never),
   });
   return rvf;
-  /* eslint-enable */
 }

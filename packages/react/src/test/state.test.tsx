@@ -3,6 +3,7 @@ import { useRvf } from "../useRvf";
 import { successValidator } from "./util/successValidator";
 import { useEffect, useRef } from "react";
 import { createValidator } from "@rvf/core";
+import { useFormScope } from "../useFormScope";
 
 const withResolvers = () => {
   let resolve;
@@ -391,7 +392,7 @@ it("should be possible to set the value for the entire form scope or a field", a
       handleSubmit: vi.fn(),
     });
 
-    const scope = useRvf(form.scope("foo"));
+    const scope = useFormScope(form.scope("foo"));
     return {
       value: form.value(),
       setValue: form.setValue,

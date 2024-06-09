@@ -1,10 +1,4 @@
-import {
-  useEffect,
-  useState,
-  useId,
-  useLayoutEffect,
-  ComponentProps,
-} from "react";
+import { useEffect, useState, useId, ComponentProps, useMemo } from "react";
 import {
   FieldValues,
   ValidationBehaviorConfig,
@@ -119,68 +113,39 @@ export function useRvf<
   SubmitResponseData,
 >(
   options: RvfOpts<FormInputData, FormOutputData, SubmitResponseData>,
-): RvfReact<FormInputData>;
+): RvfReact<FormInputData> {
+  // everything from below
+  const {
+    validator,
+    handleSubmit: onSubmit,
+    onSubmitSuccess,
+    onSubmitFailure,
+    submitSource,
+    action,
+    disableFocusOnError,
+    serverValidationErrors,
+    resetAfterSubmit,
+    otherFormProps,
+    reloadDocument,
+    validationBehaviorConfig,
+    formId: providedFormId,
+  } = options;
 
-/**
- * Interprets an `Rvf` created via `form.scope`, for use in a subcomponent.
- */
-export function useRvf<FormInputData>(
-  form: Rvf<FormInputData>,
-): RvfReact<FormInputData>;
-
-export function useRvf(
-  optsOrForm:
-    | RvfOpts<any, unknown>
-    | Omit<RvfOpts<any, unknown>, "defaultValues">
-    | Rvf<unknown>,
-): RvfReact<any> {
-  const validator = isRvf(optsOrForm) ? undefined : optsOrForm.validator;
-  const onSubmit = isRvf(optsOrForm) ? undefined : optsOrForm.handleSubmit;
-  const onSubmitSuccess = isRvf(optsOrForm)
-    ? undefined
-    : optsOrForm.onSubmitSuccess;
-  const onSubmitFailure = isRvf(optsOrForm)
-    ? undefined
-    : optsOrForm.onSubmitFailure;
-  const isWholeForm = isRvf(optsOrForm);
-  const submitSource = isRvf(optsOrForm) ? undefined : optsOrForm.submitSource;
-  const action = isRvf(optsOrForm) ? undefined : optsOrForm.action;
-  const disableFocusOnError = isRvf(optsOrForm)
-    ? undefined
-    : optsOrForm.disableFocusOnError;
-  const serverValidationErrors = isRvf(optsOrForm)
-    ? undefined
-    : optsOrForm.serverValidationErrors;
-  const resetAfterSubmit = isRvf(optsOrForm)
-    ? undefined
-    : optsOrForm.resetAfterSubmit;
-  const otherFormProps = isRvf(optsOrForm)
-    ? undefined
-    : optsOrForm.otherFormProps;
-  const reloadDocument = isRvf(optsOrForm)
-    ? undefined
-    : optsOrForm.reloadDocument;
-
-  const providedFormId = isRvf(optsOrForm) ? undefined : optsOrForm.formId;
   const defaultFormId = useId();
 
   const [form] = useState<Rvf<unknown>>(() => {
-    if (isRvf(optsOrForm)) return optsOrForm;
     const rvf = createRvf({
-      defaultValues:
-        "defaultValues" in optsOrForm && optsOrForm.defaultValues
-          ? optsOrForm.defaultValues
-          : {},
+      defaultValues: options.defaultValues ?? {},
       serverValidationErrors: serverValidationErrors ?? {},
-      validator: optsOrForm.validator,
-      onSubmit: optsOrForm.handleSubmit as never,
+      validator,
+      onSubmit: onSubmit as never,
       onSubmitSuccess: (data) => {
-        optsOrForm.onSubmitSuccess?.(data);
+        onSubmitSuccess?.(data as SubmitResponseData);
         if (resetAfterSubmit) rvf.__store__.store.getState().reset();
       },
-      onSubmitFailure: optsOrForm.onSubmitFailure ?? noOp,
-      validationBehaviorConfig: optsOrForm.validationBehaviorConfig,
-      submitSource: optsOrForm.submitSource ?? "dom",
+      onSubmitFailure: onSubmitFailure ?? noOp,
+      validationBehaviorConfig: validationBehaviorConfig,
+      submitSource: submitSource ?? "dom",
       formProps: {
         action,
         id: providedFormId ?? defaultFormId,
@@ -198,24 +163,15 @@ export function useRvf(
     return registerFormElementEvents(form.__store__);
   }, [form.__store__]);
 
-  const initial = isRvf(optsOrForm)
-    ? undefined
-    : optsOrForm.validationBehaviorConfig?.initial;
-  const whenSubmitted = isRvf(optsOrForm)
-    ? undefined
-    : optsOrForm.validationBehaviorConfig?.whenSubmitted;
-  const whenTouched = isRvf(optsOrForm)
-    ? undefined
-    : optsOrForm.validationBehaviorConfig?.whenTouched;
+  const { initial, whenSubmitted, whenTouched } =
+    validationBehaviorConfig ?? {};
 
   useEffect(() => {
-    if (isWholeForm) return;
-
     Object.assign(form.__store__.mutableImplStore, {
       validator: validator as any,
       onSubmit,
       onSubmitSuccess: (data: unknown) => {
-        optsOrForm.onSubmitSuccess?.(data);
+        onSubmitSuccess?.(data as SubmitResponseData);
         if (resetAfterSubmit) form.__store__.store.getState().reset();
       },
       onSubmitFailure,
@@ -223,18 +179,14 @@ export function useRvf(
   }, [
     validator,
     onSubmit,
-    isWholeForm,
     form.__store__.mutableImplStore,
     onSubmitSuccess,
     onSubmitFailure,
     form.__store__.store,
     resetAfterSubmit,
-    optsOrForm,
   ]);
 
   useEffect(() => {
-    if (isWholeForm) return;
-
     form.__store__.store.getState().syncOptions({
       submitSource: submitSource ?? "dom",
       validationBehaviorConfig:
@@ -258,7 +210,6 @@ export function useRvf(
   }, [
     form.__store__.store,
     initial,
-    isWholeForm,
     submitSource,
     whenSubmitted,
     whenTouched,
@@ -271,11 +222,11 @@ export function useRvf(
   ]);
 
   useEffect(() => {
-    if (isWholeForm || !serverValidationErrors) return;
+    if (!serverValidationErrors) return;
     form.__store__.store
       .getState()
-      .syncServerValidationErrors(serverValidationErrors);
-  }, [serverValidationErrors, form.__store__.store, isWholeForm]);
+      .syncServerValidationErrors(serverValidationErrors ?? {});
+  }, [serverValidationErrors, form.__store__.store]);
 
   return useRvfInternal(form) as never;
 }
