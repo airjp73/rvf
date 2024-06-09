@@ -1,6 +1,6 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { FormProvider, useFormContext } from "../context";
-import { useRvf } from "../useRvf";
+import { useForm } from "../useForm";
 import { successValidator } from "./util/successValidator";
 import userEvent from "@testing-library/user-event";
 
@@ -17,7 +17,7 @@ it("should be possible to use context to access the form", async () => {
   const submit = vi.fn();
 
   const TestComp = () => {
-    const form = useRvf({
+    const form = useForm({
       defaultValues: { name: "Bob" },
       handleSubmit: submit,
       validator: successValidator,
@@ -51,7 +51,7 @@ it("should be possible to scope a context provider", async () => {
   const submit = vi.fn();
 
   const TestComp = () => {
-    const form = useRvf({
+    const form = useForm({
       defaultValues: { personA: { name: "Bob" }, personB: { name: "Jane" } },
       handleSubmit: submit,
       validator: successValidator,

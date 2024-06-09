@@ -1,5 +1,5 @@
 import { getByTestId, render, screen, waitFor } from "@testing-library/react";
-import { useRvf } from "../useRvf";
+import { useForm } from "../useForm";
 import userEvent from "@testing-library/user-event";
 import { successValidator } from "./util/successValidator";
 import { FieldErrors, createValidator } from "@rvf/core";
@@ -9,7 +9,7 @@ import { act } from "react";
 it("should be able to manually focus fields", async () => {
   const submit = vi.fn();
   const TestComp = () => {
-    const form = useRvf({
+    const form = useForm({
       defaultValues: {
         foo: "",
         bar: "",
@@ -64,7 +64,7 @@ it("should be able to manually focus fields", async () => {
 it("should be automatically focus fields when there are submit validation errors", async () => {
   const submit = vi.fn();
   const TestComp = () => {
-    const form = useRvf({
+    const form = useForm({
       defaultValues: {
         foo: "",
         bar: "",
@@ -128,7 +128,7 @@ it("should be automatically focus fields when there are submit validation errors
 
 it("should focus the selected radio if that is the first invalid field", async () => {
   const TestComp = () => {
-    const form = useRvf({
+    const form = useForm({
       defaultValues: {
         foo: "bye",
       },
@@ -184,7 +184,7 @@ it("should focus the selected radio if that is the first invalid field", async (
 it("should be possible to turn off focus on error using the `disableFocusOnError` option", async () => {
   const submit = vi.fn();
   const TestComp = () => {
-    const form = useRvf({
+    const form = useForm({
       defaultValues: {
         foo: "",
         bar: "",

@@ -236,7 +236,7 @@ export interface RvfReact<FormInputData> {
   /**
    * Creates an `Rvf` scoped to the specified field.
    * This is useful for creating subforms.
-   * In order to use this, you can pass it to `useRvf`.
+   * In order to use this, you can pass it to `useForm`.
    *
    * @example
    * ```tsx
@@ -245,7 +245,7 @@ export interface RvfReact<FormInputData> {
    * }
    *
    * const PersonForm = ({ rvf }: PersonFormProps) => {
-   *   const form = useRvf(rvf);
+   *   const form = useForm(rvf);
    *   return (
    *     <div>
    *       <MyInputField lable="Name" {...personForm.field('name')} />
@@ -254,7 +254,7 @@ export interface RvfReact<FormInputData> {
    * };
    *
    * const LargerForm = () => {
-   *   const form = useRvf({
+   *   const form = useForm({
    *     defaultValues: {
    *       person: {
    *         name: "",
@@ -594,7 +594,7 @@ export const makeBaseRvfReact = <FormInputData,>({
   };
 };
 
-export const useRvfInternal = <FormInputData,>(form: Rvf<FormInputData>) => {
+export const useFormInternal = <FormInputData,>(form: Rvf<FormInputData>) => {
   const prefix = form.__field_prefix__;
   const { useStoreState, resolvers } = form.__store__;
   const trackedState = useStoreState();

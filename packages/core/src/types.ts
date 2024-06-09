@@ -57,7 +57,7 @@ export type FieldArrayValidationBehaviorConfig = {
 };
 
 /**
- * An RVF `Validator`. Can be used by `useRvf` or by calling it directly.
+ * An RVF `Validator`. Can be used by `useForm` or by calling it directly.
  */
 export type Validator<DataType> = {
   validate: (

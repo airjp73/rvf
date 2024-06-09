@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import { useRvf } from "../useRvf";
+import { useForm } from "../useForm";
 import { RenderCounter } from "./util/RenderCounter";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -11,7 +11,7 @@ describe("Isolate", () => {
   it("should be able to isloate rerenders on the fly", async () => {
     const submit = vi.fn();
     const TestComp = () => {
-      const form = useRvf({
+      const form = useForm({
         defaultValues: { foo: "bar" },
         validator: successValidator,
         handleSubmit: submit,
@@ -70,7 +70,7 @@ describe("Field", () => {
   it("should be able to isloate rerenders on the fly", async () => {
     const submit = vi.fn();
     const TestComp = () => {
-      const form = useRvf({
+      const form = useForm({
         defaultValues: { foo: "bar" },
         validator: successValidator,
         handleSubmit: submit,

@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import { useRvf } from "../useRvf";
+import { useForm } from "../useForm";
 import { successValidator } from "./util/successValidator";
 import { useState } from "react";
 import userEvent from "@testing-library/user-event";
@@ -8,7 +8,7 @@ it("should be able to set the value of an uncontrolled checkbox group when indiv
   const submit = vi.fn();
 
   const TestComp = () => {
-    const form = useRvf({
+    const form = useForm({
       defaultValues: {
         foo: ["bar", "baz"],
       },

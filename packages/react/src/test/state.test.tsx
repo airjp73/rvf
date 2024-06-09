@@ -1,5 +1,5 @@
 import { act, renderHook, waitFor } from "@testing-library/react";
-import { useRvf } from "../useRvf";
+import { useForm } from "../useForm";
 import { successValidator } from "./util/successValidator";
 import { useEffect, useRef } from "react";
 import { createValidator } from "@rvf/core";
@@ -27,7 +27,7 @@ it("should return submit state", async () => {
   };
 
   const { result } = renderHook(() => {
-    const form = useRvf({
+    const form = useForm({
       submitSource: "state",
       defaultValues: {
         foo: "bar",
@@ -98,7 +98,7 @@ it("should return form dirty/touched/valid state", async () => {
   });
 
   const { result } = renderHook(() => {
-    const form = useRvf({
+    const form = useForm({
       submitSource: "state",
       defaultValues: {
         foo: "bar",
@@ -162,7 +162,7 @@ it("should return form dirty/touched/valid state", async () => {
 
 it("should be possible to access the default values in the form or a field", async () => {
   const { result } = renderHook(() => {
-    const form = useRvf({
+    const form = useForm({
       submitSource: "state",
       defaultValues: {
         foo: "bar",
@@ -220,7 +220,7 @@ it("should be possible to set the dirty state of a field", async () => {
   });
 
   const { result } = renderHook(() => {
-    const form = useRvf({
+    const form = useForm({
       submitSource: "state",
       defaultValues: {
         foo: "bar",
@@ -300,7 +300,7 @@ it("should be possible to set the dirty state of a field", async () => {
 
 it("should be possible to set the dirty/touched/error state of the entire form scope", async () => {
   const { result } = renderHook(() => {
-    const form = useRvf({
+    const form = useForm({
       submitSource: "state",
       defaultValues: {
         foo: "bar",
@@ -350,7 +350,7 @@ it("should be possible to set the dirty/touched/error state of the entire form s
 
 it("should always give most up-to-date state when accessed outside of render", async () => {
   const { result } = renderHook(() => {
-    const form = useRvf({
+    const form = useForm({
       submitSource: "state",
       defaultValues: {
         foo: "bar",
@@ -383,7 +383,7 @@ it("should always give most up-to-date state when accessed outside of render", a
 
 it("should be possible to set the value for the entire form scope or a field", async () => {
   const { result } = renderHook(() => {
-    const form = useRvf({
+    const form = useForm({
       submitSource: "state",
       defaultValues: {
         foo: "bar",

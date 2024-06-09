@@ -4,7 +4,7 @@ import { withZod } from "@rvf/zod";
 import {
   validationError,
   ValidatedForm,
-  useRvf,
+  useForm,
   FormProvider,
   useRemixFormResponse,
 } from "@rvf/remix";
@@ -66,7 +66,7 @@ export default function FrontendValidation() {
   const response = useRemixFormResponse({
     formId: "test-form",
   });
-  const form = useRvf({
+  const form = useForm({
     validator,
     method: "post",
     ...response.getRvfOpts(),

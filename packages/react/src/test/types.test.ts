@@ -1,12 +1,12 @@
 import { describe, expectTypeOf, it } from "vitest";
-import { useRvf } from "../useRvf";
+import { useForm } from "../useForm";
 import { successValidator } from "./util/successValidator";
 import { FormFields } from "../base";
 
 describe("types", () => {
   it("should only allow valid paths", () => {
     const Component = () => {
-      const form = useRvf({
+      const form = useForm({
         validator: successValidator,
         defaultValues: {
           foo: "bar",

@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import { useRvf } from "../useRvf";
+import { useForm } from "../useForm";
 import { successValidator } from "./util/successValidator";
 import userEvent from "@testing-library/user-event";
 import { useState } from "react";
@@ -11,7 +11,7 @@ it("should support passing errors in directly", async () => {
     "baz.a": "baz error",
   };
   const TestComp = () => {
-    const form = useRvf({
+    const form = useForm({
       defaultValues: {
         foo: "",
         baz: { a: "" },
@@ -55,7 +55,7 @@ it("should focus the first invalid field when server validation errors are provi
   };
   const TestComp = () => {
     const [showErrors, setShowErrors] = useState(false);
-    const form = useRvf({
+    const form = useForm({
       defaultValues: {
         foo: "",
         baz: { a: "" },

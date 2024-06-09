@@ -14,7 +14,7 @@ import { FormDefaultsKey, formDefaultValuesKey } from "./constants";
  * You can also provide a second argument to `validationError`
  * to specify how to repopulate the form when JS is disabled.
  *
- * *NOTE*: If you're using `useRvf`, you still need to pull the errors out of `useActionData` yourself.
+ * *NOTE*: If you're using `useForm`, you still need to pull the errors out of `useActionData` yourself.
  * Only `ValidatedForm` will automatically do this for you.
  *
  * @example
@@ -52,7 +52,7 @@ export type FormDefaults = {
  * @deprecated This was a workaround for features in the old version of `remix-validated-form` that don't exist anymore.
  * Directly setting the `defaultValues` with data returned from your loader is now the preferred way to set the default values.
  *
- * This only works with the `ValidatedForm` component and not with `useRvf`.
+ * This only works with the `ValidatedForm` component and not with `useForm`.
  */
 export const setFormDefaults = <DataType = any>(
   formId: string,

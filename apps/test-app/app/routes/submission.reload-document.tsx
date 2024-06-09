@@ -1,7 +1,7 @@
 import { DataFunctionArgs, json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import { withYup } from "@rvf/yup";
-import { useRvf } from "@rvf/remix";
+import { useForm } from "@rvf/remix";
 import * as yup from "yup";
 import { useEffect, useRef } from "react";
 
@@ -23,7 +23,7 @@ export const loader = async ({ request }: DataFunctionArgs) => {
 
 export default function FrontendValidation() {
   const data = useLoaderData<typeof loader>();
-  const form = useRvf({
+  const form = useForm({
     validator,
     method: "get",
     reloadDocument: data.shouldReload,

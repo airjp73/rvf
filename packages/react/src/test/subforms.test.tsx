@@ -1,6 +1,6 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { Rvf, createValidator } from "@rvf/core";
-import { useRvf } from "../useRvf";
+import { useForm } from "../useForm";
 import userEvent from "@testing-library/user-event";
 import { successValidator } from "./util/successValidator";
 import { controlInput } from "./util/controlInput";
@@ -19,7 +19,7 @@ it("should be able to create scoped subforms", async () => {
   };
 
   const PersonForm = () => {
-    const form = useRvf({
+    const form = useForm({
       defaultValues: {
         person: {
           name: "",
@@ -83,7 +83,7 @@ it("should be able to create subforms of arrays", async () => {
         },
       ],
     };
-    const form = useRvf({
+    const form = useForm({
       defaultValues,
       validator: createValidator({
         validate: (data) =>
@@ -138,7 +138,7 @@ it("should be able to create subforms of arrays", async () => {
 it("should memoize subform creation", async () => {
   const submit = vi.fn();
   const Form = () => {
-    const form = useRvf({
+    const form = useForm({
       defaultValues: {
         foo: { bar: { baz: { bap: "" } } },
       },

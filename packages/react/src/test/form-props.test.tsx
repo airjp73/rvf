@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import { useRvf } from "../useRvf";
+import { useForm } from "../useForm";
 import { successValidator } from "./util/successValidator";
 import userEvent from "@testing-library/user-event";
 import { RenderCounter } from "./util/RenderCounter";
@@ -8,7 +8,7 @@ it("should cancel submission if the native onSubmit calls preventDefault", async
   const submit = vi.fn();
 
   const TestComp = () => {
-    const form = useRvf({
+    const form = useForm({
       defaultValues: {
         foo: "bar",
       },
@@ -39,7 +39,7 @@ it("should cancel reset if the native onReset calls preventDefault", async () =>
   const submit = vi.fn();
 
   const TestComp = () => {
-    const form = useRvf({
+    const form = useForm({
       defaultValues: {
         foo: "bar",
       },
@@ -70,7 +70,7 @@ it("should not over-rerender when using otherFormProps", async () => {
   const submit = vi.fn();
 
   const TestComp = () => {
-    const form = useRvf({
+    const form = useForm({
       defaultValues: {
         foo: "bar",
       },

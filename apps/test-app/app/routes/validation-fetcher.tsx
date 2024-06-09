@@ -1,7 +1,7 @@
 import { DataFunctionArgs, json } from "@remix-run/node";
 import { useFetcher } from "@remix-run/react";
 import { withYup } from "@rvf/yup";
-import { validationError, useRvf, FormProvider } from "@rvf/remix";
+import { validationError, useForm, FormProvider } from "@rvf/remix";
 import * as yup from "yup";
 import { Input } from "~/components/Input";
 import { SubmitButton } from "~/components/SubmitButton";
@@ -24,7 +24,7 @@ export const action = async ({ request }: DataFunctionArgs) => {
 
 export default function FrontendValidation() {
   const fetcher = useFetcher<typeof action>();
-  const form = useRvf({
+  const form = useForm({
     validator,
     method: "post",
     fetcher,

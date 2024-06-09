@@ -1,5 +1,5 @@
 import { Rvf } from "@rvf/core";
-import { RvfReact, useRvfInternal } from "./base";
+import { RvfReact, useFormInternal } from "./base";
 
 /**
  * Interprets an `Rvf` created via `form.scope`, for use in a subcomponent.
@@ -7,5 +7,5 @@ import { RvfReact, useRvfInternal } from "./base";
 export function useFormScope<FormInputData>(
   form: Rvf<FormInputData>,
 ): RvfReact<FormInputData> {
-  return useRvfInternal(form);
+  return useFormInternal(form);
 }

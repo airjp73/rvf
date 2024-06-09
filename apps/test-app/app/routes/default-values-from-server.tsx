@@ -5,7 +5,7 @@ import {
   ValidatorData,
   setFormDefaults,
   FormDefaults,
-  useRvf,
+  useForm,
   FormProvider,
   useRemixFormResponse,
 } from "@rvf/remix";
@@ -45,7 +45,7 @@ export default function FrontendValidation() {
   const server = useRemixFormResponse({
     formId: "test-form",
   });
-  const form = useRvf({
+  const form = useForm({
     ...server.getRvfOpts(),
     validator: validator,
     method: "post",

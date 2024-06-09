@@ -1,5 +1,5 @@
 import { AllProps, FieldValues } from "@rvf/core";
-import { RvfRemixOpts, useRvf } from "./useRvf";
+import { RvfRemixOpts, useForm } from "./useForm";
 import { FormProvider, RvfReact } from "@rvf/react";
 import { useRemixFormResponse } from "./auto-server-hooks";
 
@@ -96,7 +96,7 @@ export const ValidatedForm = <
     defaultValues,
   });
 
-  const rvf = useRvf<FormInputData, FormOutputData, FormResponseData>({
+  const rvf = useForm<FormInputData, FormOutputData, FormResponseData>({
     ...remix.getRvfOpts(),
     action,
     formId: id,

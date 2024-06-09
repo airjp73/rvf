@@ -6,7 +6,7 @@ import {
   useControlField,
   validationError,
   useField,
-  useRvf,
+  useForm,
   FormProvider,
 } from "@rvf/remix";
 import { z } from "zod";
@@ -93,7 +93,7 @@ function* range(min: number, max: number) {
 export default function ControlledField() {
   const data = useActionData<typeof action>();
   const [count, setCount] = useState(1);
-  const rvf = useRvf({
+  const rvf = useForm({
     validator,
     method: "post",
     defaultValues: { myField: "green", text: "" },

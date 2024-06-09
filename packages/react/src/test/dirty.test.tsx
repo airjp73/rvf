@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { useRef } from "react";
-import { useRvf } from "../useRvf";
+import { useForm } from "../useForm";
 import userEvent from "@testing-library/user-event";
 import { successValidator } from "./util/successValidator";
 import { controlInput } from "./util/controlInput";
@@ -8,7 +8,7 @@ import { controlInput } from "./util/controlInput";
 it("should subscribe to changes in the dirty state", async () => {
   const submit = vi.fn();
   const TestComp = () => {
-    const form = useRvf({
+    const form = useForm({
       defaultValues: {
         foo: "",
         baz: { a: "" },

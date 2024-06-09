@@ -9,7 +9,7 @@ import { useCallback, useMemo } from "react";
  * Can optionally accept an `Rvf` to grab the data from that instead.
  *
  * @deprecated Provided for backwards compatibility with `remix-validated-form`.
- * You can instead get this data directly off of the `useRvf` hook.
+ * You can instead get this data directly off of the `useForm` hook.
  */
 export const useIsSubmitting = (rvf?: Rvf<any>) =>
   useFormScopeOrContext(rvf).formState.isSubmitting;
@@ -20,13 +20,13 @@ export const useIsSubmitting = (rvf?: Rvf<any>) =>
  * Can optionally accept an `Rvf` to grab the data from that instead.
  *
  * @deprecated Provided for backwards compatibility with `remix-validated-form`.
- * You can instead get this data directly off of the `useRvf` hook.
+ * You can instead get this data directly off of the `useForm` hook.
  */
 export const useIsValid = (rvf?: Rvf<any>) =>
   useFormScopeOrContext(rvf).formState.isValid;
 
 /**
- * @deprecated Can get the value and set the value directly off of the `useRvf` hook.
+ * @deprecated Can get the value and set the value directly off of the `useForm` hook.
  */
 export const useControlField = <T>(name: string, rvf?: Rvf<any>) => {
   const form = useFormScopeOrContext(rvf);
@@ -39,7 +39,7 @@ export const useControlField = <T>(name: string, rvf?: Rvf<any>) => {
 };
 
 /**
- * @deprecated Can set the value directly off of the `useRvf` hook.
+ * @deprecated Can set the value directly off of the `useForm` hook.
  */
 export const useUpdateControlledField = (rvf?: Rvf<any>) => {
   const form = useFormScopeOrContext(rvf);

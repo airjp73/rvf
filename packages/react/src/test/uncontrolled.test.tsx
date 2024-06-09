@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useRvf } from "../useRvf";
+import { useForm } from "../useForm";
 import userEvent from "@testing-library/user-event";
 import { forwardRef, useRef } from "react";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
@@ -13,7 +13,7 @@ it("captures and submits with uncontrolled fields", async () => {
   const submit = vi.fn();
 
   const TestComp = () => {
-    const form = useRvf({
+    const form = useForm({
       defaultValues: {
         foo: "bar",
         baz: {
@@ -61,7 +61,7 @@ it("works when using getInputProps directly from the form", async () => {
   const submit = vi.fn();
 
   const TestComp = () => {
-    const form = useRvf({
+    const form = useForm({
       defaultValues: {
         foo: "bar",
         baz: {
@@ -109,7 +109,7 @@ it("should work with the component version of Field", async () => {
   const submit = vi.fn();
 
   const TestComp = () => {
-    const form = useRvf({
+    const form = useForm({
       defaultValues: {
         foo: "bar",
       },
@@ -150,7 +150,7 @@ it("captures and submits without registering uncontrolled inputs", async () => {
   const submit = vi.fn();
 
   const TestComp = () => {
-    const form = useRvf({
+    const form = useForm({
       defaultValues: {
         foo: "bar",
         baz: {
@@ -200,7 +200,7 @@ it("validates and submits without registering uncontrolled inputs outside a form
   const submit = vi.fn();
 
   const TestComp = () => {
-    const form = useRvf({
+    const form = useForm({
       defaultValues: {
         foo: "",
       },
@@ -258,7 +258,7 @@ it("should update `value` with auto-form", async () => {
   const submit = vi.fn();
 
   const TestComp = () => {
-    const form = useRvf({
+    const form = useForm({
       defaultValues: {
         foo: "bar",
       },
@@ -298,7 +298,7 @@ it("should validate with auto-form", async () => {
   const submit = vi.fn();
 
   const TestComp = () => {
-    const form = useRvf({
+    const form = useForm({
       defaultValues: { foo: "" },
       validator: createValidator({
         validate: (data) => {
@@ -349,7 +349,7 @@ it("shoud work correctly when no default values exist", async () => {
   const submit = vi.fn();
 
   const TestComp = () => {
-    const form = useRvf({
+    const form = useForm({
       validator: successValidator,
       handleSubmit: submit,
     });
@@ -393,7 +393,7 @@ it("should work correctly when the input is unmounted and remounted", async () =
   const submit = vi.fn();
 
   const TestComp = () => {
-    const form = useRvf({
+    const form = useForm({
       defaultValues: {
         foo: "bar",
       },
@@ -432,7 +432,7 @@ it("should work correctly when the input is unmounted and remounted", async () =
 it("should handle number inputs", async () => {
   const submit = vi.fn();
   const useIt = () =>
-    useRvf({
+    useForm({
       defaultValues: { foo: 0, bar: 0 },
       validator: successValidator,
       handleSubmit: submit,
@@ -477,7 +477,7 @@ it("should handle number inputs", async () => {
 it("should subscribe to value changes", async () => {
   const submit = vi.fn();
   const TestComp = () => {
-    const form = useRvf({
+    const form = useForm({
       defaultValues: {
         foo: "bar",
         baz: {
@@ -515,7 +515,7 @@ it("should subscribe to value changes", async () => {
 it("should be posible to directly set a field value", async () => {
   const submit = vi.fn();
   const TestComp = () => {
-    const form = useRvf({
+    const form = useForm({
       defaultValues: {
         foo: "bar",
         baz: {
@@ -556,7 +556,7 @@ it("should work with custom components", async () => {
   ));
 
   const TestComp = () => {
-    const form = useRvf({
+    const form = useForm({
       defaultValues: {
         foo: "bar",
       },
@@ -588,7 +588,7 @@ it("should naturally work with boolean checkboxes", async () => {
   const submit = vi.fn();
 
   const TestComp = () => {
-    const form = useRvf({
+    const form = useForm({
       defaultValues: {
         foo: true,
       },
@@ -634,7 +634,7 @@ it("should naturally work with checkbox groups", async () => {
   const submit = vi.fn();
 
   const TestComp = () => {
-    const form = useRvf({
+    const form = useForm({
       defaultValues: {
         foo: ["bar", "baz"],
       },
@@ -711,7 +711,7 @@ it("should naturally work with radio groups", async () => {
   const submit = vi.fn();
 
   const TestComp = () => {
-    const form = useRvf({
+    const form = useForm({
       defaultValues: {
         foo: "foo",
       },
@@ -777,7 +777,7 @@ it("should auto-connect fields outside of the form", async () => {
   const submit = vi.fn();
 
   const TestComp = () => {
-    const form = useRvf({
+    const form = useForm({
       defaultValues: {
         foo: "bar",
       },
@@ -814,7 +814,7 @@ it("should work with selects", async () => {
   const submit = vi.fn();
 
   const TestComp = () => {
-    const form = useRvf({
+    const form = useForm({
       submitSource: "state",
       defaultValues: {
         foo: "bar",
@@ -852,7 +852,7 @@ it("should be able to set the value of an uncontrolled select", async () => {
   const submit = vi.fn();
 
   const TestComp = () => {
-    const form = useRvf({
+    const form = useForm({
       submitSource: "state",
       defaultValues: {
         foo: "bar",
@@ -893,7 +893,7 @@ it("should handle multiple uncontrolled text inputs with the same name", async (
   const submit = vi.fn();
 
   const TestComp = () => {
-    const form = useRvf({
+    const form = useForm({
       defaultValues: {
         foo: [],
       },

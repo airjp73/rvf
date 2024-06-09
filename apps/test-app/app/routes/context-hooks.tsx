@@ -5,7 +5,7 @@ import {
   Rvf,
   FormProvider,
   useRemixFormResponse,
-  useRvf,
+  useForm,
   useFormScopeOrContext,
 } from "@rvf/remix";
 import * as yup from "yup";
@@ -71,7 +71,7 @@ export default function FrontendValidation() {
     defaultValues: { firstName: "defaultFirstName" },
   });
   // Verify we don't get an infinite loop
-  const form = useRvf({
+  const form = useForm({
     ...server.getRvfOpts(),
     validator: withYup(
       yup.object({

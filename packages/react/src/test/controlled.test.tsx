@@ -1,4 +1,4 @@
-import { useRvf } from "../useRvf";
+import { useForm } from "../useForm";
 import userEvent from "@testing-library/user-event";
 import { useRef } from "react";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
@@ -9,7 +9,7 @@ it("captures and submits with controlled fields", async () => {
   const submit = vi.fn();
 
   const TestComp = () => {
-    const form = useRvf({
+    const form = useForm({
       defaultValues: {
         foo: "bar",
         baz: {
@@ -61,7 +61,7 @@ it("works with form-level getControlProps", async () => {
   const submit = vi.fn();
 
   const TestComp = () => {
-    const form = useRvf({
+    const form = useForm({
       defaultValues: {
         foo: "bar",
         baz: {
@@ -119,7 +119,7 @@ it("shoud work correctly when no default values exist", async () => {
   const submit = vi.fn();
 
   const TestComp = () => {
-    const form = useRvf({
+    const form = useForm({
       validator: successValidator,
       handleSubmit: submit,
     });
@@ -162,7 +162,7 @@ it("shoud work correctly when no default values exist", async () => {
 it("should subscribe to value changes", async () => {
   const submit = vi.fn();
   const TestComp = () => {
-    const form = useRvf({
+    const form = useForm({
       defaultValues: {
         foo: "bar",
         baz: {
@@ -200,7 +200,7 @@ it("should subscribe to value changes", async () => {
 it("should be posible to directly set a field value", async () => {
   const submit = vi.fn();
   const TestComp = () => {
-    const form = useRvf({
+    const form = useForm({
       defaultValues: {
         foo: "bar",
         baz: {
@@ -236,7 +236,7 @@ it("should work with custom components", async () => {
   );
 
   const TestComp = () => {
-    const form = useRvf({
+    const form = useForm({
       defaultValues: {
         foo: "bar",
       },

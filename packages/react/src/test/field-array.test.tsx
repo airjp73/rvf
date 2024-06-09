@@ -1,5 +1,5 @@
 import { render, screen, waitFor } from "@testing-library/react";
-import { useRvf } from "../useRvf";
+import { useForm } from "../useForm";
 import userEvent from "@testing-library/user-event";
 import { Fragment } from "react/jsx-runtime";
 import { RenderCounter } from "./util/RenderCounter";
@@ -14,7 +14,7 @@ import { useFormScope } from "../useFormScope";
 
 it("should only accept array values", () => {
   const Comp = () => {
-    const form = useRvf({
+    const form = useForm({
       defaultValues: {
         foo: ["bar"],
         bar: "bar",
@@ -39,7 +39,7 @@ it("should only accept array values", () => {
 describe("controlled items", () => {
   it("should render every item in the array", async () => {
     const Comp = () => {
-      const form = useRvf({
+      const form = useForm({
         defaultValues: {
           foo: [{ name: "bar" }, { name: "baz" }],
         },
@@ -72,7 +72,7 @@ describe("controlled items", () => {
 
   it("should work with non-object array values", async () => {
     const Comp = () => {
-      const form = useRvf({
+      const form = useForm({
         defaultValues: {
           foo: ["bar", "baz"],
         },
@@ -127,7 +127,7 @@ describe("controlled items", () => {
 describe("uncontrolled items", () => {
   it("should render every item in the array", async () => {
     const Comp = () => {
-      const form = useRvf({
+      const form = useForm({
         defaultValues: {
           foo: [{ name: "bar" }, { name: "baz" }],
         },
@@ -158,7 +158,7 @@ describe("uncontrolled items", () => {
 
   it("should work with the component version of FieldArray", async () => {
     const Comp = () => {
-      const form = useRvf({
+      const form = useForm({
         defaultValues: {
           foo: [{ name: "bar" }, { name: "baz" }],
         },
@@ -193,7 +193,7 @@ describe("uncontrolled items", () => {
 
   it("should correctly set default values when adding items", async () => {
     const Comp = () => {
-      const form = useRvf({
+      const form = useForm({
         defaultValues: {
           foo: [{ name: "bar" }, { name: "baz" }],
         },
@@ -235,7 +235,7 @@ describe("uncontrolled items", () => {
 
   it("should work with non-object array values", async () => {
     const Comp = () => {
-      const form = useRvf({
+      const form = useForm({
         defaultValues: {
           foo: ["bar", "baz"],
         },
@@ -289,7 +289,7 @@ describe("uncontrolled items", () => {
 
 it("should work with a pre-scoped form", async () => {
   const Comp = () => {
-    const form = useRvf({
+    const form = useForm({
       defaultValues: {
         foo: [{ name: "bar" }, { name: "baz" }],
       },
@@ -323,7 +323,7 @@ it("should work with a pre-scoped form", async () => {
 
 it("should memoize array object creation", async () => {
   const Comp = () => {
-    const form = useRvf({
+    const form = useForm({
       defaultValues: {
         foo: [{ name: "bar" }, { name: "baz" }],
       },
@@ -341,7 +341,7 @@ it("should memoize array object creation", async () => {
 
 it("should be able to push to an array", async () => {
   const Comp = () => {
-    const form = useRvf({
+    const form = useForm({
       defaultValues: {
         foo: [{ name: "bar" }, { name: "baz" }],
       },
@@ -380,7 +380,7 @@ it("should be able to push to an array", async () => {
 
 it("should be able to pop from an array", async () => {
   const Comp = () => {
-    const form = useRvf({
+    const form = useForm({
       defaultValues: {
         foo: [{ name: "bar" }, { name: "baz" }],
       },
@@ -419,7 +419,7 @@ it("should be able to pop from an array", async () => {
 
 it("should be able to shift from an array", async () => {
   const Comp = () => {
-    const form = useRvf({
+    const form = useForm({
       defaultValues: {
         foo: [{ name: "bar" }, { name: "baz" }],
       },
@@ -471,7 +471,7 @@ it("should be able to shift from an array", async () => {
 
 it("should be able to unshift to an array", async () => {
   const Comp = () => {
-    const form = useRvf({
+    const form = useForm({
       defaultValues: {
         foo: [{ name: "bar" }, { name: "baz" }],
       },
@@ -525,7 +525,7 @@ it("should be able to unshift to an array", async () => {
 
 it("should be able to insert into an array", async () => {
   const Comp = () => {
-    const form = useRvf({
+    const form = useForm({
       defaultValues: {
         foo: [{ name: "bar" }, { name: "baz" }],
       },
@@ -578,7 +578,7 @@ it("should be able to insert into an array", async () => {
 
 it("should be able to move within an array", async () => {
   const Comp = () => {
-    const form = useRvf({
+    const form = useForm({
       defaultValues: {
         foo: [{ name: "bar" }, { name: "baz" }, { name: "quux" }],
       },
@@ -640,7 +640,7 @@ it("should be able to move within an array", async () => {
 
 it("should be able to swap within an array", async () => {
   const Comp = () => {
-    const form = useRvf({
+    const form = useForm({
       defaultValues: {
         foo: [{ name: "bar" }, { name: "baz" }, { name: "quux" }],
       },
@@ -695,7 +695,7 @@ it("should be able to swap within an array", async () => {
 
 it("should be able to remove from an array", async () => {
   const Comp = () => {
-    const form = useRvf({
+    const form = useForm({
       defaultValues: {
         foo: [{ name: "bar" }, { name: "baz" }, { name: "quux" }],
       },
@@ -748,7 +748,7 @@ it("should be able to remove from an array", async () => {
 
 it("should be able to replace", async () => {
   const Comp = () => {
-    const form = useRvf({
+    const form = useForm({
       defaultValues: {
         foo: [{ name: "bar" }, { name: "baz" }, { name: "quux" }],
       },
@@ -804,7 +804,7 @@ it("should be able to replace", async () => {
 it("should default to an empty array if no default value is provided", async () => {
   let id = 0;
   const Comp = () => {
-    const form = useRvf({
+    const form = useForm({
       validator: createValidator({
         validate: (data) => {
           const errors: FieldErrors = {};
@@ -882,7 +882,7 @@ it("should default to an empty array if no default value is provided", async () 
 
 it("should handle nested field arrays", async () => {
   const Comp = () => {
-    const form = useRvf({
+    const form = useForm({
       defaultValues: {
         foo: [{ name: "bar", notes: [{ text: "baz" }] }],
       },
@@ -976,7 +976,7 @@ it("should handle nested field arrays", async () => {
 
 it("should validate on submit, then on change after that by default", async () => {
   const Comp = () => {
-    const form = useRvf({
+    const form = useForm({
       submitSource: "state",
       defaultValues: {
         foo: [] as string[],
@@ -1088,7 +1088,7 @@ it("should support custom validation behavior", async () => {
   };
 
   const TestComp = () => {
-    const form = useRvf({
+    const form = useForm({
       defaultValues: {
         foo: ["foo", "bar"],
       },
@@ -1140,7 +1140,7 @@ it("should retain state when doing operations", async () => {
   };
 
   const Comp = () => {
-    const form = useRvf({
+    const form = useForm({
       defaultValues: {
         foo: [{ name: "bar" }, { name: "baz" }],
       },

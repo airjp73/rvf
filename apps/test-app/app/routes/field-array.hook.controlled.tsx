@@ -4,7 +4,7 @@ import {
   useFieldArray,
   useControlField,
   useField,
-  useRvf,
+  useForm,
   FormProvider,
 } from "@rvf/remix";
 import { z } from "zod";
@@ -70,7 +70,7 @@ const defaultValues = {
 };
 
 export default function FrontendValidation() {
-  const form = useRvf({
+  const form = useForm({
     validator,
     method: "post",
     defaultValues,

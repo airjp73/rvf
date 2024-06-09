@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import { useRvf } from "../useRvf";
+import { useForm } from "../useForm";
 import userEvent from "@testing-library/user-event";
 import { RenderCounter } from "./util/RenderCounter";
 import { useEffect } from "react";
@@ -8,7 +8,7 @@ import { successValidator } from "./util/successValidator";
 it("should subscribe to value changes", async () => {
   const submit = vi.fn();
   const TestComp = () => {
-    const form = useRvf({
+    const form = useForm({
       defaultValues: {
         foo: "bar",
       },
@@ -39,7 +39,7 @@ it("should subscribe to value changes", async () => {
 it("should only subscribe to the value that was changed even if it's nested", async () => {
   const submit = vi.fn();
   const TestComp = () => {
-    const form = useRvf({
+    const form = useForm({
       defaultValues: {
         foo: {
           bar: "bar",
@@ -84,7 +84,7 @@ it("should only subscribe to the value that was changed even if it's nested", as
 it("should still function correctly if the call to `value` just returns the whole object", async () => {
   const submit = vi.fn();
   const TestComp = () => {
-    const form = useRvf({
+    const form = useForm({
       defaultValues: {
         foo: {
           bar: "bar",
@@ -129,7 +129,7 @@ it("should still function correctly if the call to `value` just returns the whol
 it("should be possible to access a value in an effect without rerendering", async () => {
   const submit = vi.fn();
   const TestComp = () => {
-    const form = useRvf({
+    const form = useForm({
       defaultValues: {
         foo: "bar",
       },
@@ -164,7 +164,7 @@ it("should be possible to access a value in an effect without rerendering", asyn
 it("should be possible to set a value using a value returned from the value helper", async () => {
   const submit = vi.fn();
   const TestComp = () => {
-    const form = useRvf({
+    const form = useForm({
       defaultValues: {
         foo: { value: "bar" },
         bar: { value: "" },

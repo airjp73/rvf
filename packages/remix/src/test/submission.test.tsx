@@ -3,7 +3,7 @@ import { createRemixStub } from "@remix-run/testing";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { createValidator, isValidationErrorResponse } from "@rvf/core";
-import { useRvf } from "../useRvf";
+import { useForm } from "../useForm";
 import { validationError } from "../server";
 import { ActionFunctionArgs } from "@remix-run/node";
 import { ValidatedForm } from "../ValidatedForm";
@@ -25,7 +25,7 @@ it("should submit data to the action in dom mode", async () => {
       path: "/",
       Component: () => {
         const result = useActionData<typeof action>();
-        const form = useRvf({
+        const form = useForm({
           defaultValues: { foo: "" },
           validator,
           method: "post",
@@ -70,7 +70,7 @@ it("should be able to submit state directly", async () => {
       path: "/",
       Component: () => {
         const result = useActionData<typeof action>();
-        const form = useRvf({
+        const form = useForm({
           submitSource: "state",
           defaultValues: { foo: "", bar: { baz: [123] } },
           validator,
@@ -124,7 +124,7 @@ it("should be able to submit state directly as form data", async () => {
       path: "/",
       Component: () => {
         const result = useActionData<typeof action>();
-        const form = useRvf({
+        const form = useForm({
           submitSource: "state",
           defaultValues: { foo: "", bar: { baz: [123] } },
           validator,
@@ -171,7 +171,7 @@ it("should respect the formMethod of the submitter", async () => {
     {
       path: "/",
       Component: () => {
-        const form = useRvf({
+        const form = useForm({
           validator,
         });
         return (
@@ -230,7 +230,7 @@ it("should respect the specified action", async () => {
     {
       path: "/",
       Component: () => {
-        const form = useRvf({
+        const form = useForm({
           validator,
           method: "post",
           action: "/action",
@@ -301,7 +301,7 @@ it("should correctly strip down fully qualified urls", async () => {
     {
       path: "/",
       Component: () => {
-        const form = useRvf({
+        const form = useForm({
           validator,
           method: "post",
         });
@@ -347,7 +347,7 @@ it("should function correctly with nested urls", async () => {
     {
       path: "/test/action",
       Component: () => {
-        const form = useRvf({
+        const form = useForm({
           validator,
           method: "post",
           action: "/test/action/route",
@@ -391,7 +391,7 @@ it("should correctly handle submitting with a fetcher", async () => {
       path: "/",
       Component: () => {
         const fetcher = useFetcher<typeof action>();
-        const form = useRvf({
+        const form = useForm({
           fetcher,
           defaultValues: { foo: "" },
           validator,
@@ -436,7 +436,7 @@ it("should call onSubmitSuccess when the call is complete", async () => {
       path: "/",
       Component: () => {
         const fetcher = useFetcher<typeof action>();
-        const form = useRvf({
+        const form = useForm({
           fetcher,
           defaultValues: { foo: "" },
           validator,
@@ -484,7 +484,7 @@ it("should call onSubmitFailure if the call returns a validation error", async (
       path: "/",
       Component: () => {
         const response = useRemixFormResponse();
-        const form = useRvf({
+        const form = useForm({
           ...response.getRvfOpts(),
           defaultValues: { foo: "" },
           validator,
@@ -530,7 +530,7 @@ it("should reset the form after a successful submission when resetAfterSubmit is
       path: "/",
       Component: () => {
         const fetcher = useFetcher<typeof action>();
-        const form = useRvf({
+        const form = useForm({
           fetcher,
           defaultValues: { foo: "" },
           validator,

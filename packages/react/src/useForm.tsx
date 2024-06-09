@@ -9,7 +9,7 @@ import {
   StateSubmitHandler,
   DomSubmitHandler,
 } from "@rvf/core";
-import { RvfReact, useRvfInternal } from "./base";
+import { RvfReact, useFormInternal } from "./base";
 import { FieldErrors } from "@rvf/core";
 
 const noOp = () => {};
@@ -78,7 +78,7 @@ export type RvfOpts<
 
   /**
    * Optionally, you can pass other props to the form element here.
-   * This is primarily useful for writing custom hooks around `useRvf`.
+   * This is primarily useful for writing custom hooks around `useForm`.
    * For most use-cases, you can simply pass the props directly to the form element.
    */
   otherFormProps?: Omit<ComponentProps<"form">, "id" | "action">;
@@ -107,7 +107,7 @@ const isRvf = (form: any): form is Rvf<any> =>
 /**
  * Create and use an `Rvf`.
  */
-export function useRvf<
+export function useForm<
   FormInputData extends FieldValues,
   FormOutputData,
   SubmitResponseData,
@@ -228,5 +228,5 @@ export function useRvf<
       .syncServerValidationErrors(serverValidationErrors ?? {});
   }, [serverValidationErrors, form.__store__.store]);
 
-  return useRvfInternal(form) as never;
+  return useFormInternal(form) as never;
 }

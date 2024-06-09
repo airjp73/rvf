@@ -1,13 +1,13 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { useRvf } from "../useRvf";
+import { useForm } from "../useForm";
 import { successValidator } from "./util/successValidator";
 import { controlInput } from "./util/controlInput";
 
 it("should reset the whole form", async () => {
   const submit = vi.fn();
   const TestComp = () => {
-    const form = useRvf({
+    const form = useForm({
       defaultValues: {
         foo: "bar",
         baz: { a: "quux" },
@@ -59,7 +59,7 @@ it("should reset the whole form", async () => {
 it("should reset individual fields", async () => {
   const submit = vi.fn();
   const TestComp = () => {
-    const form = useRvf({
+    const form = useForm({
       defaultValues: {
         foo: "bar",
         baz: { a: "quux" },
@@ -111,7 +111,7 @@ it("should reset individual fields", async () => {
 it("should reset the whole form using custom initial values", async () => {
   const submit = vi.fn();
   const TestComp = () => {
-    const form = useRvf({
+    const form = useForm({
       defaultValues: {
         foo: "bar",
         baz: { a: "quux" },
@@ -168,7 +168,7 @@ it("should reset the whole form using custom initial values", async () => {
 it("should reset individual fields using custom initial values", async () => {
   const submit = vi.fn();
   const TestComp = () => {
-    const form = useRvf({
+    const form = useForm({
       defaultValues: {
         foo: "bar",
         baz: { a: "quux" },
@@ -220,7 +220,7 @@ it("should reset individual fields using custom initial values", async () => {
 it("should reset the whole form when a reset button is clicked", async () => {
   const submit = vi.fn();
   const TestComp = () => {
-    const form = useRvf({
+    const form = useForm({
       defaultValues: {
         foo: "bar",
         baz: { a: "quux" },
@@ -268,7 +268,7 @@ it("should reset the whole form when a reset button is clicked", async () => {
 it("should reset inputs not registered with RVF", async () => {
   const submit = vi.fn();
   const TestComp = () => {
-    const form = useRvf({
+    const form = useForm({
       defaultValues: {
         foo: "",
         baz: { a: "" },
@@ -301,7 +301,7 @@ it("should reset inputs not registered with RVF", async () => {
 it("should reset even with no default values", async () => {
   const submit = vi.fn();
   const TestComp = () => {
-    const form = useRvf({
+    const form = useForm({
       validator: successValidator,
       handleSubmit: submit,
     });

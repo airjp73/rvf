@@ -1,5 +1,5 @@
 import { render, screen, waitFor } from "@testing-library/react";
-import { useRvf } from "../useRvf";
+import { useForm } from "../useForm";
 import { successValidator } from "./util/successValidator";
 import userEvent from "@testing-library/user-event";
 import { Validator } from "@rvf/core";
@@ -9,7 +9,7 @@ it("should call onSubmitSuccess", async () => {
   const submitSuccess = vi.fn();
 
   const TestComp = () => {
-    const form = useRvf({
+    const form = useForm({
       submitSource: "dom",
       defaultValues: { foo: 123 },
       validator: successValidator as Validator<{ foo: number }>,
@@ -47,7 +47,7 @@ it("should call onSubmitFailure", async () => {
   const error = new Error("test");
 
   const TestComp = () => {
-    const form = useRvf({
+    const form = useForm({
       defaultValues: { foo: 123 },
       validator: successValidator as Validator<{ foo: 123 }>,
 

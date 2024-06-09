@@ -1,6 +1,6 @@
 import { useFetcher } from "@remix-run/react";
 import { withYup } from "@rvf/yup";
-import { FormProvider, ValidatedForm, useRvf } from "@rvf/remix";
+import { FormProvider, ValidatedForm, useForm } from "@rvf/remix";
 import * as yup from "yup";
 import { Input } from "~/components/Input";
 
@@ -14,7 +14,7 @@ export default function FrontendValidation() {
     useFetcher<
       (typeof import("./submission.helper-with-action.action"))["action"]
     >();
-  const rvf = useRvf({
+  const rvf = useForm({
     validator,
     method: "post",
     fetcher,

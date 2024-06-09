@@ -1,6 +1,6 @@
 import { withZod } from "@rvf/zod";
 import { useEffect } from "react";
-import { ValidatedForm, useControlField, useRvf } from "@rvf/remix";
+import { ValidatedForm, useControlField, useForm } from "@rvf/remix";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
 
@@ -11,7 +11,7 @@ const validator = withZod(
 );
 
 export default function OccasionalFieldTracking() {
-  const form = useRvf({
+  const form = useForm({
     validator,
     method: "post",
     defaultValues: {

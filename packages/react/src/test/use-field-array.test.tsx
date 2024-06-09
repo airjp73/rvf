@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { useFieldArray } from "../array";
-import { useRvf } from "../useRvf";
+import { useForm } from "../useForm";
 import { successValidator } from "./util/successValidator";
 import userEvent from "@testing-library/user-event";
 import { FormProvider } from "../context";
@@ -8,7 +8,7 @@ import { FormProvider } from "../context";
 it("should be possible to use useFieldArray with a scoped form", async () => {
   const submit = vi.fn();
   const TestComp = () => {
-    const form = useRvf({
+    const form = useForm({
       defaultValues: {
         foo: ["foo"],
       },
@@ -55,7 +55,7 @@ it("should be possible to use useFieldArray with context", async () => {
 
   const submit = vi.fn();
   const TestComp = () => {
-    const form = useRvf({
+    const form = useForm({
       defaultValues: {
         foo: ["foo"],
       },
@@ -96,7 +96,7 @@ it("should be possible to use useFieldArray with scoped context", async () => {
 
   const submit = vi.fn();
   const TestComp = () => {
-    const form = useRvf({
+    const form = useForm({
       defaultValues: {
         person: {
           foo: ["foo"],
@@ -134,7 +134,7 @@ it("should be possible to use useFieldArray with scoped context", async () => {
 it("should work naturally with DOM submit source", async () => {
   const submit = vi.fn();
   const TestComp = () => {
-    const form = useRvf({
+    const form = useForm({
       submitSource: "dom",
       defaultValues: {
         foo: ["foo"],

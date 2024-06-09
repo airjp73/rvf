@@ -1,12 +1,12 @@
 import { render, screen } from "@testing-library/react";
 import { successValidator } from "./util/successValidator";
-import { useRvf } from "../useRvf";
+import { useForm } from "../useForm";
 import userEvent from "@testing-library/user-event";
 
 it("should be able to submit file inputs", async () => {
   const submit = vi.fn();
   const TestComp = () => {
-    const form = useRvf({
+    const form = useForm({
       defaultValues: {
         file: undefined as File | undefined,
       },
@@ -36,7 +36,7 @@ it("should be able to submit file inputs", async () => {
 it("should be able to reset file inputs", async () => {
   const submit = vi.fn();
   const TestComp = () => {
-    const form = useRvf({
+    const form = useForm({
       defaultValues: {
         file: "",
       },
@@ -72,7 +72,7 @@ it("should be able to reset file inputs", async () => {
 it("should not blow up when a file has a default value", async () => {
   const submit = vi.fn();
   const TestComp = () => {
-    const form = useRvf({
+    const form = useForm({
       defaultValues: {
         file: "hi",
       },

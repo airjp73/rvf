@@ -3,7 +3,7 @@ import { z } from "zod";
 import { zfd } from "zod-form-data";
 import { Input } from "~/components/Input";
 import { SubmitButton } from "~/components/SubmitButton";
-import { FormProvider, useRvf } from "@rvf/remix";
+import { FormProvider, useForm } from "@rvf/remix";
 
 const validator = withZod(
   zfd.formData({
@@ -17,7 +17,7 @@ const validator = withZod(
 );
 
 export default function FrontendValidation() {
-  const form = useRvf({
+  const form = useForm({
     validator,
     method: "post",
   });

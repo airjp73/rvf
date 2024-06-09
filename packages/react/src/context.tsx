@@ -6,15 +6,14 @@ import {
   useContext,
   useEffect,
 } from "react";
-import { useRvf } from "./useRvf";
 import { RvfReact } from "./base";
 import { useFormScope } from "./useFormScope";
 
-type RvfContextValue = {
+type FormContextValue = {
   scope: Rvf<unknown>;
 };
 
-const RvfContext = createContext<RvfContextValue | null>(null);
+const RvfContext = createContext<FormContextValue | null>(null);
 
 export type FormProviderProps = {
   scope: Rvf<any>;

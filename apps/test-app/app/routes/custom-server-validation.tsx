@@ -3,7 +3,7 @@ import { withYup } from "@rvf/yup";
 import {
   validationError,
   FormProvider,
-  useRvf,
+  useForm,
   useRemixFormResponse,
 } from "@rvf/remix";
 import * as yup from "yup";
@@ -28,7 +28,7 @@ export default function CustomServerValidation() {
   const response = useRemixFormResponse({
     formId: "test-form",
   });
-  const form = useRvf({
+  const form = useForm({
     ...response.getRvfOpts(),
     validator,
     method: "post",

@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import { useRvf } from "../useRvf";
+import { useForm } from "../useForm";
 import { successValidator } from "./util/successValidator";
 import userEvent from "@testing-library/user-event";
 import { useState } from "react";
@@ -10,7 +10,7 @@ it("should use the form itself as the source of truth for `dom` mode", async () 
   const submit = vi.fn();
 
   const TestComp = () => {
-    const form = useRvf({
+    const form = useForm({
       submitSource: "dom",
       defaultValues: {
         foo: 123,
@@ -43,7 +43,7 @@ it("should use `dom` mode by default", async () => {
   const submit = vi.fn();
 
   const TestComp = () => {
-    const form = useRvf({
+    const form = useForm({
       defaultValues: {
         foo: 123,
       },
@@ -77,7 +77,7 @@ it("should be possible to rely on 'native' form submission in DOM mode");
 it("should include data from the form submitter on submit", async () => {
   const submit = vi.fn();
   const TestComp = () => {
-    const form = useRvf({
+    const form = useForm({
       submitSource: "state",
       defaultValues: {
         foo: 123,
@@ -125,7 +125,7 @@ it("should include data from the form submitter on submit", async () => {
 it("should use state as the source of truth for state mode", async () => {
   const submit = vi.fn();
   const TestComp = () => {
-    const form = useRvf({
+    const form = useForm({
       submitSource: "state",
       defaultValues: {
         foo: 123,
@@ -165,7 +165,7 @@ it("should respect changes to the submit source", async () => {
     const [submitSource, setSubmitSource] = useState(
       "state" as "state" | "dom",
     );
-    const form = useRvf({
+    const form = useForm({
       defaultValues: {
         foo: 123,
       },

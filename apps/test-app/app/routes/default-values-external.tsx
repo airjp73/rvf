@@ -1,5 +1,5 @@
 import { withZod } from "@rvf/zod";
-import { FormProvider, ValidatedForm, useRvf } from "@rvf/remix";
+import { FormProvider, ValidatedForm, useForm } from "@rvf/remix";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
 import { Fieldset } from "~/components/Fieldset";
@@ -17,7 +17,7 @@ const validator = withZod(
 );
 
 export default function FrontendValidation() {
-  const rvf = useRvf({
+  const rvf = useForm({
     validator,
     method: "post",
     defaultValues: {

@@ -2,7 +2,7 @@ import { withYup } from "@rvf/yup";
 import {
   FormProvider,
   ValidatedForm,
-  useRvf,
+  useForm,
   useFormContext,
 } from "@rvf/remix";
 import * as yup from "yup";
@@ -14,7 +14,7 @@ const schema = yup.object({
 const validator = withYup(schema);
 
 export default function FrontendValidation() {
-  const rvf = useRvf({
+  const rvf = useForm({
     validator,
     method: "post",
     action: "/submission/helper-with-action/action",

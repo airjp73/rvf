@@ -1,7 +1,7 @@
 import { DataFunctionArgs, json } from "@remix-run/node";
 import { useActionData } from "@remix-run/react";
 import { withZod } from "@rvf/zod";
-import { FormProvider, useRvf } from "@rvf/remix";
+import { FormProvider, useForm } from "@rvf/remix";
 import { z } from "zod";
 import { InputWithTouched } from "~/components/InputWithTouched";
 import { SubmitButton } from "~/components/SubmitButton";
@@ -20,7 +20,7 @@ export const action = async ({ request }: DataFunctionArgs) => {
 
 export default function FrontendValidation() {
   const actionData = useActionData<typeof action>();
-  const rvf = useRvf({
+  const rvf = useForm({
     validator,
     method: "post",
     submitSource: "dom",

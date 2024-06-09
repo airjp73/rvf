@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useRvf } from "../useRvf";
+import { useForm } from "../useForm";
 import { RenderCounter } from "./util/RenderCounter";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -10,7 +10,7 @@ it("should be able to listen to value changes without rerendering", async () => 
 
   const submit = vi.fn();
   const TestComp = () => {
-    const form = useRvf({
+    const form = useForm({
       defaultValues: {
         foo: "bar",
         baz: { a: "quux" },
@@ -49,7 +49,7 @@ it("should unsubscribe from value changes when the effect unmounts", async () =>
 
   const submit = vi.fn();
   const TestComp = () => {
-    const form = useRvf({
+    const form = useForm({
       defaultValues: {
         foo: "",
         bar: "",

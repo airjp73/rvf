@@ -1,5 +1,5 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { useRvf } from "../useRvf";
+import { useForm } from "../useForm";
 import userEvent from "@testing-library/user-event";
 import { RenderCounter } from "./util/RenderCounter";
 import { FieldErrors, Rvf, createValidator } from "@rvf/core";
@@ -8,7 +8,7 @@ import { useField } from "../field";
 it("should validate on onBlur, then on change after that", async () => {
   const submit = vi.fn();
   const TestComp = () => {
-    const form = useRvf({
+    const form = useForm({
       defaultValues: {
         foo: "",
         baz: { a: "" },
@@ -88,7 +88,7 @@ it("should validate on onBlur, then on change after that", async () => {
 it("should validate on onSubmit, if validationBehavior is onSubmit", async () => {
   const submit = vi.fn();
   const TestComp = () => {
-    const form = useRvf({
+    const form = useForm({
       validationBehaviorConfig: {
         initial: "onSubmit",
         whenTouched: "onSubmit",
@@ -182,7 +182,7 @@ it("should validate on onSubmit, if validationBehavior is onSubmit", async () =>
 it("should handle dependant validations", async () => {
   const submit = vi.fn();
   const TestComp = () => {
-    const form = useRvf({
+    const form = useForm({
       defaultValues: {
         password: "",
         confirmPassword: "",
@@ -239,7 +239,7 @@ it("should handle dependant validations", async () => {
 it("should be possible to customize validation behavior", async () => {
   const submit = vi.fn();
   const TestComp = () => {
-    const form = useRvf({
+    const form = useForm({
       defaultValues: {
         foo: "",
       },
@@ -303,7 +303,7 @@ it("should be posible to customize validation behavior at the field level", asyn
   };
 
   const TestComp = () => {
-    const form = useRvf({
+    const form = useForm({
       defaultValues: {
         foo: "",
       },
@@ -350,7 +350,7 @@ it("should be posible to customize validation behavior at the field level", asyn
 // Need to figure this out
 it("should use the data from the form when validating in DOM mode, but with consideration for controlled fields", async () => {
   const TextComp = () => {
-    const form = useRvf({
+    const form = useForm({
       defaultValues: {
         foo: "",
         bar: "",
@@ -415,7 +415,7 @@ it("should use the data from the form when validating in DOM mode, but with cons
 
 it("should use the data from the form when validating in DOM mode, but with consideration for controlled fields (no serializer)", async () => {
   const TextComp = () => {
-    const form = useRvf({
+    const form = useForm({
       defaultValues: {
         foo: "",
         bar: "",
@@ -477,7 +477,7 @@ it("should use the data from the form when validating in DOM mode, but with cons
 it("should use the data from the form when validating in DOM mode, but with consideration for field arrays", async () => {
   const checkData = vi.fn();
   const TextComp = () => {
-    const form = useRvf({
+    const form = useForm({
       defaultValues: {
         foo: [{ hatesPizza: true }],
       },

@@ -1,7 +1,7 @@
 import { withZod } from "@rvf/zod";
 import { nanoid } from "nanoid";
 import { useState } from "react";
-import { ValidatedForm, useFieldArray, useRvf } from "@rvf/remix";
+import { ValidatedForm, useFieldArray, useForm } from "@rvf/remix";
 import { z } from "zod";
 import { InputWithTouched } from "~/components/InputWithTouched";
 
@@ -28,7 +28,7 @@ const Counter = () => {
 };
 
 export default function FrontendValidation() {
-  const form = useRvf({
+  const form = useForm({
     validator,
     method: "post",
     defaultValues,

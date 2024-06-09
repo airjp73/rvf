@@ -35,7 +35,7 @@ export {
   isValidationErrorResponse,
   useFormScope,
 } from "@rvf/react";
-export { useRvf, type RvfRemixOpts } from "./useRvf";
+export { useForm, type RvfRemixOpts } from "./useForm";
 export { ValidatedForm, type ValidatedFormProps } from "./ValidatedForm";
 export { validationError, setFormDefaults, type FormDefaults } from "./server";
 export { useRemixFormResponse } from "./auto-server-hooks";

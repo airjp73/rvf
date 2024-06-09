@@ -1,5 +1,5 @@
 import {
-  useRvf as useRvfReact,
+  useForm as useFormReact,
   FieldValues,
   Rvf,
   RvfOpts,
@@ -46,7 +46,7 @@ export type RvfRemixOpts<
 /**
  * Create and use an `Rvf`.
  */
-export function useRvf<
+export function useForm<
   FormInputData extends FieldValues,
   FormOutputData,
   FormResponseData,
@@ -123,7 +123,7 @@ export function useRvf<
     });
   };
 
-  rvf = useRvfReact<FormInputData, FormOutputData, FormResponseData>({
+  rvf = useFormReact<FormInputData, FormOutputData, FormResponseData>({
     ...rvfOpts,
     otherFormProps: {
       method: rvfOpts.method,

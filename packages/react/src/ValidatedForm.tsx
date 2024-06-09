@@ -1,5 +1,5 @@
 import { FieldValues, AllProps } from "@rvf/core";
-import { RvfOpts, useRvf } from "./useRvf";
+import { RvfOpts, useForm } from "./useForm";
 import { RvfReact } from "./base";
 import { FormProvider } from "./context";
 
@@ -44,7 +44,7 @@ export const ValidatedForm = <
   reloadDocument,
   ...rest
 }: ValidatedFormProps<FormInputData, FormOutputData>) => {
-  const rvf = useRvf({
+  const rvf = useForm({
     defaultValues: defaultValues,
     serverValidationErrors,
     action,
