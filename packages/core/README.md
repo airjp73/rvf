@@ -1,4 +1,4 @@
-# RVF React
+# RVF Core
 
 The core implementation of [RVF](https://github.com/airjp73/remix-validated-form).
 This is primarily used internally by the other adapters.
