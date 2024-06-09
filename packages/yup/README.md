@@ -1,7 +1,8 @@
-# @rvf/yup
+# RVF Yup
 
-Yup adapter for [remix-validated-form](https://github.com/airjp73/remix-validated-form).
+The Yup adapter for [RVF](https://github.com/airjp73/remix-validated-form).
 
-## Docs
+## ALPHA RELEASE
 
-The docs are located a [remix-validated-form.io](https://www.remix-validated-form.io).
+This is an alpha version. There WILL be breaking API changes.
+Please feel free to experiment with it and give feedback, but don't use it in production.

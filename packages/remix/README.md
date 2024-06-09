@@ -1,6 +1,7 @@
-# RVF Zod
+# RVF Remix
 
-The Zod adapter for [RVF](https://github.com/airjp73/remix-validated-form).
+The Remix adapter for [RVF](https://github.com/airjp73/remix-validated-form).
+This is the package you should use if you are using Remix.
 
 ## ALPHA RELEASE
 

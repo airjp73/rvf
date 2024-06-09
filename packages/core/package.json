@@ -1,6 +1,6 @@
 {
   "name": "@rvf/core",
-  "version": "6.0.0",
+  "version": "0.0.1",
   "description": "Easy, predictable form state management for React",
   "main": "./dist/index.cjs.js",
   "module": "./dist/index.esm.js",
@@ -13,8 +13,7 @@
   "scripts": {
     "dev": "tsup --watch",
     "build": "tsup",
-    "prepublishOnly": "cp ../../README.md ./README.md && npm run build",
-    "postpublish": "rm ./README.md",
+    "prepublishOnly": "bun run build",
     "typecheck": "tsc --noEmit"
   },
   "author": {
