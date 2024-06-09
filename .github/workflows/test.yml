@@ -33,3 +33,30 @@ jobs:
 
       - name: Vitest
         run: bun run vitest:run
+
+      - name: Verify Cypress
+        env:
+          CI: 1
+        run: |
+          bunx cypress verify
+          bunx cypress info
+          bunx cypress version
+          bunx cypress version --component package
+          bunx cypress version --component binary
+          bunx cypress version --component electron
+          bunx cypress version --component node
+
+      - name: Cypress tests
+        run: |
+          cd apps/test-app
+          bun run test
+        env:
+          TERM: xterm
+
+      # Save screenshots as test artifacts
+      # https://github.com/actions/upload-artifact
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: screenshots
+          path: cypress/screenshots
