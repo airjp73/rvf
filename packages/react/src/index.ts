@@ -38,8 +38,8 @@ export {
   FieldArrayPropsWithScope,
 } from "./array";
 export {
-  RvfProvider,
-  RvfProviderProps,
+  FormProvider,
+  FormProviderProps,
   useFormContext,
   useFormScopeOrContext,
 } from "./context";

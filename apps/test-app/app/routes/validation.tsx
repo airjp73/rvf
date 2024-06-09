@@ -5,7 +5,7 @@ import {
   validationError,
   ValidatedForm,
   useRvf,
-  RvfProvider,
+  FormProvider,
   useRemixFormResponse,
 } from "@rvf/remix";
 import { z } from "zod";
@@ -72,7 +72,7 @@ export default function FrontendValidation() {
     ...response.getRvfOpts(),
   });
   return (
-    <RvfProvider scope={form.scope()}>
+    <FormProvider scope={form.scope()}>
       <Input name={form.scope("firstName")} label="First Name" />
       <form {...form.getFormProps()}>
         {actionData && "message" in actionData && <h1>{actionData.message}</h1>}
@@ -84,6 +84,6 @@ export default function FrontendValidation() {
         <SubmitButton />
         <button type="reset">Reset</button>
       </form>
-    </RvfProvider>
+    </FormProvider>
   );
 }

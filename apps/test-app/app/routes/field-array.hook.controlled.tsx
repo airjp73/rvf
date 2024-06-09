@@ -5,7 +5,7 @@ import {
   useControlField,
   useField,
   useRvf,
-  RvfProvider,
+  FormProvider,
 } from "@rvf/remix";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
@@ -80,7 +80,7 @@ export default function FrontendValidation() {
   const array = useFieldArray(form.scope("todos"));
 
   return (
-    <RvfProvider scope={form.scope()}>
+    <FormProvider scope={form.scope()}>
       <form {...form.getFormProps()}>
         {array.map((key, item, index) => (
           <div key={key} data-testid={`todo-${index}`}>
@@ -153,6 +153,6 @@ export default function FrontendValidation() {
         <button type="submit">Submit</button>
         {array.error() && <div>{array.error()}</div>}
       </form>
-    </RvfProvider>
+    </FormProvider>
   );
 }

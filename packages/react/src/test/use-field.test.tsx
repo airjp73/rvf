@@ -3,7 +3,7 @@ import { useField } from "../field";
 import { useRvf } from "../useRvf";
 import { successValidator } from "./util/successValidator";
 import userEvent from "@testing-library/user-event";
-import { RvfProvider } from "../context";
+import { FormProvider } from "../context";
 
 it("should be possible to use useField with a scoped form", async () => {
   const submit = vi.fn();
@@ -56,12 +56,12 @@ it("should be possible to use useField with context", async () => {
     });
 
     return (
-      <RvfProvider scope={form.scope()}>
+      <FormProvider scope={form.scope()}>
         <form {...form.getFormProps()} data-testid="form">
           <Field />
           <button type="submit" data-testid="submit" />
         </form>
-      </RvfProvider>
+      </FormProvider>
     );
   };
 
@@ -98,9 +98,9 @@ it("should be possible to use useField with scoped context", async () => {
 
     return (
       <form {...form.getFormProps()} data-testid="form">
-        <RvfProvider scope={form.scope("person")}>
+        <FormProvider scope={form.scope("person")}>
           <Field />
-        </RvfProvider>
+        </FormProvider>
         <button type="submit" data-testid="submit" />
       </form>
     );

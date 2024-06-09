@@ -1,6 +1,6 @@
 import { AllProps, FieldValues } from "@rvf/core";
 import { RvfRemixOpts, useRvf } from "./useRvf";
-import { RvfProvider, RvfReact } from "@rvf/react";
+import { FormProvider, RvfReact } from "@rvf/react";
 import { useRemixFormResponse } from "./auto-server-hooks";
 
 type ScopeToSubaction<
@@ -123,7 +123,7 @@ export const ValidatedForm = <
   >);
 
   return (
-    <RvfProvider scope={rvf.scope()}>
+    <FormProvider scope={rvf.scope()}>
       <form
         {...rvf.getFormProps({
           onSubmit,
@@ -136,6 +136,6 @@ export const ValidatedForm = <
 
         {typeof children === "function" ? children(rvf) : children}
       </form>
-    </RvfProvider>
+    </FormProvider>
   );
 };

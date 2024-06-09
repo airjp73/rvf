@@ -1,6 +1,6 @@
 import { withZod } from "@rvf/zod";
 import { nanoid } from "nanoid";
-import { RvfProvider, ValidatedForm, useFieldArray, useRvf } from "@rvf/remix";
+import { FormProvider, ValidatedForm, useFieldArray, useRvf } from "@rvf/remix";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
 import { InputWithTouched } from "~/components/InputWithTouched";
@@ -86,7 +86,7 @@ export default function FrontendValidation() {
   const array = useFieldArray(form.scope("todos"));
 
   return (
-    <RvfProvider scope={form.scope()}>
+    <FormProvider scope={form.scope()}>
       <form {...form.getFormProps()}>
         {array.map((key, item, index) => (
           <div key={key} data-testid={`todo-${index}`}>
@@ -159,6 +159,6 @@ export default function FrontendValidation() {
         <button type="submit">Submit</button>
         {array.error() && <div>{array.error()}</div>}
       </form>
-    </RvfProvider>
+    </FormProvider>
   );
 }

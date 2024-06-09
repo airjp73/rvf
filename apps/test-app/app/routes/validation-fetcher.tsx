@@ -1,7 +1,7 @@
 import { DataFunctionArgs, json } from "@remix-run/node";
 import { useFetcher } from "@remix-run/react";
 import { withYup } from "@rvf/yup";
-import { validationError, useRvf, RvfProvider } from "@rvf/remix";
+import { validationError, useRvf, FormProvider } from "@rvf/remix";
 import * as yup from "yup";
 import { Input } from "~/components/Input";
 import { SubmitButton } from "~/components/SubmitButton";
@@ -31,7 +31,7 @@ export default function FrontendValidation() {
     formId: "test-form",
   });
   return (
-    <RvfProvider scope={form.scope()}>
+    <FormProvider scope={form.scope()}>
       {fetcher.data && "message" in fetcher.data && fetcher.data?.message && (
         <h1>{fetcher.data.message}</h1>
       )}
@@ -41,6 +41,6 @@ export default function FrontendValidation() {
         <Input name="email" label="Email" />
         <SubmitButton />
       </form>
-    </RvfProvider>
+    </FormProvider>
   );
 }

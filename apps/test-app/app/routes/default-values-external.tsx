@@ -1,5 +1,5 @@
 import { withZod } from "@rvf/zod";
-import { RvfProvider, ValidatedForm, useRvf } from "@rvf/remix";
+import { FormProvider, ValidatedForm, useRvf } from "@rvf/remix";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
 import { Fieldset } from "~/components/Fieldset";
@@ -30,7 +30,7 @@ export default function FrontendValidation() {
   });
 
   return (
-    <RvfProvider scope={rvf.scope()}>
+    <FormProvider scope={rvf.scope()}>
       <Input
         type="text"
         name={rvf.scope("text1")}
@@ -110,6 +110,6 @@ export default function FrontendValidation() {
         <Input name="text2" type="text" label="Text 2" />
         <SubmitButton />
       </form>
-    </RvfProvider>
+    </FormProvider>
   );
 }

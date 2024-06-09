@@ -7,7 +7,7 @@ import {
   validationError,
   useField,
   useRvf,
-  RvfProvider,
+  FormProvider,
 } from "@rvf/remix";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
@@ -105,7 +105,7 @@ export default function ControlledField() {
   });
 
   return (
-    <RvfProvider scope={rvf.scope()}>
+    <FormProvider scope={rvf.scope()}>
       <form {...rvf.getFormProps()}>
         {data && "message" in data && <div>{data.message}</div>}
         <div style={{ margin: "1rem" }}>
@@ -129,6 +129,6 @@ export default function ControlledField() {
         <button type="reset">Reset</button>
         <SubmitButton />
       </form>
-    </RvfProvider>
+    </FormProvider>
   );
 }

@@ -3,7 +3,7 @@ import { useActionData } from "@remix-run/react";
 import { withYup } from "@rvf/yup";
 import {
   Rvf,
-  RvfProvider,
+  FormProvider,
   useRemixFormResponse,
   useRvf,
   useFormScopeOrContext,
@@ -86,14 +86,14 @@ export default function FrontendValidation() {
     <>
       {actionData?.message && <h1>{actionData.message}</h1>}
       <DisplayContext testid="external-values" form={form.scope()} />
-      <RvfProvider scope={form.scope()}>
+      <FormProvider scope={form.scope()}>
         <form {...form.getFormProps()}>
           {server.renderHiddenInputs()}
           <Input name="firstName" label="First Name" />
           <DisplayContext testid="internal-values" />
           <SubmitButton />
         </form>
-      </RvfProvider>
+      </FormProvider>
     </>
   );
 }

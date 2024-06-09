@@ -6,7 +6,7 @@ import {
   setFormDefaults,
   FormDefaults,
   useRvf,
-  RvfProvider,
+  FormProvider,
   useRemixFormResponse,
 } from "@rvf/remix";
 import { z } from "zod";
@@ -51,7 +51,7 @@ export default function FrontendValidation() {
     method: "post",
   });
   return (
-    <RvfProvider scope={form.scope()}>
+    <FormProvider scope={form.scope()}>
       <Input name="text1" type="text" form="test-form" label="Text 1" />
       <Input name="check1" type="checkbox" form="test-form" label="Check 1" />
       <Fieldset label="Radios" name="radios" rvf={form.scope("radios")}>
@@ -122,6 +122,6 @@ export default function FrontendValidation() {
         <Input name="text2" type="text" label="Text 2" />
         <SubmitButton />
       </form>
-    </RvfProvider>
+    </FormProvider>
   );
 }

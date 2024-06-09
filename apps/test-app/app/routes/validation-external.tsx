@@ -3,7 +3,7 @@ import { z } from "zod";
 import { zfd } from "zod-form-data";
 import { Input } from "~/components/Input";
 import { SubmitButton } from "~/components/SubmitButton";
-import { RvfProvider, useRvf } from "@rvf/remix";
+import { FormProvider, useRvf } from "@rvf/remix";
 
 const validator = withZod(
   zfd.formData({
@@ -23,12 +23,12 @@ export default function FrontendValidation() {
   });
 
   return (
-    <RvfProvider scope={form.scope()}>
+    <FormProvider scope={form.scope()}>
       <Input name="text1" type="text" form="test-form" label="Text 1" />
       <form {...form.getFormProps()}>
         <Input name="text2" type="text" label="Text 2" />
         <SubmitButton />
       </form>
-    </RvfProvider>
+    </FormProvider>
   );
 }

@@ -1,7 +1,7 @@
 import { FieldValues, AllProps } from "@rvf/core";
 import { RvfOpts, useRvf } from "./useRvf";
 import { RvfReact } from "./base";
-import { RvfProvider } from "./context";
+import { FormProvider } from "./context";
 
 export type ValidatedFormProps<
   FormInputData extends FieldValues,
@@ -62,7 +62,7 @@ export const ValidatedForm = <
   } satisfies AllProps<RvfOpts<FormInputData, FormOutputData, void>>);
 
   return (
-    <RvfProvider scope={rvf.scope()}>
+    <FormProvider scope={rvf.scope()}>
       <form
         {...rvf.getFormProps({
           onSubmit,
@@ -73,6 +73,6 @@ export const ValidatedForm = <
       >
         {typeof children === "function" ? children(rvf) : children}
       </form>
-    </RvfProvider>
+    </FormProvider>
   );
 };

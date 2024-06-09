@@ -2,7 +2,7 @@ import { DataFunctionArgs } from "@remix-run/node";
 import { withYup } from "@rvf/yup";
 import {
   validationError,
-  RvfProvider,
+  FormProvider,
   useRvf,
   useRemixFormResponse,
 } from "@rvf/remix";
@@ -34,12 +34,12 @@ export default function CustomServerValidation() {
     method: "post",
   });
   return (
-    <RvfProvider scope={form.scope()}>
+    <FormProvider scope={form.scope()}>
       <Input name="firstName" label="First Name" form="test-form" />
       <form {...form.getFormProps()}>
         <Input name="lastName" label="Last Name" />
         <SubmitButton />
       </form>
-    </RvfProvider>
+    </FormProvider>
   );
 }

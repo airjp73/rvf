@@ -1,5 +1,5 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { RvfProvider, useFormContext } from "../context";
+import { FormProvider, useFormContext } from "../context";
 import { useRvf } from "../useRvf";
 import { successValidator } from "./util/successValidator";
 import userEvent from "@testing-library/user-event";
@@ -24,11 +24,11 @@ it("should be possible to use context to access the form", async () => {
     });
 
     return (
-      <RvfProvider scope={form.scope()}>
+      <FormProvider scope={form.scope()}>
         <form {...form.getFormProps()} data-testid="form">
           <Name />
         </form>
-      </RvfProvider>
+      </FormProvider>
     );
   };
 
@@ -59,12 +59,12 @@ it("should be possible to scope a context provider", async () => {
 
     return (
       <form {...form.getFormProps()} data-testid="form">
-        <RvfProvider scope={form.scope("personA")}>
+        <FormProvider scope={form.scope("personA")}>
           <Name />
-        </RvfProvider>
-        <RvfProvider scope={form.scope("personB")}>
+        </FormProvider>
+        <FormProvider scope={form.scope("personB")}>
           <Name />
-        </RvfProvider>
+        </FormProvider>
       </form>
     );
   };

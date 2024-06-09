@@ -16,14 +16,14 @@ type RvfContextValue = {
 
 const RvfContext = createContext<RvfContextValue | null>(null);
 
-export type RvfProviderProps = {
+export type FormProviderProps = {
   scope: Rvf<any>;
 };
 
-export const RvfProvider = ({
+export const FormProvider = ({
   scope,
   children,
-}: PropsWithChildren<RvfProviderProps>) => {
+}: PropsWithChildren<FormProviderProps>) => {
   const value = useMemo(() => ({ scope }), [scope]);
   return <RvfContext.Provider value={value}>{children}</RvfContext.Provider>;
 };
@@ -31,7 +31,7 @@ export const RvfProvider = ({
 export const useFormContext = <TData,>() => {
   const value = useContext(RvfContext);
   if (!value)
-    throw new Error("useFormContext must be used within a RvfProvider");
+    throw new Error("useFormContext must be used within a FormProvider");
   return useFormScope(value.scope) as RvfReact<TData>;
 };
 
@@ -43,14 +43,14 @@ export const useFormScopeOrContextInternal = (
   const getRvf = () => {
     if (rvfOrName == null) {
       if (!value)
-        throw new Error("useFormContext must be used within a RvfProvider");
+        throw new Error("useFormContext must be used within a FormProvider");
       return value.scope;
     }
 
     if (typeof rvfOrName !== "string") return rvfOrName;
 
     if (!value)
-      throw new Error("useFormContext must be used within a RvfProvider");
+      throw new Error("useFormContext must be used within a FormProvider");
     return scopeRvf(value.scope, rvfOrName);
   };
 
@@ -72,7 +72,7 @@ export const useFormScopeOrContext = <TData,>(
 
   if (!scope)
     throw new Error(
-      "useFormScopeOrContext must be passed an Rvf or be used within a RvfProvider",
+      "useFormScopeOrContext must be passed an Rvf or be used within a FormProvider",
     );
 
   return useFormScope(scope) as RvfReact<TData>;

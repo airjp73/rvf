@@ -7,7 +7,7 @@ import { describe, expect, it, vi } from "vitest";
 import { successValidator } from "./util/successValidator";
 import { controlInput } from "./util/controlInput";
 import { FieldArray, useFieldArray } from "../array";
-import { RvfProvider } from "../context";
+import { FormProvider } from "../context";
 import { FieldErrors, Rvf, createValidator } from "@rvf/core";
 import { ComponentProps, useState } from "react";
 import { useFormScope } from "../useFormScope";
@@ -824,7 +824,7 @@ it("should default to an empty array if no default value is provided", async () 
     });
 
     return (
-      <RvfProvider scope={form.scope()}>
+      <FormProvider scope={form.scope()}>
         <form {...form.getFormProps()}>
           <FieldArray name="foo">
             {({ map, push, remove }) => (
@@ -855,7 +855,7 @@ it("should default to an empty array if no default value is provided", async () 
           </FieldArray>
           <button type="submit" data-testid="submit" />
         </form>
-      </RvfProvider>
+      </FormProvider>
     );
   };
 
