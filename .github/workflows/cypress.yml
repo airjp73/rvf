@@ -8,6 +8,7 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v1
 
       # install a specific version of Node using
       # https://github.com/actions/setup-node
