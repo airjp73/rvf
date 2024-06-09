@@ -1,4 +1,9 @@
-import { Rvf, useIsSubmitting, useIsValid, useRvfOrContext } from "@rvf/remix";
+import {
+  Rvf,
+  useIsSubmitting,
+  useIsValid,
+  useFormScopeOrContext,
+} from "@rvf/remix";
 
 type Props = {
   label?: string;
@@ -23,7 +28,7 @@ export const SubmitButton = ({
 }: Props) => {
   const isSubmitting = useIsSubmitting(form);
   const isValid = useIsValid(form);
-  const rvf = useRvfOrContext(form);
+  const rvf = useFormScopeOrContext(form);
   return (
     <button
       type="submit"

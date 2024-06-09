@@ -14,7 +14,7 @@ import {
   isFormControl,
 } from "@rvf/core";
 import { GetInputProps, createGetInputProps } from "./inputs/getInputProps";
-import { useRvfOrContextInternal } from "./context";
+import { useFormScopeOrContextInternal } from "./context";
 
 export type GetControlPropsParam<FieldValue> = {
   onChange?: (value: FieldValue) => void;
@@ -240,7 +240,7 @@ export function useField<FormInputData>(
   formOrName: Rvf<FormInputData> | string,
   opts?: UseFieldOpts,
 ): RvfField<FormInputData> {
-  const scope = useRvfOrContextInternal(formOrName);
+  const scope = useFormScopeOrContextInternal(formOrName);
   const prefix = scope.__field_prefix__;
   const trackedState = scope.__store__.useStoreState();
 

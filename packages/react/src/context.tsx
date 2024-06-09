@@ -35,7 +35,7 @@ export const useRvfContext = <TData,>() => {
   return useFormScope(value.scope) as RvfReact<TData>;
 };
 
-export const useRvfOrContextInternal = (
+export const useFormScopeOrContextInternal = (
   rvfOrName?: Rvf<any> | string,
 ): Rvf<unknown> => {
   const value = useContext(RvfContext);
@@ -64,13 +64,15 @@ export const useRvfOrContextInternal = (
   return rvf;
 };
 
-export const useRvfOrContext = <TData,>(rvf?: Rvf<TData>): RvfReact<TData> => {
+export const useFormScopeOrContext = <TData,>(
+  rvf?: Rvf<TData>,
+): RvfReact<TData> => {
   const value = useContext(RvfContext);
   const scope = value?.scope ?? rvf;
 
   if (!scope)
     throw new Error(
-      "useRvfOrContext must be passed an Rvf or be used within a RvfProvider",
+      "useFormScopeOrContext must be passed an Rvf or be used within a RvfProvider",
     );
 
   return useFormScope(scope) as RvfReact<TData>;

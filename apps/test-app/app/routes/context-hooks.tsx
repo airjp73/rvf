@@ -6,7 +6,7 @@ import {
   RvfProvider,
   useRemixFormResponse,
   useRvf,
-  useRvfOrContext,
+  useFormScopeOrContext,
 } from "@rvf/remix";
 import * as yup from "yup";
 import { Input } from "~/components/Input";
@@ -25,7 +25,7 @@ const DisplayContext = ({
   testid: string;
   form?: Rvf<any>;
 }) => {
-  const context = useRvfOrContext(form);
+  const context = useFormScopeOrContext(form);
 
   return (
     <div data-testid={testid}>

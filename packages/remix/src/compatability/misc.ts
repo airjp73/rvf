@@ -1,4 +1,4 @@
-import { Rvf, useRvfOrContext } from "@rvf/react";
+import { Rvf, useFormScopeOrContext } from "@rvf/react";
 import { useCallback, useMemo } from "react";
 
 /**
@@ -12,7 +12,7 @@ import { useCallback, useMemo } from "react";
  * You can instead get this data directly off of the `useRvf` hook.
  */
 export const useIsSubmitting = (rvf?: Rvf<any>) =>
-  useRvfOrContext(rvf).formState.isSubmitting;
+  useFormScopeOrContext(rvf).formState.isSubmitting;
 
 /**
  * Returns whether or not the current form is valid.
@@ -23,13 +23,13 @@ export const useIsSubmitting = (rvf?: Rvf<any>) =>
  * You can instead get this data directly off of the `useRvf` hook.
  */
 export const useIsValid = (rvf?: Rvf<any>) =>
-  useRvfOrContext(rvf).formState.isValid;
+  useFormScopeOrContext(rvf).formState.isValid;
 
 /**
  * @deprecated Can get the value and set the value directly off of the `useRvf` hook.
  */
 export const useControlField = <T>(name: string, rvf?: Rvf<any>) => {
-  const form = useRvfOrContext(rvf);
+  const form = useFormScopeOrContext(rvf);
   const value: T = form.value(name);
   const setValue = useCallback(
     (value: T) => form.setValue(name, value),
@@ -42,7 +42,7 @@ export const useControlField = <T>(name: string, rvf?: Rvf<any>) => {
  * @deprecated Can set the value directly off of the `useRvf` hook.
  */
 export const useUpdateControlledField = (rvf?: Rvf<any>) => {
-  const form = useRvfOrContext(rvf);
+  const form = useFormScopeOrContext(rvf);
   return useCallback(
     (name: string, value: any) => form.setValue(name, value),
     [form],

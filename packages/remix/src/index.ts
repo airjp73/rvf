@@ -31,7 +31,7 @@ export {
   RvfProvider,
   type RvfProviderProps,
   useRvfContext,
-  useRvfOrContext,
+  useFormScopeOrContext,
   isValidationErrorResponse,
   useFormScope,
 } from "@rvf/react";

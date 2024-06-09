@@ -11,7 +11,7 @@ import {
 import { makeImplFactory } from "./implFactory";
 import { RvfReact, makeBaseRvfReact } from "./base";
 import { ValidationBehaviorConfig } from "@rvf/core";
-import { useRvfOrContextInternal } from "./context";
+import { useFormScopeOrContextInternal } from "./context";
 
 export interface RvfArray<FormInputData extends Array<any>> {
   /**
@@ -193,7 +193,7 @@ export function useFieldArray<FormInputData extends any[]>(
   formOrName: Rvf<FormInputData> | string,
   { validationBehavior }: UseFieldArrayOpts = {},
 ) {
-  const scope = useRvfOrContextInternal(formOrName);
+  const scope = useFormScopeOrContextInternal(formOrName);
   const prefix = scope.__field_prefix__;
   const { useStoreState } = scope.__store__;
   const trackedState = useStoreState();
