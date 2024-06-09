@@ -30,6 +30,12 @@ import {
 import { RvfArray, makeFieldArrayImpl } from "./array";
 import { makeImplFactory } from "./implFactory";
 import { RvfField, makeFieldImpl } from "./field";
+import {
+  GetInputProps,
+  GetInputPropsParam,
+  MinimalInputProps,
+  ValidInputPropsValues,
+} from "./inputs/getInputProps";
 
 type MinimalRvf<FieldPaths extends string> = {
   resetField: (fieldName: FieldPaths, nextValue?: any) => void;
@@ -295,6 +301,14 @@ export interface RvfReact<FormInputData> {
    */
   name(): string;
 
+  getInputProps: <
+    Field extends ValidStringPaths<FormInputData, ValidInputPropsValues>,
+    T extends MinimalInputProps,
+  >(
+    fieldName: Field,
+    props?: GetInputPropsParam<T>,
+  ) => T;
+
   /**
    * Get field helpers for the specified field.
    */
@@ -512,6 +526,9 @@ export const makeBaseRvfReact = <FormInputData,>({
         form.__store__.formRef.current = el;
       },
     }),
+
+    getInputProps: (fieldName, props) =>
+      fieldImpl(fieldName).getInputProps(props),
 
     submit: (options) => {
       const submitterData =

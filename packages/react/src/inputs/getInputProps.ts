@@ -20,7 +20,7 @@ export type CreateGetInputPropsOptions = {
 type HandledProps = "name" | "defaultValue" | "defaultChecked";
 type Callbacks = "onChange" | "onBlur";
 
-type MinimalInputProps = {
+export type MinimalInputProps = {
   onChange?: ((...args: any[]) => void) | undefined;
   onBlur?: ((...args: any[]) => void) | undefined;
   defaultValue?: any;
@@ -32,8 +32,16 @@ type MinimalInputProps = {
   form?: string;
 };
 
+export type ValidInputPropsValues = string | string[] | number | boolean;
+
+export type GetInputPropsParam<T extends MinimalInputProps> = Omit<
+  T,
+  HandledProps | Callbacks
+> &
+  Partial<Pick<T, Callbacks>>;
+
 export type GetInputProps = <T extends MinimalInputProps>(
-  props?: Omit<T, HandledProps | Callbacks> & Partial<Pick<T, Callbacks>>,
+  props?: GetInputPropsParam<T>,
 ) => T;
 
 export const createGetInputProps = ({

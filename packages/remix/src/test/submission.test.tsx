@@ -35,7 +35,7 @@ it("should submit data to the action in dom mode", async () => {
             {result && !isValidationErrorResponse(result) && (
               <p>{result.message}</p>
             )}
-            <input data-testid="foo" {...form.field("foo").getInputProps()} />
+            <input data-testid="foo" {...form.getInputProps("foo")} />
             <button type="submit" data-testid="submit" />
           </form>
         );

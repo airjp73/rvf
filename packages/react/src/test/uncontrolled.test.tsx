@@ -57,6 +57,54 @@ it("captures and submits with uncontrolled fields", async () => {
   expect(screen.getByTestId("render-count")).toHaveTextContent("1");
 });
 
+it("works when using getInputProps directly from the form", async () => {
+  const submit = vi.fn();
+
+  const TestComp = () => {
+    const form = useRvf({
+      defaultValues: {
+        foo: "bar",
+        baz: {
+          a: "quux",
+        },
+      },
+      validator: successValidator,
+      handleSubmit: submit,
+    });
+
+    return (
+      <form {...form.getFormProps()} data-testid="form">
+        <input data-testid="foo" {...form.getInputProps("foo")} />
+        <input data-testid="baz.a" {...form.getInputProps("baz.a")} />
+        <RenderCounter data-testid="render-count" />
+      </form>
+    );
+  };
+
+  render(<TestComp />);
+  expect(screen.getByTestId("foo")).toHaveValue("bar");
+  expect(screen.getByTestId("baz.a")).toHaveValue("quux");
+  expect(screen.getByTestId("render-count")).toHaveTextContent("1");
+
+  await userEvent.type(screen.getByTestId("foo"), "testing 123");
+  await userEvent.type(screen.getByTestId("baz.a"), "another value");
+  fireEvent.submit(screen.getByTestId("form"));
+
+  await waitFor(() => expect(submit).toHaveBeenCalledTimes(1));
+  expect(submit).toHaveBeenCalledWith(
+    {
+      foo: "bartesting 123",
+      baz: {
+        a: "quuxanother value",
+      },
+    },
+    expect.any(FormData),
+    {},
+  );
+
+  expect(screen.getByTestId("render-count")).toHaveTextContent("1");
+});
+
 it("should work with the component version of Field", async () => {
   const submit = vi.fn();
 

@@ -11,7 +11,10 @@ type PathKey = string | number;
  */
 export type IsAny<T> = 0 extends 1 & T ? true : false;
 
-export type ValidStringPaths<Obj> = StringPaths<PathsOfObject<Obj, []>, true>;
+export type ValidStringPaths<Obj, ValueType = any> = StringPaths<
+  PathsOfObject<Obj, [], ValueType>,
+  true
+>;
 
 export type ValidStringPathsToArrays<Obj> = StringPaths<
   PathsOfObject<Obj, [], Array<any>>,
