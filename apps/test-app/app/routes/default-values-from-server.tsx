@@ -46,7 +46,7 @@ export default function FrontendValidation() {
     formId: "test-form",
   });
   const form = useForm({
-    ...server.getRvfOpts(),
+    ...server.getFormOpts(),
     validator: validator,
     method: "post",
   });

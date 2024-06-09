@@ -97,7 +97,7 @@ export const ValidatedForm = <
   });
 
   const rvf = useForm<FormInputData, FormOutputData, FormResponseData>({
-    ...remix.getRvfOpts(),
+    ...remix.getFormOpts(),
     action,
     formId: id,
     disableFocusOnError,

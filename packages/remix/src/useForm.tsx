@@ -2,7 +2,7 @@ import {
   useForm as useFormReact,
   FieldValues,
   Rvf,
-  RvfOpts,
+  FormOpts,
   RvfReact,
 } from "@rvf/react";
 import { useRemixSubmit } from "./remix-submission-handling";
@@ -23,7 +23,7 @@ export type RvfRemixOpts<
   FormResponseData,
 > = PartialProps<
   Omit<
-    RvfOpts<FormInputData, FormOutputData, FormResponseData>,
+    FormOpts<FormInputData, FormOutputData, FormResponseData>,
     keyof SubmitOptions
   >,
   "handleSubmit"

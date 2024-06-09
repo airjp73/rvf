@@ -485,7 +485,7 @@ it("should call onSubmitFailure if the call returns a validation error", async (
       Component: () => {
         const response = useRemixFormResponse();
         const form = useForm({
-          ...response.getRvfOpts(),
+          ...response.getFormOpts(),
           defaultValues: { foo: "" },
           validator,
           method: "post",

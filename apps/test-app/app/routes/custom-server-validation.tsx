@@ -29,7 +29,7 @@ export default function CustomServerValidation() {
     formId: "test-form",
   });
   const form = useForm({
-    ...response.getRvfOpts(),
+    ...response.getFormOpts(),
     validator,
     method: "post",
   });

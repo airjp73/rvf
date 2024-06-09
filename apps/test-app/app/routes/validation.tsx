@@ -69,7 +69,7 @@ export default function FrontendValidation() {
   const form = useForm({
     validator,
     method: "post",
-    ...response.getRvfOpts(),
+    ...response.getFormOpts(),
   });
   return (
     <FormProvider scope={form.scope()}>

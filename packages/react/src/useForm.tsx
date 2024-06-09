@@ -24,7 +24,7 @@ type RvfSubmitOpts<FormOutputData, ResponseData> =
       handleSubmit?: DomSubmitHandler<FormOutputData, ResponseData>;
     };
 
-export type RvfOpts<
+export type FormOpts<
   FormInputData extends FieldValues = FieldValues,
   FormOutputData = never,
   SubmitResponseData = unknown,
@@ -112,7 +112,7 @@ export function useForm<
   FormOutputData,
   SubmitResponseData,
 >(
-  options: RvfOpts<FormInputData, FormOutputData, SubmitResponseData>,
+  options: FormOpts<FormInputData, FormOutputData, SubmitResponseData>,
 ): RvfReact<FormInputData> {
   // everything from below
   const {

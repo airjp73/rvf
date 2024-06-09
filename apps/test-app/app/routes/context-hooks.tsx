@@ -72,7 +72,7 @@ export default function FrontendValidation() {
   });
   // Verify we don't get an infinite loop
   const form = useForm({
-    ...server.getRvfOpts(),
+    ...server.getFormOpts(),
     validator: withYup(
       yup.object({
         firstName: yup.string().label("First Name").required(),

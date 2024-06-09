@@ -20,7 +20,7 @@ export {
   isValidationErrorResponse,
 } from "@rvf/core";
 export { type RvfReact, type FormFields } from "./base";
-export { useForm, RvfOpts } from "./useForm";
+export { useForm, FormOpts } from "./useForm";
 export {
   useField,
   FieldApi,

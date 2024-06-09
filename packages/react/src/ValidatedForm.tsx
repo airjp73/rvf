@@ -1,12 +1,12 @@
 import { FieldValues, AllProps } from "@rvf/core";
-import { RvfOpts, useForm } from "./useForm";
+import { FormOpts, useForm } from "./useForm";
 import { RvfReact } from "./base";
 import { FormProvider } from "./context";
 
 export type ValidatedFormProps<
   FormInputData extends FieldValues,
   FormOutputData,
-> = Omit<RvfOpts<FormInputData, FormOutputData>, "formId"> &
+> = Omit<FormOpts<FormInputData, FormOutputData>, "formId"> &
   Omit<React.ComponentProps<"form">, "children"> & {
     id?: string;
 
@@ -59,7 +59,7 @@ export const ValidatedForm = <
     resetAfterSubmit,
     otherFormProps,
     reloadDocument,
-  } satisfies AllProps<RvfOpts<FormInputData, FormOutputData, void>>);
+  } satisfies AllProps<FormOpts<FormInputData, FormOutputData, void>>);
 
   return (
     <FormProvider scope={rvf.scope()}>
