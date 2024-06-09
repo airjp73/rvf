@@ -10,7 +10,6 @@ import {
 } from "@rvf/core";
 import { makeImplFactory } from "./implFactory";
 import { ReactFormApi, makeBaseReactFormApi } from "./base";
-import { ValidationBehaviorConfig } from "@rvf/core";
 import { useFormScopeOrContextInternal } from "./context";
 
 export interface FieldArrayApi<FormInputData extends Array<any>> {
