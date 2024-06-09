@@ -1378,3 +1378,21 @@ describe("arrays", () => {
 });
 
 it.todo("should be able to `resetField` on a whole array");
+
+describe("resolver queue", () => {
+  it("should resolve", async () => {
+    const queue = createResolverQueue();
+
+    await expect(queue.await()).resolves.toBeUndefined();
+
+    const prom1 = queue.queue();
+    const prom2 = queue.queue();
+    const prom3 = queue.await();
+
+    queue.flush();
+
+    await expect(prom1).resolves.toBeUndefined();
+    await expect(prom2).resolves.toBeUndefined();
+    await expect(prom3).resolves.toBeUndefined();
+  });
+});

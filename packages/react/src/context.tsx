@@ -39,22 +39,28 @@ export const useRvfOrContextInternal = (
 ): Rvf<unknown> => {
   const value = useContext(RvfContext);
 
-  // Flush on every update
-  useEffect(() => {
-    value?.scope.__store__.resolvers.flush();
-  });
+  const getRvf = () => {
+    if (rvfOrName == null) {
+      if (!value)
+        throw new Error("useRvfContext must be used within a RvfProvider");
+      return value.scope;
+    }
 
-  if (rvfOrName == null) {
+    if (typeof rvfOrName !== "string") return rvfOrName;
+
     if (!value)
       throw new Error("useRvfContext must be used within a RvfProvider");
-    return value.scope;
-  }
+    return scopeRvf(value.scope, rvfOrName);
+  };
 
-  if (typeof rvfOrName !== "string") return rvfOrName;
+  const rvf = getRvf();
 
-  if (!value)
-    throw new Error("useRvfContext must be used within a RvfProvider");
-  return scopeRvf(value.scope, rvfOrName);
+  // Flush on every update
+  useEffect(() => {
+    rvf.__store__.resolvers.flush();
+  });
+
+  return rvf;
 };
 
 export const useRvfOrContext = <TData,>(rvf?: Rvf<TData>): RvfReact<TData> => {

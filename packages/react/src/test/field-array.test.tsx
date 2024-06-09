@@ -6,9 +6,9 @@ import { RenderCounter } from "./util/RenderCounter";
 import { describe, expect, it, vi } from "vitest";
 import { successValidator } from "./util/successValidator";
 import { controlInput } from "./util/controlInput";
-import { FieldArray } from "../array";
+import { FieldArray, useFieldArray } from "../array";
 import { RvfProvider } from "../context";
-import { FieldErrors, createValidator } from "@rvf/core";
+import { FieldErrors, Rvf, createValidator } from "@rvf/core";
 import { ComponentProps, useState } from "react";
 
 it("should only accept array values", () => {
@@ -1044,7 +1044,81 @@ it("should validate on submit, then on change after that by default", async () =
   expect(screen.getByTestId("array-error")).toHaveTextContent("too short");
 });
 
-it.todo("should support custom validation behavior");
+it("should support custom validation behavior", async () => {
+  const submit = vi.fn();
+
+  const FA = ({ scope }: { scope: Rvf<string[]> }) => {
+    const array = useFieldArray(scope, {
+      validationBehavior: {
+        initial: "onChange",
+        whenSubmitted: "onChange",
+      },
+    });
+
+    return (
+      <>
+        {array.map((key, item, index) => {
+          return (
+            <div key={key}>
+              <input
+                data-testid={`foo-${index}`}
+                {...item.field().getInputProps()}
+              />
+              <button
+                type="button"
+                onClick={() => {
+                  array.remove(index);
+                }}
+                data-testid={`foo-${index}-remove`}
+              />
+            </div>
+          );
+        })}
+        <button
+          type="button"
+          onClick={() => array.push("new")}
+          data-testid="add"
+        >
+          Add
+        </button>
+        <pre data-testid={`foo-error`}>{array.error()}</pre>
+      </>
+    );
+  };
+
+  const TestComp = () => {
+    const form = useRvf({
+      defaultValues: {
+        foo: ["foo", "bar"],
+      },
+      validator: createValidator({
+        validate: () => {
+          return Promise.resolve({
+            data: undefined,
+            error: {
+              foo: "not enough items",
+            },
+          });
+        },
+      }),
+      handleSubmit: submit,
+    });
+
+    return (
+      <form {...form.getFormProps()}>
+        <FA scope={form.scope("foo")} />
+        <button type="submit" data-testid="submit" />
+      </form>
+    );
+  };
+
+  render(<TestComp />);
+
+  expect(screen.getByTestId("foo-error")).toBeEmptyDOMElement();
+  await userEvent.click(screen.getByTestId("add"));
+  // await userEvent.click(screen.getByTestId("submit"));
+  expect(screen.getByTestId("foo-error")).toHaveTextContent("not enough items");
+});
 
 it("should retain state when doing operations", async () => {
   const Counter = (props: ComponentProps<"button">) => {

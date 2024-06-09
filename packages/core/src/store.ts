@@ -96,7 +96,10 @@ export const createResolverQueue = () => {
      * Waits for any pending updates to resolve if there are any.
      * Does not queue any resolvers if there are none.
      */
-    await: () => (resolvers.size > 0 ? queueResolver() : Promise.resolve()),
+    await: () => {
+      const res = resolvers.size > 0 ? queueResolver() : Promise.resolve();
+      return res;
+    },
   };
 };
 
@@ -464,6 +467,7 @@ export const createFormStateStore = ({
         if (get().submitSource === "dom") {
           await resolvers.queue();
         }
+
         if (get().shouldValidateArray("onChange", behaviorOverride)) {
           get().validateField(fieldName);
         } else {
