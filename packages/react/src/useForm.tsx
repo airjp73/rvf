@@ -14,7 +14,7 @@ import { FieldErrors } from "@rvf/core";
 
 const noOp = () => {};
 
-type RvfSubmitOpts<FormOutputData, ResponseData> =
+type FormSubmitOpts<FormOutputData, ResponseData> =
   | {
       submitSource?: "state";
       handleSubmit: StateSubmitHandler<FormOutputData, ResponseData>;
@@ -99,7 +99,7 @@ export type FormOpts<
    * This is equivalent to calling `resetForm` in the `onSubmitSuccess` callback.
    */
   resetAfterSubmit?: boolean;
-} & RvfSubmitOpts<FormOutputData, SubmitResponseData>;
+} & FormSubmitOpts<FormOutputData, SubmitResponseData>;
 
 const isRvf = (form: any): form is Rvf<any> =>
   "__brand__" in form && form.__brand__ === "rvf";
