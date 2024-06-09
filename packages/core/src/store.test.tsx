@@ -1377,7 +1377,30 @@ describe("arrays", () => {
   });
 });
 
-it.todo("should be able to `resetField` on a whole array");
+it("should be able to `resetField` on a whole array", () => {
+  const store = testStore();
+  store.setState({
+    defaultValues: {
+      foo: [{ name: "baz", notes: [{ text: "jimbo" }] }],
+    },
+    values: {
+      foo: [
+        { name: "foo", notes: [{ text: "bar" }] },
+        { name: "value", notes: [{ text: "thing" }] },
+      ],
+    },
+    touchedFields: {},
+    dirtyFields: {},
+    validationErrors: {},
+    fieldArrayKeys: {},
+  });
+
+  store.getState().resetField("foo");
+
+  expect(store.getState().values).toEqual({
+    foo: [{ name: "baz", notes: [{ text: "jimbo" }] }],
+  });
+});
 
 describe("resolver queue", () => {
   it("should resolve", async () => {
