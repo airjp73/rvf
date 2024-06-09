@@ -31,7 +31,7 @@ export {
 } from "./field";
 export {
   useFieldArray,
-  RvfArray,
+  FieldArrayApi,
   UseFieldArrayOpts,
   FieldArray,
   FieldArrayPropsWithName,

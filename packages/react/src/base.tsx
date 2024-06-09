@@ -27,7 +27,7 @@ import {
   getPath,
   pathArrayToString,
 } from "set-get";
-import { RvfArray, makeFieldArrayImpl } from "./array";
+import { FieldArrayApi, makeFieldArrayImpl } from "./array";
 import { makeImplFactory } from "./implFactory";
 import {
   GetControlPropsParam,
@@ -287,7 +287,7 @@ export interface RvfReact<FormInputData> {
    */
   array(
     _no_args: FormInputData extends Array<any> ? void : never,
-  ): FormInputData extends Array<any> ? RvfArray<FormInputData> : never;
+  ): FormInputData extends Array<any> ? FieldArrayApi<FormInputData> : never;
 
   /**
    * Get array helpers for the specified field array.
@@ -295,7 +295,7 @@ export interface RvfReact<FormInputData> {
   array<Field extends ValidStringPathsToArrays<FormInputData>>(
     fieldName: Field,
   ): ValueAtPath<FormInputData, StringToPathTuple<Field>> extends Array<any>
-    ? RvfArray<ValueAtPath<FormInputData, StringToPathTuple<Field>>>
+    ? FieldArrayApi<ValueAtPath<FormInputData, StringToPathTuple<Field>>>
     : never;
 
   /**

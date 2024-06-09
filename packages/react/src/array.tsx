@@ -13,7 +13,7 @@ import { RvfReact, makeBaseRvfReact } from "./base";
 import { ValidationBehaviorConfig } from "@rvf/core";
 import { useFormScopeOrContextInternal } from "./context";
 
-export interface RvfArray<FormInputData extends Array<any>> {
+export interface FieldArrayApi<FormInputData extends Array<any>> {
   /**
    * Gets field name of the array.
    */
@@ -105,7 +105,7 @@ export const makeFieldArrayImpl = <FormInputData extends Array<any>>({
   arrayFieldName,
   trackedState,
   validationBehavior,
-}: FieldArrayParams<FormInputData>): RvfArray<FormInputData> => {
+}: FieldArrayParams<FormInputData>): FieldArrayApi<FormInputData> => {
   const itemImpl = makeImplFactory(arrayFieldName, (itemFieldName) =>
     makeBaseRvfReact({
       form: scopeRvf(form, itemFieldName) as Rvf<FormInputData[number]>,
@@ -184,11 +184,11 @@ export type UseFieldArrayOpts = {
 export function useFieldArray<FormInputData extends any[]>(
   form: Rvf<FormInputData>,
   { validationBehavior }?: UseFieldArrayOpts,
-): RvfArray<FormInputData>;
+): FieldArrayApi<FormInputData>;
 export function useFieldArray<FormInputData extends any[] = unknown[]>(
   name: string,
   opts?: UseFieldArrayOpts,
-): RvfArray<FormInputData>;
+): FieldArrayApi<FormInputData>;
 export function useFieldArray<FormInputData extends any[]>(
   formOrName: Rvf<FormInputData> | string,
   { validationBehavior }: UseFieldArrayOpts = {},
@@ -218,12 +218,12 @@ export function useFieldArray<FormInputData extends any[]>(
 
 export type FieldArrayPropsWithScope<FormInputData extends any[]> = {
   scope: Rvf<FormInputData>;
-  children: (field: RvfArray<FormInputData>) => React.ReactNode;
+  children: (field: FieldArrayApi<FormInputData>) => React.ReactNode;
 };
 
 export type FieldArrayPropsWithName<FormInputData extends any[]> = {
   name: string;
-  children: (field: RvfArray<FormInputData>) => React.ReactNode;
+  children: (field: FieldArrayApi<FormInputData>) => React.ReactNode;
 };
 
 export function FieldArray<FormInputData extends any[] = unknown[]>(
@@ -235,5 +235,5 @@ export function FieldArray<FormInputData extends any[] = unknown[]>(
     // not actually breaking rules here
     // eslint-disable-next-line react-hooks/rules-of-hooks
     "name" in props ? useFieldArray(props.name) : useFieldArray(props.scope);
-  return props.children(field as RvfArray<FormInputData>);
+  return props.children(field as FieldArrayApi<FormInputData>);
 }

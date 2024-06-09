@@ -26,7 +26,7 @@ export {
   type RvfField,
   type UseFieldOpts,
   useFieldArray,
-  type RvfArray,
+  type FieldArrayApi,
   type UseFieldArrayOpts,
   FormProvider,
   type FormProviderProps,
