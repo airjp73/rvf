@@ -1,7 +1,0 @@
-./package-lock.json
-_build
-build
-dist
-node_modules
-.turbo
-.cache

@@ -14,30 +14,49 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-
-      - uses: actions/setup-node@v3
+      - uses: oven-sh/setup-bun@v1
+      - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: "yarn"
 
       - name: Install Deps
-        run: yarn install --frozen-lockfile
+        run: bun install
 
       - name: Lint
-        run: yarn run lint
-
-      - name: Typecheck
-        run: yarn run typecheck
+        run: bun run lint
 
       - name: Build
-        run: yarn run build
+        run: bun run build
+
+      - name: Typecheck
+        run: bun run typecheck
 
       - name: Vitest
-        run: yarn run vitest:run
+        run: bun run vitest:run
 
-      - name: Cypress Tests
-        uses: cypress-io/github-action@v2
+      - name: Verify Cypress
+        env:
+          CI: 1
+        run: |
+          bunx cypress verify
+          bunx cypress info
+          bunx cypress version
+          bunx cypress version --component package
+          bunx cypress version --component binary
+          bunx cypress version --component electron
+          bunx cypress version --component node
+
+      - name: Cypress tests
+        run: |
+          cd apps/test-app
+          bun run test
+        env:
+          TERM: xterm
+
+      # Save screenshots as test artifacts
+      # https://github.com/actions/upload-artifact
+      - uses: actions/upload-artifact@v4
+        if: failure()
         with:
-          working-directory: ./apps/test-app
-          start: yarn dev
-          wait-on: http://localhost:3000
+          name: screenshots
+          path: cypress/screenshots

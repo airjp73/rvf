@@ -1,13 +1,13 @@
 import { DataFunctionArgs, json } from "@remix-run/node";
-import { withZod } from "@remix-validated-form/with-zod";
-import { ValidatedForm, validationError, useField } from "remix-validated-form";
+import { withZod } from "@rvf/zod";
+import { ValidatedForm, validationError, useField } from "@rvf/remix";
 import { z } from "zod";
 import { SubmitButton } from "~/components/SubmitButton";
 
 const validator = withZod(
   z.object({
     testinput: z.literal("success"),
-  })
+  }),
 );
 
 export const action = async ({ request }: DataFunctionArgs) => {
@@ -38,8 +38,8 @@ const CustomInput = () => {
   return (
     <div>
       <label htmlFor="testinput">Test input</label>
-      <input {...getInputProps({ id: "testinput" })} />
-      {error && <span style={{ color: "red" }}>{error}</span>}
+      <input {...getInputProps()} id="testinput" />
+      {error() && <span style={{ color: "red" }}>{error()}</span>}
     </div>
   );
 };

@@ -22,14 +22,14 @@ export const validator = withZod(
       .string()
       .min(1, { message: "Email is required" })
       .email("Must be a valid email"),
-  })
+  }),
 );
 
 export const action = async ({
   request,
 }: DataFunctionArgs) => {
   const data = await validator.validate(
-    await request.formData()
+    await request.formData(),
   );
   if (data.error) return validationError(data.error);
   const { firstName, lastName, email } = data.data;

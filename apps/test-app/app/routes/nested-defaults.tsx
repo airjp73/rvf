@@ -1,6 +1,6 @@
-import { withZod } from "@remix-validated-form/with-zod";
-import { useField } from "remix-validated-form";
-import { ValidatedForm } from "remix-validated-form";
+import { withZod } from "@rvf/zod";
+import { useField } from "@rvf/remix";
+import { ValidatedForm } from "@rvf/remix";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
 
@@ -17,10 +17,8 @@ const Switch = ({ name, label, "data-testid": dataTestId }: SwitchProps) => {
     <div>
       <input
         type="checkbox"
-        {...getInputProps({
-          type: "checkbox",
-          id: name,
-        })}
+        id={name}
+        {...getInputProps({ type: "checkbox" })}
       />
       <label>{label}</label>
       <pre data-testid={dataTestId}>
@@ -37,7 +35,7 @@ export const validator = withZod(
       checkTrue: zfd.checkbox(),
       checkFalse: zfd.checkbox(),
     }),
-  })
+  }),
 );
 
 export default function Index() {

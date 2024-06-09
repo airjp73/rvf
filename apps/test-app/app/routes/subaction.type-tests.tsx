@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
-import { withZod } from "@remix-validated-form/with-zod";
-import { ValidatedForm } from "remix-validated-form";
+import { withZod } from "@rvf/zod";
+import { ValidatedForm } from "@rvf/remix";
 import { z } from "zod";
 
 const schema = z.union([
@@ -17,29 +17,31 @@ export default function SubactionSubmissions() {
         subaction="action1"
         defaultValues={{
           bob: "bob",
-          // @ts-expect-error
           ross: "ross",
         }}
-        onSubmit={(data) => {
+        handleSubmit={(data) => {
           data.bob;
           // @ts-expect-error
           data.ross;
         }}
-      />
+      >
+        <p>Children</p>
+      </ValidatedForm>
       <ValidatedForm
         validator={validator}
         subaction="action2"
         defaultValues={{
           ross: "ross",
-          // @ts-expect-error
           bob: "bob",
         }}
-        onSubmit={(data) => {
+        handleSubmit={(data) => {
           data.ross;
           // @ts-expect-error
           data.bob;
         }}
-      />
+      >
+        <p>Children</p>
+      </ValidatedForm>
     </>
   );
 }

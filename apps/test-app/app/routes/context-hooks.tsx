@@ -1,7 +1,13 @@
 import { DataFunctionArgs, json } from "@remix-run/node";
 import { useActionData } from "@remix-run/react";
-import { withYup } from "@remix-validated-form/with-yup";
-import { useFormContext, ValidatedForm } from "remix-validated-form";
+import { withYup } from "@rvf/yup";
+import {
+  Rvf,
+  RvfProvider,
+  useRemixFormResponse,
+  useRvf,
+  useRvfOrContext,
+} from "@rvf/remix";
 import * as yup from "yup";
 import { Input } from "~/components/Input";
 import { SubmitButton } from "~/components/SubmitButton";
@@ -17,48 +23,40 @@ const DisplayContext = ({
   form,
 }: {
   testid: string;
-  form?: string;
+  form?: Rvf<any>;
 }) => {
-  const {
-    action,
-    hasBeenSubmitted,
-    isValid,
-    fieldErrors,
-    defaultValues,
-    touchedFields,
-    getValues,
-  } = useFormContext(form);
+  const context = useRvfOrContext(form);
 
   return (
     <div data-testid={testid}>
       <dl>
         <dt>hasBeenSubmitted</dt>
-        <dd>{hasBeenSubmitted ? "true" : "false"}</dd>
+        <dd>{context.formState.hasBeenSubmitted ? "true" : "false"}</dd>
 
         <dt>isValid</dt>
-        <dd>{isValid ? "true" : "false"}</dd>
+        <dd>{context.formState.isValid ? "true" : "false"}</dd>
 
         <dt>action</dt>
-        <dd>{action}</dd>
+        <dd>{context.formOptions.action}</dd>
 
         <dt>fieldErrors</dt>
         <dd>
-          <pre>{JSON.stringify(fieldErrors)}</pre>
+          <pre>{JSON.stringify(context.formState.fieldErrors)}</pre>
         </dd>
 
         <dt>defaultValues</dt>
         <dd>
-          <pre>{JSON.stringify(defaultValues)}</pre>
+          <pre>{JSON.stringify(context.defaultValue())}</pre>
         </dd>
 
         <dt>touchedFields</dt>
         <dd>
-          <pre>{JSON.stringify(touchedFields)}</pre>
+          <pre>{JSON.stringify(context.formState.touchedFields)}</pre>
         </dd>
 
         <dt>getValues</dt>
         <dd>
-          <pre>{JSON.stringify(Object.fromEntries(getValues()))}</pre>
+          <pre>{JSON.stringify(context.value())}</pre>
         </dd>
       </dl>
     </div>
@@ -68,28 +66,34 @@ const DisplayContext = ({
 export default function FrontendValidation() {
   const actionData = useActionData<typeof action>();
 
+  const server = useRemixFormResponse({
+    formId: "test-form",
+    defaultValues: { firstName: "defaultFirstName" },
+  });
   // Verify we don't get an infinite loop
-  useFormContext("test-form");
+  const form = useRvf({
+    ...server.getRvfOpts(),
+    validator: withYup(
+      yup.object({
+        firstName: yup.string().label("First Name").required(),
+      }),
+    ),
+    action: "/context-hooks",
+    method: "post",
+  });
 
   return (
     <>
       {actionData?.message && <h1>{actionData.message}</h1>}
-      <DisplayContext testid="external-values" form="test-form" />
-      <ValidatedForm
-        validator={withYup(
-          yup.object({
-            firstName: yup.string().label("First Name").required(),
-          })
-        )}
-        method="post"
-        id="test-form"
-        action="/context-hooks"
-        defaultValues={{ firstName: "defaultFirstName" }}
-      >
-        <Input name="firstName" label="First Name" />
-        <DisplayContext testid="internal-values" />
-        <SubmitButton />
-      </ValidatedForm>
+      <DisplayContext testid="external-values" form={form.scope()} />
+      <RvfProvider scope={form.scope()}>
+        <form {...form.getFormProps()}>
+          {server.renderHiddenInputs()}
+          <Input name="firstName" label="First Name" />
+          <DisplayContext testid="internal-values" />
+          <SubmitButton />
+        </form>
+      </RvfProvider>
     </>
   );
 }

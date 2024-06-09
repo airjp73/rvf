@@ -1,11 +1,12 @@
-import { withZod } from "@remix-validated-form/with-zod";
+import { withZod } from "@rvf/zod";
 import { nanoid } from "nanoid";
 import {
   useFieldArray,
   useControlField,
   useField,
-  ValidatedForm,
-} from "remix-validated-form";
+  useRvf,
+  RvfProvider,
+} from "@rvf/remix";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
 
@@ -18,13 +19,13 @@ const validator = withZod(
           title: zfd.text(
             z.string({
               required_error: "Title is required",
-            })
+            }),
           ),
           note: zfd.text().optional(),
-        })
+        }),
       )
       .refine((arr) => arr.length > 1, "Must have at least two todos"),
-  })
+  }),
 );
 
 const ControlledInput = ({ label, name }: { label: string; name: string }) => {
@@ -42,8 +43,8 @@ const ControlledInput = ({ label, name }: { label: string; name: string }) => {
           })}
         />
       </label>
-      {touched && <span>{name} touched</span>}
-      {error && <p data-testid="text-error">{error}</p>}
+      {touched() && <span>{name} touched</span>}
+      {error() && <p data-testid="text-error">{error()}</p>}
     </div>
   );
 };
@@ -69,80 +70,89 @@ const defaultValues = {
 };
 
 export default function FrontendValidation() {
-  const [
-    items,
-    { swap, insert, pop, unshift, replace, push, move, remove },
-    error,
-  ] = useFieldArray("todos", { formId: "form" });
+  const form = useRvf({
+    validator,
+    method: "post",
+    defaultValues,
+    formId: "form",
+  });
+
+  const array = useFieldArray(form.scope("todos"));
+
   return (
-    <ValidatedForm
-      validator={validator}
-      method="post"
-      defaultValues={defaultValues}
-      id="form"
-    >
-      {items.map(({ defaultValue, key }, index) => (
-        <div key={key} data-testid={`todo-${index}`}>
-          <input
-            type="hidden"
-            name={`todos[${index}].id`}
-            value={defaultValue.id}
-            data-testid="todo-id"
-          />
-          <ControlledInput name={`todos[${index}].title`} label="Title" />
-          <ControlledInput name={`todos[${index}].notes`} label="Notes" />
-          <button
-            type="button"
-            onClick={() => {
-              remove(index);
-            }}
-          >
-            Delete todo
-          </button>
-        </div>
-      ))}
-      <button type="button" onClick={() => swap(0, 2)}>
-        Swap
-      </button>
-      <button type="button" onClick={() => move(0, 2)}>
-        Move
-      </button>
-      <button type="button" onClick={() => insert(1, { id: nanoid() })}>
-        Insert
-      </button>
-      <button type="button" onClick={() => pop()}>
-        Pop
-      </button>
-      <button type="button" onClick={() => unshift({ id: nanoid() })}>
-        Unshift
-      </button>
-      <button
-        type="button"
-        onClick={() =>
-          replace(1, {
-            id: nanoid(),
-            title: "New title",
-            notes: "New note",
-          })
-        }
-      >
-        Replace
-      </button>
-      <button
-        type="button"
-        onClick={() =>
-          push({
-            id: nanoid(),
-            title: "New title",
-            notes: "New note",
-          })
-        }
-      >
-        Push
-      </button>
-      <button type="reset">Reset</button>
-      <button type="submit">Submit</button>
-      {error && <div>{error}</div>}
-    </ValidatedForm>
+    <RvfProvider scope={form.scope()}>
+      <form {...form.getFormProps()}>
+        {array.map((key, item, index) => (
+          <div key={key} data-testid={`todo-${index}`}>
+            <input
+              type="hidden"
+              name={`todos[${index}].id`}
+              value={item.value("id")}
+              data-testid="todo-id"
+            />
+            <ControlledInput name={`todos[${index}].title`} label="Title" />
+            <ControlledInput name={`todos[${index}].notes`} label="Notes" />
+            <button
+              type="button"
+              onClick={() => {
+                array.remove(index);
+              }}
+            >
+              Delete todo
+            </button>
+          </div>
+        ))}
+        <button type="button" onClick={() => array.swap(0, 2)}>
+          Swap
+        </button>
+        <button type="button" onClick={() => array.move(0, 2)}>
+          Move
+        </button>
+        <button
+          type="button"
+          onClick={() =>
+            array.insert(1, { id: nanoid(), title: "", notes: "" })
+          }
+        >
+          Insert
+        </button>
+        <button type="button" onClick={() => array.pop()}>
+          Pop
+        </button>
+        <button
+          type="button"
+          onClick={() => array.unshift({ id: nanoid(), title: "", notes: "" })}
+        >
+          Unshift
+        </button>
+        <button
+          type="button"
+          onClick={() =>
+            array.replace(1, {
+              id: nanoid(),
+              title: "New title",
+              notes: "New note",
+            })
+          }
+        >
+          Replace
+        </button>
+        <button
+          type="button"
+          onClick={() =>
+            array.push({
+              id: nanoid(),
+              title: "New title",
+              notes: "New note",
+            })
+          }
+        >
+          Push
+        </button>
+        <button type="reset">Reset</button>
+        <button type="submit">Submit</button>
+        {array.error() && <div>{array.error()}</div>}
+      </form>
+    </RvfProvider>
   );
 }

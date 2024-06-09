@@ -1,10 +1,10 @@
-import { useIsSubmitting, useIsValid } from "remix-validated-form";
+import { Rvf, useIsSubmitting, useIsValid, useRvfOrContext } from "@rvf/remix";
 
 type Props = {
   label?: string;
   submittingLabel?: string;
   disableWhenInvalid?: boolean;
-  form?: string;
+  form?: Rvf<any>;
   name?: string;
   value?: string;
   "data-testid"?: string;
@@ -23,15 +23,16 @@ export const SubmitButton = ({
 }: Props) => {
   const isSubmitting = useIsSubmitting(form);
   const isValid = useIsValid(form);
+  const rvf = useRvfOrContext(form);
   return (
     <button
       type="submit"
       disabled={disableWhenInvalid ? isSubmitting || !isValid : isSubmitting}
       name={name}
       value={value}
-      form={form}
       data-testid={dataTestid}
       formMethod={formMethod}
+      form={rvf.formOptions.formId}
     >
       {isSubmitting ? submittingLabel : label}
     </button>

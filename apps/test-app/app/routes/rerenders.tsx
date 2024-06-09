@@ -1,6 +1,6 @@
-import { withYup } from "@remix-validated-form/with-yup";
+import { withYup } from "@rvf/yup";
 import { useEffect, useRef } from "react";
-import { useFormContext, ValidatedForm } from "remix-validated-form";
+import { ValidatedForm, useRvfContext } from "@rvf/remix";
 import * as yup from "yup";
 import { Input } from "~/components/Input";
 
@@ -19,12 +19,13 @@ const validator = withYup(schema);
 const RenderCounter = () => {
   // Since we subscribe to the form context,
   // this component will update when validation errors change
-  useFormContext();
+  useRvfContext();
   const renderCount = useRef(0);
 
   let renderUpdated = false;
   useEffect(() => {
     if (renderUpdated) return;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     renderUpdated = true;
     renderCount.current++;
   });
@@ -32,14 +33,6 @@ const RenderCounter = () => {
   return (
     <>
       <p data-testid="render-count">{renderCount.current + 1}</p>
-      <button
-        type="button"
-        onClick={() => {
-          renderCount.current = 0;
-        }}
-      >
-        Reset render count
-      </button>
     </>
   );
 };

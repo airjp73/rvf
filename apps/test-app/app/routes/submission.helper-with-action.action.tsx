@@ -1,7 +1,7 @@
 import { DataFunctionArgs, json } from "@remix-run/node";
 import { useActionData } from "@remix-run/react";
-import { withYup } from "@remix-validated-form/with-yup";
-import { validationError } from "remix-validated-form";
+import { withYup } from "@rvf/yup";
+import { validationError } from "@rvf/remix";
 import * as yup from "yup";
 
 const schema = yup.object({

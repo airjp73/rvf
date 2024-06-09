@@ -1,6 +1,8 @@
 {
   "extends": "../tsconfig.json",
   "compilerOptions": {
+    "moduleResolution": "node",
+    "module": "esnext",
     "noEmit": true,
     "types": [
       "cypress",

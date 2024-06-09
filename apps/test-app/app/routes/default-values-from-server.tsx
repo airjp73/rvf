@@ -1,11 +1,14 @@
 import { json, DataFunctionArgs } from "@remix-run/node";
-import { withZod } from "@remix-validated-form/with-zod";
+import { withZod } from "@rvf/zod";
 import {
   ValidatedForm,
   ValidatorData,
   setFormDefaults,
   FormDefaults,
-} from "remix-validated-form";
+  useRvf,
+  RvfProvider,
+  useRemixFormResponse,
+} from "@rvf/remix";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
 import { Fieldset } from "~/components/Fieldset";
@@ -19,7 +22,7 @@ const validator = withZod(
     check1: zfd.checkbox(),
     radio: z.string(),
     likesColors: zfd.repeatable(),
-  })
+  }),
 );
 
 export type LoaderData = {
@@ -39,11 +42,19 @@ export const loader = (args: DataFunctionArgs) =>
   });
 
 export default function FrontendValidation() {
+  const server = useRemixFormResponse({
+    formId: "test-form",
+  });
+  const form = useRvf({
+    ...server.getRvfOpts(),
+    validator: validator,
+    method: "post",
+  });
   return (
-    <>
+    <RvfProvider scope={form.scope()}>
       <Input name="text1" type="text" form="test-form" label="Text 1" />
       <Input name="check1" type="checkbox" form="test-form" label="Check 1" />
-      <Fieldset label="Radios" name="radios" form="test-form">
+      <Fieldset label="Radios" name="radios" rvf={form.scope("radios")}>
         <Input
           name="radio"
           type="radio"
@@ -75,7 +86,7 @@ export default function FrontendValidation() {
       <Fieldset
         label="Which colors do you like"
         name="likesColors"
-        form="test-form"
+        rvf={form.scope("likesColors")}
       >
         <Input
           data-testid="red"
@@ -106,10 +117,11 @@ export default function FrontendValidation() {
         />
       </Fieldset>
       <hr />
-      <ValidatedForm validator={validator} method="post" id="test-form">
+      <form {...form.getFormProps()}>
+        {server.renderHiddenInputs()}
         <Input name="text2" type="text" label="Text 2" />
         <SubmitButton />
-      </ValidatedForm>
-    </>
+      </form>
+    </RvfProvider>
   );
 }

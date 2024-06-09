@@ -14,14 +14,14 @@ import { CheckboxGroup } from "~/components/CheckboxGroup";
 import { SubmitButton } from "~/components/SubmitButton";
 
 export const validator = withZod(
-  z.object({ likes: zfd.repeatable() })
+  z.object({ likes: zfd.repeatable() }),
 );
 
 export const action = async ({
   request,
 }: DataFunctionArgs) => {
   const result = await validator.validate(
-    await request.formData()
+    await request.formData(),
   );
   if (result.error) return validationError(result.error);
   const { likes } = result.data;

@@ -1,9 +1,9 @@
 import { DataFunctionArgs, json } from "@remix-run/node";
 import { useActionData } from "@remix-run/react";
-import { withZod } from "@remix-validated-form/with-zod";
+import { withZod } from "@rvf/zod";
 import { useEffect } from "react";
 import { useState } from "react";
-import { useFormContext, ValidatedForm } from "remix-validated-form";
+import { RvfProvider, ValidatedForm, useRvf } from "@rvf/remix";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
 import { Input } from "~/components/Input";
@@ -11,7 +11,7 @@ import { Input } from "~/components/Input";
 const validator = withZod(
   z.object({
     isValid: zfd.checkbox().refine((val) => !!val, "Must be checked"),
-  })
+  }),
 );
 
 export const action = async (args: DataFunctionArgs) => {
@@ -20,7 +20,11 @@ export const action = async (args: DataFunctionArgs) => {
 };
 
 export default function FrontendValidation() {
-  const { submit, validate } = useFormContext("test-form");
+  const { submit, validate, getFormProps, scope } = useRvf({
+    validator,
+    method: "post",
+    formId: "test-form",
+  });
 
   const data = useActionData<typeof action>();
   const [message, setMessage] = useState("");
@@ -28,15 +32,15 @@ export default function FrontendValidation() {
   useEffect(() => setMessage(data?.message || ""), [data?.message]);
 
   return (
-    <>
+    <RvfProvider scope={scope()}>
       {message && <h1>{message}</h1>}
-      <ValidatedForm validator={validator} method="post" id="test-form">
+      <form {...getFormProps()}>
         <Input type="checkbox" name="isValid" label="isValid" />
         <button
           type="button"
           onClick={async () => {
             const result = await validate();
-            if (result.error) {
+            if (Object.keys(result).length > 0) {
               setMessage("Invalid");
               return;
             }
@@ -46,7 +50,7 @@ export default function FrontendValidation() {
         >
           Submit with helper
         </button>
-      </ValidatedForm>
-    </>
+      </form>
+    </RvfProvider>
   );
 }

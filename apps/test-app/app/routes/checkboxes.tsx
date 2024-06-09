@@ -1,7 +1,7 @@
 import { DataFunctionArgs, json } from "@remix-run/node";
 import { useActionData } from "@remix-run/react";
-import { withZod } from "@remix-validated-form/with-zod";
-import { validationError, ValidatedForm } from "remix-validated-form";
+import { withZod } from "@rvf/zod";
+import { validationError, ValidatedForm } from "@rvf/remix";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
 import { Fieldset } from "~/components/Fieldset";
@@ -10,9 +10,9 @@ import { SubmitButton } from "~/components/SubmitButton";
 const validator = withZod(
   z.object({
     likes: zfd.repeatable(
-      z.array(z.string()).min(1, "Please choose at least one")
+      z.array(z.string()).min(1, "Please choose at least one"),
     ),
-  })
+  }),
 );
 
 export const action = async ({ request }: DataFunctionArgs) => {

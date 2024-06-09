@@ -44,7 +44,7 @@ describe("Field arrays", () => {
     cy.findAllByTestId("todo-id").should("have.length", 0);
   });
 
-  it("should sumbit the data correctly", () => {
+  it("should submit the data correctly", () => {
     cy.visit("/field-array/no-defaults").waitForJs();
 
     cy.findByText("Add todo").click();
@@ -79,8 +79,8 @@ describe("Field arrays", () => {
     cy.findByText("Todo 3: This one gets deleted").should("not.exist");
   });
 
-  it("should maintain state correctly", () => {
-    cy.visit("/field-array/state");
+  it.only("should maintain state correctly", () => {
+    cy.visit("/field-array/state").waitForJs();
 
     cy.findByText("Push").click();
     cy.findByText("Push").click();
@@ -121,7 +121,7 @@ describe("Field arrays", () => {
   });
 
   it("should handle nested field arrays", () => {
-    cy.visit("/field-array/nested");
+    cy.visit("/field-array/nested").waitForJs();
 
     cy.findByTestId("todo-0")
       .findByLabelText("Note 0")

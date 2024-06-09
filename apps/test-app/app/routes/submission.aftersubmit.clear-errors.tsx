@@ -1,7 +1,7 @@
 import { DataFunctionArgs, json } from "@remix-run/node";
 import { useActionData } from "@remix-run/react";
-import { withZod } from "@remix-validated-form/with-zod";
-import { ValidatedForm } from "remix-validated-form";
+import { withZod } from "@rvf/zod";
+import { ValidatedForm } from "@rvf/remix";
 import { z } from "zod";
 import { Input } from "~/components/Input";
 import { SubmitButton } from "~/components/SubmitButton";
@@ -20,7 +20,7 @@ const validator = withZod(
           message: "Not a match",
         });
       }
-    })
+    }),
 );
 
 export const action = (args: DataFunctionArgs) => json({ message: "Success" });

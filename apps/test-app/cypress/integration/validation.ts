@@ -130,7 +130,7 @@ describe("Validation", () => {
     cy.findByLabelText("Name of a contact").should("not.be.focused");
   });
 
-  it("should support custom recieveFocus handlers", () => {
+  it("should support focusing refs of controlled fields", () => {
     cy.visit("/validation-focus-custom").waitForJs();
 
     cy.findByText("Submit").click();
@@ -209,6 +209,8 @@ describe("Validation", () => {
     cy.findByText("Name of a contact is a required field").should("exist");
     cy.findByText("Comment is a required field").should("exist");
 
+    // sometimes there's a weird race condition where the blur runs after the click
+    cy.focused().blur();
     cy.findByText("Reset").click();
 
     cy.findByText("Email is a required field").should("not.exist");
@@ -260,7 +262,7 @@ describe("Validation", () => {
 
   it("should not focus the first invalid field from custom validation if disableFocusOnError is true", () => {
     cy.visit(
-      "/custom-server-validation-disable-focus-invalid-field"
+      "/custom-server-validation-disable-focus-invalid-field",
     ).waitForJs();
 
     cy.findByText("Submit").click();

@@ -1,5 +1,5 @@
-import { withZod } from "@remix-validated-form/with-zod";
-import { ValidatedForm } from "remix-validated-form";
+import { withZod } from "@rvf/zod";
+import { ValidatedForm } from "@rvf/remix";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
 import { Input } from "~/components/Input";
@@ -9,7 +9,7 @@ const validator = withZod(
   zfd.formData({
     myRadio: z.literal("not valid ever"),
     someText: zfd.text(),
-  })
+  }),
 );
 
 export default function FrontendValidation() {

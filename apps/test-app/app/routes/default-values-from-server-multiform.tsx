@@ -1,11 +1,11 @@
 import { json, DataFunctionArgs } from "@remix-run/node";
-import { withZod } from "@remix-validated-form/with-zod";
+import { withZod } from "@rvf/zod";
 import {
   ValidatedForm,
   ValidatorData,
   setFormDefaults,
   FormDefaults,
-} from "remix-validated-form";
+} from "@rvf/remix";
 import { zfd } from "zod-form-data";
 import { Input } from "~/components/Input";
 import { SubmitButton } from "~/components/SubmitButton";
@@ -13,7 +13,7 @@ import { SubmitButton } from "~/components/SubmitButton";
 const validator = withZod(
   zfd.formData({
     text1: zfd.text(),
-  })
+  }),
 );
 
 export type LoaderData = {

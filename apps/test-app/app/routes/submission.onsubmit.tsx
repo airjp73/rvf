@@ -1,7 +1,7 @@
 import { DataFunctionArgs, json } from "@remix-run/node";
 import { useActionData } from "@remix-run/react";
-import { withZod } from "@remix-validated-form/with-zod";
-import { ValidatedForm } from "remix-validated-form";
+import { withZod } from "@rvf/zod";
+import { ValidatedForm } from "@rvf/remix";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
 import { Input } from "~/components/Input";
@@ -10,7 +10,7 @@ import { SubmitButton } from "~/components/SubmitButton";
 const validator = withZod(
   z.object({
     shouldPreventDefault: zfd.checkbox(),
-  })
+  }),
 );
 
 export const action = async (args: DataFunctionArgs) => {
@@ -27,18 +27,9 @@ export default function FrontendValidation() {
         validator={validator}
         method="post"
         id="test-form"
-        onSubmit={async (data, event) => {
-          await new Promise((resolve) => setTimeout(resolve, 500));
-          if (event.defaultPrevented)
-            throw new Error("defaultPrevented should start false");
-
-          if (data.shouldPreventDefault) {
-            event.preventDefault();
-            if (!event.defaultPrevented)
-              throw new Error(
-                "defaultPrevented should be true after calling preventDefault"
-              );
-          }
+        onSubmit={(event) => {
+          const data = new FormData(event.target as HTMLFormElement);
+          if (data.has("shouldPreventDefault")) event.preventDefault();
         }}
       >
         <Input

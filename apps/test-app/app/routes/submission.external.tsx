@@ -1,7 +1,7 @@
 import { DataFunctionArgs, json } from "@remix-run/node";
 import { useActionData } from "@remix-run/react";
-import { withZod } from "@remix-validated-form/with-zod";
-import { ValidatedForm } from "remix-validated-form";
+import { withZod } from "@rvf/zod";
+import { RvfProvider, useRvf } from "@rvf/remix";
 import { z } from "zod";
 import { InputWithTouched } from "~/components/InputWithTouched";
 import { SubmitButton } from "~/components/SubmitButton";
@@ -9,7 +9,7 @@ import { SubmitButton } from "~/components/SubmitButton";
 const validator = withZod(
   z.object({
     mySubmit: z.string(),
-  })
+  }),
 );
 
 export const action = async ({ request }: DataFunctionArgs) => {
@@ -20,20 +20,28 @@ export const action = async ({ request }: DataFunctionArgs) => {
 
 export default function FrontendValidation() {
   const actionData = useActionData<typeof action>();
+  const rvf = useRvf({
+    validator,
+    method: "post",
+    submitSource: "dom",
+  });
+
   return (
     <>
       {actionData?.message && <h1>{actionData.message}</h1>}
-      <SubmitButton form="test-form" name="mySubmit" value="submitVal" />
-      <ValidatedForm validator={validator} method="post" id="test-form">
-        <InputWithTouched name="firstName" label="First Name" />
-        <InputWithTouched name="lastName" label="Last Name" />
-        <SubmitButton
-          name="mySubmit"
-          value="internalVal"
-          label="Submit 2"
-          submittingLabel="Submitting 2"
-        />
-      </ValidatedForm>
+      <SubmitButton form={rvf.scope()} name="mySubmit" value="submitVal" />
+      <RvfProvider scope={rvf.scope()}>
+        <form {...rvf.getFormProps()}>
+          <InputWithTouched name="firstName" label="First Name" />
+          <InputWithTouched name="lastName" label="Last Name" />
+          <SubmitButton
+            name="mySubmit"
+            value="internalVal"
+            label="Submit 2"
+            submittingLabel="Submitting 2"
+          />
+        </form>
+      </RvfProvider>
     </>
   );
 }

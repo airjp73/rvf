@@ -2,7 +2,6 @@ import type { LinksFunction } from "@remix-run/node";
 import {
   Link,
   Links,
-  LiveReload,
   Meta,
   Outlet,
   Scripts,
@@ -12,9 +11,9 @@ import {
   useRouteError,
 } from "@remix-run/react";
 import * as React from "react";
-import darkStylesUrl from "~/styles/dark.css";
-import deleteMeRemixStyles from "~/styles/demos/remix.css";
-import globalStylesUrl from "~/styles/global.css";
+import darkStylesUrl from "~/styles/dark.css?url";
+import deleteMeRemixStyles from "~/styles/demos/remix.css?url";
+import globalStylesUrl from "~/styles/global.css?url";
 
 /**
  * The `links` export is a function that returns an array of objects that map to
@@ -51,6 +50,18 @@ export default function App() {
   );
 }
 
+function subscribe() {
+  return () => {};
+}
+
+export function useHydrated() {
+  return React.useSyncExternalStore(
+    subscribe,
+    () => true,
+    () => false
+  );
+}
+
 function Document({
   children,
   title,
@@ -58,8 +69,7 @@ function Document({
   children: React.ReactNode;
   title?: string;
 }) {
-  const [hydrated, setHydrated] = React.useState(false);
-  React.useEffect(() => setHydrated(true), []);
+  const hydrated = useHydrated();
 
   return (
     <html lang="en">
@@ -82,13 +92,12 @@ function Document({
         <RouteChangeAnnouncement />
         <ScrollRestoration />
         <Scripts />
-        <LiveReload />
       </body>
     </html>
   );
 }
 
-function Layout({ children }: React.PropsWithChildren<{}>) {
+function Layout({ children }: React.PropsWithChildren) {
   return (
     <div className="remix-app">
       <header className="remix-app__header">

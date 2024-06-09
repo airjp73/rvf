@@ -1,12 +1,8 @@
 import { DataFunctionArgs, json } from "@remix-run/node";
 import { useActionData } from "@remix-run/react";
-import { withZod } from "@remix-validated-form/with-zod";
+import { withZod } from "@rvf/zod";
 import { nanoid } from "nanoid";
-import {
-  FieldArray,
-  ValidatedForm,
-  validationError,
-} from "remix-validated-form";
+import { FieldArray, ValidatedForm, validationError } from "@rvf/remix";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
 import { Input } from "~/components/Input";
@@ -19,9 +15,9 @@ const validator = withZod(
         id: z.string(),
         title: zfd.text(),
         notes: zfd.text().optional(),
-      })
+      }),
     ),
-  })
+  }),
 );
 
 export const action = async ({ request }: DataFunctionArgs) => {
@@ -47,14 +43,14 @@ export default function FrontendValidation() {
         </>
       )}
       <FieldArray name="todos">
-        {(items, { push, remove }) => (
+        {({ map, push, remove }) => (
           <>
-            {items.map(({ defaultValue, key }, index) => (
+            {map((key, item, index) => (
               <div key={key} data-testid={`todo-${index}`}>
                 <input
                   type="hidden"
                   name={`todos[${index}].id`}
-                  value={defaultValue.id}
+                  value={item.value("id" as never)}
                   data-testid="todo-id"
                 />
                 <Input name={`todos[${index}].title`} label="Title" />

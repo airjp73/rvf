@@ -1,15 +1,15 @@
 {
   "compilerOptions": {
     "allowJs": true,
-    "lib": ["DOM", "DOM.Iterable", "ES2019"],
+    "lib": ["DOM", "DOM.Iterable", "ESNext", "ESNext.Array"],
     "esModuleInterop": true,
     "moduleResolution": "Node",
-    "target": "ES2019",
+    "target": "ES2022",
     "strict": true,
     "skipLibCheck": true,
     "declaration": true,
     "jsx": "react-jsx",
-    "types": ["vitest/importMeta"],
+    "types": ["vitest/importMeta", "vitest/globals"],
     "module": "esnext"
   }
 }

@@ -1,7 +1,7 @@
 import { DataFunctionArgs, json } from "@remix-run/node";
 import { useActionData } from "@remix-run/react";
-import { withZod } from "@remix-validated-form/with-zod";
-import { validationError, ValidatedForm } from "remix-validated-form";
+import { withZod } from "@rvf/zod";
+import { validationError, ValidatedForm } from "@rvf/remix";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
 import { Input } from "~/components/Input";
@@ -12,9 +12,9 @@ const validator = withZod(
     firstName: zfd.text(
       z.string({
         required_error: "First Name is a required field",
-      })
+      }),
     ),
-  })
+  }),
 );
 
 export const action = async ({ request }: DataFunctionArgs) => {

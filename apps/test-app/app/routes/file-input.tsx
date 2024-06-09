@@ -1,15 +1,12 @@
-import {
-  DataFunctionArgs,
-  unstable_parseMultipartFormData,
-  json,
-} from "@remix-run/node";
+import { unstable_parseMultipartFormData, json } from "@remix-run/node";
 import { useActionData } from "@remix-run/react";
 import {
+  ActionFunctionArgs,
   unstable_composeUploadHandlers,
   unstable_createMemoryUploadHandler,
 } from "@remix-run/server-runtime";
-import { withZod } from "@remix-validated-form/with-zod";
-import { validationError, ValidatedForm } from "remix-validated-form";
+import { withZod } from "@rvf/zod";
+import { validationError, ValidatedForm } from "@rvf/remix";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
 import { Input } from "~/components/Input";
@@ -25,18 +22,18 @@ const clientValidator = withZod(
       myFile: zfd.file(
         z.instanceof(File, {
           message: "Please choose a file",
-        })
+        }),
       ),
-    })
-  )
+    }),
+  ),
 );
 
 const serverValidator = withZod(
   baseSchema.and(
     z.object({
       myFile: zfd.file(z.string()),
-    })
-  )
+    }),
+  ),
 );
 
 const testUploadHandler = unstable_composeUploadHandlers(async ({ name }) => {
@@ -47,9 +44,9 @@ const testUploadHandler = unstable_composeUploadHandlers(async ({ name }) => {
   return "testFile";
 }, unstable_createMemoryUploadHandler());
 
-export const action = async ({ request }: DataFunctionArgs) => {
+export const action = async ({ request }: ActionFunctionArgs) => {
   const result = await serverValidator.validate(
-    await unstable_parseMultipartFormData(request, testUploadHandler)
+    await unstable_parseMultipartFormData(request, testUploadHandler),
   );
   if (result.error) return validationError(result.error);
   const { myFile, description } = result.data;

@@ -1,0 +1,8 @@
+{
+  "extends": "tsconfig/tsconfig.json",
+  "compilerOptions": {
+    "module": "esnext"
+  },
+  "include": ["src/**/*.ts", "src/**/*.tsx", "../../vitest.setup.ts"],
+  "exclude": ["node_modules"]
+}

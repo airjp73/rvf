@@ -5,10 +5,10 @@
   "license": "",
   "version": "0.0.1",
   "scripts": {
-    "build": "yarn build:css && yarn build:remix",
+    "build": "bun run build:css && bun run build:remix",
     "build:remix": "remix build",
     "build:css": "postcss ./styles/index.css --output app/styles/index.css --env production",
-    "dev": "concurrently \"yarn dev:remix\" \"yarn dev:css\"",
+    "dev": "concurrently \"bun run dev:remix\" \"bun run dev:css\"",
     "dev:remix": "PORT=3002 remix dev",
     "dev:css": "TAILWIND_MODE=watch postcss ./styles/index.css --output app/styles/index.css --watch",
     "typecheck": "tsc --noEmit"
@@ -16,11 +16,11 @@
   "dependencies": {
     "@headlessui/react": "^1.7.4",
     "@heroicons/react": "^1.0.5",
-    "@remix-run/node": "^1.16.1",
-    "@remix-run/react": "^1.16.1",
-    "@remix-run/vercel": "^1.16.1",
-    "@remix-run/server-runtime": "^1.16.1",
-    "@remix-validated-form/with-zod": "*",
+    "@remix-run/node": "=1.19.3",
+    "@remix-run/react": "=1.19.3",
+    "@remix-run/server-runtime": "=1.19.3",
+    "@remix-run/vercel": "=1.19.3",
+    "@remix-validated-form/with-zod": "2.0.7",
     "@vercel/node": "^2.8.1",
     "classnames": "^2.3.1",
     "framer-motion": "^7.6.12",
@@ -30,28 +30,26 @@
     "react": "^18.1.0",
     "react-dom": "^18.1.0",
     "rehype-highlight": "^5.0.1",
-    "remix-validated-form": "*",
+    "remix-validated-form": "^5.1.5",
     "zod": "~3.20.0",
-    "zod-form-data": "*"
+    "zod-form-data": "=2.0.1"
   },
   "devDependencies": {
-    "@remix-run/dev": "^1.16.1",
-    "@remix-run/serve": "^1.16.1",
+    "@remix-run/dev": "=1.19.3",
+    "@remix-run/serve": "=1.19.3",
     "@tailwindcss/typography": "^0.5.0",
     "@types/react": "^18.0.9",
     "@types/react-dom": "^18.0.3",
     "autoprefixer": "^10.4.0",
-    "classnames": "^2.3.1",
     "concurrently": "^6.5.1",
-    "custom-remark-plugin": "*",
     "postcss": "^8.4.5",
     "postcss-cli": "^9.1.0",
     "postcss-import": "^14.0.2",
     "tailwindcss": "3.0.7",
-    "typescript": "^4.8.4"
+    "typescript": "^5.4.5"
   },
   "engines": {
-    "node": ">=14"
+    "node": ">=20"
   },
   "sideEffects": false
 }

@@ -1,14 +1,14 @@
 import { DataFunctionArgs, json } from "@remix-run/node";
 import { useActionData } from "@remix-run/react";
-import { withZod } from "@remix-validated-form/with-zod";
+import { withZod } from "@rvf/zod";
 import { useState } from "react";
 import {
-  ValidatedForm,
   useControlField,
   validationError,
   useField,
-  useUpdateControlledField,
-} from "remix-validated-form";
+  useRvf,
+  RvfProvider,
+} from "@rvf/remix";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
 import { SubmitButton } from "~/components/SubmitButton";
@@ -17,7 +17,7 @@ const validator = withZod(
   z.object({
     myField: z.literal("blue"),
     text: zfd.json(z.literal("bob")),
-  })
+  }),
 );
 
 export const action = async ({ request }: DataFunctionArgs) => {
@@ -50,9 +50,9 @@ const Controlled = () => {
       >
         Yellow{value === "yellow" && " (selected)"}
       </button>
-      {error && (
+      {error() && (
         <p style={{ color: "red" }} data-testid="error">
-          {error}
+          {error()}
         </p>
       )}
     </div>
@@ -78,7 +78,7 @@ const ControlledInput = () => {
         onChange={(e) => update(e.target.value)}
         data-testid="text-input"
       />
-      {error && <p data-testid="text-error">{error}</p>}
+      {error() && <p data-testid="text-error">{error()}</p>}
       <p data-testid="resolution-count">{count}</p>
     </div>
   );
@@ -93,35 +93,42 @@ function* range(min: number, max: number) {
 export default function ControlledField() {
   const data = useActionData<typeof action>();
   const [count, setCount] = useState(1);
-  const update = useUpdateControlledField("test-form");
+  const rvf = useRvf({
+    validator,
+    method: "post",
+    defaultValues: { myField: "green", text: "" },
+    validationBehaviorConfig: {
+      initial: "onChange",
+      whenTouched: "onChange",
+      whenSubmitted: "onChange",
+    },
+  });
+
   return (
-    <ValidatedForm
-      id="test-form"
-      validator={validator}
-      method="post"
-      defaultValues={{ myField: "green" as any, text: "" as any }}
-    >
-      {data && "message" in data && <div>{data.message}</div>}
-      <div style={{ margin: "1rem" }}>
-        <button type="button" onClick={() => setCount((prev) => prev + 1)}>
-          +
+    <RvfProvider scope={rvf.scope()}>
+      <form {...rvf.getFormProps()}>
+        {data && "message" in data && <div>{data.message}</div>}
+        <div style={{ margin: "1rem" }}>
+          <button type="button" onClick={() => setCount((prev) => prev + 1)}>
+            +
+          </button>
+          <button type="button" onClick={() => setCount((prev) => prev - 1)}>
+            -
+          </button>
+        </div>
+        {[...range(0, count)].map((_, i) => (
+          <Controlled key={i} />
+        ))}
+        <ControlledInput />
+        <button
+          onClick={() => rvf.setValue("text", "Hello from update hook")}
+          type="button"
+        >
+          Force Update
         </button>
-        <button type="button" onClick={() => setCount((prev) => prev - 1)}>
-          -
-        </button>
-      </div>
-      {[...range(0, count)].map((_, i) => (
-        <Controlled key={i} />
-      ))}
-      <ControlledInput />
-      <button
-        onClick={() => update("text", "Hello from update hook")}
-        type="button"
-      >
-        Force Update
-      </button>
-      <button type="reset">Reset</button>
-      <SubmitButton />
-    </ValidatedForm>
+        <button type="reset">Reset</button>
+        <SubmitButton />
+      </form>
+    </RvfProvider>
   );
 }

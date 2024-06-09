@@ -18,7 +18,7 @@ export const validator = withZod(
       .string()
       .min(1, { message: "Email is required" })
       .email("Must be a valid email"),
-  })
+  }),
 );
 
 export default function Demo() {

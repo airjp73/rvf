@@ -1,0 +1,33 @@
+{
+  "name": "@rvf/zod",
+  "version": "3.0.0",
+  "main": "./dist/index.cjs.js",
+  "module": "./dist/index.esm.js",
+  "types": "./dist/index.d.ts",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/airjp73/remix-validated-form"
+  },
+  "scripts": {
+    "dev": "tsup --watch",
+    "build": "tsup",
+    "prepublishOnly": "npm run build",
+    "typecheck": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "@rvf/core": ">= 6.0.0 <= 7.0.0",
+    "zod": ">= 3.11.0"
+  },
+  "devDependencies": {
+    "@rvf/yup": "*",
+    "@types/semver": "^7.5.0",
+    "@rvf/core": "*",
+    "semver": "^7.5.1",
+    "set-get": "*",
+    "tsconfig": "*",
+    "tsup-config": "*",
+    "typescript": "^5.4.5",
+    "zod": "~3.20.0"
+  }
+}

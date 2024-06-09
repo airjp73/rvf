@@ -1,7 +1,7 @@
 import { json, DataFunctionArgs } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
-import { withZod } from "@remix-validated-form/with-zod";
-import { ValidatedForm, ValidatorData } from "remix-validated-form";
+import { withZod } from "@rvf/zod";
+import { ValidatedForm, ValidatorData } from "@rvf/remix";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
 import { Fieldset } from "~/components/Fieldset";
@@ -19,7 +19,7 @@ const validator = withZod(
     likesPizza: zfd.checkbox(),
     favoriteDessert: z.union([z.literal("iceCream"), z.literal("cake")]),
     likesColors: zfd.repeatable(),
-  })
+  }),
 );
 
 type LoaderData = {
@@ -29,10 +29,7 @@ type LoaderData = {
 export const loader = (args: DataFunctionArgs) => {
   return json<LoaderData>({
     defaultValues: {
-      "name.first": "Jane",
-      // @ts-expect-error
-      name: { last: "Doe" },
-      lastName: "Doe",
+      name: { first: "Jane", last: "Doe" },
       email: "jane.doe@example.com",
       age: 26,
       likesPizza: true,

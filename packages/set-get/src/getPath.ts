@@ -1,5 +1,10 @@
-import get from "lodash.get";
+import { stringToPathArray } from "./stringToPathArray";
 
 export const getPath = (object: any, path: string) => {
-  return get(object, path);
+  const parts = stringToPathArray(path);
+  let value = object;
+  for (const part of parts) {
+    value = (value as any)?.[part];
+  }
+  return value;
 };
