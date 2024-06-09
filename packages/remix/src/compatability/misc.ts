@@ -1,4 +1,4 @@
-import { Rvf, useFormScopeOrContext } from "@rvf/react";
+import { FormScope, useFormScopeOrContext } from "@rvf/react";
 import { useCallback, useMemo } from "react";
 
 /**
@@ -6,29 +6,29 @@ import { useCallback, useMemo } from "react";
  * This is different from Remix's `useNavigation()` in that it
  * is aware of what form it's in and when _that_ form is being submitted.
  *
- * Can optionally accept an `Rvf` to grab the data from that instead.
+ * Can optionally accept an `FormScope` to grab the data from that instead.
  *
  * @deprecated Provided for backwards compatibility with `remix-validated-form`.
  * You can instead get this data directly off of the `useForm` hook.
  */
-export const useIsSubmitting = (rvf?: Rvf<any>) =>
+export const useIsSubmitting = (rvf?: FormScope<any>) =>
   useFormScopeOrContext(rvf).formState.isSubmitting;
 
 /**
  * Returns whether or not the current form is valid.
  *
- * Can optionally accept an `Rvf` to grab the data from that instead.
+ * Can optionally accept an `FormScope` to grab the data from that instead.
  *
  * @deprecated Provided for backwards compatibility with `remix-validated-form`.
  * You can instead get this data directly off of the `useForm` hook.
  */
-export const useIsValid = (rvf?: Rvf<any>) =>
+export const useIsValid = (rvf?: FormScope<any>) =>
   useFormScopeOrContext(rvf).formState.isValid;
 
 /**
  * @deprecated Can get the value and set the value directly off of the `useForm` hook.
  */
-export const useControlField = <T>(name: string, rvf?: Rvf<any>) => {
+export const useControlField = <T>(name: string, rvf?: FormScope<any>) => {
   const form = useFormScopeOrContext(rvf);
   const value: T = form.value(name);
   const setValue = useCallback(
@@ -41,7 +41,7 @@ export const useControlField = <T>(name: string, rvf?: Rvf<any>) => {
 /**
  * @deprecated Can set the value directly off of the `useForm` hook.
  */
-export const useUpdateControlledField = (rvf?: Rvf<any>) => {
+export const useUpdateControlledField = (rvf?: FormScope<any>) => {
   const form = useFormScopeOrContext(rvf);
   return useCallback(
     (name: string, value: any) => form.setValue(name, value),

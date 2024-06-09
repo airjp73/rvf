@@ -13,14 +13,14 @@ export {
   type CreateValidatorArg,
   type FieldValues,
   type SubmitStatus,
-  type Rvf,
+  type FormScope,
   FieldArray,
   type FieldArrayPropsWithName,
   type FieldArrayPropsWithScope,
   Field,
   type FieldPropsWithName,
   type FieldPropsWithScope,
-  type RvfReact,
+  type ReactFormApi,
   type FormFields,
   useField,
   type FieldApi,
@@ -35,7 +35,7 @@ export {
   isValidationErrorResponse,
   useFormScope,
 } from "@rvf/react";
-export { useForm, type RvfRemixOpts } from "./useForm";
+export { useForm, type FormScopeRemixOpts } from "./useForm";
 export { ValidatedForm, type ValidatedFormProps } from "./ValidatedForm";
 export { validationError, setFormDefaults, type FormDefaults } from "./server";
 export { useRemixFormResponse } from "./auto-server-hooks";

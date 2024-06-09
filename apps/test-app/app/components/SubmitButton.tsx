@@ -1,5 +1,5 @@
 import {
-  Rvf,
+  FormScope,
   useIsSubmitting,
   useIsValid,
   useFormScopeOrContext,
@@ -9,7 +9,7 @@ type Props = {
   label?: string;
   submittingLabel?: string;
   disableWhenInvalid?: boolean;
-  form?: Rvf<any>;
+  form?: FormScope<any>;
   name?: string;
   value?: string;
   "data-testid"?: string;

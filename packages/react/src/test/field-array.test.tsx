@@ -8,7 +8,7 @@ import { successValidator } from "./util/successValidator";
 import { controlInput } from "./util/controlInput";
 import { FieldArray, useFieldArray } from "../array";
 import { FormProvider } from "../context";
-import { FieldErrors, Rvf, createValidator } from "@rvf/core";
+import { FieldErrors, FormScope, createValidator } from "@rvf/core";
 import { ComponentProps, useState } from "react";
 import { useFormScope } from "../useFormScope";
 
@@ -1048,7 +1048,7 @@ it("should validate on submit, then on change after that by default", async () =
 it("should support custom validation behavior", async () => {
   const submit = vi.fn();
 
-  const FA = ({ scope }: { scope: Rvf<string[]> }) => {
+  const FA = ({ scope }: { scope: FormScope<string[]> }) => {
     const array = useFieldArray(scope, {
       validationBehavior: {
         initial: "onChange",

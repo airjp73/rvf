@@ -1,5 +1,5 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { Rvf, createValidator } from "@rvf/core";
+import { FormScope, createValidator } from "@rvf/core";
 import { useForm } from "../useForm";
 import userEvent from "@testing-library/user-event";
 import { successValidator } from "./util/successValidator";
@@ -8,7 +8,7 @@ import { useFormScope } from "../useFormScope";
 
 it("should be able to create scoped subforms", async () => {
   const submit = vi.fn();
-  const NameForm = ({ form }: { form: Rvf<{ name: string }> }) => {
+  const NameForm = ({ form }: { form: FormScope<{ name: string }> }) => {
     const iso = useFormScope(form);
 
     return (
@@ -36,7 +36,7 @@ it("should be able to create scoped subforms", async () => {
     });
 
     const personForm = form.scope("person");
-    expectTypeOf(personForm).toEqualTypeOf<Rvf<{ name: string }>>();
+    expectTypeOf(personForm).toEqualTypeOf<FormScope<{ name: string }>>();
 
     return (
       <form {...form.getFormProps()} data-testid="form">
@@ -65,7 +65,7 @@ it("should be able to create scoped subforms", async () => {
 
 it("should be able to create subforms of arrays", async () => {
   const submit = vi.fn();
-  const NameForm = ({ form }: { form: Rvf<{ name: string }> }) => {
+  const NameForm = ({ form }: { form: FormScope<{ name: string }> }) => {
     const iso = useFormScope(form);
 
     return (
@@ -96,16 +96,16 @@ it("should be able to create subforms of arrays", async () => {
     });
 
     expectTypeOf(form.scope("people[0]")).toEqualTypeOf<
-      Rvf<{ name: string }>
+      FormScope<{ name: string }>
     >();
 
     expectTypeOf(form.scope(`people[${0 as number}]`)).toEqualTypeOf<
-      Rvf<{ name: string }>
+      FormScope<{ name: string }>
     >();
 
     const peopleForm = useFormScope(form.scope("people"));
     expectTypeOf(peopleForm.scope(`${0 as number}`)).toEqualTypeOf<
-      Rvf<{ name: string }>
+      FormScope<{ name: string }>
     >();
 
     return (

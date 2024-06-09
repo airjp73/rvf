@@ -1,15 +1,15 @@
 import { ReactNode, useMemo } from "react";
 import {
   FormStoreValue,
-  Rvf,
+  FormScope,
   getFieldError,
   getFieldValue,
-  scopeRvf,
+  scopeFormScope,
   getArrayUpdateKey,
   FieldArrayValidationBehaviorConfig,
 } from "@rvf/core";
 import { makeImplFactory } from "./implFactory";
-import { RvfReact, makeBaseRvfReact } from "./base";
+import { ReactFormApi, makeBaseReactFormApi } from "./base";
 import { ValidationBehaviorConfig } from "@rvf/core";
 import { useFormScopeOrContextInternal } from "./context";
 
@@ -38,7 +38,7 @@ export interface FieldArrayApi<FormInputData extends Array<any>> {
   map: (
     callback: (
       key: string,
-      form: RvfReact<FormInputData[number]>,
+      form: ReactFormApi<FormInputData[number]>,
       index: number,
     ) => ReactNode,
   ) => ReactNode;
@@ -94,7 +94,7 @@ export interface FieldArrayApi<FormInputData extends Array<any>> {
 }
 
 export type FieldArrayParams<FormInputData> = {
-  form: Rvf<FormInputData>;
+  form: FormScope<FormInputData>;
   arrayFieldName: string;
   trackedState: FormStoreValue;
   validationBehavior?: FieldArrayValidationBehaviorConfig;
@@ -107,8 +107,10 @@ export const makeFieldArrayImpl = <FormInputData extends Array<any>>({
   validationBehavior,
 }: FieldArrayParams<FormInputData>): FieldArrayApi<FormInputData> => {
   const itemImpl = makeImplFactory(arrayFieldName, (itemFieldName) =>
-    makeBaseRvfReact({
-      form: scopeRvf(form, itemFieldName) as Rvf<FormInputData[number]>,
+    makeBaseReactFormApi({
+      form: scopeFormScope(form, itemFieldName) as FormScope<
+        FormInputData[number]
+      >,
       prefix: itemFieldName,
       trackedState,
     }),
@@ -135,8 +137,8 @@ export const makeFieldArrayImpl = <FormInputData extends Array<any>>({
       return trackedState
         .getFieldArrayKeys(arrayFieldName)
         .map((key, index) => {
-          const itemRvf = itemImpl(String(index));
-          return callback(key, itemRvf, index);
+          const itemFormScope = itemImpl(String(index));
+          return callback(key, itemFormScope, index);
         });
     },
     push: (value) =>
@@ -182,7 +184,7 @@ export type UseFieldArrayOpts = {
   validationBehavior?: FieldArrayValidationBehaviorConfig;
 };
 export function useFieldArray<FormInputData extends any[]>(
-  form: Rvf<FormInputData>,
+  form: FormScope<FormInputData>,
   { validationBehavior }?: UseFieldArrayOpts,
 ): FieldArrayApi<FormInputData>;
 export function useFieldArray<FormInputData extends any[] = unknown[]>(
@@ -190,7 +192,7 @@ export function useFieldArray<FormInputData extends any[] = unknown[]>(
   opts?: UseFieldArrayOpts,
 ): FieldArrayApi<FormInputData>;
 export function useFieldArray<FormInputData extends any[]>(
-  formOrName: Rvf<FormInputData> | string,
+  formOrName: FormScope<FormInputData> | string,
   { validationBehavior }: UseFieldArrayOpts = {},
 ) {
   const scope = useFormScopeOrContextInternal(formOrName);
@@ -217,7 +219,7 @@ export function useFieldArray<FormInputData extends any[]>(
 }
 
 export type FieldArrayPropsWithScope<FormInputData extends any[]> = {
-  scope: Rvf<FormInputData>;
+  scope: FormScope<FormInputData>;
   children: (field: FieldArrayApi<FormInputData>) => React.ReactNode;
 };
 

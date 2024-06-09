@@ -14,12 +14,12 @@ export {
   type CreateValidatorArg,
   type FieldValues,
   type SubmitStatus,
-  type Rvf,
+  type FormScope,
   type StateSubmitHandler,
   type DomSubmitHandler,
   isValidationErrorResponse,
 } from "@rvf/core";
-export { type RvfReact, type FormFields } from "./base";
+export { type ReactFormApi, type FormFields } from "./base";
 export { useForm, FormOpts } from "./useForm";
 export {
   useField,

@@ -2,7 +2,7 @@ import { DataFunctionArgs, json } from "@remix-run/node";
 import { useActionData } from "@remix-run/react";
 import { withYup } from "@rvf/yup";
 import {
-  Rvf,
+  FormScope,
   FormProvider,
   useRemixFormResponse,
   useForm,
@@ -23,7 +23,7 @@ const DisplayContext = ({
   form,
 }: {
   testid: string;
-  form?: Rvf<any>;
+  form?: FormScope<any>;
 }) => {
   const context = useFormScopeOrContext(form);
 

@@ -3,13 +3,13 @@ import {
   FieldValues,
   ValidationBehaviorConfig,
   Validator,
-  Rvf,
-  createRvf,
+  FormScope,
+  createFormScope,
   registerFormElementEvents,
   StateSubmitHandler,
   DomSubmitHandler,
 } from "@rvf/core";
-import { RvfReact, useFormInternal } from "./base";
+import { ReactFormApi, useFormInternal } from "./base";
 import { FieldErrors } from "@rvf/core";
 
 const noOp = () => {};
@@ -101,11 +101,11 @@ export type FormOpts<
   resetAfterSubmit?: boolean;
 } & FormSubmitOpts<FormOutputData, SubmitResponseData>;
 
-const isRvf = (form: any): form is Rvf<any> =>
+const isFormScope = (form: any): form is FormScope<any> =>
   "__brand__" in form && form.__brand__ === "rvf";
 
 /**
- * Create and use an `Rvf`.
+ * Create and use an `FormScope`.
  */
 export function useForm<
   FormInputData extends FieldValues,
@@ -113,7 +113,7 @@ export function useForm<
   SubmitResponseData,
 >(
   options: FormOpts<FormInputData, FormOutputData, SubmitResponseData>,
-): RvfReact<FormInputData> {
+): ReactFormApi<FormInputData> {
   // everything from below
   const {
     validator,
@@ -133,8 +133,8 @@ export function useForm<
 
   const defaultFormId = useId();
 
-  const [form] = useState<Rvf<unknown>>(() => {
-    const rvf = createRvf({
+  const [form] = useState<FormScope<unknown>>(() => {
+    const rvf = createFormScope({
       defaultValues: options.defaultValues ?? {},
       serverValidationErrors: serverValidationErrors ?? {},
       validator,

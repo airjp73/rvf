@@ -2,7 +2,7 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { useForm } from "../useForm";
 import userEvent from "@testing-library/user-event";
 import { RenderCounter } from "./util/RenderCounter";
-import { FieldErrors, Rvf, createValidator } from "@rvf/core";
+import { FieldErrors, FormScope, createValidator } from "@rvf/core";
 import { useField } from "../field";
 
 it("should validate on onBlur, then on change after that", async () => {
@@ -297,7 +297,7 @@ it("should be posible to customize validation behavior at the field level", asyn
 
   const submit = vi.fn();
 
-  const Input = ({ form }: { form: Rvf<string> }) => {
+  const Input = ({ form }: { form: FormScope<string> }) => {
     const field = useField(form, { validationBehavior: behaviorConfig });
     return <input data-testid="foo" {...field.getInputProps()} />;
   };

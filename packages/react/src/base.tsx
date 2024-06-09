@@ -1,8 +1,8 @@
 import { useEffect, useMemo } from "react";
 import * as R from "remeda";
 import {
-  Rvf,
-  scopeRvf,
+  FormScope,
+  scopeFormScope,
   SubmitStatus,
   FormStoreValue,
   getFieldValue,
@@ -44,12 +44,12 @@ import {
   ValidInputPropsValues,
 } from "./inputs/getInputProps";
 
-type MinimalRvf<FieldPaths extends string> = {
+type MinimalFormScope<FieldPaths extends string> = {
   resetField: (fieldName: FieldPaths, nextValue?: any) => void;
 };
 
 export type FormFields<Form> =
-  Form extends MinimalRvf<infer FieldPaths> ? FieldPaths : never;
+  Form extends MinimalFormScope<infer FieldPaths> ? FieldPaths : never;
 
 interface FormProps {
   onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
@@ -64,7 +64,7 @@ export type ManualSubmitOption = SubmitterOptions & {
   value?: string;
 };
 
-export interface RvfReact<FormInputData> {
+export interface ReactFormApi<FormInputData> {
   /**
    * Gets whether the field has been touched.
    * @willRerender
@@ -234,14 +234,14 @@ export interface RvfReact<FormInputData> {
   ) => void;
 
   /**
-   * Creates an `Rvf` scoped to the specified field.
+   * Creates an `FormScope` scoped to the specified field.
    * This is useful for creating subforms.
    * In order to use this, you can pass it to `useForm`.
    *
    * @example
    * ```tsx
    * type PersonFormProps = {
-   *   rvf: Rvf<{ name: string }>;
+   *   rvf: FormScope<{ name: string }>;
    * }
    *
    * const PersonForm = ({ rvf }: PersonFormProps) => {
@@ -272,12 +272,12 @@ export interface RvfReact<FormInputData> {
    */
   scope<Field extends ValidStringPaths<FormInputData>>(
     fieldName: Field,
-  ): Rvf<ValueAtPath<FormInputData, StringToPathTuple<Field>>>;
+  ): FormScope<ValueAtPath<FormInputData, StringToPathTuple<Field>>>;
 
   /**
-   * Returns an `Rvf` without scoping any further.
+   * Returns an `FormScope` without scoping any further.
    */
-  scope(): Rvf<FormInputData>;
+  scope(): FormScope<FormInputData>;
 
   getFormProps: (props?: Partial<FormProps>) => FormProps;
 
@@ -369,17 +369,17 @@ export interface RvfReact<FormInputData> {
   submit: (option?: ManualSubmitOption) => void;
 }
 
-export type BaseRvfReactParams<FormInputData> = {
-  form: Rvf<FormInputData>;
+export type BaseReactFormParams<FormInputData> = {
+  form: FormScope<FormInputData>;
   prefix: string;
   trackedState: FormStoreValue;
 };
 
-export const makeBaseRvfReact = <FormInputData,>({
+export const makeBaseReactFormApi = <FormInputData,>({
   trackedState,
   prefix,
   form,
-}: BaseRvfReactParams<FormInputData>): RvfReact<FormInputData> => {
+}: BaseReactFormParams<FormInputData>): ReactFormApi<FormInputData> => {
   const f = (fieldName?: string) =>
     pathArrayToString([prefix, fieldName].filter(R.isNonNullish));
   const transientState = () => form.__store__.store.getState();
@@ -392,7 +392,7 @@ export const makeBaseRvfReact = <FormInputData,>({
     makeFieldArrayImpl({
       trackedState,
       arrayFieldName,
-      form: scopeRvf(form, arrayFieldName) as Rvf<any[]>,
+      form: scopeFormScope(form, arrayFieldName) as FormScope<any[]>,
     }),
   );
 
@@ -505,7 +505,7 @@ export const makeBaseRvfReact = <FormInputData,>({
       form.__store__.store.getState().resetField(f(fieldName), nextValue),
 
     scope: (fieldName?: string) =>
-      fieldName == null ? form : (scopeRvf(form, fieldName) as any),
+      fieldName == null ? form : (scopeFormScope(form, fieldName) as any),
 
     name: (fieldName?: string) => f(fieldName),
 
@@ -594,7 +594,9 @@ export const makeBaseRvfReact = <FormInputData,>({
   };
 };
 
-export const useFormInternal = <FormInputData,>(form: Rvf<FormInputData>) => {
+export const useFormInternal = <FormInputData,>(
+  form: FormScope<FormInputData>,
+) => {
   const prefix = form.__field_prefix__;
   const { useStoreState, resolvers } = form.__store__;
   const trackedState = useStoreState();
@@ -610,7 +612,7 @@ export const useFormInternal = <FormInputData,>(form: Rvf<FormInputData>) => {
 
   const base = useMemo(
     () =>
-      makeBaseRvfReact({
+      makeBaseReactFormApi({
         form,
         prefix,
         trackedState,

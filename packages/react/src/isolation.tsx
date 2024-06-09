@@ -1,13 +1,13 @@
 import { ReactNode } from "react";
-import { Rvf } from "@rvf/core";
-import { RvfReact, useFormInternal } from "./base";
+import { FormScope } from "@rvf/core";
+import { ReactFormApi, useFormInternal } from "./base";
 
 export const Isolate = <FormValue,>({
   form,
   render,
 }: {
-  form: Rvf<FormValue>;
-  render: (form: RvfReact<FormValue>) => ReactNode;
+  form: FormScope<FormValue>;
+  render: (form: ReactFormApi<FormValue>) => ReactNode;
 }) => {
   const rvf = useFormInternal(form);
   return render(rvf);

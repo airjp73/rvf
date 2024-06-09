@@ -48,17 +48,17 @@ type FormInit<FormInputData extends FieldValues, FormOutputData> = {
   flags: StoreFlags;
 } & SubmitTypes<FormOutputData>;
 
-export interface Rvf<FormInputData> {
+export interface FormScope<FormInputData> {
   __brand__: "rvf";
   __type__FormInputData: FormInputData;
   __field_prefix__: string;
-  __store__: RvfStore;
+  __store__: FormStore;
   scope<Path extends ValidStringPaths<FormInputData>>(
     field: Path,
-  ): Rvf<ValueAtPath<FormInputData, StringToPathTuple<Path>>>;
+  ): FormScope<ValueAtPath<FormInputData, StringToPathTuple<Path>>>;
 }
 
-export interface RvfStore {
+export interface FormStore {
   transientFieldRefs: RefStore;
   controlledFieldRefs: RefStore;
   fieldSerializerRefs: RefStore<FieldSerializer>;
@@ -70,7 +70,10 @@ export interface RvfStore {
   subformCache: Map<string, any>;
 }
 
-export const createRvf = <FormInputData extends FieldValues, FormOutputData>({
+export const createFormScope = <
+  FormInputData extends FieldValues,
+  FormOutputData,
+>({
   defaultValues,
   serverValidationErrors,
   validator,
@@ -81,7 +84,7 @@ export const createRvf = <FormInputData extends FieldValues, FormOutputData>({
   submitSource,
   formProps,
   flags,
-}: FormInit<FormInputData, FormOutputData>): Rvf<FormInputData> => {
+}: FormInit<FormInputData, FormOutputData>): FormScope<FormInputData> => {
   const transientFieldRefs = createRefStore<HTMLElement>();
   const controlledFieldRefs = createRefStore<HTMLElement>();
   const fieldSerializerRefs = createRefStore<FieldSerializer>();
@@ -109,7 +112,7 @@ export const createRvf = <FormInputData extends FieldValues, FormOutputData>({
   });
   const subformCache = new Map<string, any>();
 
-  const rvfStore: RvfStore = {
+  const rvfStore: FormStore = {
     transientFieldRefs,
     controlledFieldRefs,
     fieldSerializerRefs,
@@ -121,13 +124,13 @@ export const createRvf = <FormInputData extends FieldValues, FormOutputData>({
     useStoreState: createTrackedSelector(store),
   };
 
-  return instantiateRvf<FormInputData>(rvfStore, "");
+  return instantiateFormScope<FormInputData>(rvfStore, "");
 };
 
-const instantiateRvf = <FormInputData extends FieldValues>(
-  store: RvfStore,
+const instantiateFormScope = <FormInputData extends FieldValues>(
+  store: FormStore,
   prefix: string,
-): Rvf<FormInputData> => ({
+): FormScope<FormInputData> => ({
   __brand__: "rvf",
   __type__FormInputData: {} as any,
   __field_prefix__: prefix,
@@ -137,15 +140,15 @@ const instantiateRvf = <FormInputData extends FieldValues>(
     if (store.subformCache.has(newPrefix))
       return store.subformCache.get(newPrefix);
 
-    const scoped = instantiateRvf(store, newPrefix);
+    const scoped = instantiateFormScope(store, newPrefix);
     store.subformCache.set(newPrefix, scoped);
     return scoped;
   },
 });
 
-export const scopeRvf = (
-  parentForm: Rvf<unknown>,
+export const scopeFormScope = (
+  parentForm: FormScope<unknown>,
   prefix: string,
-): Rvf<unknown> => {
+): FormScope<unknown> => {
   return parentForm.scope(prefix as never);
 };

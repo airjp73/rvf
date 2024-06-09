@@ -1,4 +1,4 @@
-import { Rvf, RvfStore } from "../form";
+import { FormScope, FormStore } from "../form";
 import { getFieldValue } from "../getters";
 import { MultiValueMap } from "../native-form-data/MultiValueMap";
 import * as R from "remeda";
@@ -140,7 +140,7 @@ export const getElementsWithNames = (
   ) as HTMLElement[];
 };
 
-export const registerFormElementEvents = (store: RvfStore) => {
+export const registerFormElementEvents = (store: FormStore) => {
   const transientState = () => store.store.getState();
 
   const onChange = (event: Event) => {

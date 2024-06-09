@@ -1,9 +1,9 @@
 import {
   useForm as useFormReact,
   FieldValues,
-  Rvf,
+  FormScope,
   FormOpts,
-  RvfReact,
+  ReactFormApi,
 } from "@rvf/react";
 import { useRemixSubmit } from "./remix-submission-handling";
 import {
@@ -17,7 +17,7 @@ import { GenericObject, SubmitterOptions } from "@rvf/core";
 type PartialProps<T, Props extends keyof T> = Omit<T, Props> &
   Partial<Pick<T, Props>>;
 
-export type RvfRemixOpts<
+export type FormScopeRemixOpts<
   FormInputData extends FieldValues,
   FormOutputData,
   FormResponseData,
@@ -44,16 +44,16 @@ export type RvfRemixOpts<
   };
 
 /**
- * Create and use an `Rvf`.
+ * Create and use an `FormScope`.
  */
 export function useForm<
   FormInputData extends FieldValues,
   FormOutputData,
   FormResponseData,
 >(
-  rvfOpts: RvfRemixOpts<FormInputData, FormOutputData, FormResponseData>,
-): RvfReact<FormInputData> {
-  let rvf: RvfReact<FormInputData>;
+  rvfOpts: FormScopeRemixOpts<FormInputData, FormOutputData, FormResponseData>,
+): ReactFormApi<FormInputData> {
+  let rvf: ReactFormApi<FormInputData>;
 
   const {
     fetcher,

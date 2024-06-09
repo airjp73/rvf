@@ -1,6 +1,6 @@
 import { AllProps, FieldValues } from "@rvf/core";
-import { RvfRemixOpts, useForm } from "./useForm";
-import { FormProvider, RvfReact } from "@rvf/react";
+import { FormScopeRemixOpts, useForm } from "./useForm";
+import { FormProvider, ReactFormApi } from "@rvf/react";
 import { useRemixFormResponse } from "./auto-server-hooks";
 
 type ScopeToSubaction<
@@ -8,7 +8,10 @@ type ScopeToSubaction<
   Subaction extends string | undefined,
 > = Subaction extends undefined ? Data : Data & { subaction: Subaction };
 
-type RvfRemixSubmitOpts<FormOutputData, Subaction extends string | undefined> =
+type FormScopeRemixSubmitOpts<
+  FormOutputData,
+  Subaction extends string | undefined,
+> =
   | {
       submitSource: "state";
       handleSubmit: (
@@ -29,7 +32,7 @@ export type ValidatedFormProps<
   FormResponseData,
   Subaction extends string | undefined,
 > = Omit<
-  RvfRemixOpts<FormInputData, FormOutputData, FormResponseData>,
+  FormScopeRemixOpts<FormInputData, FormOutputData, FormResponseData>,
   "submitSource" | "handleSubmit" | "serverValidationErrors"
 > &
   Omit<React.ComponentProps<"form">, "children"> & {
@@ -46,8 +49,8 @@ export type ValidatedFormProps<
 
     children:
       | React.ReactNode
-      | ((form: RvfReact<FormInputData>) => React.ReactNode);
-  } & RvfRemixSubmitOpts<FormOutputData, Subaction>;
+      | ((form: ReactFormApi<FormInputData>) => React.ReactNode);
+  } & FormScopeRemixSubmitOpts<FormOutputData, Subaction>;
 
 export const ValidatedForm = <
   FormInputData extends FieldValues,
@@ -119,7 +122,7 @@ export const ValidatedForm = <
     otherFormProps,
     reloadDocument,
   } satisfies AllProps<
-    RvfRemixOpts<FormInputData, FormOutputData, FormResponseData>
+    FormScopeRemixOpts<FormInputData, FormOutputData, FormResponseData>
   >);
 
   return (

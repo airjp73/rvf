@@ -1,8 +1,8 @@
 import React, { forwardRef } from "react";
-import { useField, Rvf } from "@rvf/remix";
+import { useField, FormScope } from "@rvf/remix";
 
 type InputProps = {
-  name: string | Rvf<string | boolean | string[]>;
+  name: string | FormScope<string | boolean | string[]>;
   label: string;
   type?: string;
   value?: string;

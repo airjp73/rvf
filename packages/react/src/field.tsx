@@ -2,7 +2,7 @@ import { RefCallback, useMemo } from "react";
 import {
   FieldSerializer,
   FormStoreValue,
-  Rvf,
+  FormScope,
   ValidationBehaviorConfig,
   getFieldDefaultValue,
   getFieldDirty,
@@ -99,7 +99,7 @@ export interface FieldApi<FormInputData> {
 }
 
 export type FieldImplParams<FormInputData> = {
-  form: Rvf<FormInputData>;
+  form: FormScope<FormInputData>;
   fieldName: string;
   trackedState: FormStoreValue;
   validationBehavior?: ValidationBehaviorConfig;
@@ -229,7 +229,7 @@ export type UseFieldOpts = {
 };
 
 export function useField<FormInputData>(
-  form: Rvf<FormInputData>,
+  form: FormScope<FormInputData>,
   { validationBehavior }?: UseFieldOpts,
 ): FieldApi<FormInputData>;
 export function useField<FormInputData = unknown>(
@@ -237,7 +237,7 @@ export function useField<FormInputData = unknown>(
   opts?: UseFieldOpts,
 ): FieldApi<FormInputData>;
 export function useField<FormInputData>(
-  formOrName: Rvf<FormInputData> | string,
+  formOrName: FormScope<FormInputData> | string,
   opts?: UseFieldOpts,
 ): FieldApi<FormInputData> {
   const scope = useFormScopeOrContextInternal(formOrName);
@@ -263,7 +263,7 @@ export function useField<FormInputData>(
 }
 
 export type FieldPropsWithScope<FormInputData> = {
-  scope: Rvf<FormInputData>;
+  scope: FormScope<FormInputData>;
   children: (field: FieldApi<FormInputData>) => React.ReactNode;
 };
 

@@ -1,10 +1,10 @@
 import { FC, PropsWithChildren } from "react";
-import { Rvf, useField } from "@rvf/remix";
+import { FormScope, useField } from "@rvf/remix";
 
 type FieldsetProps = PropsWithChildren<{
   label: string;
   name: string;
-  rvf?: Rvf<any>;
+  rvf?: FormScope<any>;
 }>;
 
 export const Fieldset: FC<FieldsetProps> = ({ children, label, name, rvf }) => {

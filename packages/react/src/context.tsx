@@ -1,4 +1,4 @@
-import { Rvf, scopeRvf } from "@rvf/core";
+import { FormScope, scopeFormScope } from "@rvf/core";
 import {
   createContext,
   type PropsWithChildren,
@@ -6,17 +6,17 @@ import {
   useContext,
   useEffect,
 } from "react";
-import { RvfReact } from "./base";
+import { ReactFormApi } from "./base";
 import { useFormScope } from "./useFormScope";
 
 type FormContextValue = {
-  scope: Rvf<unknown>;
+  scope: FormScope<unknown>;
 };
 
 const FormContext = createContext<FormContextValue | null>(null);
 
 export type FormProviderProps = {
-  scope: Rvf<any>;
+  scope: FormScope<any>;
 };
 
 export const FormProvider = ({
@@ -31,15 +31,15 @@ export const useFormContext = <TData,>() => {
   const value = useContext(FormContext);
   if (!value)
     throw new Error("useFormContext must be used within a FormProvider");
-  return useFormScope(value.scope) as RvfReact<TData>;
+  return useFormScope(value.scope) as ReactFormApi<TData>;
 };
 
 export const useFormScopeOrContextInternal = (
-  rvfOrName?: Rvf<any> | string,
-): Rvf<unknown> => {
+  rvfOrName?: FormScope<any> | string,
+): FormScope<unknown> => {
   const value = useContext(FormContext);
 
-  const getRvf = () => {
+  const getFormScope = () => {
     if (rvfOrName == null) {
       if (!value)
         throw new Error("useFormContext must be used within a FormProvider");
@@ -50,10 +50,10 @@ export const useFormScopeOrContextInternal = (
 
     if (!value)
       throw new Error("useFormContext must be used within a FormProvider");
-    return scopeRvf(value.scope, rvfOrName);
+    return scopeFormScope(value.scope, rvfOrName);
   };
 
-  const rvf = getRvf();
+  const rvf = getFormScope();
 
   // Flush on every update
   useEffect(() => {
@@ -64,15 +64,15 @@ export const useFormScopeOrContextInternal = (
 };
 
 export const useFormScopeOrContext = <TData,>(
-  rvf?: Rvf<TData>,
-): RvfReact<TData> => {
+  rvf?: FormScope<TData>,
+): ReactFormApi<TData> => {
   const value = useContext(FormContext);
   const scope = value?.scope ?? rvf;
 
   if (!scope)
     throw new Error(
-      "useFormScopeOrContext must be passed an Rvf or be used within a FormProvider",
+      "useFormScopeOrContext must be passed an FormScope or be used within a FormProvider",
     );
 
-  return useFormScope(scope) as RvfReact<TData>;
+  return useFormScope(scope) as ReactFormApi<TData>;
 };
