@@ -11,7 +11,7 @@ import {
 } from "@rvf/core";
 import { useId } from "react";
 
-export const useDefaultValuesFromLoader = ({ formId }: { formId: string }) => {
+const useDefaultValuesFromLoader = ({ formId }: { formId: string }) => {
   const matches = useMatches();
   const dataKey = formDefaultValuesKey(formId);
   // If multiple loaders declare the same default values,
@@ -31,7 +31,7 @@ type ErrorResponseContext = {
   formId: string;
 };
 
-export function useErrorResponseForForm({
+function useErrorResponseForForm({
   fetcher,
   subaction,
   formId,
