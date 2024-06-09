@@ -41,7 +41,7 @@ export type GetHiddenInputPropsResult = {
   ref: RefCallback<HTMLInputElement>;
 };
 
-export interface RvfField<FormInputData> {
+export interface FieldApi<FormInputData> {
   /**
    * Returns props that can be spread onto native form controls or thin wrappers around them.
    * It's important that the component you spread the props into accepts the `ref` prop.
@@ -110,7 +110,7 @@ export const makeFieldImpl = <FormInputData,>({
   fieldName,
   trackedState,
   validationBehavior,
-}: FieldImplParams<FormInputData>): RvfField<FormInputData> => {
+}: FieldImplParams<FormInputData>): FieldApi<FormInputData> => {
   const onChange = (value: unknown) =>
     trackedState.onFieldChange(fieldName, value, validationBehavior);
 
@@ -231,15 +231,15 @@ export type UseFieldOpts = {
 export function useField<FormInputData>(
   form: Rvf<FormInputData>,
   { validationBehavior }?: UseFieldOpts,
-): RvfField<FormInputData>;
+): FieldApi<FormInputData>;
 export function useField<FormInputData = unknown>(
   name: string,
   opts?: UseFieldOpts,
-): RvfField<FormInputData>;
+): FieldApi<FormInputData>;
 export function useField<FormInputData>(
   formOrName: Rvf<FormInputData> | string,
   opts?: UseFieldOpts,
-): RvfField<FormInputData> {
+): FieldApi<FormInputData> {
   const scope = useFormScopeOrContextInternal(formOrName);
   const prefix = scope.__field_prefix__;
   const trackedState = scope.__store__.useStoreState();
@@ -264,12 +264,12 @@ export function useField<FormInputData>(
 
 export type FieldPropsWithScope<FormInputData> = {
   scope: Rvf<FormInputData>;
-  children: (field: RvfField<FormInputData>) => React.ReactNode;
+  children: (field: FieldApi<FormInputData>) => React.ReactNode;
 };
 
 export type FieldPropsWithName<FormInputData> = {
   name: string;
-  children: (field: RvfField<FormInputData>) => React.ReactNode;
+  children: (field: FieldApi<FormInputData>) => React.ReactNode;
 };
 
 export function Field<FormInputData = unknown>(
@@ -278,5 +278,5 @@ export function Field<FormInputData = unknown>(
   // not actually breaking rules here
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const field = "name" in props ? useField(props.name) : useField(props.scope);
-  return props.children(field as RvfField<FormInputData>);
+  return props.children(field as FieldApi<FormInputData>);
 }

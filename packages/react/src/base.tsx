@@ -34,7 +34,7 @@ import {
   GetControlPropsResult,
   GetHiddenInputPropsParam,
   GetHiddenInputPropsResult,
-  RvfField,
+  FieldApi,
   makeFieldImpl,
 } from "./field";
 import {
@@ -355,13 +355,13 @@ export interface RvfReact<FormInputData> {
    */
   field<Field extends ValidStringPaths<FormInputData>>(
     fieldName: Field,
-  ): RvfField<ValueAtPath<FormInputData, StringToPathTuple<Field>>>;
+  ): FieldApi<ValueAtPath<FormInputData, StringToPathTuple<Field>>>;
 
   /**
    * Get field helpers for the field in scope.
    * This is only useful if you're using a form that has been scoped to a single field.
    */
-  field(): RvfField<FormInputData>;
+  field(): FieldApi<FormInputData>;
 
   /**
    * Pass this to your form's `onSubmit` handler.

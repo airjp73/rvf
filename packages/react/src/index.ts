@@ -23,7 +23,7 @@ export { type RvfReact, type FormFields } from "./base";
 export { useForm, RvfOpts } from "./useForm";
 export {
   useField,
-  RvfField,
+  FieldApi,
   UseFieldOpts,
   Field,
   FieldPropsWithName,

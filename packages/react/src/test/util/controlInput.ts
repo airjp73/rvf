@@ -1,6 +1,6 @@
-import { GetControlPropsResult, RvfField } from "../../field";
+import { GetControlPropsResult, FieldApi } from "../../field";
 
-export const controlInput = (field: RvfField<any>) => {
+export const controlInput = (field: FieldApi<any>) => {
   const props = field.getControlProps();
   return controlInputProps(props);
 };
@@ -13,7 +13,7 @@ export const controlInputProps = (props: GetControlPropsResult<string>) => {
   };
 };
 
-export const controlNumberInput = (field: RvfField<any>) => {
+export const controlNumberInput = (field: FieldApi<any>) => {
   const props = field.getControlProps();
   return {
     ...props,
