@@ -28,10 +28,10 @@ export const RvfProvider = ({
   return <RvfContext.Provider value={value}>{children}</RvfContext.Provider>;
 };
 
-export const useRvfContext = <TData,>() => {
+export const useFormContext = <TData,>() => {
   const value = useContext(RvfContext);
   if (!value)
-    throw new Error("useRvfContext must be used within a RvfProvider");
+    throw new Error("useFormContext must be used within a RvfProvider");
   return useFormScope(value.scope) as RvfReact<TData>;
 };
 
@@ -43,14 +43,14 @@ export const useFormScopeOrContextInternal = (
   const getRvf = () => {
     if (rvfOrName == null) {
       if (!value)
-        throw new Error("useRvfContext must be used within a RvfProvider");
+        throw new Error("useFormContext must be used within a RvfProvider");
       return value.scope;
     }
 
     if (typeof rvfOrName !== "string") return rvfOrName;
 
     if (!value)
-      throw new Error("useRvfContext must be used within a RvfProvider");
+      throw new Error("useFormContext must be used within a RvfProvider");
     return scopeRvf(value.scope, rvfOrName);
   };
 

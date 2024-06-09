@@ -30,7 +30,7 @@ export {
   type UseFieldArrayOpts,
   RvfProvider,
   type RvfProviderProps,
-  useRvfContext,
+  useFormContext,
   useFormScopeOrContext,
   isValidationErrorResponse,
   useFormScope,

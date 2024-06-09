@@ -1,5 +1,5 @@
 import { withYup } from "@rvf/yup";
-import { RvfProvider, ValidatedForm, useRvf, useRvfContext } from "@rvf/remix";
+import { RvfProvider, ValidatedForm, useRvf, useFormContext } from "@rvf/remix";
 import * as yup from "yup";
 import { Input } from "~/components/Input";
 

@@ -40,7 +40,7 @@ export {
 export {
   RvfProvider,
   RvfProviderProps,
-  useRvfContext,
+  useFormContext,
   useFormScopeOrContext,
 } from "./context";
 export { useFormScope } from "./useFormScope";

@@ -1,11 +1,11 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { RvfProvider, useRvfContext } from "../context";
+import { RvfProvider, useFormContext } from "../context";
 import { useRvf } from "../useRvf";
 import { successValidator } from "./util/successValidator";
 import userEvent from "@testing-library/user-event";
 
 const Name = () => {
-  const form = useRvfContext<{ name: string }>();
+  const form = useFormContext<{ name: string }>();
   return (
     <div>
       <input data-testid="name" {...form.field("name").getInputProps()} />

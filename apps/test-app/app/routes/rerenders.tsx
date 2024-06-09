@@ -1,6 +1,6 @@
 import { withYup } from "@rvf/yup";
 import { useEffect, useRef } from "react";
-import { ValidatedForm, useRvfContext } from "@rvf/remix";
+import { ValidatedForm, useFormContext } from "@rvf/remix";
 import * as yup from "yup";
 import { Input } from "~/components/Input";
 
@@ -19,7 +19,7 @@ const validator = withYup(schema);
 const RenderCounter = () => {
   // Since we subscribe to the form context,
   // this component will update when validation errors change
-  useRvfContext();
+  useFormContext();
   const renderCount = useRef(0);
 
   let renderUpdated = false;
