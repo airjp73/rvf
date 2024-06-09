@@ -38,7 +38,7 @@ it("should be able to reset file inputs", async () => {
   const TestComp = () => {
     const form = useRvf({
       defaultValues: {
-        file: undefined as File | undefined,
+        file: "",
       },
       validator: successValidator,
       handleSubmit: submit,
@@ -50,6 +50,7 @@ it("should be able to reset file inputs", async () => {
           data-testid="file"
           {...form.field("file").getInputProps({ type: "file" })}
         />
+        <pre data-testid="file-value">{JSON.stringify(form.value("file"))}</pre>
         <button type="reset" data-testid="reset" />
         <button data-testid="submit" type="submit" />
       </form>
@@ -62,6 +63,7 @@ it("should be able to reset file inputs", async () => {
   const fileInput = screen.getByTestId("file") as HTMLInputElement;
   await userEvent.upload(fileInput, file);
   expect(fileInput.files).toHaveLength(1);
+  expect(screen.getByTestId("file-value")).toHaveTextContent(file.name);
 
   await userEvent.click(screen.getByTestId("reset"));
   expect(fileInput.files).toHaveLength(0);
