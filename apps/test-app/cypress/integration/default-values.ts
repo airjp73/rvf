@@ -54,38 +54,6 @@ describe("Validation", () => {
     cy.findByTestId("green").should("be.checked");
   });
 
-  it("should populate internal and external fields with defaults response", () => {
-    cy.visit("/default-values-from-server");
-    cy.findByLabelText("Text 1").should("have.value", "John");
-    cy.findByLabelText("Text 2").should("have.value", "Bob");
-    cy.findByLabelText("Check 1").should("be.checked");
-    cy.findByTestId("value1").should("not.be.checked");
-    cy.findByTestId("value2").should("not.be.checked");
-    cy.findByTestId("value3").should("be.checked");
-    cy.findByTestId("red").should("be.checked");
-    cy.findByTestId("blue").should("not.be.checked");
-    cy.findByTestId("green").should("be.checked");
-  });
-
-  it("should populate internal and external fields with defaults response without JS", () => {
-    cy.visitWithoutJs("/default-values-from-server");
-    cy.findByLabelText("Text 1").should("have.value", "John");
-    cy.findByLabelText("Text 2").should("have.value", "Bob");
-    cy.findByLabelText("Check 1").should("be.checked");
-    cy.findByTestId("value1").should("not.be.checked");
-    cy.findByTestId("value2").should("not.be.checked");
-    cy.findByTestId("value3").should("be.checked");
-    cy.findByTestId("red").should("be.checked");
-    cy.findByTestId("blue").should("not.be.checked");
-    cy.findByTestId("green").should("be.checked");
-  });
-
-  it("should distinguish between default values for different forms", () => {
-    cy.visitWithoutJs("/default-values-from-server-multiform");
-    cy.findByTestId("form1input").should("have.value", "John");
-    cy.findByTestId("form2input").should("have.value", "Bob");
-  });
-
   it("should maintain default value after the first render for nested values", () => {
     cy.visit("/nested-defaults").waitForJs();
     cy.findByTestId("check").should("contain", '"defaultChecked": true');

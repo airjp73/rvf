@@ -1,10 +1,5 @@
 import { type TypedResponse } from "@remix-run/server-runtime";
-import {
-  GenericObject,
-  ValidationErrorResponseData,
-  ValidatorError,
-} from "@rvf/core";
-import { FormDefaultsKey, formDefaultValuesKey } from "./constants";
+import { ValidationErrorResponseData, ValidatorError } from "@rvf/core";
 
 /**
  * Takes the errors from a `Validator` and returns a `Response`.
@@ -44,19 +39,3 @@ export function validationError(
     },
   ) as TypedResponse<ValidationErrorResponseData>;
 }
-
-export type FormDefaults = {
-  [formDefaultsKey: FormDefaultsKey]: any;
-};
-/**
- * @deprecated This was a workaround for features in the old version of `remix-validated-form` that don't exist anymore.
- * Directly setting the `defaultValues` with data returned from your loader is now the preferred way to set the default values.
- *
- * This only works with the `ValidatedForm` component and not with `useForm`.
- */
-export const setFormDefaults = <DataType = any>(
-  formId: string,
-  defaultValues: Partial<DataType>,
-): FormDefaults => ({
-  [formDefaultValuesKey(formId)]: defaultValues,
-});

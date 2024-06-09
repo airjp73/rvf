@@ -37,5 +37,5 @@ export {
 } from "@rvf/react";
 export { useForm, type RemixFormOpts as FormScopeRemixOpts } from "./useForm";
 export { ValidatedForm, type ValidatedFormProps } from "./ValidatedForm";
-export { validationError, setFormDefaults, type FormDefaults } from "./server";
+export { validationError } from "./server";
 export { useRemixFormResponse } from "./auto-server-hooks";
