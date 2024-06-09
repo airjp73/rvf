@@ -3,10 +3,11 @@
   "name": "test-app",
   "description": "",
   "version": "0.0.1",
+  "type": "module",
   "scripts": {
     "build": "remix vite:build",
     "dev": "start-server-and-test dev:remix http-get://localhost:3000 cy:open",
-    "test": "start-server-and-test dev:remix http-get://localhost:3000 cy:run",
+    "test": "start-server-and-test start http-get://localhost:3000 cy:run",
     "dev:remix": "remix vite:dev",
     "cy:open": "cypress open",
     "cy:run": "cypress run",
