@@ -841,4 +841,50 @@ it("should be able to set the value of an uncontrolled select", async () => {
   expect(submit).toHaveBeenCalledWith({ foo: "baz" }, {});
 });
 
-it.todo("should handle multiple uncontrolled text inputs with the same name");
+it("should handle multiple uncontrolled text inputs with the same name", async () => {
+  const submit = vi.fn();
+
+  const TestComp = () => {
+    const form = useRvf({
+      defaultValues: {
+        foo: [],
+      },
+      validator: successValidator,
+      handleSubmit: submit,
+    });
+
+    return (
+      <>
+        <form {...form.getFormProps()}>
+          <input
+            data-testid="foo-1"
+            {...form.field("foo").getInputProps({ type: "text" })}
+          />
+          <input
+            data-testid="foo-2"
+            {...form.field("foo").getInputProps({ type: "text" })}
+          />
+          <input
+            data-testid="foo-3"
+            {...form.field("foo").getInputProps({ type: "text" })}
+          />
+          <button type="submit" data-testid="submit" />
+        </form>
+      </>
+    );
+  };
+
+  render(<TestComp />);
+
+  await userEvent.type(screen.getByTestId("foo-1"), "foo");
+  await userEvent.type(screen.getByTestId("foo-2"), "bar");
+  await userEvent.type(screen.getByTestId("foo-3"), "baz");
+
+  await userEvent.click(screen.getByTestId("submit"));
+  expect(submit).toHaveBeenCalledTimes(1);
+  expect(submit).toHaveBeenCalledWith(
+    { foo: ["foo", "bar", "baz"] },
+    expect.any(FormData),
+    {},
+  );
+});
