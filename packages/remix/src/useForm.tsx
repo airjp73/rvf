@@ -17,7 +17,7 @@ import { GenericObject, SubmitterOptions } from "@rvf/core";
 type PartialProps<T, Props extends keyof T> = Omit<T, Props> &
   Partial<Pick<T, Props>>;
 
-export type FormScopeRemixOpts<
+export type RemixFormOpts<
   FormInputData extends FieldValues,
   FormOutputData,
   FormResponseData,
@@ -51,7 +51,7 @@ export function useForm<
   FormOutputData,
   FormResponseData,
 >(
-  rvfOpts: FormScopeRemixOpts<FormInputData, FormOutputData, FormResponseData>,
+  rvfOpts: RemixFormOpts<FormInputData, FormOutputData, FormResponseData>,
 ): ReactFormApi<FormInputData> {
   let rvf: ReactFormApi<FormInputData>;
 

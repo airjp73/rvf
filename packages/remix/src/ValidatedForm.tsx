@@ -1,62 +1,27 @@
 import { AllProps, FieldValues } from "@rvf/core";
-import { FormScopeRemixOpts, useForm } from "./useForm";
+import { RemixFormOpts, useForm } from "./useForm";
 import { FormProvider, ReactFormApi } from "@rvf/react";
-import { useRemixFormResponse } from "./auto-server-hooks";
-
-type ScopeToSubaction<
-  Data,
-  Subaction extends string | undefined,
-> = Subaction extends undefined ? Data : Data & { subaction: Subaction };
-
-type FormScopeRemixSubmitOpts<
-  FormOutputData,
-  Subaction extends string | undefined,
-> =
-  | {
-      submitSource: "state";
-      handleSubmit: (
-        data: ScopeToSubaction<FormOutputData, Subaction>,
-      ) => Promise<void> | void;
-    }
-  | {
-      submitSource?: "dom";
-      handleSubmit?: (
-        data: ScopeToSubaction<FormOutputData, Subaction>,
-        formData: FormData,
-      ) => Promise<void> | void;
-    };
 
 export type ValidatedFormProps<
   FormInputData extends FieldValues,
   FormOutputData,
   FormResponseData,
-  Subaction extends string | undefined,
-> = Omit<
-  FormScopeRemixOpts<FormInputData, FormOutputData, FormResponseData>,
-  "submitSource" | "handleSubmit" | "serverValidationErrors"
-> &
+> = RemixFormOpts<FormInputData, FormOutputData, FormResponseData> &
   Omit<React.ComponentProps<"form">, "children"> & {
     /**
      * A ref to the form element.
      */
     formRef?: React.RefObject<HTMLFormElement>;
 
-    /**
-     * Adds a hidden input to the form with the name `subaction` and the value of the subaction.
-     * This can be used to handle multiple forms in the same action function.
-     */
-    subaction?: Subaction;
-
     children:
       | React.ReactNode
       | ((form: ReactFormApi<FormInputData>) => React.ReactNode);
-  } & FormScopeRemixSubmitOpts<FormOutputData, Subaction>;
+  };
 
 export const ValidatedForm = <
   FormInputData extends FieldValues,
   FormOutputData,
   FormResponseData,
-  Subaction extends string | undefined,
 >({
   validator,
   formRef,
@@ -76,7 +41,6 @@ export const ValidatedForm = <
   encType,
   state,
   fetcher,
-  subaction,
   onSubmitSuccess,
   onSubmitFailure,
   disableFocusOnError,
@@ -85,22 +49,10 @@ export const ValidatedForm = <
   navigate,
   otherFormProps,
   reloadDocument,
+  serverValidationErrors,
   ...rest
-}: ValidatedFormProps<
-  FormInputData,
-  FormOutputData,
-  FormResponseData,
-  Subaction
->) => {
-  const remix = useRemixFormResponse({
-    formId: id,
-    fetcher,
-    subaction,
-    defaultValues,
-  });
-
+}: ValidatedFormProps<FormInputData, FormOutputData, FormResponseData>) => {
   const rvf = useForm<FormInputData, FormOutputData, FormResponseData>({
-    ...remix.getFormOpts(),
     action,
     formId: id,
     disableFocusOnError,
@@ -121,8 +73,11 @@ export const ValidatedForm = <
     navigate,
     otherFormProps,
     reloadDocument,
+    defaultValues,
+    fetcher,
+    serverValidationErrors,
   } satisfies AllProps<
-    FormScopeRemixOpts<FormInputData, FormOutputData, FormResponseData>
+    RemixFormOpts<FormInputData, FormOutputData, FormResponseData>
   >);
 
   return (
@@ -135,8 +90,6 @@ export const ValidatedForm = <
         })}
         {...rest}
       >
-        {remix.renderHiddenInputs()}
-
         {typeof children === "function" ? children(rvf) : children}
       </form>
     </FormProvider>
