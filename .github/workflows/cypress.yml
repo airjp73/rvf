@@ -48,9 +48,14 @@ jobs:
           bunx cypress version --component electron
           bunx cypress version --component node
 
+      - name: Build
+        run: bun run build
+
       # Starts local server, then runs Cypress tests and records results on Cypress Cloud
       - name: Cypress tests
-        run: bun run test
+        run: |
+          cd apps/test-app
+          bun run test
         env:
           TERM: xterm
 
