@@ -1,6 +1,5 @@
-import { MoonIcon, MoonStarIcon, SunDim } from "lucide-react";
+import { MoonIcon, SunDim } from "lucide-react";
 import { ComponentProps } from "react";
-import { useHydrated } from "remix-utils/use-hydrated";
 import { ClientOnly } from "remix-utils/client-only";
 import invariant from "tiny-invariant";
 import { z } from "zod";
@@ -71,7 +70,7 @@ const AutoIcon = ({
     >
       <motion.div className="absolute inset-0 flex items-center justify-center rotate-45">
         <Moon
-          className={cn("text-cyan-500 size-6")}
+          className={cn("text-cyan-800 dark:text-cyan-400 size-6")}
           variants={{
             light: {
               rotate: "-135deg",
@@ -106,7 +105,7 @@ const AutoIcon = ({
       </motion.div>
       <motion.div className="absolute inset-0 flex items-center justify-center rotate-45">
         <Sun
-          className={cn("text-amber-500 size-8")}
+          className={cn("text-amber-700 dark:text-amber-400 size-8")}
           variants={{
             light: {
               rotate: "-45deg",
@@ -162,8 +161,6 @@ export const ThemeToggle = ({ className, buttonVariant }: ThemeToggleProps) => {
     if (setting === "light") return "Light theme selected";
     return "System theme selected";
   };
-
-  const hydrated = useHydrated();
 
   return (
     <DropdownMenu>
