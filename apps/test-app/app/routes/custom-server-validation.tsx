@@ -33,6 +33,7 @@ export default function CustomServerValidation() {
   });
   return (
     <FormProvider scope={form.scope()}>
+      {response.renderHiddenInput()}
       <Input name="firstName" label="First Name" form="test-form" />
       <form {...form.getFormProps()}>
         <Input name="lastName" label="Last Name" />
