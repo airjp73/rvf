@@ -41,12 +41,7 @@ export default function FrontendValidation() {
         <Input name="testinput" label="Test input" ref={inputRef} />
         <SubmitButton label="Submit" submittingLabel="Submitting" />
       </ValidatedForm>
-      <ValidatedForm
-        validator={validator}
-        method="post"
-        resetAfterSubmit
-        subaction="another-action"
-      >
+      <ValidatedForm validator={validator} method="post" resetAfterSubmit>
         <Input name="anotherinput" label="Another input" ref={inputRef} />
         <SubmitButton label="Other Submit" submittingLabel="Submitting" />
       </ValidatedForm>

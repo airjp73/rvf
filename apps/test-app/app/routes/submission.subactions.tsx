@@ -22,13 +22,15 @@ export default function SubactionSubmissions() {
   return (
     <>
       <p>{actionData?.message}</p>
-      <ValidatedForm validator={validator} method="post" subaction="action1">
+      <ValidatedForm validator={validator} method="post">
+        <input name="subaction" type="hidden" value="action1" />
         <SubmitButton
           label="Submit form 1"
           submittingLabel="Submitting form 1"
         />
       </ValidatedForm>
-      <ValidatedForm validator={validator} method="post" subaction="action2">
+      <ValidatedForm validator={validator} method="post">
+        <input name="subaction" type="hidden" value="action2" />
         <SubmitButton
           label="Submit form 2"
           submittingLabel="Submitting form 2"

@@ -42,7 +42,6 @@ export default function MyForm() {
       defaultValues={{
         noReplaceNameValidation: "Jake",
       }}
-      subaction="noReplaceValidation"
       replace
     >
       {data?.message && <p>{data.message}</p>}

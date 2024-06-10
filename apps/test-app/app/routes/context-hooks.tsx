@@ -66,13 +66,11 @@ const DisplayContext = ({
 export default function FrontendValidation() {
   const actionData = useActionData<typeof action>();
 
-  const server = useServerValidationErrors({
-    formId: "test-form",
-    defaultValues: { firstName: "defaultFirstName" },
-  });
+  const server = useServerValidationErrors("test-form");
   // Verify we don't get an infinite loop
   const form = useForm({
     ...server.getFormOpts(),
+    defaultValues: { firstName: "defaultFirstName" },
     validator: withYup(
       yup.object({
         firstName: yup.string().label("First Name").required(),
@@ -88,7 +86,7 @@ export default function FrontendValidation() {
       <DisplayContext testid="external-values" form={form.scope()} />
       <FormProvider scope={form.scope()}>
         <form {...form.getFormProps()}>
-          {server.renderHiddenInputs()}
+          {server.renderHiddenInput()}
           <Input name="firstName" label="First Name" />
           <DisplayContext testid="internal-values" />
           <SubmitButton />
