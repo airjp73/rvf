@@ -56,9 +56,10 @@ const AutoIcon = ({
 }: {
   className?: string;
   setting: "light" | "dark" | "auto";
-  displayedTheme: "light" | "dark";
+  displayedTheme: "light" | "dark" | undefined;
 }) => {
-  const animate = setting === "auto" ? `auto-${displayedTheme}` : setting;
+  const animate =
+    setting === "auto" && !!displayedTheme ? `auto-${displayedTheme}` : setting;
   return (
     <motion.div
       className={cn("relative", className)}
