@@ -53,25 +53,25 @@ const AutoIcon = ({
 }) => {
   return (
     <div className={cn("relative", className)}>
-      <div className="absolute inset-0 flex items-center justify-center">
+      <div
+        className="absolute inset-0 flex items-center justify-center rotate-45"
+        style={{
+          clipPath: `polygon(${percentLight}%  0, 100% 0, 100% 100%, ${percentLight}% 100%)`,
+          transition: "clip-path .5s ease-out",
+        }}
+      >
         <MoonStarIcon
-          className={cn("text-cyan-500 -scale-x-100 size-6")}
-          style={{
-            clipPath: `polygon(0 0, ${100 - percentLight}% 0, ${
-              100 - percentLight
-            }% 100%, 0 100%)`,
-            transition: "clip-path .5s ease-out",
-          }}
+          className={cn("text-cyan-500 -scale-x-100 size-6 -rotate-45")}
         />
       </div>
-      <div className="absolute inset-0 flex items-center justify-center">
-        <SunDim
-          className={cn("text-amber-500 size-8")}
-          style={{
-            clipPath: `polygon(0 0, ${percentLight}% 0, ${percentLight}% 100%, 0% 100%)`,
-            transition: "clip-path .5s ease-out",
-          }}
-        />
+      <div
+        className="absolute inset-0 flex items-center justify-center rotate-45"
+        style={{
+          clipPath: `polygon(0 0, ${percentLight}% 0, ${percentLight}% 100%, 0% 100%)`,
+          transition: "clip-path .5s ease-out",
+        }}
+      >
+        <SunDim className={cn("text-amber-500 size-8 -rotate-45")} />
       </div>
     </div>
   );
