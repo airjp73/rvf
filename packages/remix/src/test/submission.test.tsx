@@ -484,10 +484,12 @@ it("should call onSubmitFailure if the call returns a validation error", async (
     {
       path: "/",
       Component: () => {
-        const response = useServerValidationErrors("testing");
+        const response = useServerValidationErrors({
+          formId: "testing",
+          defaultValues: { foo: "" },
+        });
         const form = useForm({
           ...response.getFormOpts(),
-          defaultValues: { foo: "" },
           validator,
           method: "post",
           onSubmitSuccess: success,

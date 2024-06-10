@@ -35,8 +35,14 @@ export const action = async ({ request }: DataFunctionArgs) => {
 
 export default function FrontendValidation() {
   const inputRef = useRef<HTMLInputElement>(null);
-  const errors = useServerValidationErrors("aftersubmit-form");
-  const errors2 = useServerValidationErrors("other-aftersubmit-form");
+  const errors = useServerValidationErrors({
+    formId: "aftersubmit-form",
+    defaultValues: {},
+  });
+  const errors2 = useServerValidationErrors({
+    formId: "other-aftersubmit-form",
+    defaultValues: {},
+  });
   return (
     <>
       <ValidatedForm

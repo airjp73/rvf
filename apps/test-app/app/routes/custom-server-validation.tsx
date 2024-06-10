@@ -25,7 +25,10 @@ export const action = async (args: DataFunctionArgs) => {
 };
 
 export default function CustomServerValidation() {
-  const response = useServerValidationErrors("test-form");
+  const response = useServerValidationErrors({
+    formId: "test-form",
+    defaultValues: {},
+  });
   const form = useForm({
     ...response.getFormOpts(),
     validator,

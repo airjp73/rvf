@@ -27,7 +27,10 @@ export const action = async (args: DataFunctionArgs) => {
 };
 
 export default function CustomServerValidationDisableFocusInvalidField() {
-  const response = useServerValidationErrors("test-form");
+  const response = useServerValidationErrors({
+    formId: "test-form",
+    defaultValues: {},
+  });
   return (
     <ValidatedForm
       validator={validator}

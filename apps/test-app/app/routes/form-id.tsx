@@ -14,7 +14,10 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
 export default function FormId() {
   const actionData = useActionData<typeof action>();
-  const server = useServerValidationErrors("form-id-test-form");
+  const server = useServerValidationErrors({
+    formId: "form-id-test-form",
+    defaultValues: {},
+  });
   return (
     <ValidatedForm
       validator={validator}
