@@ -15,7 +15,7 @@ import { Layout } from "./components/Layout";
 import stylesUrl from "./styles/index.css";
 
 export const meta: MetaFunction = () => {
-  return { title: "New Remix App" };
+  return { title: "Remix Validated Form documentation" };
 };
 
 export const links: LinksFunction = () => [
