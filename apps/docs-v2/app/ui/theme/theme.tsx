@@ -52,10 +52,14 @@ const Sun = motion(SunDim);
 const AutoIcon = ({
   className,
   setting,
+  displayedTheme,
 }: {
   className?: string;
   setting: "light" | "dark" | "auto";
+  displayedTheme: "light" | "dark";
 }) => {
+  const animate = setting === "auto" ? `auto-${displayedTheme}` : setting;
+  console.log(animate);
   return (
     <div className={cn("relative", className)}>
       <motion.div
@@ -67,11 +71,14 @@ const AutoIcon = ({
           dark: {
             clipPath: `polygon(0 0, 100% 0, 100% 100%, 0% 100%)`,
           },
-          auto: {
+          "auto-dark": {
+            clipPath: `polygon(0 0, 100% 0, 100% 100%, 0% 100%)`,
+          },
+          "auto-light": {
             clipPath: `polygon(0 0, 100% 0, 100% 100%, 0% 100%)`,
           },
         }}
-        animate={setting}
+        animate={animate}
       >
         <Moon
           className={cn("text-cyan-500 size-6")}
@@ -88,10 +95,16 @@ const AutoIcon = ({
               x: 0,
               y: 0,
             },
-            auto: {
+            "auto-dark": {
               rotate: "-135deg",
-              scale: 0.8,
-              x: "25%",
+              scale: 0.95,
+              x: "15%",
+              y: 0,
+            },
+            "auto-light": {
+              rotate: "-135deg",
+              scale: 0.65,
+              x: "35%",
               y: 0,
             },
           }}
@@ -106,14 +119,17 @@ const AutoIcon = ({
           light: {
             clipPath: `polygon(0 0, 100% 0, 100% 100%, 0% 100%)`,
           },
-          auto: {
+          "auto-dark": {
+            clipPath: `polygon(0 0, 100% 0, 100% 100%, 0% 100%)`,
+          },
+          "auto-light": {
             clipPath: `polygon(0 0, 100% 0, 100% 100%, 0% 100%)`,
           },
         }}
-        animate={setting}
+        animate={animate}
       >
         <Sun
-          className={cn("text-amber-500 size-8 -rotate-45")}
+          className={cn("text-amber-500 size-8")}
           variants={{
             light: {
               rotate: "-45deg",
@@ -127,10 +143,16 @@ const AutoIcon = ({
               x: 0,
               y: 0,
             },
-            auto: {
+            "auto-dark": {
               rotate: "-45deg",
-              scale: 0.8,
-              x: "-25%",
+              scale: 0.65,
+              x: "-35%",
+              y: 0,
+            },
+            "auto-light": {
+              rotate: "-45deg",
+              scale: 0.95,
+              x: "-15%",
               y: 0,
             },
           }}
@@ -148,6 +170,9 @@ export type ThemeToggleProps = {
 export const ThemeToggle = ({ className, buttonVariant }: ThemeToggleProps) => {
   const setting = useThemeSelector((state) =>
     state.matches("dark") ? "dark" : state.matches("light") ? "light" : "auto"
+  );
+  const displayedTheme = useThemeSelector(
+    (state) => state.context.displayedTheme
   );
   const themeActor = useThemeActorRef();
 
@@ -173,6 +198,7 @@ export const ThemeToggle = ({ className, buttonVariant }: ThemeToggleProps) => {
               <AutoIcon
                 aria-hidden
                 setting={setting}
+                displayedTheme={displayedTheme}
                 className="h-full w-full"
               />
             </Button>
