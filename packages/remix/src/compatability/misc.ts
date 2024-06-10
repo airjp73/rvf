@@ -1,5 +1,5 @@
 import { FormScope, useFormScopeOrContext } from "@rvf/react";
-import { useCallback, useMemo } from "react";
+import { useCallback } from "react";
 
 /**
  * Returns whether or not the parent form is currently being submitted.
