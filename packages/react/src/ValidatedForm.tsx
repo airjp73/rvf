@@ -48,7 +48,7 @@ export const ValidatedForm = <
     defaultValues: defaultValues,
     serverValidationErrors,
     action,
-    formId: id,
+    id,
     disableFocusOnError,
     validator,
     handleSubmit: handleSubmit as never,

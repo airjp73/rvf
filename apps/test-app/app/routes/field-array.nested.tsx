@@ -85,7 +85,7 @@ export default function FrontendValidation() {
     validator,
     method: "post",
     defaultValues,
-    formId: "form",
+    id: "form",
   });
 
   const array = useFieldArray(form.scope("todos"));

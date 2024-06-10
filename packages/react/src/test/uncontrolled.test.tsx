@@ -214,7 +214,7 @@ it("validates and submits without registering uncontrolled inputs outside a form
         },
       }),
       handleSubmit: submit,
-      formId: "test",
+      id: "test",
     });
 
     return (

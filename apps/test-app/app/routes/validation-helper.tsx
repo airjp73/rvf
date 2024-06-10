@@ -23,7 +23,7 @@ export default function FrontendValidation() {
   const { submit, validate, getFormProps, scope } = useForm({
     validator,
     method: "post",
-    formId: "test-form",
+    id: "test-form",
   });
 
   const data = useActionData<typeof action>();

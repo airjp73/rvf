@@ -54,7 +54,7 @@ export const ValidatedForm = <
 }: ValidatedFormProps<FormInputData, FormOutputData, FormResponseData>) => {
   const rvf = useForm<FormInputData, FormOutputData, FormResponseData>({
     action,
-    formId: id,
+    id,
     disableFocusOnError,
     validator,
     handleSubmit: handleSubmit as never,

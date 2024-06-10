@@ -63,9 +63,7 @@ export const action = async ({ request }: DataFunctionArgs) => {
 
 export default function FrontendValidation() {
   const actionData = useActionData<typeof action>();
-  const response = useServerValidationErrors({
-    formId: "test-form",
-  });
+  const response = useServerValidationErrors("test-form");
   const form = useForm({
     validator,
     method: "post",

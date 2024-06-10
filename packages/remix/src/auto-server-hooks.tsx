@@ -36,7 +36,7 @@ export const useServerValidationErrors = (
   return {
     getFormOpts: () => ({
       serverValidationErrors: errorsFromServer?.fieldErrors,
-      formId,
+      id: formId,
       fetcher,
     }),
     renderHiddenInput: () => (

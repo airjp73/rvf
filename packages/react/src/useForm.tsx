@@ -63,7 +63,7 @@ export type FormOpts<
   /**
    * The id of the form element.
    */
-  formId?: string;
+  id?: string;
 
   /**
    * Disables the default behavior of focusing the first invalid field when a submit fails due to validation errors.
@@ -128,7 +128,7 @@ export function useForm<
     otherFormProps,
     reloadDocument,
     validationBehaviorConfig,
-    formId,
+    id,
   } = options;
 
   const [form] = useState<FormScope<unknown>>(() => {
@@ -146,7 +146,7 @@ export function useForm<
       submitSource: submitSource ?? "dom",
       formProps: {
         action,
-        id: formId,
+        id,
         ...otherFormProps,
       },
       flags: {
@@ -197,7 +197,7 @@ export function useForm<
           : undefined,
       formProps: {
         action,
-        id: formId,
+        id,
         ...otherFormProps,
       },
       flags: {
@@ -212,7 +212,7 @@ export function useForm<
     whenSubmitted,
     whenTouched,
     action,
-    formId,
+    id,
     disableFocusOnError,
     otherFormProps,
     reloadDocument,

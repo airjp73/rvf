@@ -28,7 +28,7 @@ export default function FrontendValidation() {
     validator,
     method: "post",
     fetcher,
-    formId: "test-form",
+    id: "test-form",
   });
   return (
     <FormProvider scope={form.scope()}>
