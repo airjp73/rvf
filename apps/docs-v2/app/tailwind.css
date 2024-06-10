@@ -67,8 +67,8 @@
       --accent: 240deg 3.7% 15.9%;
       --accent-foreground: 0 0%deg 98%;
 
-      --destructive: 0 62.8%deg 30.6%;
-      --destructive-foreground: 0 0%deg 98%;
+      --destructive: 0deg 62.8%deg 30.6%;
+      --destructive-foreground: 0deg 0%deg 98%;
 
       --border: 240deg 3.7% 15.9%;
       --input: 240deg 3.7% 15.9%;
