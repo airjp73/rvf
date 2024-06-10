@@ -128,10 +128,8 @@ export function useForm<
     otherFormProps,
     reloadDocument,
     validationBehaviorConfig,
-    formId: providedFormId,
+    formId,
   } = options;
-
-  const defaultFormId = useId();
 
   const [form] = useState<FormScope<unknown>>(() => {
     const rvf = createFormScope({
@@ -148,7 +146,7 @@ export function useForm<
       submitSource: submitSource ?? "dom",
       formProps: {
         action,
-        id: providedFormId ?? defaultFormId,
+        id: formId,
         ...otherFormProps,
       },
       flags: {
@@ -199,7 +197,7 @@ export function useForm<
           : undefined,
       formProps: {
         action,
-        id: providedFormId ?? defaultFormId,
+        id: formId,
         ...otherFormProps,
       },
       flags: {
@@ -214,8 +212,7 @@ export function useForm<
     whenSubmitted,
     whenTouched,
     action,
-    providedFormId,
-    defaultFormId,
+    formId,
     disableFocusOnError,
     otherFormProps,
     reloadDocument,
