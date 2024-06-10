@@ -187,17 +187,17 @@ export const ThemeToggle = ({ className, buttonVariant }: ThemeToggleProps) => {
         <DropdownMenuItem
           onClick={() => themeActor.send({ type: "choose light" })}
         >
-          <span>Light</span>
+          Light
         </DropdownMenuItem>
         <DropdownMenuItem
           onClick={() => themeActor.send({ type: "choose dark" })}
         >
-          <span>Dark</span>
+          Dark
         </DropdownMenuItem>
         <DropdownMenuItem
           onClick={() => themeActor.send({ type: "choose auto" })}
         >
-          <span>System</span>
+          System
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
@@ -216,7 +216,7 @@ export const ThemedHtmlElement = (
       {...props}
       data-theme={displayedTheme}
       suppressHydrationWarning
-      className={cn("dark:dark", props.className)}
+      className={cn("dark:[.dark]", props.className)}
     />
   );
 };
