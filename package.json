@@ -42,7 +42,6 @@
     "globals": "^15.1.0",
     "husky": "^7.0.4",
     "jest": "^27.4.4",
-    "lint-staged": "^12.1.2",
     "prettier": "^3.2.5",
     "turbo": "^1.13.3",
     "typescript-eslint": "^7.8.0",
@@ -51,11 +50,5 @@
   "engines": {
     "npm": ">=7.0.0",
     "node": ">=20.0.0"
-  },
-  "lint-staged": {
-    "**/*.{ts,tsx,js,jsx}": [
-      "prettier --cache --write",
-      "eslint --cache --fix"
-    ]
   }
 }
