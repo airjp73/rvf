@@ -107,7 +107,7 @@ export type ResolverQueue = ReturnType<typeof createResolverQueue>;
 
 export type StoreFormProps = {
   action?: string;
-  id?: string;
+  id: string;
 };
 
 export type StoreFlags = {
