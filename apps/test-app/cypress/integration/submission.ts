@@ -58,7 +58,7 @@ describe("Submission", () => {
     cy.findByText("Submitted form 3").should("exist");
   });
 
-  it.only("should reset when the form has been successfully submitted when resetAfterSubmit", () => {
+  it("should reset when the form has been successfully submitted when resetAfterSubmit", () => {
     cy.visit("/submission/aftersubmit").waitForJs();
 
     cy.findByLabelText("Test input").type("fail");
@@ -121,7 +121,7 @@ describe("Submission", () => {
     cy.findByText("Submitted!").should("not.exist");
   });
 
-  it.only("should include submit button value when external", () => {
+  it("should include submit button value when external", () => {
     cy.visit("/submission/external").waitForJs();
     cy.findByText("Submitted submitVal").should("not.exist");
 
