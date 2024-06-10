@@ -26,7 +26,6 @@ export function validationError(
   return new Response(
     JSON.stringify({
       fieldErrors: error.fieldErrors,
-      subaction: error.subaction,
       repopulateFields,
       formId: error.formId,
     }),

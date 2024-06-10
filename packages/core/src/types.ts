@@ -75,13 +75,11 @@ export type ValidatorData<T extends Validator<any>> =
   T extends Validator<infer U> ? U : never;
 
 export type ValidatorError = {
-  subaction?: string;
   formId?: string;
   fieldErrors: FieldErrors;
 };
 
 export type ValidationErrorResponseData = {
-  subaction?: string;
   formId?: string;
   fieldErrors: FieldErrors;
   repopulateFields?: unknown;

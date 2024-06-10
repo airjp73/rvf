@@ -234,7 +234,6 @@ describe("Validation", () => {
               firstName: anyString,
             },
             formId: undefined,
-            subaction: "updatePerson",
           },
           data: undefined,
           submittedData: person,

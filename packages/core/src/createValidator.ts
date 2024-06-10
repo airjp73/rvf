@@ -25,7 +25,6 @@ export function createValidator<T>(
           data: undefined,
           error: {
             fieldErrors: result.error,
-            subaction: data.subaction,
             formId,
           },
           submittedData: data,
