@@ -4,7 +4,8 @@
   "private": true,
   "workspaces": [
     "packages/*",
-    "apps/test-app"
+    "apps/test-app",
+    "apps/docs-v2"
   ],
   "scripts": {
     "build-docs": "turbo run build --filter=docs --include-dependencies --no-deps --force",
