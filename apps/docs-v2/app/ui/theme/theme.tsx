@@ -1,17 +1,20 @@
-import { Snowflake, Sun } from "lucide-react";
+import { MoonStarIcon, SunDim } from "lucide-react";
 import { ComponentProps } from "react";
-import { useHydrated } from "remix-utils";
+import { useHydrated } from "remix-utils/use-hydrated";
 import invariant from "tiny-invariant";
 import { z } from "zod";
-import { useThemeSelector } from "./themeMachine";
-import { Button } from "./ui/Button";
-import { cn } from "../cn";
+import {
+  useThemeActorref as useThemeActorRef,
+  useThemeSelector,
+} from "./themeMachine";
+import { Button } from "../button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "./ui/DropdownMenu";
+} from "../dropdown-menu";
+import { cn } from "~/lib/utils";
 
 const storageSchema = z.object({
   theme: z.enum(["light", "dark"]),
@@ -44,28 +47,32 @@ export const getInitialThemeInfo = (): {
 const AutoIcon = ({
   className,
   percentLight,
-  iconSize,
 }: {
   className?: string;
   percentLight: number;
-  iconSize: string;
 }) => {
   return (
     <div className={cn("relative", className)}>
-      <Snowflake
-        className={cn("absolute inset-0 text-cyan-500", iconSize)}
-        style={{
-          clipPath: `polygon(${percentLight}% 0, 100% 0, 100% 100%, ${percentLight}% 100%)`,
-          transition: "clip-path 1s ease-out",
-        }}
-      />
-      <Sun
-        className={cn("absolute inset-0 text-amber-500", iconSize)}
-        style={{
-          clipPath: `polygon(0 0, ${percentLight}% 0, ${percentLight}% 100%, 0% 100%)`,
-          transition: "clip-path 1s ease-out",
-        }}
-      />
+      <div className="absolute inset-0 flex items-center justify-center">
+        <MoonStarIcon
+          className={cn("text-cyan-500 -scale-x-100 size-6")}
+          style={{
+            clipPath: `polygon(0 0, ${100 - percentLight}% 0, ${
+              100 - percentLight
+            }% 100%, 0 100%)`,
+            transition: "clip-path .5s ease-out",
+          }}
+        />
+      </div>
+      <div className="absolute inset-0 flex items-center justify-center">
+        <SunDim
+          className={cn("text-amber-500 size-8")}
+          style={{
+            clipPath: `polygon(0 0, ${percentLight}% 0, ${percentLight}% 100%, 0% 100%)`,
+            transition: "clip-path .5s ease-out",
+          }}
+        />
+      </div>
     </div>
   );
 };
@@ -76,21 +83,23 @@ export type ThemeToggleProps = {
 };
 
 export const ThemeToggle = ({ className, buttonVariant }: ThemeToggleProps) => {
-  const { t } = useTranslation();
-  const [state, send] = useTheme();
+  const themeBehavior = useThemeSelector((state) =>
+    state.matches("dark") ? "dark" : state.matches("light") ? "light" : "auto"
+  );
+  const themeActor = useThemeActorRef();
 
   const buttonText = () => {
-    if (state.matches("dark")) return t("theme.selected.dark");
-    if (state.matches("light")) return t("theme.selected.light");
-    return t("theme.selected.auto");
+    if (themeBehavior === "dark") return "Dark theme selected";
+    if (themeBehavior === "light") return "Light theme selected";
+    return "System theme selected";
   };
 
   const hydrated = useHydrated();
 
   const getPercentage = () => {
     if (!hydrated) return 50;
-    if (state.matches("system")) return 50;
-    if (state.matches("light")) return 100;
+    if (themeBehavior === "auto") return 50;
+    if (themeBehavior === "light") return 100;
     return 0;
   };
 
@@ -103,27 +112,24 @@ export const ThemeToggle = ({ className, buttonVariant }: ThemeToggleProps) => {
             aria-hidden
             percentLight={getPercentage()}
             className="h-full w-full"
-            iconSize="h-6 w-6"
           />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent sideOffset={15}>
-        <DropdownMenuItem onClick={() => send({ type: "choose light" })}>
-          <Sun aria-hidden className="mr-2 h-5 w-5 text-amber-500" />
-          <span>{t("theme.light")}</span>
+        <DropdownMenuItem
+          onClick={() => themeActor.send({ type: "choose light" })}
+        >
+          <span>Light</span>
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => send({ type: "choose dark" })}>
-          <Snowflake aria-hidden className="mr-2 h-5 w-5 text-cyan-500" />
-          <span>{t("theme.dark")}</span>
+        <DropdownMenuItem
+          onClick={() => themeActor.send({ type: "choose dark" })}
+        >
+          <span>Dark</span>
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => send({ type: "choose auto" })}>
-          <AutoIcon
-            aria-hidden
-            className="mr-2 h-5 w-5"
-            iconSize="h-5 w-5"
-            percentLight={50}
-          />
-          <span>{t("theme.auto")}</span>
+        <DropdownMenuItem
+          onClick={() => themeActor.send({ type: "choose auto" })}
+        >
+          <span>System</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
@@ -137,7 +143,14 @@ export const ThemedHtmlElement = (
     (state) => state.context.displayedTheme
   );
 
-  return <html {...props} data-theme={displayedTheme} />;
+  return (
+    <html
+      {...props}
+      data-theme={displayedTheme}
+      suppressHydrationWarning
+      className={cn("dark:dark", props.className)}
+    />
+  );
 };
 
 export const ThemeScript = () => (
