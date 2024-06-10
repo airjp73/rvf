@@ -1,8 +1,10 @@
-import { MoonStarIcon, SunDim } from "lucide-react";
+import { MoonIcon, MoonStarIcon, SunDim } from "lucide-react";
 import { ComponentProps } from "react";
 import { useHydrated } from "remix-utils/use-hydrated";
+import { ClientOnly } from "remix-utils/client-only";
 import invariant from "tiny-invariant";
 import { z } from "zod";
+import { motion } from "framer-motion";
 import {
   useThemeActorref as useThemeActorRef,
   useThemeSelector,
@@ -44,35 +46,96 @@ export const getInitialThemeInfo = (): {
   }
 };
 
+const Moon = motion(MoonIcon);
+const Sun = motion(SunDim);
+
 const AutoIcon = ({
   className,
-  percentLight,
+  setting,
 }: {
   className?: string;
-  percentLight: number;
+  setting: "light" | "dark" | "auto";
 }) => {
   return (
     <div className={cn("relative", className)}>
-      <div
+      <motion.div
         className="absolute inset-0 flex items-center justify-center rotate-45"
-        style={{
-          clipPath: `polygon(${percentLight}%  0, 100% 0, 100% 100%, ${percentLight}% 100%)`,
-          transition: "clip-path .5s ease-out",
+        variants={{
+          light: {
+            clipPath: `polygon(100% 0, 100% 0, 100% 100%, 100% 100%)`,
+          },
+          dark: {
+            clipPath: `polygon(0 0, 100% 0, 100% 100%, 0% 100%)`,
+          },
+          auto: {
+            clipPath: `polygon(0 0, 100% 0, 100% 100%, 0% 100%)`,
+          },
         }}
+        animate={setting}
       >
-        <MoonStarIcon
-          className={cn("text-cyan-500 -scale-x-100 size-6 -rotate-45")}
+        <Moon
+          className={cn("text-cyan-500 size-6")}
+          variants={{
+            light: {
+              rotate: "-135deg",
+              scale: 1,
+              x: 0,
+              y: 0,
+            },
+            dark: {
+              rotate: "-135deg",
+              scale: 1,
+              x: 0,
+              y: 0,
+            },
+            auto: {
+              rotate: "-135deg",
+              scale: 0.8,
+              x: "25%",
+              y: 0,
+            },
+          }}
         />
-      </div>
-      <div
+      </motion.div>
+      <motion.div
         className="absolute inset-0 flex items-center justify-center rotate-45"
-        style={{
-          clipPath: `polygon(0 0, ${percentLight}% 0, ${percentLight}% 100%, 0% 100%)`,
-          transition: "clip-path .5s ease-out",
+        variants={{
+          dark: {
+            clipPath: `polygon(0 0, 0 0, 0 100%, 0% 100%)`,
+          },
+          light: {
+            clipPath: `polygon(0 0, 100% 0, 100% 100%, 0% 100%)`,
+          },
+          auto: {
+            clipPath: `polygon(0 0, 100% 0, 100% 100%, 0% 100%)`,
+          },
         }}
+        animate={setting}
       >
-        <SunDim className={cn("text-amber-500 size-8 -rotate-45")} />
-      </div>
+        <Sun
+          className={cn("text-amber-500 size-8 -rotate-45")}
+          variants={{
+            light: {
+              rotate: "-45deg",
+              scale: 1,
+              x: 0,
+              y: 0,
+            },
+            dark: {
+              rotate: "-45deg",
+              scale: 1,
+              x: 0,
+              y: 0,
+            },
+            auto: {
+              rotate: "-45deg",
+              scale: 0.8,
+              x: "-25%",
+              y: 0,
+            },
+          }}
+        />
+      </motion.div>
     </div>
   );
 };
@@ -83,38 +146,39 @@ export type ThemeToggleProps = {
 };
 
 export const ThemeToggle = ({ className, buttonVariant }: ThemeToggleProps) => {
-  const themeBehavior = useThemeSelector((state) =>
+  const setting = useThemeSelector((state) =>
     state.matches("dark") ? "dark" : state.matches("light") ? "light" : "auto"
   );
   const themeActor = useThemeActorRef();
 
   const buttonText = () => {
-    if (themeBehavior === "dark") return "Dark theme selected";
-    if (themeBehavior === "light") return "Light theme selected";
+    if (setting === "dark") return "Dark theme selected";
+    if (setting === "light") return "Light theme selected";
     return "System theme selected";
   };
 
   const hydrated = useHydrated();
 
-  const getPercentage = () => {
-    if (!hydrated) return 50;
-    if (themeBehavior === "auto") return 50;
-    if (themeBehavior === "light") return 100;
-    return 0;
-  };
-
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant={buttonVariant} size="icon" className={cn(className)}>
-          <span className="sr-only">{buttonText()}</span>
-          <AutoIcon
-            aria-hidden
-            percentLight={getPercentage()}
-            className="h-full w-full"
-          />
-        </Button>
-      </DropdownMenuTrigger>
+      <ClientOnly>
+        {() => (
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant={buttonVariant}
+              size="icon"
+              className={cn(className)}
+            >
+              <span className="sr-only">{buttonText()}</span>
+              <AutoIcon
+                aria-hidden
+                setting={setting}
+                className="h-full w-full"
+              />
+            </Button>
+          </DropdownMenuTrigger>
+        )}
+      </ClientOnly>
       <DropdownMenuContent sideOffset={15}>
         <DropdownMenuItem
           onClick={() => themeActor.send({ type: "choose light" })}
