@@ -87,7 +87,7 @@ export const Header = forwardRef<
         <div className="hidden md:block md:h-5 md:w-px md:bg-zinc-900/10 md:dark:bg-white/15" />
         <div className="flex gap-4">
           {/* <MobileSearch /> */}
-          <ThemeToggle buttonVariant="outline" />
+          <ThemeToggle buttonVariant="ghost" />
         </div>
         <div className="hidden min-[416px]:contents">
           {/* <Button href="#">Sign in</Button> */}

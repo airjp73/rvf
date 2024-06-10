@@ -216,7 +216,7 @@ export const ThemedHtmlElement = (
       {...props}
       data-theme={displayedTheme}
       suppressHydrationWarning
-      className={cn("dark:[.dark]", props.className)}
+      className={cn(displayedTheme === "dark" && "dark", props.className)}
     />
   );
 };
@@ -227,11 +227,11 @@ export const ThemeScript = () => (
       __html: `
         // Ensure dark mode is always correctly set without a flash of light mode 
         if (localStorage.theme) {
-          document.documentElement.dataset.theme = localStorage.theme;
+          if (localStorage.theme === "dark") {
+            document.documentElement.classList.add("dark");
+          }
         } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-          document.documentElement.dataset.theme = 'dark';
-        } else {
-          document.documentElement.dataset.theme = 'light';
+          document.documentElement.classList.add("dark");
         }
       `,
     }}
