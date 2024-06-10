@@ -4,7 +4,7 @@ import { withYup } from "@rvf/yup";
 import {
   FormScope,
   FormProvider,
-  useRemixFormResponse,
+  useServerValidationErrors,
   useForm,
   useFormScopeOrContext,
 } from "@rvf/remix";
@@ -66,7 +66,7 @@ const DisplayContext = ({
 export default function FrontendValidation() {
   const actionData = useActionData<typeof action>();
 
-  const server = useRemixFormResponse({
+  const server = useServerValidationErrors({
     formId: "test-form",
     defaultValues: { firstName: "defaultFirstName" },
   });

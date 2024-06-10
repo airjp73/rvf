@@ -4,7 +4,7 @@ import {
   validationError,
   FormProvider,
   useForm,
-  useRemixFormResponse,
+  useServerValidationErrors,
 } from "@rvf/remix";
 import * as yup from "yup";
 import { Input } from "~/components/Input";
@@ -25,7 +25,7 @@ export const action = async (args: DataFunctionArgs) => {
 };
 
 export default function CustomServerValidation() {
-  const response = useRemixFormResponse({
+  const response = useServerValidationErrors({
     formId: "test-form",
   });
   const form = useForm({

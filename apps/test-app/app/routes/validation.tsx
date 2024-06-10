@@ -6,7 +6,7 @@ import {
   ValidatedForm,
   useForm,
   FormProvider,
-  useRemixFormResponse,
+  useServerValidationErrors,
 } from "@rvf/remix";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
@@ -63,7 +63,7 @@ export const action = async ({ request }: DataFunctionArgs) => {
 
 export default function FrontendValidation() {
   const actionData = useActionData<typeof action>();
-  const response = useRemixFormResponse({
+  const response = useServerValidationErrors({
     formId: "test-form",
   });
   const form = useForm({

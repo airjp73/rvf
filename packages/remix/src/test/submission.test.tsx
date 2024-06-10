@@ -7,7 +7,7 @@ import { useForm } from "../useForm";
 import { validationError } from "../server";
 import { ActionFunctionArgs } from "@remix-run/node";
 import { ValidatedForm } from "../ValidatedForm";
-import { useRemixFormResponse } from "../auto-server-hooks";
+import { useServerValidationErrors } from "../auto-server-hooks";
 
 it("should submit data to the action in dom mode", async () => {
   const validator = createValidator({
@@ -483,7 +483,7 @@ it("should call onSubmitFailure if the call returns a validation error", async (
     {
       path: "/",
       Component: () => {
-        const response = useRemixFormResponse();
+        const response = useServerValidationErrors();
         const form = useForm({
           ...response.getFormOpts(),
           defaultValues: { foo: "" },
