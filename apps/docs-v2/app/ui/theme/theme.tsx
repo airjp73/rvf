@@ -59,50 +59,43 @@ const AutoIcon = ({
   displayedTheme: "light" | "dark";
 }) => {
   const animate = setting === "auto" ? `auto-${displayedTheme}` : setting;
-  console.log(animate);
   return (
-    <div className={cn("relative", className)}>
-      <motion.div
-        className="absolute inset-0 flex items-center justify-center rotate-45"
-        variants={{
-          light: {
-            clipPath: `polygon(100% 0, 100% 0, 100% 100%, 100% 100%)`,
-          },
-          dark: {
-            clipPath: `polygon(0 0, 100% 0, 100% 100%, 0% 100%)`,
-          },
-          "auto-dark": {
-            clipPath: `polygon(0 0, 100% 0, 100% 100%, 0% 100%)`,
-          },
-          "auto-light": {
-            clipPath: `polygon(0 0, 100% 0, 100% 100%, 0% 100%)`,
-          },
-        }}
-        animate={animate}
-      >
+    <motion.div
+      className={cn("relative", className)}
+      animate={animate}
+      initial={animate}
+      transition={{
+        type: "tween",
+      }}
+    >
+      <motion.div className="absolute inset-0 flex items-center justify-center rotate-45">
         <Moon
           className={cn("text-cyan-500 size-6")}
           variants={{
             light: {
               rotate: "-135deg",
-              scale: 1,
-              x: 0,
+              opacity: 0,
+              scale: 0.25,
+              x: "60%",
               y: 0,
             },
             dark: {
               rotate: "-135deg",
               scale: 1,
+              opacity: 1,
               x: 0,
               y: 0,
             },
             "auto-dark": {
               rotate: "-135deg",
+              opacity: 1,
               scale: 0.95,
               x: "15%",
               y: 0,
             },
             "auto-light": {
               rotate: "-135deg",
+              opacity: 1,
               scale: 0.65,
               x: "35%",
               y: 0,
@@ -110,55 +103,42 @@ const AutoIcon = ({
           }}
         />
       </motion.div>
-      <motion.div
-        className="absolute inset-0 flex items-center justify-center rotate-45"
-        variants={{
-          dark: {
-            clipPath: `polygon(0 0, 0 0, 0 100%, 0% 100%)`,
-          },
-          light: {
-            clipPath: `polygon(0 0, 100% 0, 100% 100%, 0% 100%)`,
-          },
-          "auto-dark": {
-            clipPath: `polygon(0 0, 100% 0, 100% 100%, 0% 100%)`,
-          },
-          "auto-light": {
-            clipPath: `polygon(0 0, 100% 0, 100% 100%, 0% 100%)`,
-          },
-        }}
-        animate={animate}
-      >
+      <motion.div className="absolute inset-0 flex items-center justify-center rotate-45">
         <Sun
           className={cn("text-amber-500 size-8")}
           variants={{
             light: {
               rotate: "-45deg",
               scale: 1,
+              opacity: 1,
               x: 0,
               y: 0,
             },
             dark: {
               rotate: "-45deg",
-              scale: 1,
-              x: 0,
+              scale: 0.25,
+              opacity: 0,
+              x: "-60%",
               y: 0,
             },
             "auto-dark": {
               rotate: "-45deg",
               scale: 0.65,
+              opacity: 1,
               x: "-35%",
               y: 0,
             },
             "auto-light": {
               rotate: "-45deg",
               scale: 0.95,
+              opacity: 1,
               x: "-15%",
               y: 0,
             },
           }}
         />
       </motion.div>
-    </div>
+    </motion.div>
   );
 };
 
