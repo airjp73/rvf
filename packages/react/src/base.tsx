@@ -55,7 +55,7 @@ interface FormProps {
   onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
   onReset: (event: React.FormEvent<HTMLFormElement>) => void;
   ref: React.Ref<HTMLFormElement>;
-  id?: string;
+  id: string;
   action?: string;
 }
 
@@ -115,7 +115,7 @@ export interface ReactFormApi<FormInputData> {
 
   formOptions: {
     action?: string;
-    formId?: string;
+    formId: string;
   };
 
   formState: {
