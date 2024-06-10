@@ -37,7 +37,7 @@ export type GetHiddenInputPropsResult = {
   name: string;
   value: string;
   type: "hidden";
-  form: string;
+  form?: string;
   ref: RefCallback<HTMLInputElement>;
 };
 
