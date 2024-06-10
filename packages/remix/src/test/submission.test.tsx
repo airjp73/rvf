@@ -473,9 +473,10 @@ it("should call onSubmitFailure if the call returns a validation error", async (
     validate: (data) => Promise.resolve({ data, error: undefined }),
   });
 
-  const action = async () => {
+  const action = async ({ request }: ActionFunctionArgs) => {
     return validationError({
       fieldErrors: { foo: "validation error" },
+      formId: "testing",
     });
   };
 
@@ -494,6 +495,7 @@ it("should call onSubmitFailure if the call returns a validation error", async (
         });
         return (
           <form {...form.getFormProps()}>
+            {response.renderHiddenInput()}
             <input data-testid="foo" {...form.field("foo").getInputProps()} />
             <pre>{form.error("foo")}</pre>
             <button type="submit" data-testid="submit" />
