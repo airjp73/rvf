@@ -71,6 +71,7 @@ const AutoIcon = ({
       <motion.div className="absolute inset-0 flex items-center justify-center rotate-45">
         <Moon
           className={cn("text-cyan-800 dark:text-cyan-400 size-6")}
+          transition={{ damping: 5 }}
           variants={{
             light: {
               rotate: "-135deg",
@@ -106,6 +107,7 @@ const AutoIcon = ({
       <motion.div className="absolute inset-0 flex items-center justify-center rotate-45">
         <Sun
           className={cn("text-amber-700 dark:text-amber-400 size-8")}
+          transition={{ damping: 5 }}
           variants={{
             light: {
               rotate: "-45deg",
