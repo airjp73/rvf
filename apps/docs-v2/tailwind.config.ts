@@ -3,7 +3,7 @@ import typographyStyles from "./typography";
 
 const config = {
   darkMode: ["class", '[data-theme="dark"]'],
-  content: ["./app/**/*.{js,mjs,jsx,ts,tsx,mdx}"],
+  content: ["**/*.{js,mjs,jsx,ts,tsx,mdx,css}"],
   prefix: "",
   theme: {
     typography: typographyStyles,
