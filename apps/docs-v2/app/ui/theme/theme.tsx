@@ -29,7 +29,7 @@ export const getInitialThemeInfo = (): {
 } => {
   invariant(
     localStorage,
-    "Can only access the theme on the client. Consider wrapping the component in a `ClientOnly`."
+    "Can only access the theme on the client. Consider wrapping the component in a `ClientOnly`.",
   );
 
   try {
@@ -64,9 +64,6 @@ const AutoIcon = ({
       className={cn("relative", className)}
       animate={animate}
       initial={animate}
-      transition={{
-        type: "tween",
-      }}
     >
       <motion.div className="absolute inset-0 flex items-center justify-center rotate-45">
         <Moon
@@ -151,10 +148,10 @@ export type ThemeToggleProps = {
 
 export const ThemeToggle = ({ className, buttonVariant }: ThemeToggleProps) => {
   const setting = useThemeSelector((state) =>
-    state.matches("dark") ? "dark" : state.matches("light") ? "light" : "auto"
+    state.matches("dark") ? "dark" : state.matches("light") ? "light" : "auto",
   );
   const displayedTheme = useThemeSelector(
-    (state) => state.context.displayedTheme
+    (state) => state.context.displayedTheme,
   );
   const themeActor = useThemeActorRef();
 
@@ -166,7 +163,7 @@ export const ThemeToggle = ({ className, buttonVariant }: ThemeToggleProps) => {
 
   return (
     <DropdownMenu>
-      <ClientOnly>
+      <ClientOnly fallback={<div className="h-10 w-10" />}>
         {() => (
           <DropdownMenuTrigger asChild>
             <Button
@@ -207,10 +204,10 @@ export const ThemeToggle = ({ className, buttonVariant }: ThemeToggleProps) => {
 };
 
 export const ThemedHtmlElement = (
-  props: React.ButtonHTMLAttributes<HTMLHtmlElement>
+  props: React.ButtonHTMLAttributes<HTMLHtmlElement>,
 ) => {
   const displayedTheme = useThemeSelector(
-    (state) => state.context.displayedTheme
+    (state) => state.context.displayedTheme,
   );
 
   return (
