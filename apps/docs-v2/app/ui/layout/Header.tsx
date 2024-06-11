@@ -5,6 +5,8 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import { ThemeToggle } from "../theme/theme";
 import { Logo } from "../branding/Logo";
 import { GithubIcon } from "../icons/GithubIcon";
+import { MobileNavigation } from "./MobileNavigation";
+import { TopLevelNavItem } from "./Navigation";
 
 // import {
 //   MobileNavigation,
@@ -13,25 +15,6 @@ import { GithubIcon } from "../icons/GithubIcon";
 // import { useMobileNavigationStore } from '@/components/MobileNavigation'
 // import { MobileSearch, Search } from '@/components/Search'
 // import { ThemeToggle } from '@/components/ThemeToggle'
-
-function TopLevelNavItem({
-  href,
-  children,
-}: {
-  href: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <li>
-      <Link
-        to={href}
-        className="text-sm leading-5 text-zinc-600 transition hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white flex gap-2 items-center"
-      >
-        {children}
-      </Link>
-    </li>
-  );
-}
 
 export const Header = forwardRef<
   React.ElementRef<"div">,
@@ -72,9 +55,9 @@ export const Header = forwardRef<
       />
       {/* <Search /> */}
       <div className="flex items-center gap-5 lg:hidden">
-        {/* <MobileNavigation /> */}
+        <MobileNavigation />
         <Link to="/" aria-label="Home">
-          <Logo className="h-6" />
+          <Logo className="h-8" />
         </Link>
       </div>
       <div className="flex items-center gap-5 ml-auto">

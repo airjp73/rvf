@@ -1,11 +1,12 @@
 "use client";
 
-import { useRef } from "react";
+import { ReactNode, useRef } from "react";
 import { Link, useLocation } from "@remix-run/react";
 import clsx from "clsx";
 import { AnimatePresence, motion, useIsPresent } from "framer-motion";
 import { Button } from "../button";
 import { GithubIcon } from "../icons/GithubIcon";
+import { cn } from "~/lib/utils";
 
 interface NavGroup {
   title: string;
@@ -20,18 +21,23 @@ function useInitialValue<T>(value: T, condition = true) {
   return condition ? initialValue : value;
 }
 
-function TopLevelNavItem({
+export function TopLevelNavItem({
   href,
   children,
+  className,
 }: {
   href: string;
   children: React.ReactNode;
+  className?: string;
 }) {
   return (
-    <li className="md:hidden">
+    <li>
       <Link
         to={href}
-        className="block py-1 text-sm text-zinc-600 transition hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
+        className={cn(
+          "text-sm leading-5 text-zinc-600 transition hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white flex gap-2 items-center",
+          className
+        )}
       >
         {children}
       </Link>
@@ -239,13 +245,16 @@ export const navigation: Array<NavGroup> = [
   },
 ];
 
-export function Navigation(props: React.ComponentPropsWithoutRef<"nav">) {
+export function Navigation({
+  children,
+  topLevelItems,
+  ...props
+}: React.ComponentPropsWithoutRef<"nav"> & { topLevelItems?: ReactNode }) {
   return (
     <nav {...props}>
+      {children}
       <ul role="list">
-        <TopLevelNavItem href="https://www.github.com/airjp73/remix-validated-form">
-          <GithubIcon className="size-4 fill-current" /> Github
-        </TopLevelNavItem>
+        {topLevelItems}
         {navigation.map((group, groupIndex) => (
           <NavigationGroup
             key={group.title}
