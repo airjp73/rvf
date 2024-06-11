@@ -3,10 +3,9 @@
 import { ReactNode, useRef } from "react";
 import { Link, useLocation } from "@remix-run/react";
 import clsx from "clsx";
-import { AnimatePresence, motion, useIsPresent } from "framer-motion";
-import { Button } from "../button";
-import { GithubIcon } from "../icons/GithubIcon";
+import { AnimatePresence, motion } from "framer-motion";
 import { cn } from "~/lib/utils";
+import { useMobileNavigationStore } from "./MobileNavigation";
 
 interface NavGroup {
   title: string;
@@ -225,7 +224,7 @@ export const navigation: Array<NavGroup> = [
     title: "Guides",
     links: [
       { title: "Introduction", href: "/" },
-      { title: "Quickstart", href: "/quickstart" },
+      { title: "Test doc", href: "/test-doc" },
       { title: "SDKs", href: "/sdks" },
       { title: "Authentication", href: "/authentication" },
       { title: "Pagination", href: "/pagination" },

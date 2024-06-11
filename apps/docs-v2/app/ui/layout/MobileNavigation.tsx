@@ -4,8 +4,9 @@ import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet";
 import { Navigation, TopLevelNavItem } from "./Navigation";
 import { Button } from "../button";
 import { GithubIcon } from "../icons/GithubIcon";
-import { Link } from "@remix-run/react";
+import { Link, useLocation, useNavigation } from "@remix-run/react";
 import { Logo } from "../branding/Logo";
+import { useEffect } from "react";
 
 export const useMobileNavigationStore = create<{
   isOpen: boolean;
@@ -13,16 +14,27 @@ export const useMobileNavigationStore = create<{
   close: () => void;
   toggle: () => void;
   setOpen: (open: boolean) => void;
-}>()((set) => ({
+  routeChange: (route: string) => void;
+  route?: string;
+}>()((set, get) => ({
   isOpen: false,
   open: () => set({ isOpen: true }),
   close: () => set({ isOpen: false }),
   toggle: () => set((state) => ({ isOpen: !state.isOpen })),
   setOpen: (open: boolean) => set({ isOpen: open }),
+  routeChange: (route: string) => {
+    if (route === get().route) return;
+    set({ route, isOpen: false });
+  },
 }));
 
 export function MobileNavigation() {
   let store = useMobileNavigationStore();
+  const location = useLocation();
+
+  useEffect(() => {
+    store.routeChange(location.pathname);
+  }, [location.pathname, store]);
 
   return (
     <Sheet open={store.isOpen} onOpenChange={store.setOpen}>
