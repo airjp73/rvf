@@ -11,10 +11,10 @@
     "typecheck": "tsc"
   },
   "dependencies": {
-    "@headlessui/react": "^2.0.4",
     "@mdx-js/react": "^3.0.1",
     "@radix-ui/react-dropdown-menu": "^2.0.6",
     "@radix-ui/react-slot": "^1.0.2",
+    "@radix-ui/react-tabs": "^1.0.4",
     "@remix-run/node": "^2.9.2",
     "@remix-run/react": "^2.9.2",
     "@remix-run/serve": "^2.9.2",

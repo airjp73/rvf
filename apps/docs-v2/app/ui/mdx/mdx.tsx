@@ -8,7 +8,7 @@ export const a = ({ href, ...rest }: ComponentProps<"a">) => (
   <Link to={href ?? "#"} {...rest} />
 );
 export { Button } from "~/ui/button";
-export { CodeGroup, Code as code, Pre as pre } from "./Code";
+export { Code as code, Pre as pre } from "./Code";
 
 export function wrapper({ children }: { children: React.ReactNode }) {
   return (
@@ -19,7 +19,7 @@ export function wrapper({ children }: { children: React.ReactNode }) {
 }
 
 export const h2 = function H2(
-  props: Omit<React.ComponentPropsWithoutRef<typeof Heading>, "level">
+  props: Omit<React.ComponentPropsWithoutRef<typeof Heading>, "level">,
 ) {
   return <Heading level={2} {...props} />;
 };
@@ -70,7 +70,7 @@ export function Col({
     <div
       className={cn(
         "[&>:first-child]:mt-0 [&>:last-child]:mb-0",
-        sticky && "xl:sticky xl:top-24"
+        sticky && "xl:sticky xl:top-24",
       )}
     >
       {children}

@@ -1,3 +1,5 @@
+import { BasicExample } from "../examples/basic/BasicExample"
+
 export const meta = () => [{
   title: "Test doc",
 }]
@@ -22,17 +24,15 @@ const a = 1;
 
 And here's a code block with a language specifier:
 
-<CodeGroup title="Jimbo">
-
-```tsx {{ title: "TS" }}
+```tsx 
 const b = 2;
 ```
 
-```tsx {{ title: "JS" }}
+```tsx 
 const b = 6;
 ```
 
-</CodeGroup>
+<BasicExample />
 
 ## Here's a link
 
