@@ -3,6 +3,7 @@ import { Link } from "@remix-run/react";
 import clsx from "clsx";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { ThemeToggle } from "../theme/theme";
+import { Logo } from "../branding/Logo";
 
 // import {
 //   MobileNavigation,
@@ -84,8 +85,7 @@ export const Header = forwardRef<
       <div className="flex items-center gap-5 lg:hidden">
         {/* <MobileNavigation /> */}
         <Link to="/" aria-label="Home">
-          Logo
-          {/* <Logo className="h-6" /> */}
+          <Logo className="h-6" />
         </Link>
       </div>
       <div className="flex items-center gap-5 ml-auto">

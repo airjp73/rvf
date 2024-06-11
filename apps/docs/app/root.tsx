@@ -21,6 +21,12 @@ export const meta: MetaFunction = () => {
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: stylesUrl },
   { rel: "stylesheet", href: codeExampleTheme },
+  {
+    rel: "icon",
+    href: "/favicon.png",
+    type: "image/png",
+    sizes: "any",
+  },
 ];
 
 export default function App() {
