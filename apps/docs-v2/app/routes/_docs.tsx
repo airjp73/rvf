@@ -2,6 +2,7 @@ import { Link, Outlet } from "@remix-run/react";
 import { motion } from "framer-motion";
 import { Logo } from "~/ui/branding/Logo";
 import { Header } from "~/ui/layout/Header";
+import { Navigation } from "~/ui/layout/Navigation";
 
 export default function DocsLayout() {
   return (
@@ -18,7 +19,7 @@ export default function DocsLayout() {
               </Link>
             </div>
             <Header />
-            {/* <Navigation className="hidden lg:mt-10 lg:block" /> */}
+            <Navigation className="hidden lg:mt-10 lg:block" />
           </div>
         </motion.header>
         <div className="relative flex h-full flex-col px-4 pt-14 sm:px-6 lg:px-8">

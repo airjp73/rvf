@@ -172,7 +172,7 @@ export function Pre({
   return (
     <pre
       {...props}
-      className="not-prose shiki whitespace-pre-wrap p-3 text-xs rounded-md my-6"
+      className="not-prose shiki border border-border whitespace-pre-wrap p-3 text-xs rounded-md my-6"
     >
       {children}
     </pre>
