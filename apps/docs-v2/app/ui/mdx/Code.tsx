@@ -126,11 +126,11 @@ function CodePanel({
     code = child.props.code ?? code;
   }
 
-  // if (!code) {
-  //   throw new Error(
-  //     "`CodePanel` requires a `code` prop, or a child with a `code` prop."
-  //   );
-  // }
+  if (!code) {
+    throw new Error(
+      "`CodePanel` requires a `code` prop, or a child with a `code` prop."
+    );
+  }
 
   return (
     <div className="group dark:bg-white/2.5">
@@ -328,7 +328,6 @@ export function Code({
   children,
   ...props
 }: React.ComponentPropsWithoutRef<"code">) {
-  console.log("code", props);
   let isGrouped = useContext(CodeGroupContext);
 
   if (isGrouped) {

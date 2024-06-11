@@ -4,6 +4,10 @@ import tsconfigPaths from "vite-tsconfig-paths";
 import mdx from "@mdx-js/rollup";
 import * as path from "path";
 
+import { recmaPlugins } from "./app/mdx/recma.mjs";
+import { rehypePlugins } from "./app/mdx/rehype.mjs";
+import { remarkPlugins } from "./app/mdx/remark.mjs";
+
 export default defineConfig({
   plugins: [
     {
@@ -12,6 +16,9 @@ export default defineConfig({
         providerImportSource: path.resolve(
           path.join(__dirname, "./app/ui/mdx/mdx-components.tsx")
         ),
+        remarkPlugins,
+        rehypePlugins,
+        recmaPlugins,
       }),
     },
     remix({
