@@ -4,7 +4,7 @@
 
   @layer base {
     :root {
-      --background: 0 0%deg 100%;
+      --background: 240deg 5% 96%;
       --foreground: 240deg 10% 3.9%;
 
       --card: 0 0%deg 100%;
@@ -23,7 +23,7 @@
       --muted-foreground: 240deg 3.8% 46.1%;
 
       --accent: 240deg 4.8% 95.9%;
-      --accent-foreground: 240deg 5.9% 10%;
+      --accent-foreground: 264deg 67% 35%;
 
       --destructive: 0 84.2%deg 60.2%;
       --destructive-foreground: 0 0%deg 98%;
@@ -36,7 +36,7 @@
     }
 
     .dark {
-      --background: 240deg 10% 3.9%;
+      --background: 240deg 6% 10%;
       --foreground: 0deg 0% 98%;
 
       --card: 240deg 10% 3.9%;
@@ -54,8 +54,8 @@
       --muted: 240deg 3.7% 15.9%;
       --muted-foreground: 240deg 5% 64.9%;
 
-      --accent: 240deg 3.7% 15.9%;
-      --accent-foreground: 0 0%deg 98%;
+      --accent: 255deg 92% 76%;
+      --accent-foreground: 252deg 95% 85%;
 
       --destructive: 0deg 62.8%deg 30.6%;
       --destructive-foreground: 0deg 0%deg 98%;
