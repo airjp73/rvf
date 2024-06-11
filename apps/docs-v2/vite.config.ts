@@ -5,7 +5,6 @@ import mdx from "@mdx-js/rollup";
 import { compile } from "@mdx-js/mdx";
 import * as path from "path";
 
-import { recmaPlugins } from "./app/mdx/recma.mjs";
 import { rehypePlugins } from "./app/mdx/rehype.mjs";
 import { remarkPlugins } from "./app/mdx/remark.mjs";
 
@@ -19,7 +18,6 @@ export default defineConfig({
         ),
         remarkPlugins,
         rehypePlugins,
-        recmaPlugins,
       }),
     },
     {
@@ -30,12 +28,10 @@ export default defineConfig({
           const code = await compile(["```tsx", src.trim(), "```"].join("\n"), {
             rehypePlugins,
             remarkPlugins,
-            recmaPlugins,
             providerImportSource: path.resolve(
               path.join(__dirname, "./app/ui/mdx/code-components.tsx"),
             ),
           });
-          console.log("compiling", code.toString());
           return {
             code: code.toString(),
             map: null,
