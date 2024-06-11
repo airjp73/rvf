@@ -101,9 +101,9 @@ export function CodeHeader({
   tabs?: React.ReactNode;
 }) {
   return (
-    <div className="flex min-h-[calc(theme(spacing.12)+1px)] flex-wrap items-start gap-x-4 border-b border-zinc-700 bg-zinc-800 px-4 dark:border-zinc-800 dark:bg-transparent">
+    <div className="flex min-h-[calc(theme(spacing.12)+1px)] flex-wrap items-start gap-x-4 border-b border-zinc-400 bg-zinc-100 px-4 dark:border-zinc-800 dark:bg-transparent">
       {title && (
-        <h3 className="mr-auto pt-3 text-xs font-semibold text-white">
+        <h3 className="mr-auto pt-3 text-xs font-semibold text-blck dark:text-white">
           {title}
         </h3>
       )}{" "}
