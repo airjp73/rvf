@@ -1,9 +1,11 @@
 import { type MDXComponents } from "mdx/types";
-import { code } from "./mdx";
+import * as allComponents from "./mdx";
+
+const { wrapper, ...rest } = allComponents;
 
 export function useMDXComponents(components: MDXComponents) {
   return {
     ...components,
-    code,
+    ...rest,
   };
 }

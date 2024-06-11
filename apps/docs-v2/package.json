@@ -28,7 +28,7 @@
     "react-dom": "^18.2.0",
     "remark-gfm": "^4.0.0",
     "remix-utils": "^7.6.0",
-    "shiki": "^0.14.7",
+    "shiki": "^1.6.4",
     "tailwind-merge": "^2.3.0",
     "tailwindcss-animate": "^1.0.7",
     "xstate": "^5.13.1",
@@ -37,6 +37,7 @@
   "devDependencies": {
     "@mdx-js/rollup": "^3.0.1",
     "@remix-run/dev": "^2.9.2",
+    "@shikijs/rehype": "^1.6.4",
     "@tailwindcss/typography": "^0.5.13",
     "@types/react": "^18.2.20",
     "@types/react-dom": "^18.2.7",

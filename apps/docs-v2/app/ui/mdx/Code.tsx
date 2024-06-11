@@ -40,8 +40,8 @@ export function CopyButton({ content }: { content: string }) {
       className={clsx(
         "group/button absolute right-4 top-3.5 overflow-hidden rounded-full py-1 pl-2 pr-3 text-2xs font-medium opacity-0 backdrop-blur transition focus:opacity-100 group-hover:opacity-100",
         copied
-          ? "bg-emerald-400/10 ring-1 ring-inset ring-emerald-400/20"
-          : "bg-white/5 hover:bg-white/7.5 dark:bg-white/2.5 dark:hover:bg-white/5",
+          ? "bg-fuchsia-400/10 ring-1 ring-inset ring-fuchsia-400/20"
+          : "bg-white/5 hover:bg-white/7.5 dark:bg-white/2.5 dark:hover:bg-white/5"
       )}
       onClick={() => {
         window.navigator.clipboard.writeText(content).then(() => {
@@ -53,7 +53,7 @@ export function CopyButton({ content }: { content: string }) {
         aria-hidden={copied}
         className={clsx(
           "pointer-events-none flex items-center gap-0.5 text-zinc-400 transition duration-300",
-          copied && "-translate-y-1.5 opacity-0",
+          copied && "-translate-y-1.5 opacity-0"
         )}
       >
         <ClipboardIcon className="h-5 w-5 fill-zinc-500/20 stroke-zinc-500 transition-colors group-hover/button:stroke-zinc-400" />
@@ -62,8 +62,8 @@ export function CopyButton({ content }: { content: string }) {
       <span
         aria-hidden={!copied}
         className={clsx(
-          "pointer-events-none absolute inset-0 flex items-center justify-center text-emerald-400 transition duration-300",
-          !copied && "translate-y-1.5 opacity-0",
+          "pointer-events-none absolute inset-0 flex items-center justify-center text-fuchsia-400 transition duration-300",
+          !copied && "translate-y-1.5 opacity-0"
         )}
       >
         Copied!
@@ -85,9 +85,7 @@ export function CodePanel({
     <TabsContent value={value}>
       <div className="group dark:bg-white/2.5">
         <div className="relative">
-          <pre className="overflow-x-auto p-4 text-xs text-white">
-            {children}
-          </pre>
+          {children}
           {copyButton}
         </div>
       </div>
@@ -131,14 +129,14 @@ export const CodeTabsTrigger = ({
   <TabsTrigger
     className={cn(
       "border-b py-3 transition ui-not-focus-visible:outline-none",
-      "data-[state=active]:border-emerald-500 data-[state=active]:text-emerald-400 data-[state=inactive]:border-transparent data-[state=inactive]:text-zinc-400 data-[state=inactive]:hover:text-zinc-300",
-      className,
+      "data-[state=active]:border-fuchsia-500 data-[state=active]:text-fuchsia-400 data-[state=inactive]:border-transparent data-[state=inactive]:text-zinc-400 data-[state=inactive]:hover:text-zinc-300",
+      className
     )}
     {...rest}
   />
 );
 
-export function CodeExample({
+export function ExampleArea({
   children,
   className,
   ...rest
@@ -146,12 +144,12 @@ export function CodeExample({
   return (
     <div
       className={cn(
-        "my-6 overflow-hidden rounded-md bg-zinc-900 shadow-md dark:ring-1 dark:ring-white/10",
-        className,
+        "my-6 overflow-hidden rounded-md shiki shadow-md dark:ring-1 dark:ring-white/10 not-prose [&_pre]:rounded-none [&_pre]:my-0",
+        className
       )}
       {...rest}
     >
-      <div className="not-prose">{children}</div>
+      {children}
     </div>
   );
 }
@@ -170,10 +168,13 @@ export function Code({
 export function Pre({
   children,
   ...props
-}: React.ComponentPropsWithoutRef<typeof CodeExample>) {
+}: React.ComponentPropsWithoutRef<"pre">) {
   return (
-    <CodeExample {...props} className="p-2">
+    <pre
+      {...props}
+      className="not-prose shiki whitespace-pre-wrap p-3 text-xs rounded-md my-6"
+    >
       {children}
-    </CodeExample>
+    </pre>
   );
 }

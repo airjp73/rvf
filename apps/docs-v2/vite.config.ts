@@ -14,7 +14,7 @@ export default defineConfig({
       enforce: "pre",
       ...mdx({
         providerImportSource: path.resolve(
-          path.join(__dirname, "./app/ui/mdx/mdx-components.tsx"),
+          path.join(__dirname, "./app/ui/mdx/mdx-components.tsx")
         ),
         remarkPlugins,
         rehypePlugins,
@@ -29,7 +29,7 @@ export default defineConfig({
             rehypePlugins,
             remarkPlugins,
             providerImportSource: path.resolve(
-              path.join(__dirname, "./app/ui/mdx/code-components.tsx"),
+              path.join(__dirname, "./app/ui/mdx/code-components.tsx")
             ),
           });
           return {

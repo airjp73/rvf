@@ -1,12 +1,12 @@
 import { Tabs } from "@radix-ui/react-tabs";
 import {
   Code,
-  CodeExample,
   CodeHeader,
   CodePanel,
   CodeTabsList,
   CodeTabsTrigger,
   CopyButton,
+  ExampleArea,
 } from "~/ui/mdx/Code";
 import { ReactExample } from "./with-animation";
 import WithAnimation from "./with-animation?code";
@@ -17,7 +17,7 @@ import noAnimationText from "./no-animation?raw";
 export const BasicExample = () => {
   return (
     <Tabs defaultValue="example">
-      <CodeExample>
+      <ExampleArea>
         <CodeHeader
           title="Animation stuff"
           tabs={
@@ -33,7 +33,9 @@ export const BasicExample = () => {
           }
         />
         <CodePanel value="example">
-          <ReactExample />
+          <div className="p-4">
+            <ReactExample />
+          </div>
         </CodePanel>
         <CodePanel
           value="with-animation"
@@ -47,7 +49,7 @@ export const BasicExample = () => {
         >
           <NoAnimation />
         </CodePanel>
-      </CodeExample>
+      </ExampleArea>
     </Tabs>
   );
 };
