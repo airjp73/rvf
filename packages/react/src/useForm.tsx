@@ -16,11 +16,11 @@ const noOp = () => {};
 
 type FormSubmitOpts<FormOutputData, ResponseData> =
   | {
-      submitSource?: "state";
+      submitSource: "state";
       handleSubmit: StateSubmitHandler<FormOutputData, ResponseData>;
     }
   | {
-      submitSource: "dom";
+      submitSource?: "dom";
       handleSubmit?: DomSubmitHandler<FormOutputData, ResponseData>;
     };
 
