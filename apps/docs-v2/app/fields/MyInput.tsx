@@ -3,6 +3,7 @@ import { useField } from "@rvf/react";
 import { useId } from "react";
 import { Input } from "~/ui/input";
 import { Label } from "~/ui/label";
+import { ErrorMessage } from "./ErrorMessage";
 
 type MyInputProps =
   | {
@@ -31,12 +32,9 @@ export const MyInput = ({ label, scope, type }: MyInputProps) => {
         aria-invalid={!!field.error()}
       />
       {field.error() && (
-        <span
-          className="text-red-600 dark:text-red-500 text-sm absolute"
-          id={errorId}
-        >
+        <ErrorMessage id={errorId} className="absolute">
           {field.error()}
-        </span>
+        </ErrorMessage>
       )}
     </div>
   );

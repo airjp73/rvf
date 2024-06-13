@@ -28,7 +28,7 @@ export const BasicExample = () => {
           }
         />
         <CodePanel value="example">
-          <div className="py-6 px-8 [&_form]:space-y-6 [&_ul]:space-y-8 [&_li]:flex [&_li]:items-end [&_li]:gap-4 [&_li_:not(button)]:grow">
+          <div className="py-6 px-8 [&_form]:space-y-10 [&_ul]:space-y-6 [&_li]:flex [&_li]:items-end [&_li]:gap-4 [&_li_:not(button)]:grow [&_h3]:text-lg [&_h3]:font-semibold [&_hr]:mt-2 [&_hr]:mb-4">
             <ReactExample />
           </div>
         </CodePanel>
