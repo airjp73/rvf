@@ -1204,6 +1204,7 @@ it("should combo well with `useField`", async () => {
     return (
       <form {...form.getFormProps()}>
         {form.array("foo").map((key, item, index) => {
+          expect(item.name()).toEqual(`foo[${index}]`);
           return (
             <MyInput
               scope={item.scope("name")}

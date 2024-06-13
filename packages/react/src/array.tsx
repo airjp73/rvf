@@ -94,23 +94,21 @@ export interface FieldArrayApi<FormInputData extends Array<any>> {
 
 export type FieldArrayParams<FormInputData> = {
   form: FormScope<FormInputData>;
-  arrayFieldName: string;
   trackedState: FormStoreValue;
   validationBehavior?: FieldArrayValidationBehaviorConfig;
 };
 
 export const makeFieldArrayImpl = <FormInputData extends Array<any>>({
   form,
-  arrayFieldName,
   trackedState,
   validationBehavior,
 }: FieldArrayParams<FormInputData>): FieldArrayApi<FormInputData> => {
+  const arrayFieldName = form.__field_prefix__;
   const itemImpl = makeImplFactory(arrayFieldName, (itemFieldName) =>
     makeBaseReactFormApi({
       form: scopeFormScope(form, itemFieldName) as FormScope<
         FormInputData[number]
       >,
-      prefix: itemFieldName,
       trackedState,
     }),
   );
@@ -195,7 +193,6 @@ export function useFieldArray<FormInputData extends any[]>(
   { validationBehavior }: UseFieldArrayOpts = {},
 ) {
   const scope = useFormScopeOrContextInternal(formOrName);
-  const prefix = scope.__field_prefix__;
   const { useStoreState } = scope.__store__;
   const trackedState = useStoreState();
 
@@ -207,11 +204,10 @@ export function useFieldArray<FormInputData extends any[]>(
     () =>
       makeFieldArrayImpl({
         form: scope as never,
-        arrayFieldName: prefix,
         trackedState,
         validationBehavior,
       }),
-    [prefix, scope, trackedState, validationBehavior],
+    [scope, trackedState, validationBehavior],
   );
 
   return base;

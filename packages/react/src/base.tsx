@@ -371,15 +371,14 @@ export interface ReactFormApi<FormInputData> {
 
 export type BaseReactFormParams<FormInputData> = {
   form: FormScope<FormInputData>;
-  prefix: string;
   trackedState: FormStoreValue;
 };
 
 export const makeBaseReactFormApi = <FormInputData,>({
   trackedState,
-  prefix,
   form,
 }: BaseReactFormParams<FormInputData>): ReactFormApi<FormInputData> => {
+  const prefix = form.__field_prefix__;
   const f = (fieldName?: string) =>
     pathArrayToString([prefix, fieldName].filter(R.isNonNullish));
   const transientState = () => form.__store__.store.getState();
@@ -391,15 +390,13 @@ export const makeBaseReactFormApi = <FormInputData,>({
   const arrayImpl = makeImplFactory(prefix, (arrayFieldName) =>
     makeFieldArrayImpl({
       trackedState,
-      arrayFieldName,
       form: scopeFormScope(form, arrayFieldName) as FormScope<any[]>,
     }),
   );
 
   const fieldImpl = makeImplFactory(prefix, (fieldName) =>
     makeFieldImpl({
-      form,
-      fieldName,
+      form: scopeFormScope(form, fieldName) as FormScope<any>,
       trackedState,
     }),
   );
@@ -597,7 +594,6 @@ export const makeBaseReactFormApi = <FormInputData,>({
 export const useFormInternal = <FormInputData,>(
   form: FormScope<FormInputData>,
 ) => {
-  const prefix = form.__field_prefix__;
   const { useStoreState, resolvers } = form.__store__;
   const trackedState = useStoreState();
 
@@ -614,10 +610,9 @@ export const useFormInternal = <FormInputData,>(
     () =>
       makeBaseReactFormApi({
         form,
-        prefix,
         trackedState,
       }),
-    [form, prefix, trackedState],
+    [form, trackedState],
   );
 
   return base;

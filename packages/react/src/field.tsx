@@ -57,7 +57,7 @@ export interface FieldApi<FormInputData> {
    * behavior of automatically listening to changes in the field.
    */
   getControlProps: (
-    props?: GetControlPropsParam<FormInputData>
+    props?: GetControlPropsParam<FormInputData>,
   ) => GetControlPropsResult<FormInputData>;
 
   /**
@@ -65,7 +65,7 @@ export interface FieldApi<FormInputData> {
    * This is useful in combination with `getControlProps`.
    */
   getHiddenInputProps: (
-    opts?: GetHiddenInputPropsParam<FormInputData>
+    opts?: GetHiddenInputPropsParam<FormInputData>,
   ) => GetHiddenInputPropsResult;
 
   refs: {
@@ -100,17 +100,16 @@ export interface FieldApi<FormInputData> {
 
 export type FieldImplParams<FormInputData> = {
   form: FormScope<FormInputData>;
-  fieldName: string;
   trackedState: FormStoreValue;
   validationBehavior?: ValidationBehaviorConfig;
 };
 
 export const makeFieldImpl = <FormInputData,>({
   form,
-  fieldName,
   trackedState,
   validationBehavior,
 }: FieldImplParams<FormInputData>): FieldApi<FormInputData> => {
+  const fieldName = form.__field_prefix__;
   const onChange = (value: unknown) =>
     trackedState.onFieldChange(fieldName, value, validationBehavior);
 
@@ -148,7 +147,7 @@ export const makeFieldImpl = <FormInputData,>({
   };
 
   const createSerializerRef = (
-    serialize: FieldSerializer
+    serialize: FieldSerializer,
   ): RefCallback<HTMLElement> => {
     const sym = Symbol(fieldName);
     return (el) => {
@@ -232,15 +231,15 @@ type ScopeData<Scope> = Scope extends FormScope<infer Data> ? Data : never;
 
 export function useField<Scope extends FormScope<any>>(
   form: Scope,
-  { validationBehavior }?: UseFieldOpts
+  { validationBehavior }?: UseFieldOpts,
 ): FieldApi<ScopeData<Scope>>;
 export function useField<FormInputData = unknown>(
   name: string,
-  opts?: UseFieldOpts
+  opts?: UseFieldOpts,
 ): FieldApi<FormInputData>;
 export function useField<FormInputData>(
   formOrName: FormScope<FormInputData> | string,
-  opts?: UseFieldOpts
+  opts?: UseFieldOpts,
 ): FieldApi<FormInputData> {
   const scope = useFormScopeOrContextInternal(formOrName);
   const prefix = scope.__field_prefix__;
@@ -254,11 +253,10 @@ export function useField<FormInputData>(
     () =>
       makeFieldImpl({
         form: scope,
-        fieldName: prefix,
         trackedState,
         validationBehavior: opts?.validationBehavior,
       }),
-    [opts?.validationBehavior, prefix, scope, trackedState]
+    [opts?.validationBehavior, scope, trackedState],
   );
 
   return base as never;
@@ -275,7 +273,7 @@ export type FieldPropsWithName<FormInputData> = {
 };
 
 export function Field<FormInputData = unknown>(
-  props: FieldPropsWithName<FormInputData> | FieldPropsWithScope<FormInputData>
+  props: FieldPropsWithName<FormInputData> | FieldPropsWithScope<FormInputData>,
 ): React.ReactNode {
   // not actually breaking rules here
   // eslint-disable-next-line react-hooks/rules-of-hooks

@@ -15,7 +15,7 @@ export const makeImplFactory = <Item,>(
     const existingImpl = implCache.get(fullName);
     if (existingImpl) return existingImpl;
 
-    const impl = create(fullName);
+    const impl = create(fieldName ?? "");
     implCache.set(fullName, impl);
     return impl;
   };
