@@ -1,10 +1,10 @@
 import { create } from "zustand";
-import { MenuIcon, XIcon } from "lucide-react";
-import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet";
+import { MenuIcon } from "lucide-react";
+import { Sheet, SheetContent, SheetTrigger } from "../sheet";
 import { Navigation, TopLevelNavItem } from "./Navigation";
 import { Button } from "../button";
 import { GithubIcon } from "../icons/GithubIcon";
-import { Link, useLocation, useNavigation } from "@remix-run/react";
+import { Link, useLocation } from "@remix-run/react";
 import { Logo } from "../branding/Logo";
 import { useEffect } from "react";
 
