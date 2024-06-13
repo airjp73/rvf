@@ -1,7 +1,6 @@
 import { slugifyWithCounter } from "@sindresorhus/slugify";
 import * as acorn from "acorn";
 import { toString } from "mdast-util-to-string";
-import { mdxAnnotations } from "mdx-annotations";
 import rehypeShiki from "@shikijs/rehype";
 import { visit } from "unist-util-visit";
 
@@ -11,7 +10,7 @@ function rehypeParseCodeBlocks() {
       if (node.tagName === "code" && node.properties.className) {
         parentNode.properties.language = node.properties.className[0]?.replace(
           /^language-/,
-          ""
+          "",
         );
       }
     });
@@ -78,7 +77,6 @@ function getSections(node) {
 }
 
 export const rehypePlugins = [
-  mdxAnnotations.rehype,
   rehypeParseCodeBlocks,
   [
     rehypeShiki,
