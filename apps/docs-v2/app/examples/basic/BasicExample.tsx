@@ -19,7 +19,7 @@ export const BasicExample = () => {
     <Tabs defaultValue="example">
       <ExampleArea>
         <CodeHeader
-          title="Animation stuff"
+          title="Demo form"
           tabs={
             <CodeTabsList>
               <CodeTabsTrigger value="example">Example</CodeTabsTrigger>
