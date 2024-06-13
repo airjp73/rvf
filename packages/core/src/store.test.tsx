@@ -1375,6 +1375,24 @@ describe("arrays", () => {
       },
     });
   });
+
+  it("should setValue on nested array objects", () => {
+    const store = testStore();
+    store.setState({
+      values: {
+        foo: [{ name: "" }],
+      },
+      touchedFields: {},
+      dirtyFields: {},
+      validationErrors: {},
+      fieldArrayKeys: {},
+    });
+
+    store.getState().setValue("foo[0].name", "b");
+    expect(store.getState().values).toEqual({
+      foo: [{ name: "b" }],
+    });
+  });
 });
 
 it("should be able to `resetField` on a whole array", () => {
