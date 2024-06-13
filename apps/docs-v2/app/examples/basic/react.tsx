@@ -38,7 +38,7 @@ export const ReactExample = () => {
       <MyInput label="Project name" scope={form.scope("projectName")} />
 
       <ul>
-        {form.array("tasks").map((key, item) => (
+        {form.array("tasks").map((key, item, index) => (
           <li key={key}>
             <MyInput label="Title" scope={item.scope("title")} />
             <MyInput
@@ -46,6 +46,13 @@ export const ReactExample = () => {
               type="number"
               scope={item.scope("daysToComplete")}
             />
+            <Button
+              variant="ghost"
+              type="button"
+              onClick={() => form.array("tasks").remove(index)}
+            >
+              Delete
+            </Button>
           </li>
         ))}
       </ul>
