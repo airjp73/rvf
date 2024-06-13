@@ -7,11 +7,11 @@ import {
   CopyButton,
   ExampleArea,
 } from "~/ui/mdx/Code";
-import { ReactExample } from "./with-animation";
-import WithAnimation from "./with-animation?code";
-import withAnimationText from "./with-animation?raw";
-import NoAnimation from "./no-animation?code";
-import noAnimationText from "./no-animation?raw";
+import { ReactExample } from "./react";
+import WithReact from "./react?code";
+import withReactText from "./react?raw";
+import WithRemix from "./remix?code";
+import withRemixText from "./remix?raw";
 
 export const BasicExample = () => {
   return (
@@ -22,31 +22,27 @@ export const BasicExample = () => {
           tabs={
             <CodeTabsList>
               <CodeTabsTrigger value="example">Example</CodeTabsTrigger>
-              <CodeTabsTrigger value="with-animation">
-                With animation
-              </CodeTabsTrigger>
-              <CodeTabsTrigger value="no-animation">
-                No animation
-              </CodeTabsTrigger>
+              <CodeTabsTrigger value="with-react">React</CodeTabsTrigger>
+              <CodeTabsTrigger value="with-remix">Remix</CodeTabsTrigger>
             </CodeTabsList>
           }
         />
         <CodePanel value="example">
-          <div className="p-4">
+          <div className="py-6 px-8 [&_form]:space-y-6 [&_ul]:space-y-6 [&_li]:flex [&_li]:gap-4 [&_li_*]:grow">
             <ReactExample />
           </div>
         </CodePanel>
         <CodePanel
-          value="with-animation"
-          copyButton={<CopyButton content={withAnimationText} />}
+          value="with-react"
+          copyButton={<CopyButton content={withReactText} />}
         >
-          <WithAnimation />
+          <WithReact />
         </CodePanel>
         <CodePanel
-          value="no-animation"
-          copyButton={<CopyButton content={noAnimationText} />}
+          value="with-remix"
+          copyButton={<CopyButton content={withRemixText} />}
         >
-          <NoAnimation />
+          <WithRemix />
         </CodePanel>
       </ExampleArea>
     </Tabs>

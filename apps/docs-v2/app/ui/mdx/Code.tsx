@@ -144,7 +144,7 @@ export function ExampleArea({
   return (
     <div
       className={cn(
-        "my-6 overflow-hidden rounded-md shiki shadow-md dark:ring-1 dark:ring-white/10 not-prose [&_pre]:rounded-none [&_pre]:my-0",
+        "my-6 overflow-hidden rounded-md dark:ring-1 dark:ring-white/10 not-prose [&_pre]:rounded-none [&_pre]:my-0",
         className
       )}
       {...rest}
