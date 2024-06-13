@@ -1,4 +1,8 @@
-import { useForm, validationError } from "@rvf/remix";
+import {
+  isValidationErrorResponse,
+  useForm,
+  validationError,
+} from "@rvf/remix";
 import { withZod } from "@rvf/zod";
 import { z } from "zod";
 import { MyInput } from "~/fields/MyInput";
@@ -7,7 +11,7 @@ import { createProject } from "./api";
 import { ErrorMessage } from "~/fields/ErrorMessage";
 import { showToastMessage } from "~/lib/utils";
 import { EmptyState } from "~/ui/empty-state";
-import { json } from "@remix-run/react";
+import { json, useActionData } from "@remix-run/react";
 import { ActionFunctionArgs } from "@remix-run/node";
 
 const validator = withZod(
@@ -36,10 +40,11 @@ const validator = withZod(
 export const action = async ({ request }: ActionFunctionArgs) => {
   const data = await validator.validate(await request.formData());
   if (data.error) return validationError(data.error);
+
   const { projectName, tasks } = data.data;
 
   await createProject({ name: projectName, tasks });
-  return json({});
+  return json({ projectName });
 };
 
 export const ReactExample = () => {
@@ -49,8 +54,8 @@ export const ReactExample = () => {
       projectName: "",
       tasks: [] as Array<{ title: string; daysToComplete: number }>,
     },
-    onSubmitSuccess: (projectName) => {
-      showToastMessage(`Project ${projectName} created!`);
+    onSubmitSuccess: () => {
+      showToastMessage("Project created!");
       form.resetForm();
     },
   });
