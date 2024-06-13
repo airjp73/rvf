@@ -1,6 +1,5 @@
 import { Tabs } from "@radix-ui/react-tabs";
 import {
-  Code,
   CodeHeader,
   CodePanel,
   CodeTabsList,

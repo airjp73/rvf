@@ -28,6 +28,6 @@
     "tsconfig": "*",
     "tsup-config": "*",
     "typescript": "^5.4.5",
-    "zod": "~3.20.0"
+    "zod": "^3.23.8"
   }
 }
