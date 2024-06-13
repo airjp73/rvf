@@ -3,7 +3,7 @@ import {
   ValidationErrorResponseData,
   Validator,
 } from "./types";
-import { GenericObject, preprocessFormData } from "./native-form-data/flatten";
+import { preprocessFormData } from "./native-form-data/flatten";
 import { FORM_ID_FIELD_NAME } from "./constants";
 
 /**
@@ -12,7 +12,7 @@ import { FORM_ID_FIELD_NAME } from "./constants";
  * extracting the values from FormData.
  */
 export function createValidator<T>(
-  validator: CreateValidatorArg<T>,
+  validator: CreateValidatorArg<T>
 ): Validator<T> {
   return {
     validate: async (value) => {
@@ -42,6 +42,9 @@ export function createValidator<T>(
   };
 }
 
-export const isValidationErrorResponse = <T extends GenericObject>(
-  response: T | ValidationErrorResponseData,
-): response is ValidationErrorResponseData => "fieldErrors" in response;
+export const isValidationErrorResponse = <T>(
+  response: T | ValidationErrorResponseData
+): response is ValidationErrorResponseData =>
+  typeof response === "object" &&
+  response !== null &&
+  "fieldErrors" in response;
