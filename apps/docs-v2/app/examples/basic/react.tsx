@@ -5,6 +5,8 @@ import { MyInput } from "~/fields/MyInput";
 import { Button } from "~/ui/button";
 import { createProject } from "./api";
 import { ErrorMessage } from "~/fields/ErrorMessage";
+import { showToastMessage } from "~/lib/utils";
+import { EmptyState } from "~/ui/empty-state";
 
 const validator = withZod(
   z.object({
@@ -38,6 +40,11 @@ export const ReactExample = () => {
     },
     handleSubmit: async ({ projectName, tasks }) => {
       await createProject({ name: projectName, tasks });
+      return projectName;
+    },
+    onSubmitSuccess: (projectName) => {
+      showToastMessage(`Project ${projectName} created!`);
+      form.resetForm();
     },
   });
 
@@ -70,6 +77,9 @@ export const ReactExample = () => {
               </Button>
             </li>
           ))}
+          {form.array("tasks").length() === 0 && (
+            <EmptyState>No tasks yet</EmptyState>
+          )}
         </ul>
       </div>
 
@@ -86,7 +96,9 @@ export const ReactExample = () => {
         >
           Add task
         </Button>
-        <Button type="submit">Submit</Button>
+        <Button type="submit" isLoading={form.formState.isSubmitting}>
+          Submit
+        </Button>
       </div>
     </form>
   );

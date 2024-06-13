@@ -13,7 +13,7 @@ export const Header = forwardRef<
   { className?: string }
 >(function Header({ className }, ref) {
   let { scrollY } = useScroll();
-  let bgOpacityLight = useTransform(scrollY, [0, 72], [0.5, 0.9]);
+  let bgOpacityLight = useTransform(scrollY, [0, 72], [0.5, 0.7]);
   let bgOpacityDark = useTransform(scrollY, [0, 72], [0.2, 0.8]);
 
   return (
@@ -23,7 +23,7 @@ export const Header = forwardRef<
         className,
         "fixed inset-x-0 top-0 z-50 flex h-14 items-center justify-between gap-12 px-4 transition sm:px-6 lg:left-72 lg:z-30 lg:px-8 xl:left-80",
         "backdrop-blur-sm lg:left-72 xl:left-80 dark:backdrop-blur",
-        "bg-white/[var(--bg-opacity-light)] dark:bg-zinc-900/[var(--bg-opacity-dark)]",
+        "bg-white/[var(--bg-opacity-light)] dark:bg-zinc-950/[var(--bg-opacity-dark)]",
         "border-b border-border"
       )}
       style={

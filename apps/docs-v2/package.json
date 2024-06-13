@@ -34,6 +34,7 @@
     "remark-gfm": "^4.0.0",
     "remix-utils": "^7.6.0",
     "shiki": "^1.6.4",
+    "sonner": "^1.5.0",
     "tailwind-merge": "^2.3.0",
     "tailwindcss-animate": "^1.0.7",
     "xstate": "^5.13.1",

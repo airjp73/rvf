@@ -8,6 +8,7 @@ import {
 import "./tailwind.css";
 import { ThemeProvider } from "./ui/theme/themeMachine";
 import { ThemeScript, ThemedHtmlElement } from "./ui/theme/theme";
+import { Toaster } from "./ui/sonner";
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -24,6 +25,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
           <ScrollRestoration />
           <Scripts />
           <ThemeScript />
+          <Toaster />
         </body>
       </ThemedHtmlElement>
     </ThemeProvider>
