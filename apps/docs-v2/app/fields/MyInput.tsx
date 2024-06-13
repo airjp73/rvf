@@ -15,21 +15,26 @@ type MyInputProps =
       scope: FormScope<number>;
       type: "number";
     };
+
 export const MyInput = ({ label, scope, type }: MyInputProps) => {
   const field = useField(scope);
   const inputId = useId();
   const errorId = useId();
 
   return (
-    <div>
+    <div className="relative">
       <Label htmlFor={inputId}>{label}</Label>
       <Input
         id={inputId}
         {...field.getInputProps({ type })}
         aria-describedby={errorId}
+        aria-invalid={!!field.error()}
       />
       {field.error() && (
-        <span className="text-red-500 text-sm" id={errorId}>
+        <span
+          className="text-red-600 dark:text-red-500 text-sm absolute"
+          id={errorId}
+        >
           {field.error()}
         </span>
       )}

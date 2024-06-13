@@ -19,9 +19,9 @@ const validator = withZod(
           .min(1, "Tasks need a title.")
           .max(50, "Must be 50 characters or less."),
         daysToComplete: z.coerce.number({ required_error: "This is required" }),
-      })
+      }),
     ),
-  })
+  }),
 );
 
 export const ReactExample = () => {
