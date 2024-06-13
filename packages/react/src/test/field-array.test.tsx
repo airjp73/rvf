@@ -1225,3 +1225,7 @@ it("should combo well with `useField`", async () => {
   await userEvent.type(screen.getByTestId("name-1"), "bar");
   expect(screen.getByTestId("name-1")).toHaveValue("bar");
 });
+
+it.todo(
+  "shouldn't show errors as soon as array items are pushed into an array after submission",
+);
