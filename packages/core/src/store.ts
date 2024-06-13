@@ -355,7 +355,7 @@ export const moveFieldArrayKeys = (
       const parts = stringToPathArray(suffix);
       const index = Number(parts.shift());
       if (Number.isNaN(index))
-        throw new Error("Attempted to update a non-array field");
+        throw new Error(`Attempted to update a non-array field, ${fieldName}`);
       const newIndex = updater(index);
       return pathArrayToString([fieldName, newIndex, ...parts]);
     });
