@@ -11,6 +11,7 @@ import { FormProvider } from "../context";
 import { FieldErrors, FormScope, createValidator } from "@rvf/core";
 import { ComponentProps, useState } from "react";
 import { useFormScope } from "../useFormScope";
+import { useField } from "../field";
 
 it("should only accept array values", () => {
   const Comp = () => {
@@ -1182,4 +1183,44 @@ it("should retain state when doing operations", async () => {
 
   expect(screen.getByTestId("foo-0-count")).toHaveTextContent("1");
   expect(screen.getByTestId("foo-1-count")).toHaveTextContent("2");
+});
+
+it("should combo well with `useField`", async () => {
+  const MyInput = ({ scope, id }: { scope: FormScope<string>; id: string }) => {
+    const field = useField(scope);
+    return (
+      <input {...field.getInputProps({ type: "text" })} data-testid={id} />
+    );
+  };
+
+  const Comp = () => {
+    const form = useForm({
+      defaultValues: {
+        foo: [{ name: "" }, { name: "" }],
+      },
+      validator: successValidator,
+    });
+
+    return (
+      <form {...form.getFormProps()}>
+        {form.array("foo").map((key, item, index) => {
+          return (
+            <MyInput
+              scope={item.scope("name")}
+              key={key}
+              id={`name-${index}`}
+            />
+          );
+        })}
+      </form>
+    );
+  };
+
+  render(<Comp />);
+
+  await userEvent.type(screen.getByTestId("name-0"), "foo");
+  expect(screen.getByTestId("name-0")).toHaveValue("foo");
+
+  await userEvent.type(screen.getByTestId("name-1"), "bar");
+  expect(screen.getByTestId("name-1")).toHaveValue("bar");
 });
