@@ -13,7 +13,7 @@
     "sample-app": "bun dev --filter=sample-app",
     "test-app": "bun dev --filter=test-app",
     "docs": "bun dev --filter=docs-v2",
-    "docs-legacy": "bun dev --filter=docs",
+    "docs-legacy": "cd apps/docs && bun dev",
     "dev": "turbo run dev",
     "test": "turbo run test",
     "vitest": "vitest",
