@@ -58,6 +58,7 @@ function NavLink({
   return (
     <Link
       to={href}
+      prefetch="intent"
       aria-current={active ? "page" : undefined}
       className={clsx(
         "flex justify-between gap-2 py-1 pr-3 text-sm transition",
