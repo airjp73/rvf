@@ -1230,6 +1230,7 @@ it.todo(
   "shouldn't show errors as soon as array items are pushed into an array after submission",
 );
 
-it.todo("should move focus correctly depending on the array operation.");
-it.todo("should be able to turn off array focusing");
+it.todo(
+  "should be possible to await updates from field arrays, move focus in userland to the new inputs",
+);
 it.todo("should be possible to set a focus target for array-level errors");
