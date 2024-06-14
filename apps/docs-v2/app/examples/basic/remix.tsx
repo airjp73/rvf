@@ -59,6 +59,8 @@ export const ReactExample = () => {
       // We know this isn't an error in the success callback, but Typescript doesn't
       if (isValidationErrorResponse(data)) return;
 
+      // This isn't always the best way to show a toast in remix.
+      // https://www.jacobparis.com/content/remix-form-toast
       showToastMessage(`Project ${data?.projectName} created!`);
       form.resetForm();
     },
