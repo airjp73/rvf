@@ -75,5 +75,3 @@ it("should call onSubmitFailure", async () => {
   });
   expect(submitFailure).toHaveBeenCalledWith(error);
 });
-
-it.todo("should be timed so that the callbacks have access to the action data");

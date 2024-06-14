@@ -1,6 +1,6 @@
 import { json, redirect, useActionData, useFetcher } from "@remix-run/react";
 import { createRemixStub } from "@remix-run/testing";
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { createValidator, isValidationErrorResponse } from "@rvf/core";
 import { useForm } from "../useForm";
@@ -464,6 +464,53 @@ it("should call onSubmitSuccess when the call is complete", async () => {
 
   expect(await screen.findByText("You said: bar")).toBeInTheDocument();
   expect(success).toHaveBeenCalledTimes(1);
+});
+
+it("should have access to the latest action data in onSubmitSuccess", async () => {
+  const success = vi.fn();
+  const validator = createValidator({
+    validate: (data) => Promise.resolve({ data, error: undefined }),
+  });
+
+  const action = async ({ request }: ActionFunctionArgs) => {
+    const data = await validator.validate(await request.formData());
+    if (data.error) return validationError(data.error);
+    return { message: `You said: ${data.data.foo}` };
+  };
+
+  const Stub = createRemixStub([
+    {
+      path: "/",
+      Component: () => {
+        const data = useActionData<typeof action>();
+        const form = useForm({
+          defaultValues: { foo: "" },
+          validator,
+          method: "post",
+          onSubmitSuccess: () => {
+            success(data);
+          },
+        });
+        return (
+          <form {...form.getFormProps()}>
+            <input data-testid="foo" {...form.field("foo").getInputProps()} />
+            <button type="submit" data-testid="submit" />
+          </form>
+        );
+      },
+      action,
+    },
+  ]);
+
+  render(<Stub />);
+
+  await userEvent.type(screen.getByTestId("foo"), "bar");
+  await userEvent.click(screen.getByTestId("submit"));
+
+  await waitFor(() => {
+    expect(success).toHaveBeenCalledTimes(1);
+  });
+  expect(success).toHaveBeenCalledWith({ message: "You said: bar" });
 });
 
 it("should call onSubmitFailure if the call returns a validation error", async () => {
