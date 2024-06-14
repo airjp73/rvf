@@ -1270,4 +1270,67 @@ it("should be possible to await updates from field arrays, move focus in userlan
   expect(screen.getByTestId("foo-2-name")).toHaveFocus();
 });
 
-it.todo("should be possible to set a focus target for array-level errors");
+it("should be possible to set a focus target for array-level errors", async () => {
+  const Comp = () => {
+    const form = useForm({
+      defaultValues: {
+        foo: [{ name: "" }],
+        bar: "",
+      },
+      validator: createValidator({
+        validate: (data) => {
+          const errors: FieldErrors = {};
+          if (data.bar === "") errors.bar = "bar required";
+          if (data.foo[0].name === "") errors["foo[0].name"] = "name required";
+          if (data.foo[0].name === "bob") {
+            errors.foo = "no bob's allowed";
+            errors["foo[0].name"] = "no bob's allowed";
+          }
+          if (Object.keys(errors).length > 0)
+            return Promise.resolve({ error: errors, data: undefined });
+          return Promise.resolve({ data, error: undefined });
+        },
+      }),
+    });
+
+    return (
+      <form {...form.getFormProps()}>
+        <input {...form.getInputProps("bar")} data-testid="bar" />
+        {form.error("foo") && (
+          <div
+            data-testid="foo-error"
+            tabIndex={0}
+            ref={form.array("foo").errorFocusElement}
+          >
+            {form.error("foo")}
+          </div>
+        )}
+        {form.array("foo").map((key, item, index) => {
+          return (
+            <div key={key}>
+              <input
+                data-testid={`foo-${index}-name`}
+                {...item.field("name").getInputProps()}
+              />
+              <div data-testid={`foo-${index}-error`}>{item.error()}</div>
+            </div>
+          );
+        })}
+        <button data-testid="submit" type="submit" />
+      </form>
+    );
+  };
+
+  render(<Comp />);
+
+  await userEvent.click(screen.getByTestId("submit"));
+  expect(screen.getByTestId("bar")).toHaveFocus();
+  await userEvent.type(screen.getByTestId("bar"), "hello");
+
+  await userEvent.click(screen.getByTestId("submit"));
+  expect(screen.getByTestId("foo-0-name")).toHaveFocus();
+  await userEvent.type(screen.getByTestId("foo-0-name"), "bob");
+
+  await userEvent.click(screen.getByTestId("submit"));
+  expect(screen.getByTestId("foo-error")).toHaveFocus();
+});

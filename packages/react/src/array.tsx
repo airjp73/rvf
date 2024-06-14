@@ -1,4 +1,4 @@
-import { ReactNode, useMemo } from "react";
+import { ReactNode, RefCallback, useMemo } from "react";
 import {
   FormStoreValue,
   FormScope,
@@ -11,8 +11,17 @@ import {
 import { makeImplFactory } from "./implFactory";
 import { ReactFormApi, makeBaseReactFormApi } from "./base";
 import { useFormScopeOrContextInternal } from "./context";
+import { createControlledRef } from "./refs";
 
 export interface FieldArrayApi<FormInputData extends Array<any>> {
+  /**
+   * Normally, when a user submits a form and it contains validation error,
+   * the first invalid element in the form will be focused.
+   * Pass this ref to a focusable element to simulate this behavior when there are array-level errors
+   * for this field array.
+   */
+  errorFocusElement: RefCallback<HTMLElement>;
+
   /**
    * Gets field name of the array.
    */
@@ -126,6 +135,7 @@ export const makeFieldArrayImpl = <FormInputData extends Array<any>>({
   // TODO: handle validation behavior
 
   return {
+    errorFocusElement: createControlledRef(arrayFieldName, form),
     name: () => arrayFieldName,
     error: () => getFieldError(trackedState, arrayFieldName),
     length,

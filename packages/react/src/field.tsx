@@ -10,11 +10,10 @@ import {
   getFieldTouched,
   getFieldValue,
   getFormId,
-  setFormControlValue,
-  isFormControl,
 } from "@rvf/core";
 import { GetInputProps, createGetInputProps } from "./inputs/getInputProps";
 import { useFormScopeOrContextInternal } from "./context";
+import { createControlledRef, createTransientRef } from "./refs";
 
 export type GetControlPropsParam<FieldValue> = {
   onChange?: (value: FieldValue) => void;
@@ -115,37 +114,6 @@ export const makeFieldImpl = <FormInputData,>({
 
   const onBlur = () => trackedState.onFieldBlur(fieldName, validationBehavior);
 
-  const transientState = () => form.__store__.store.getState();
-
-  // This is a little hacky, but we can simplify when React adds ref cleanup functions.
-  const createTransientRef = (): RefCallback<HTMLElement> => {
-    const sym = Symbol(fieldName);
-    return (el) => {
-      if (el == null) {
-        form.__store__.transientFieldRefs.removeRef(fieldName, sym);
-        return;
-      }
-
-      form.__store__.transientFieldRefs.setRef(fieldName, el, sym);
-      if (isFormControl(el)) {
-        const value = getFieldValue(transientState(), fieldName);
-        if (value != null) setFormControlValue(el, value);
-      }
-    };
-  };
-
-  const createControlledRef = (): RefCallback<HTMLElement> => {
-    const sym = Symbol(fieldName);
-    return (el) => {
-      if (el == null) {
-        form.__store__.controlledFieldRefs.removeRef(fieldName, sym);
-        return;
-      }
-
-      form.__store__.controlledFieldRefs.setRef(fieldName, el, sym);
-    };
-  };
-
   const createSerializerRef = (
     serialize: FieldSerializer,
   ): RefCallback<HTMLElement> => {
@@ -166,7 +134,7 @@ export const makeFieldImpl = <FormInputData,>({
       onBlur,
       defaultValue: getFieldDefaultValue(trackedState, fieldName),
       name: fieldName,
-      createRef: createTransientRef,
+      createRef: () => createTransientRef(fieldName, form),
       formId: getFormId(trackedState),
       getCurrentValue: () =>
         getFieldValue(form.__store__.store.getState(), fieldName),
@@ -183,7 +151,7 @@ export const makeFieldImpl = <FormInputData,>({
         props.onBlur?.();
       },
       value: getFieldValue(trackedState, fieldName) as never,
-      ref: createControlledRef(),
+      ref: createControlledRef(fieldName, form),
     }),
 
     getHiddenInputProps: ({
@@ -197,8 +165,8 @@ export const makeFieldImpl = <FormInputData,>({
     }),
 
     refs: {
-      transient: createTransientRef,
-      controlled: createControlledRef,
+      transient: () => createTransientRef(fieldName, form),
+      controlled: () => createControlledRef(fieldName, form),
     },
 
     name: () => fieldName,

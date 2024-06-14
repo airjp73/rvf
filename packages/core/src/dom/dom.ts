@@ -80,25 +80,33 @@ const sortByPosition = (elements: HTMLElement[]) => {
     return 0;
   });
 };
+
+const handleRadioFocus = (sortedElements: HTMLElement[]) => {
+  /* Radio groups get special treatment -- the selected radio gets focused. */
+  const formControls = sortedElements.filter(isFormControl);
+  const firstControl = formControls[0];
+
+  const endOfFirstFieldsElements = formControls.findIndex(
+    (el) => el.name !== firstControl.name,
+  );
+  const firstFieldElements = formControls.slice(0, endOfFirstFieldsElements);
+
+  if (firstFieldElements.every((el) => el.type === "radio")) {
+    const checkedElement = firstFieldElements.find(
+      (el) => el instanceof HTMLInputElement && el.checked,
+    );
+    return checkedElement;
+  }
+};
+
 const getElementToFocus = (elements: HTMLElement[]) => {
-  const sorted = sortByPosition(elements).filter(isFormControl);
+  const sorted = sortByPosition(elements).filter((el) => "focus" in el);
 
   if (sorted.length === 0) return undefined;
 
   const firstElement = sorted[0];
-  const endOfFirstFieldsElements = sorted.findIndex(
-    (el) => el.name !== firstElement.name,
-  );
-  const firstFieldElements = sorted.slice(0, endOfFirstFieldsElements);
-
-  if (firstFieldElements.every((el) => el.type === "radio")) {
-    const checkedElement = elements.find(
-      (el) => el instanceof HTMLInputElement && el.checked,
-    );
-    return checkedElement ?? firstElement;
-  }
-
-  return firstElement;
+  if (!isFormControl(firstElement)) return firstElement;
+  return handleRadioFocus(sorted) ?? firstElement;
 };
 
 export const focusOrReport = (elements: HTMLElement[]) => {
