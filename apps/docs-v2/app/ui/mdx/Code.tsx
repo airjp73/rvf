@@ -1,7 +1,14 @@
 "use client";
 
-import { ComponentPropsWithoutRef, useEffect, useState } from "react";
-import { TabsList, TabsTrigger, TabsContent } from "@radix-ui/react-tabs";
+import {
+  Children,
+  ComponentPropsWithoutRef,
+  isValidElement,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+import { TabsList, TabsTrigger, TabsContent, Tabs } from "@radix-ui/react-tabs";
 import clsx from "clsx";
 import { cn } from "~/lib/utils";
 
@@ -21,7 +28,7 @@ function ClipboardIcon(props: React.ComponentPropsWithoutRef<"svg">) {
   );
 }
 
-export function CopyButton({ content }: { content: string }) {
+export function CopyButton({ content }: { content: string | (() => string) }) {
   let [copyCount, setCopyCount] = useState(0);
   let copied = copyCount > 0;
 
@@ -38,13 +45,14 @@ export function CopyButton({ content }: { content: string }) {
     <button
       type="button"
       className={clsx(
-        "group/button absolute right-4 top-3.5 overflow-hidden rounded-full py-1 pl-2 pr-3 text-2xs font-medium opacity-0 backdrop-blur transition focus:opacity-100 group-hover:opacity-100",
+        "group/button absolute right-4 top-1 overflow-hidden rounded-full py-1 pl-2 pr-3 text-2xs font-medium opacity-0 backdrop-blur transition focus:opacity-100 group-hover:opacity-100",
         copied
           ? "bg-fuchsia-400/10 ring-1 ring-inset ring-fuchsia-400/20"
           : "bg-white/5 hover:bg-white/7.5 dark:bg-white/2.5 dark:hover:bg-white/5",
       )}
       onClick={() => {
-        window.navigator.clipboard.writeText(content).then(() => {
+        const text = typeof content === "function" ? content() : content;
+        window.navigator.clipboard.writeText(text).then(() => {
           setCopyCount((count) => count + 1);
         });
       }}
@@ -92,6 +100,22 @@ export function CodePanel({
     </TabsContent>
   );
 }
+
+const Copyable = ({ children }: { children: React.ReactNode }) => {
+  const copyText = useRef<string | null>(null);
+  return (
+    <>
+      <div
+        ref={(el) => {
+          copyText.current = el?.textContent ?? null;
+        }}
+      >
+        {children}
+      </div>
+      <CopyButton content={() => copyText.current ?? ""} />
+    </>
+  );
+};
 
 export function CodeHeader({
   title,
@@ -154,6 +178,41 @@ export function ExampleArea({
     </div>
   );
 }
+
+export const CodeExamples = ({
+  children,
+  title,
+  tabs,
+}: {
+  children: React.ReactNode;
+  title: string;
+  tabs: string[];
+}) => {
+  const validChildren = Children.toArray(children).filter(isValidElement);
+  return (
+    <Tabs defaultValue={tabs[0]}>
+      <ExampleArea title={title}>
+        <CodeHeader
+          title={title}
+          tabs={
+            <CodeTabsList>
+              {tabs.map((tab) => (
+                <CodeTabsTrigger value={tab} key={tab}>
+                  {tab}
+                </CodeTabsTrigger>
+              ))}
+            </CodeTabsList>
+          }
+        />
+        {tabs.map((tab, index) => (
+          <CodePanel value={tab} key={tab}>
+            <Copyable>{validChildren[index]}</Copyable>
+          </CodePanel>
+        ))}
+      </ExampleArea>
+    </Tabs>
+  );
+};
 
 export function Code({
   children,

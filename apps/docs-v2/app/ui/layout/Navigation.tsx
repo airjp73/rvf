@@ -35,7 +35,7 @@ export function TopLevelNavItem({
         to={href}
         className={cn(
           "text-sm leading-5 text-zinc-600 transition hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white flex gap-2 items-center",
-          className
+          className,
         )}
       >
         {children}
@@ -64,7 +64,7 @@ function NavLink({
         isAnchorLink ? "pl-7" : "pl-4",
         active
           ? "text-zinc-900 dark:text-white"
-          : "text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
+          : "text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white",
       )}
     >
       <span className="truncate">{children}</span>
@@ -224,22 +224,7 @@ export const navigation: Array<NavGroup> = [
     title: "Guides",
     links: [
       { title: "Introduction", href: "/" },
-      { title: "Test doc", href: "/test-doc" },
-      { title: "SDKs", href: "/sdks" },
-      { title: "Authentication", href: "/authentication" },
-      { title: "Pagination", href: "/pagination" },
-      { title: "Errors", href: "/errors" },
-      { title: "Webhooks", href: "/webhooks" },
-    ],
-  },
-  {
-    title: "Resources",
-    links: [
-      { title: "Contacts", href: "/contacts" },
-      { title: "Conversations", href: "/conversations" },
-      { title: "Messages", href: "/messages" },
-      { title: "Groups", href: "/groups" },
-      { title: "Attachments", href: "/attachments" },
+      { title: "Installation", href: "/installation" },
     ],
   },
 ];

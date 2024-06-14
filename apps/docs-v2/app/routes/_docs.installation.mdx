@@ -1,0 +1,51 @@
+export const meta = () => [{
+  title: "Installation",
+}]
+
+# Installation
+
+## Base package
+
+<Row>
+  <Col>
+    RVF can be used with any flavor of React, but there's also an adapter specifically for [Remix](https://remix.run).
+
+    - `@rvf/react`
+    - `@rvf/remix`
+  </Col>
+
+  <Col>
+    <CodeExamples title="Install base package" tabs={["Vanilla React", "Remix"]}>
+      ```bash
+      npm install @rvf/react
+      ```
+
+      ```bash
+      npm install @rvf/remix
+      ```
+    </CodeExamples>
+  </Col>
+
+</Row>
+
+    ## Validation library adapter
+<Row>
+  <Col>
+    RVF is validation library agnostic, but there are official adapters available for `zod` and `yup`.
+
+    - `@rvf/zod`
+    - `@rvf/yup`
+  </Col>
+
+  <Col>
+    <CodeExamples title="Install validation adapter" tabs={["Zod", "Yup"]}>
+      ```bash
+      npm install @rvf/zod
+      ```
+
+      ```bash
+      npm install @rvf/yup
+      ```
+    </CodeExamples>
+  </Col>
+</Row>
