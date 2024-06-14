@@ -14,10 +14,10 @@ export default defineConfig({
       enforce: "pre",
       ...mdx({
         providerImportSource: path.resolve(
-          path.join(__dirname, "./app/ui/mdx/mdx-components.tsx")
+          path.join(__dirname, "./app/ui/mdx/mdx-components.tsx"),
         ),
         remarkPlugins,
-        rehypePlugins,
+        rehypePlugins: rehypePlugins as any,
       }),
     },
     {
@@ -26,10 +26,10 @@ export default defineConfig({
       async transform(src, id) {
         if (id.endsWith("?code")) {
           const code = await compile(["```tsx", src.trim(), "```"].join("\n"), {
-            rehypePlugins,
+            rehypePlugins: rehypePlugins as any,
             remarkPlugins,
             providerImportSource: path.resolve(
-              path.join(__dirname, "./app/ui/mdx/code-components.tsx")
+              path.join(__dirname, "./app/ui/mdx/code-components.tsx"),
             ),
           });
           return {
