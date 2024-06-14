@@ -6,6 +6,7 @@ import clsx from "clsx";
 import { AnimatePresence, motion } from "framer-motion";
 import { cn } from "~/lib/utils";
 import { useMobileNavigationStore } from "./MobileNavigation";
+import { ArrowLeftIcon, ArrowRightIcon } from "lucide-react";
 
 interface NavGroup {
   title: string;

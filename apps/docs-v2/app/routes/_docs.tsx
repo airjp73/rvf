@@ -1,6 +1,7 @@
 import { Link, Outlet } from "@remix-run/react";
 import { motion } from "framer-motion";
 import { Logo } from "~/ui/branding/Logo";
+import { Footer } from "~/ui/layout/Footer";
 import { Header } from "~/ui/layout/Header";
 import { Navigation } from "~/ui/layout/Navigation";
 
@@ -26,6 +27,7 @@ export default function DocsLayout() {
           <main className="flex-auto">
             <Outlet />
           </main>
+          <Footer />
         </div>
       </div>
     </div>
