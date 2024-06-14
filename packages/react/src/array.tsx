@@ -45,51 +45,51 @@ export interface FieldArrayApi<FormInputData extends Array<any>> {
   /**
    * Adds an item to the array. Just like `Array.push`.
    */
-  push: (value: FormInputData[number]) => void;
+  push: (value: FormInputData[number]) => Promise<void>;
 
   /**
    * Pops the last item in the array. Similar to `Array.pop`.
    */
-  pop: () => void;
+  pop: () => Promise<void>;
 
   /**
    * Removes the first item in the array. Similar to `Array.shift`.
    */
-  shift: () => void;
+  shift: () => Promise<void>;
 
   /**
    * Inserts an item at the start of the array. Just like `Array.unshift`.
    */
-  unshift: (value: FormInputData[number]) => void;
+  unshift: (value: FormInputData[number]) => Promise<void>;
 
   /**
    * Inserts an item at a specific index in the array.
    */
-  insert: (index: number, value: FormInputData[number]) => void;
+  insert: (index: number, value: FormInputData[number]) => Promise<void>;
 
   /**
    * Moves an item from `fromIndex` to `toIndex` in the array.
    * This process happens by removing the item at `fromIndex` and inserting it at `toIndex`.
    * Keep this in mind if your `toIndex` is after the `fromIndex`.
    */
-  move: (fromIndex: number, toIndex: number) => void;
+  move: (fromIndex: number, toIndex: number) => Promise<void>;
 
   /**
    * Removes an item from the array.
    */
-  remove: (index: number) => void;
+  remove: (index: number) => Promise<void>;
 
   /**
    * Swaps the items at `fromIndex` and `toIndex` in the array.
    */
-  swap: (fromIndex: number, toIndex: number) => void;
+  swap: (fromIndex: number, toIndex: number) => Promise<void>;
 
   /**
    * Replaces an item in the array.
    * The new value will be treated as a new field, which will reset any `touched`, `dirty`, or `validationErrors` for the item.
    * It will also generate a new key for the item.
    */
-  replace: (index: number, value: FormInputData[number]) => void;
+  replace: (index: number, value: FormInputData[number]) => Promise<void>;
 }
 
 export type FieldArrayParams<FormInputData> = {
@@ -138,42 +138,62 @@ export const makeFieldArrayImpl = <FormInputData extends Array<any>>({
           return callback(key, itemFormScope, index);
         });
     },
-    push: (value) =>
-      trackedState.arrayPush(arrayFieldName, value, validationBehavior),
-    pop: () => trackedState.arrayPop(arrayFieldName, validationBehavior),
-    shift: () => trackedState.arrayShift(arrayFieldName, validationBehavior),
-    unshift: (value) =>
-      trackedState.arrayUnshift(arrayFieldName, value, validationBehavior),
-    insert: (index, value) =>
+    push: (value) => {
+      trackedState.arrayPush(arrayFieldName, value, validationBehavior);
+      return form.__store__.resolvers.await();
+    },
+    pop: () => {
+      trackedState.arrayPop(arrayFieldName, validationBehavior);
+      return form.__store__.resolvers.await();
+    },
+    shift: () => {
+      trackedState.arrayShift(arrayFieldName, validationBehavior);
+      return form.__store__.resolvers.await();
+    },
+    unshift: (value) => {
+      trackedState.arrayUnshift(arrayFieldName, value, validationBehavior);
+      return form.__store__.resolvers.await();
+    },
+    insert: (index, value) => {
       trackedState.arrayInsert(
         arrayFieldName,
         index,
         value,
         validationBehavior,
-      ),
-    move: (fromIndex, toIndex) =>
+      );
+      return form.__store__.resolvers.await();
+    },
+    move: (fromIndex, toIndex) => {
       trackedState.arrayMove(
         arrayFieldName,
         fromIndex,
         toIndex,
         validationBehavior,
-      ),
-    remove: (index) =>
-      trackedState.arrayRemove(arrayFieldName, index, validationBehavior),
-    swap: (fromIndex, toIndex) =>
+      );
+      return form.__store__.resolvers.await();
+    },
+    remove: (index) => {
+      trackedState.arrayRemove(arrayFieldName, index, validationBehavior);
+      return form.__store__.resolvers.await();
+    },
+    swap: (fromIndex, toIndex) => {
       trackedState.arraySwap(
         arrayFieldName,
         fromIndex,
         toIndex,
         validationBehavior,
-      ),
-    replace: (index, value) =>
+      );
+      return form.__store__.resolvers.await();
+    },
+    replace: (index, value) => {
       trackedState.arrayReplace(
         arrayFieldName,
         index,
         value,
         validationBehavior,
-      ),
+      );
+      return form.__store__.resolvers.await();
+    },
   };
 };
 

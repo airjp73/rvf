@@ -1230,7 +1230,44 @@ it.todo(
   "shouldn't show errors as soon as array items are pushed into an array after submission",
 );
 
-it.todo(
-  "should be possible to await updates from field arrays, move focus in userland to the new inputs",
-);
+it("should be possible to await updates from field arrays, move focus in userland to the new inputs", async () => {
+  const Comp = () => {
+    const form = useForm({
+      defaultValues: {
+        foo: [{ name: "" }, { name: "" }],
+      },
+      validator: successValidator,
+    });
+
+    return (
+      <form {...form.getFormProps()}>
+        {form.array("foo").map((key, item, index) => {
+          return (
+            <div key={key}>
+              <input
+                data-testid={`foo-${index}-name`}
+                {...item.field("name").getInputProps()}
+              />
+            </div>
+          );
+        })}
+        <button
+          data-testid="add"
+          type="button"
+          onClick={async () => {
+            const numItems = form.array("foo").length();
+            await form.array("foo").push({ name: "" });
+            form.focus(`foo[${numItems}].name`);
+          }}
+        ></button>
+      </form>
+    );
+  };
+
+  render(<Comp />);
+
+  await userEvent.click(screen.getByTestId("add"));
+  expect(screen.getByTestId("foo-2-name")).toHaveFocus();
+});
+
 it.todo("should be possible to set a focus target for array-level errors");

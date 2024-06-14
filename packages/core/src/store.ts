@@ -82,7 +82,7 @@ export const createResolverQueue = () => {
   const queueResolver = () => {
     const { promise, resolve } = withResolvers();
     resolvers.add(resolve);
-    return promise;
+    return promise as Promise<void>;
   };
 
   return {
