@@ -128,7 +128,7 @@ export const CodeTabsTrigger = ({
 }: ComponentPropsWithoutRef<typeof TabsTrigger>) => (
   <TabsTrigger
     className={cn(
-      "border-b py-3 transition ui-not-focus-visible:outline-none",
+      "border-b py-3 transition focus-visible:outline-none focus-visible:ring ring-ring",
       "data-[state=active]:border-fuchsia-600 dark:data-[state=active]:border-fuchsia-400 data-[state=active]:text-fuchsia-600 dark:data-[state=active]:text-fuchsia-400 data-[state=inactive]:border-transparent text-muted-foreground data-[state=inactive]:hover:text-zinc-300",
       className,
     )}
