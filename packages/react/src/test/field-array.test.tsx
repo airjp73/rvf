@@ -1229,3 +1229,7 @@ it("should combo well with `useField`", async () => {
 it.todo(
   "shouldn't show errors as soon as array items are pushed into an array after submission",
 );
+
+it.todo("should move focus correctly depending on the array operation.");
+it.todo("should be able to turn off array focusing");
+it.todo("should be possible to set a focus target for array-level errors");
