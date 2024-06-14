@@ -1226,10 +1226,6 @@ it("should combo well with `useField`", async () => {
   expect(screen.getByTestId("name-1")).toHaveValue("bar");
 });
 
-it.todo(
-  "shouldn't show errors as soon as array items are pushed into an array after submission",
-);
-
 it("should be possible to await updates from field arrays, move focus in userland to the new inputs", async () => {
   const Comp = () => {
     const form = useForm({
