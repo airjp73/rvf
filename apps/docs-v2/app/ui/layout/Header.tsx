@@ -7,6 +7,7 @@ import { Logo } from "../branding/Logo";
 import { GithubIcon } from "../icons/GithubIcon";
 import { MobileNavigation } from "./MobileNavigation";
 import { TopLevelNavItem } from "./Navigation";
+import { ConstructionIcon } from "lucide-react";
 
 export const Header = forwardRef<
   React.ElementRef<"div">,
@@ -39,6 +40,11 @@ export const Header = forwardRef<
         <Link to="/" aria-label="Home">
           <Logo className="h-8" />
         </Link>
+      </div>
+      <div className="flex gap-2 ml-auto">
+        <ConstructionIcon className="text-orange-500" />
+        Under construction
+        <ConstructionIcon className="text-orange-500" />
       </div>
       <div className="flex items-center gap-5 ml-auto">
         <nav className="hidden md:block">
