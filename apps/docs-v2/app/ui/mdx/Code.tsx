@@ -41,7 +41,7 @@ export function CopyButton({ content }: { content: string }) {
         "group/button absolute right-4 top-3.5 overflow-hidden rounded-full py-1 pl-2 pr-3 text-2xs font-medium opacity-0 backdrop-blur transition focus:opacity-100 group-hover:opacity-100",
         copied
           ? "bg-fuchsia-400/10 ring-1 ring-inset ring-fuchsia-400/20"
-          : "bg-white/5 hover:bg-white/7.5 dark:bg-white/2.5 dark:hover:bg-white/5"
+          : "bg-white/5 hover:bg-white/7.5 dark:bg-white/2.5 dark:hover:bg-white/5",
       )}
       onClick={() => {
         window.navigator.clipboard.writeText(content).then(() => {
@@ -53,7 +53,7 @@ export function CopyButton({ content }: { content: string }) {
         aria-hidden={copied}
         className={clsx(
           "pointer-events-none flex items-center gap-0.5 text-zinc-400 transition duration-300",
-          copied && "-translate-y-1.5 opacity-0"
+          copied && "-translate-y-1.5 opacity-0",
         )}
       >
         <ClipboardIcon className="h-5 w-5 fill-zinc-500/20 stroke-zinc-500 transition-colors group-hover/button:stroke-zinc-400" />
@@ -63,7 +63,7 @@ export function CopyButton({ content }: { content: string }) {
         aria-hidden={!copied}
         className={clsx(
           "pointer-events-none absolute inset-0 flex items-center justify-center text-fuchsia-400 transition duration-300",
-          !copied && "translate-y-1.5 opacity-0"
+          !copied && "translate-y-1.5 opacity-0",
         )}
       >
         Copied!
@@ -130,7 +130,7 @@ export const CodeTabsTrigger = ({
     className={cn(
       "border-b py-3 transition ui-not-focus-visible:outline-none",
       "data-[state=active]:border-fuchsia-600 dark:data-[state=active]:border-fuchsia-400 data-[state=active]:text-fuchsia-600 dark:data-[state=active]:text-fuchsia-400 data-[state=inactive]:border-transparent text-muted-foreground data-[state=inactive]:hover:text-zinc-300",
-      className
+      className,
     )}
     {...rest}
   />
@@ -145,7 +145,8 @@ export function ExampleArea({
     <div
       className={cn(
         "my-6 overflow-hidden ring-1 ring-zinc-900/25 dark:ring-[white]/15 rounded-md not-prose [&_pre]:rounded-none [&_pre]:my-0",
-        className
+        "group example-area",
+        className,
       )}
       {...rest}
     >
@@ -172,7 +173,10 @@ export function Pre({
   return (
     <pre
       {...props}
-      className="not-prose shiki border border-border whitespace-pre-wrap p-3 text-xs rounded-md my-6"
+      className={cn(
+        "not-prose shiki whitespace-pre-wrap p-3 text-xs rounded-md my-6",
+        "border border-zinc-900/25 dark:border-[white]/15 group-[.example-area]:border-none",
+      )}
     >
       {children}
     </pre>
