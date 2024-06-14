@@ -48,6 +48,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 };
 
 export const ReactExample = () => {
+  const data = useActionData<typeof action>();
   const form = useForm({
     validator,
     defaultValues: {
@@ -55,7 +56,10 @@ export const ReactExample = () => {
       tasks: [] as Array<{ title: string; daysToComplete: number }>,
     },
     onSubmitSuccess: () => {
-      showToastMessage("Project created!");
+      // We know this isn't an error in the success callback, but Typescript doesn't
+      if (isValidationErrorResponse(data)) return;
+
+      showToastMessage(`Project ${data?.projectName} created!`);
       form.resetForm();
     },
   });
