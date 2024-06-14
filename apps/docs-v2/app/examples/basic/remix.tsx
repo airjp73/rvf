@@ -30,11 +30,11 @@ const validator = withZod(
           daysToComplete: z.coerce.number({
             required_error: "This is required",
           }),
-        })
+        }),
       )
       .min(1, "Needs at least one task.")
       .default([]),
-  })
+  }),
 );
 
 export const action = async ({ request }: ActionFunctionArgs) => {
@@ -99,12 +99,14 @@ export const ReactExample = () => {
         <Button
           variant="secondary"
           type="button"
-          onClick={() =>
-            form.array("tasks").push({
+          onClick={async () => {
+            const nextTaskIndex = form.array("tasks").length();
+            await form.array("tasks").push({
               daysToComplete: 0,
               title: "",
-            })
-          }
+            });
+            form.focus(`tasks[${nextTaskIndex}].title`);
+          }}
         >
           Add task
         </Button>
