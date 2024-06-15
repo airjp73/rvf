@@ -583,7 +583,7 @@ it("should reset the form after a successful submission when resetAfterSubmit is
         const fetcher = useFetcher<typeof action>();
         const form = useForm({
           fetcher,
-          defaultValues: { foo: "" },
+          defaultValues: { foo: "", bar: "" },
           validator,
           method: "post",
           resetAfterSubmit: true,
@@ -594,6 +594,7 @@ it("should reset the form after a successful submission when resetAfterSubmit is
               <p>{fetcher.data.message}</p>
             )}
             <input data-testid="foo" {...form.field("foo").getInputProps()} />
+            <input data-testid="bar" name="bar" />
             <button type="submit" data-testid="submit" />
           </form>
         );
@@ -604,10 +605,15 @@ it("should reset the form after a successful submission when resetAfterSubmit is
 
   render(<Stub />);
 
-  await userEvent.type(screen.getByTestId("foo"), "bar");
-  expect(screen.getByTestId("foo")).toHaveValue("bar");
+  await userEvent.type(screen.getByTestId("foo"), "foo");
+  expect(screen.getByTestId("foo")).toHaveValue("foo");
+
+  await userEvent.type(screen.getByTestId("bar"), "bar");
+  expect(screen.getByTestId("bar")).toHaveValue("bar");
+
   await userEvent.click(screen.getByTestId("submit"));
 
-  expect(await screen.findByText("You said: bar")).toBeInTheDocument();
+  expect(await screen.findByText("You said: foo")).toBeInTheDocument();
   expect(screen.getByTestId("foo")).toHaveValue("");
+  expect(screen.getByTestId("bar")).toHaveValue("");
 });

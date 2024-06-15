@@ -24,13 +24,15 @@ export const MyInput = ({ label, scope, type }: MyInputProps) => {
 
   return (
     <div className="relative">
-      <Label htmlFor={inputId}>{label}</Label>
-      <Input
-        id={inputId}
-        {...field.getInputProps({ type })}
-        aria-describedby={errorId}
-        aria-invalid={!!field.error()}
-      />
+      <Label>
+        {label}
+        <Input
+          id={inputId}
+          {...field.getInputProps({ type })}
+          aria-describedby={errorId}
+          aria-invalid={!!field.error()}
+        />
+      </Label>
       {field.error() && (
         <ErrorMessage id={errorId} className="absolute">
           {field.error()}

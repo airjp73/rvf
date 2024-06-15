@@ -496,8 +496,13 @@ export const makeBaseReactFormApi = <FormInputData,>({
         .getState()
         .validate()
         .then((res) => res.errors ?? {}),
-    resetForm: (...args) =>
-      form.__store__.store.getState().reset(...(args as any)),
+    resetForm: (...args) => {
+      // TODO: This ends up calling the store's `reset` method twice.
+      // That gets the job done, but it's not ideal.
+      const formElement = form.__store__.formRef.current;
+      if (formElement) formElement.reset();
+      form.__store__.store.getState().reset(...(args as any));
+    },
     resetField: (fieldName, nextValue) =>
       form.__store__.store.getState().resetField(f(fieldName), nextValue),
 

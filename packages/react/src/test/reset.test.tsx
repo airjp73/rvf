@@ -265,7 +265,7 @@ it("should reset the whole form when a reset button is clicked", async () => {
   expect(screen.getByTestId("baz.a-touched")).toHaveTextContent("false");
 });
 
-it("should reset inputs not registered with RVF", async () => {
+it("should reset inputs not registered with RVF even when not using a reset button", async () => {
   const submit = vi.fn();
   const TestComp = () => {
     const form = useForm({
@@ -281,7 +281,11 @@ it("should reset inputs not registered with RVF", async () => {
       <form {...form.getFormProps()} data-testid="form">
         <input data-testid="foo" name="foo" />
         <input data-testid="baz.a" name="baz.a" />
-        <button type="reset" data-testid="reset" />
+        <button
+          type="button"
+          data-testid="reset"
+          onClick={() => form.resetForm()}
+        />
       </form>
     );
   };

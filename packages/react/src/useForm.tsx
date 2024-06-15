@@ -141,7 +141,11 @@ export function useForm<
       onSubmit: onSubmit as never,
       onSubmitSuccess: (data) => {
         onSubmitSuccess?.(data as SubmitResponseData);
-        if (resetAfterSubmit) rvf.__store__.store.getState().reset();
+        if (resetAfterSubmit) {
+          const formElement = form.__store__.formRef.current;
+          if (formElement) formElement.reset();
+          else form.__store__.store.getState().reset();
+        }
       },
       onSubmitFailure: onSubmitFailure ?? noOp,
       validationBehaviorConfig: validationBehaviorConfig,
@@ -172,7 +176,11 @@ export function useForm<
       onSubmit,
       onSubmitSuccess: (data: unknown) => {
         onSubmitSuccess?.(data as SubmitResponseData);
-        if (resetAfterSubmit) form.__store__.store.getState().reset();
+        if (resetAfterSubmit) {
+          const formElement = form.__store__.formRef.current;
+          if (formElement) formElement.reset();
+          else form.__store__.store.getState().reset();
+        }
       },
       onSubmitFailure,
     });
@@ -184,6 +192,7 @@ export function useForm<
     onSubmitFailure,
     form.__store__.store,
     resetAfterSubmit,
+    form.__store__.formRef,
   ]);
 
   useEffect(() => {
