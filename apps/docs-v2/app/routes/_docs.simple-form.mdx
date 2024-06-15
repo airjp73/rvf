@@ -12,6 +12,7 @@ Notice how much we have to:
 
 - Manually pull all the data out of the form
 - Manually validate that the passwords match in three different places
+- Manually call `setCustomValidity` and `reportValidity` on the confirm password input
 - Manually manage a loading state
 
 ## Simplifying with RVF
@@ -19,3 +20,15 @@ Notice how much we have to:
 Now let's add just a little bit of RVF.
 
 <SimpleFormRvf />
+
+We've only saved a few lines of code, but the code is much less manual and more organized.
+Now we
+
+- Get the data directly in our submit handler
+- Get to keep our existing, native validations via the `required` prop.
+- Get our custom validation run automatically at the right time
+- Don't have to call `setCustomValidity` and `reportValidity` directly
+- Don't have to manage a loading state
+
+And we didn't have to call `register` or `useField` or use a `Field` component or anything.
+Just `useForm`, some native validations, and `useNativeValidity` for an extra custom error.

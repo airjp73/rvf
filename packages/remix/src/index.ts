@@ -34,6 +34,7 @@ export {
   useFormScopeOrContext,
   isValidationErrorResponse,
   useFormScope,
+  useNativeValidity,
 } from "@rvf/react";
 export { useForm, type RemixFormOpts as FormScopeRemixOpts } from "./useForm";
 export { ValidatedForm, type ValidatedFormProps } from "./ValidatedForm";

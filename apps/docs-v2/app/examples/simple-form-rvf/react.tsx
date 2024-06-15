@@ -1,5 +1,5 @@
-import { useForm } from "@rvf/react";
-import { useEffect, useRef, useState } from "react";
+import { useForm, useNativeValidity } from "@rvf/react";
+import { useRef } from "react";
 import { Button } from "~/ui/button";
 import { Input } from "~/ui/input";
 import { Label } from "~/ui/label";
@@ -36,11 +36,7 @@ export const SignupForm = () => {
   });
 
   const confirmRef = useRef<HTMLInputElement>(null);
-  const passwordMatchError = form.error("confirmPassword") ?? "";
-  useEffect(
-    () => confirmRef.current?.setCustomValidity(passwordMatchError),
-    [passwordMatchError],
-  );
+  useNativeValidity(confirmRef, form.error("confirmPassword"));
 
   return (
     <form {...form.getFormProps()}>
