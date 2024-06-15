@@ -223,10 +223,11 @@ function NavigationGroup({
 
 export const navigation: Array<NavGroup> = [
   {
-    title: "Guides",
+    title: "Getting started",
     links: [
       { title: "Introduction", href: "/" },
       { title: "Installation", href: "/installation" },
+      { title: "A simple form", href: "/simple-form" },
     ],
   },
 ];
