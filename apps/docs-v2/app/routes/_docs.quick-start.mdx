@@ -1,0 +1,146 @@
+# Quick start
+
+You only need a couple things to get started with RVF.
+
+## Validators
+
+<Row>
+  <Col>
+    All validation in RVF is done at the form level using a `validator`.
+    RVF has first-party validation adaptors for `zod` and `yup`, but you can also create your own.
+  </Col>
+  <Col>
+    <CodeExamples title="Creating a validator" tabs={["Zod", "Yup"]}>
+      ```typescript
+      import { withZod } from "@rvf/zod";
+      import { z } from "zod";
+
+      const validator = withZod(
+        z.object({
+          name: z.string().min(1),
+          email: z.string().email().min(1),
+        }),
+      )
+      ```
+
+      ```typescript
+      import { withYup } from "@rvf/yup";
+      import * as yup from "yup";
+
+      const validator = withYup(
+        yup.object({
+          name: z.string().required(),
+          email: z.string().email().required(),
+        }),
+      )
+      ```
+    </CodeExamples>
+  </Col>
+</Row>
+
+## Connecting it to your form
+
+<Row>
+  <Col>
+    By default, RVF let's the browser do most of the heavy lifting,
+    so it must be used with a native html `form` element (though there is an [escape hatch](/state-mode)).
+  </Col>
+  <Col>
+    ```tsx
+      import { useForm } from "@rvf/react";
+
+      const validator = // The validator we created above
+
+      const MyForm = () => {
+        const form = useForm({
+          validator,
+        });
+
+        return (
+          <form {...form.getFormProps()}>
+            <label>
+              Name
+              <input name="name" />
+            </label>
+
+            <label>
+              Email
+              <input name="email" />
+            </label>
+
+            <button type="submit">Submit</button>
+          </form>
+        );
+      }
+    ```
+  </Col>
+</Row>
+
+## Choose how to show your errors
+
+<Row>
+  <Col>
+    Now you can access your form's validatio errors using `form.error("fieldName")`.
+    It's common to simply display these errors in the UI, but RVF also provides a
+    `useNativeValidity` hook you can use to display errors using [`setCustomValidity`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLInputElement/setCustomValidity).
+  </Col>
+  <Col>
+    ```diff
+      <label>
+        Name
+    -   <input name="name" />
+    +   <input name="name" aria-describedby="name-error" />
+      </label>
+    + {form.error("name") && (
+    +   <div id="name-error">{form.error("name")}</div>
+    + )}
+    ```
+  </Col>
+</Row>
+
+## Getting a little more power
+
+With this setup you can use many of the features of RVF.
+Pretty much all of the RVF features that _observe_ the form will work now.
+
+- Validation
+- Listening to changes in input values
+- Observing dirty & touched states
+- etc.
+
+Plus a couple other things like:
+
+- Programmatically moving focus to any field in the form
+- Modifying dirty & touched states
+
+But what we _can't_ do yet is to modify the form's values,
+either with default values or programmatically modifying the form on the fly.
+
+### Wiring up the inputs
+
+<Row>
+  <Col>
+    To be able to make changes to the form's values, we need to wire up the inputs
+    with `form.getInputProps`.
+  </Col>
+  <Col>
+    ```diff
+    -   <input name="name" aria-describedby="name-error" />
+    +   <input
+    +     {...form.getInputProps("name")}
+    +     aria-describedby="name-error"
+    +   />
+    ```
+  </Col>
+</Row>
+
+## Next steps
+
+That's all you really need to get started, but it isn't all RVF can do.
+Check out the guides or the API reference to learn more about power features like
+
+- Nested objects and arrays
+- Field arrays
+- Controlled components
+- Creating your own powerful, typesafe abstractions using form scopes.
+- "State mode"

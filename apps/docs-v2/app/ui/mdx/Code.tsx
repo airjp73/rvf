@@ -190,8 +190,8 @@ export const CodeExamples = ({
 }) => {
   const validChildren = Children.toArray(children).filter(isValidElement);
   return (
-    <Tabs defaultValue={tabs[0]}>
-      <ExampleArea title={title}>
+    <ExampleArea title={title}>
+      <Tabs defaultValue={tabs[0]}>
         <CodeHeader
           title={title}
           tabs={
@@ -209,8 +209,8 @@ export const CodeExamples = ({
             <Copyable>{validChildren[index]}</Copyable>
           </CodePanel>
         ))}
-      </ExampleArea>
-    </Tabs>
+      </Tabs>
+    </ExampleArea>
   );
 };
 
