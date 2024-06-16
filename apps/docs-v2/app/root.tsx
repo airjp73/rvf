@@ -4,6 +4,8 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  isRouteErrorResponse,
+  useRouteError,
 } from "@remix-run/react";
 import "./tailwind.css";
 import { ThemeProvider } from "./ui/theme/themeMachine";
@@ -34,4 +36,45 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
 export default function App() {
   return <Outlet />;
+}
+
+export function ErrorBoundary() {
+  const error = useRouteError();
+
+  if (isRouteErrorResponse(error)) {
+    if (error.status === 404) {
+      return (
+        <div className="container flex flex-col gap-4 items-center justify-center h-screen">
+          <h1 className="text-3xl">404</h1>
+          <p>
+            These docs are still in development, so I probably haven't added
+            this page yet.
+          </p>
+        </div>
+      );
+    }
+    return (
+      <div className="container flex flex-col gap-4 items-center justify-center h-screen">
+        <h1 className="text-3xl">
+          {error.status} {error.statusText}
+        </h1>
+        <p>{error.data}</p>
+      </div>
+    );
+  } else if (error instanceof Error) {
+    return (
+      <div className="container flex flex-col gap-4 items-center justify-center h-screen">
+        <h1 className="text-3xl">Error</h1>
+        <p>{error.message}</p>
+        <p>The stack trace is:</p>
+        <pre>{error.stack}</pre>
+      </div>
+    );
+  } else {
+    return (
+      <div className="container flex flex-col gap-4 items-center justify-center h-screen">
+        <h1 className="text-3xl">Unknown error</h1>
+      </div>
+    );
+  }
 }
