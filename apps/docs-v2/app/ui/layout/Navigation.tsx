@@ -230,6 +230,10 @@ export const navigation: Array<NavGroup> = [
       { title: "Quick start", href: "/quick-start" },
     ],
   },
+  {
+    title: "Guides",
+    links: [{ title: "Different input types", href: "/input-types" }],
+  },
 ];
 
 export function Navigation({

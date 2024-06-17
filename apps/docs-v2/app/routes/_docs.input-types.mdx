@@ -1,0 +1,44 @@
+# Working with different input types
+
+This guide covers the basis of how to use RVF with different native input types.
+
+## Number inputs
+
+### Setting default values
+
+<Row>
+  <Col>
+    - Number inputs can be set using either a `number` or a `string`,
+    and both approaches can be used for different fields in the same form.
+    - When you access the value of the input using `form.value("age")`, the type
+    of that value will be consistent with the type of the default value, even after
+    the user has changed the value.
+    - If there is no default value, the type of the value will be a `number`.
+  </Col>
+  <Col>
+    ```tsx
+    const form = useForm({
+      defaultValues: {
+        age: "25",
+        numberOfPeople: 10,
+      },
+    })
+
+    const age = form.value("age");
+    //    ^? string
+    const numberOfPeople = form.value("numberOfPeople");
+    //    ^? number
+    ```
+  </Col>
+</Row>
+
+### Validating
+
+Like most input types, the value inside the native `form` element is always a string.
+Unless you're using [state mode](/state-mode), your validator should be able to handle that.
+
+- If you're using `zod`, you can use `z.coerce.number` to handle this.
+- If you're using `yup`, then `yup.number()` already handles this.
+
+If you're using state mode, then the value passed to your validator will be the same value
+that you would get out of `form.value("myField")`.
