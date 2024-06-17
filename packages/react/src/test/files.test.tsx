@@ -80,10 +80,12 @@ it("should not blow up when a file has a default value", async () => {
       handleSubmit: submit,
     });
 
-    const props = form.field("file").getInputProps({ type: "file" });
     return (
       <form {...form.getFormProps()} encType="multipart/form-data">
-        <input data-testid="file" {...props} />
+        <input
+          data-testid="file"
+          {...form.getInputProps("file", { type: "file" })}
+        />
         <button data-testid="submit" type="submit" />
       </form>
     );
@@ -98,4 +100,85 @@ it("should not blow up when a file has a default value", async () => {
 
   expect(submit).toHaveBeenCalledTimes(1);
   expect(submit).toHaveBeenCalledWith({ file }, expect.any(FormData), {});
+});
+
+it("should be possible to observe and clear the value of a file input", async () => {
+  const submit = vi.fn();
+  const TestComp = () => {
+    const form = useForm({
+      defaultValues: {
+        file: "",
+      },
+      validator: successValidator,
+      handleSubmit: submit,
+    });
+
+    return (
+      <form {...form.getFormProps()} encType="multipart/form-data">
+        <input
+          data-testid="file"
+          {...form.getInputProps("file", { type: "file" })}
+        />
+        <pre data-testid="file-value">{JSON.stringify(form.value("file"))}</pre>
+        <button
+          data-testid="clear"
+          type="button"
+          onClick={() => form.setValue("file", "")}
+        />
+        <button data-testid="submit" type="submit" />
+      </form>
+    );
+  };
+
+  render(<TestComp />);
+
+  const file = new File(["test"], "test.txt", { type: "text/plain" });
+  await userEvent.upload(screen.getByTestId("file"), file);
+  expect(screen.getByTestId("file-value")).toHaveTextContent(
+    JSON.stringify(file),
+  );
+
+  await userEvent.click(screen.getByTestId("clear"));
+  expect(screen.getByTestId("file-value")).toHaveTextContent('""');
+});
+
+it("should be possible to observe and clear the value of a multi-file input", async () => {
+  const submit = vi.fn();
+  const TestComp = () => {
+    const form = useForm({
+      defaultValues: {
+        file: "",
+      },
+      validator: successValidator,
+      handleSubmit: submit,
+    });
+
+    return (
+      <form {...form.getFormProps()} encType="multipart/form-data">
+        <input
+          data-testid="file"
+          {...form.getInputProps("file", { type: "file" })}
+          multiple
+        />
+        <pre data-testid="file-value">{JSON.stringify(form.value("file"))}</pre>
+        <button
+          data-testid="clear"
+          type="button"
+          onClick={() => form.setValue("file", "")}
+        />
+        <button data-testid="submit" type="submit" />
+      </form>
+    );
+  };
+
+  render(<TestComp />);
+
+  const file = new File(["test"], "test.txt", { type: "text/plain" });
+  await userEvent.upload(screen.getByTestId("file"), file);
+  expect(screen.getByTestId("file-value")).toHaveTextContent(
+    JSON.stringify(file),
+  );
+
+  await userEvent.click(screen.getByTestId("clear"));
+  expect(screen.getByTestId("file-value")).toHaveTextContent('""');
 });

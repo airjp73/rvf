@@ -1,6 +1,35 @@
 # Working with different input types
 
-This guide covers the basis of how to use RVF with different native input types.
+Since RVF validates and submits data directly from the html `form` element by default,
+nearly anything you can do with plain html forms can be done with RVF.
+All native input types are supported out of the box.
+
+When you're using RVF to observe or set the value of a field,
+it should hopefully "just work" the way you expect.
+But for completeness, this page is going to cover all the different input types
+and how they interact with RVF.
+
+## Common traits
+
+### Setting default values
+
+All input types (except for `file`) can have their default value set using a `string`.
+For input types that represent some other type (like `number`),
+you can usually set the default value using that type.
+
+### Observing / setting values
+
+The type of the value you get when you call `form.value(fieldName)` is always
+the same as the type you pass into `defaultValues`.
+You should use the same type when calling `form.setValue(fieldName, value)`.
+
+### Validating
+
+Unless you're using [state mode](/state-mode), the data received by your validator
+will _always_ be a `string` (except for `file` inputs) **OR** a `string[]`.
+
+- If only one input is in the form for a given field, the value will be a `string`.
+- If multiple inputs in the form have the same name, the value will be a `string[]`.
 
 ## Number inputs
 
@@ -42,3 +71,28 @@ Unless you're using [state mode](/state-mode), your validator should be able to 
 
 If you're using state mode, then the value passed to your validator will be the same value
 that you would get out of `form.value("myField")`.
+
+## File inputs
+
+<Row>
+  <Col>
+    File inputs actually pretty inflexible. Try running this code to see what happens.
+    If you do that, you might see an error like this:
+    
+    > This input element accepts a filename, which may only be programmatically set to the empty string.
+  </Col>
+  <Col>
+
+    ```tsx
+    const FileInputTest = () => {
+      const inputRef = useRef<HTMLInputElement>(null);
+      return <input type="file" defaultValue="myFile.txt" />;
+    }
+    ```
+  </Col>
+</Row>
+
+Unfortunately, this means we can't set the default value of a file input
+or modify it with `setValue`, unless that value is an empty string (`""`).
+
+TODO: note about observing the value

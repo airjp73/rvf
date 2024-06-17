@@ -37,6 +37,7 @@ export const ReactExample = () => {
     defaultValues: {
       projectName: "",
       tasks: [] as Array<{ title: string; daysToComplete: number }>,
+      file: "" as File | "",
     },
     handleSubmit: async ({ projectName, tasks }) => {
       await createProject({ name: projectName, tasks });
@@ -51,6 +52,9 @@ export const ReactExample = () => {
   return (
     <form {...form.getFormProps()}>
       <MyInput label="Project name" scope={form.scope("projectName")} />
+
+      <input {...form.getInputProps("file", { type: "file" })} />
+      <pre>{JSON.stringify(form.value("file"))}</pre>
 
       <div>
         <h3>Tasks</h3>
