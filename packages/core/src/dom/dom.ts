@@ -171,8 +171,8 @@ export const getNextNativeValue = ({
   }
 
   if (element.type === "number") {
-    if (typeof currentValue === "number") return Number(derivedValue);
-    return String(derivedValue);
+    if (typeof currentValue === "string") return String(derivedValue);
+    return Number(derivedValue);
   }
 
   return derivedValue;
