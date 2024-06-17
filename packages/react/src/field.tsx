@@ -136,8 +136,7 @@ export const makeFieldImpl = <FormInputData,>({
       name: fieldName,
       createRef: () => createTransientRef(fieldName, form),
       formId: getFormId(trackedState),
-      getCurrentValue: () =>
-        getFieldValue(form.__store__.store.getState(), fieldName),
+      store: form.__store__,
     }),
 
     getControlProps: (props = {}) => ({

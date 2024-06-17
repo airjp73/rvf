@@ -2,9 +2,10 @@ import { Ref } from "react";
 import * as R from "remeda";
 import {
   getCheckboxChecked,
-  getNextCheckboxValue,
   getRadioChecked,
-  getEventValue,
+  onNativeChange,
+  FormStore,
+  isEvent,
 } from "@rvf/core";
 
 export type CreateGetInputPropsOptions = {
@@ -12,9 +13,9 @@ export type CreateGetInputPropsOptions = {
   onBlur: () => void;
   defaultValue?: any;
   name: string;
-  getCurrentValue: () => unknown;
   createRef: () => Ref<HTMLElement>;
   formId?: string;
+  store: FormStore;
 };
 
 type HandledProps = "name" | "defaultValue" | "defaultChecked";
@@ -50,7 +51,7 @@ export const createGetInputProps = ({
   defaultValue,
   name,
   createRef,
-  getCurrentValue,
+  store,
   formId,
 }: CreateGetInputPropsOptions): GetInputProps => {
   return <T extends MinimalInputProps>(props = {} as any) => {
@@ -58,21 +59,8 @@ export const createGetInputProps = ({
       ...props,
       form: formId,
       onChange: (...args: unknown[]) => {
-        const value = getEventValue(args[0]);
-
-        if (props.type === "radio") {
-          onChange(props.value);
-        } else if (props.type === "checkbox") {
-          onChange(
-            getNextCheckboxValue({
-              derivedValue: value,
-              valueProp: props.value,
-              currentValue: getCurrentValue(),
-            }),
-          );
-        } else {
-          onChange(value);
-        }
+        if (isEvent(args[0])) onNativeChange(args[0] as Event, store);
+        else onChange(args[0]);
         props?.onChange?.(...args);
       },
       onBlur: (...args: unknown[]) => {

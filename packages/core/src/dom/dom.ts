@@ -148,77 +148,74 @@ export const getElementsWithNames = (
   ) as HTMLElement[];
 };
 
-export const registerFormElementEvents = (store: FormStore) => {
+export const onNativeChange = (event: Event, store: FormStore) => {
+  if (event.defaultPrevented) return;
   const transientState = () => store.store.getState();
 
-  const onChange = (event: Event) => {
-    if (event.defaultPrevented) return;
+  const changed = event.target;
+  const formEl = store.formRef.current;
 
-    const changed = event.target;
-    const formEl = store.formRef.current;
+  if (
+    !formEl ||
+    !changed ||
+    !isFormControl(changed) ||
+    !changed.form ||
+    changed.form !== formEl
+  )
+    return;
 
-    if (
-      !formEl ||
-      !changed ||
-      !isFormControl(changed) ||
-      !changed.form ||
-      changed.form !== formEl
-    )
-      return;
+  const name = changed.name;
+  if (store.transientFieldRefs.has(name) || store.controlledFieldRefs.has(name))
+    return;
 
-    const name = changed.name;
-    if (
-      store.transientFieldRefs.has(name) ||
-      store.controlledFieldRefs.has(name)
-    )
-      return;
+  const getValue = () => {
+    const derivedValue = getFormControlValue(changed);
 
-    const getValue = () => {
-      const derivedValue = getFormControlValue(changed);
+    if (changed.type === "checkbox") {
+      const nextValue = getNextCheckboxValue({
+        currentValue: getFieldValue(transientState(), name),
+        derivedValue,
+        valueProp: changed.value,
+      });
+      return nextValue;
+    }
 
-      if (changed.type === "checkbox") {
-        const nextValue = getNextCheckboxValue({
-          currentValue: getFieldValue(transientState(), name),
-          derivedValue,
-          valueProp: changed.value,
-        });
-        return nextValue;
-      }
+    if (changed.type === "radio") {
+      return changed.value;
+    }
 
-      if (changed.type === "radio") {
-        return changed.value;
-      }
-
-      return derivedValue;
-    };
-
-    transientState().onFieldChange(name, getValue());
+    return derivedValue;
   };
 
-  const onBlur = (event: FocusEvent) => {
-    if (event.defaultPrevented) return;
+  transientState().onFieldChange(name, getValue());
+};
 
-    const changed = event.target;
-    const formEl = store.formRef.current;
+export const onNativeBlur = (event: FocusEvent, store: FormStore) => {
+  if (event.defaultPrevented) return;
+  const transientState = () => store.store.getState();
 
-    if (
-      !formEl ||
-      !changed ||
-      !isFormControl(changed) ||
-      !changed.form ||
-      changed.form !== formEl
-    )
-      return;
+  const changed = event.target;
+  const formEl = store.formRef.current;
 
-    const name = changed.name;
-    if (
-      store.transientFieldRefs.has(name) ||
-      store.controlledFieldRefs.has(name)
-    )
-      return;
+  if (
+    !formEl ||
+    !changed ||
+    !isFormControl(changed) ||
+    !changed.form ||
+    changed.form !== formEl
+  )
+    return;
 
-    transientState().onFieldBlur(name);
-  };
+  const name = changed.name;
+  if (store.transientFieldRefs.has(name) || store.controlledFieldRefs.has(name))
+    return;
+
+  transientState().onFieldBlur(name);
+};
+
+export const registerFormElementEvents = (store: FormStore) => {
+  const onChange = (event: Event) => onNativeChange(event, store);
+  const onBlur = (event: FocusEvent) => onNativeBlur(event, store);
 
   document.addEventListener("input", onChange);
   document.addEventListener("focusout", onBlur);
