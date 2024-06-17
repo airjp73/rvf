@@ -170,6 +170,11 @@ export const getNextNativeValue = ({
     return element.value;
   }
 
+  if (element.type === "number") {
+    if (typeof currentValue === "number") return Number(derivedValue);
+    return String(derivedValue);
+  }
+
   return derivedValue;
 };
 

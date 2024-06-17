@@ -60,18 +60,23 @@ export const createGetInputProps = ({
       form: formId,
       onChange: (...args: unknown[]) => {
         props?.onChange?.(...args);
-        if (isEvent(args[0])) {
-          const target = (args[0] as FormEvent).target;
-          if (isFormControl(target)) {
-            const nextValue = getNextNativeValue({
-              element: target,
-              currentValue: getCurrentValue(),
-            });
-            onChange(nextValue);
-          }
-        } else {
+
+        if (!isEvent(args[0])) {
           onChange(args[0]);
+          return;
         }
+
+        const target = (args[0] as FormEvent).target;
+        if (!isFormControl(target)) {
+          onChange(args[0]);
+          return;
+        }
+
+        const nextValue = getNextNativeValue({
+          element: target,
+          currentValue: getCurrentValue(),
+        });
+        onChange(nextValue);
       },
       onBlur: (...args: unknown[]) => {
         props?.onBlur?.(...args);

@@ -13,18 +13,21 @@ describe("number inputs", () => {
 
       return (
         <form {...form.getFormProps()}>
-          <input data-testid="age" {...form.field("age").getInputProps()} />
+          <input
+            data-testid="age"
+            {...form.field("age").getInputProps({ type: "number" })}
+          />
           <pre data-testid="age-value">{JSON.stringify(form.value("age"))}</pre>
         </form>
       );
     };
     render(<TestComp />);
 
-    expect(screen.getByTestId("age")).toHaveValue("25");
+    expect(screen.getByTestId("age")).toHaveValue(25);
     expect(screen.getByTestId("age-value").textContent).toEqual("25");
 
     await userEvent.type(screen.getByTestId("age"), "4");
-    expect(screen.getByTestId("age")).toHaveValue("254");
+    expect(screen.getByTestId("age")).toHaveValue(254);
     expect(screen.getByTestId("age-value").textContent).toEqual("254");
   });
 
@@ -37,18 +40,21 @@ describe("number inputs", () => {
 
       return (
         <form {...form.getFormProps()}>
-          <input data-testid="age" {...form.field("age").getInputProps()} />
+          <input
+            data-testid="age"
+            {...form.field("age").getInputProps({ type: "number" })}
+          />
           <pre data-testid="age-value">{JSON.stringify(form.value("age"))}</pre>
         </form>
       );
     };
     render(<TestComp />);
 
-    expect(screen.getByTestId("age")).toHaveValue("25");
+    expect(screen.getByTestId("age")).toHaveValue(25);
     expect(screen.getByTestId("age-value").textContent).toEqual('"25"');
 
     await userEvent.type(screen.getByTestId("age"), "4");
-    expect(screen.getByTestId("age")).toHaveValue("254");
+    expect(screen.getByTestId("age")).toHaveValue(254);
     expect(screen.getByTestId("age-value").textContent).toEqual('"254"');
   });
 });
