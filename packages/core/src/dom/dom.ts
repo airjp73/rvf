@@ -148,6 +148,31 @@ export const getElementsWithNames = (
   ) as HTMLElement[];
 };
 
+export const getNextNativeValue = ({
+  element,
+  currentValue,
+}: {
+  element: FormControl;
+  currentValue: unknown;
+}) => {
+  const derivedValue = getFormControlValue(element);
+
+  if (element.type === "checkbox") {
+    const nextValue = getNextCheckboxValue({
+      currentValue,
+      derivedValue,
+      valueProp: element.value,
+    });
+    return nextValue;
+  }
+
+  if (element.type === "radio") {
+    return element.value;
+  }
+
+  return derivedValue;
+};
+
 export const onNativeChange = (event: Event, store: FormStore) => {
   if (event.defaultPrevented) return;
   const transientState = () => store.store.getState();
@@ -168,26 +193,13 @@ export const onNativeChange = (event: Event, store: FormStore) => {
   if (store.transientFieldRefs.has(name) || store.controlledFieldRefs.has(name))
     return;
 
-  const getValue = () => {
-    const derivedValue = getFormControlValue(changed);
-
-    if (changed.type === "checkbox") {
-      const nextValue = getNextCheckboxValue({
-        currentValue: getFieldValue(transientState(), name),
-        derivedValue,
-        valueProp: changed.value,
-      });
-      return nextValue;
-    }
-
-    if (changed.type === "radio") {
-      return changed.value;
-    }
-
-    return derivedValue;
-  };
-
-  transientState().onFieldChange(name, getValue());
+  transientState().onFieldChange(
+    name,
+    getNextNativeValue({
+      element: changed,
+      currentValue: getFieldValue(transientState(), name),
+    }),
+  );
 };
 
 export const onNativeBlur = (event: FocusEvent, store: FormStore) => {

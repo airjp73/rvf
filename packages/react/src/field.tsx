@@ -111,10 +111,8 @@ export const makeFieldImpl = <FormInputData,>({
   validationBehavior,
 }: FieldImplParams<FormInputData>): FieldApi<FormInputData> => {
   const fieldName = form.__field_prefix__;
-  const onChange = (value: unknown) => {
-    if (isEvent(value)) onNativeChange(value as Event, form.__store__);
-    else trackedState.onFieldChange(fieldName, value, validationBehavior);
-  };
+  const onChange = (value: unknown) =>
+    trackedState.onFieldChange(fieldName, value, validationBehavior);
 
   const onBlur = () => trackedState.onFieldBlur(fieldName, validationBehavior);
 
@@ -140,17 +138,19 @@ export const makeFieldImpl = <FormInputData,>({
       name: fieldName,
       createRef: () => createTransientRef(fieldName, form),
       formId: getFormId(trackedState),
+      getCurrentValue: () =>
+        getFieldValue(form.__store__.store.getState(), fieldName),
     }),
 
     getControlProps: (props = {}) => ({
       name: fieldName,
       onChange: (value) => {
-        onChange(value);
         props.onChange?.(value);
+        onChange(value);
       },
       onBlur: () => {
-        onBlur();
         props.onBlur?.();
+        onBlur();
       },
       value: getFieldValue(trackedState, fieldName) as never,
       ref: createControlledRef(fieldName, form),
