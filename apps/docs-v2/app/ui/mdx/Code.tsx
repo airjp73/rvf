@@ -101,10 +101,16 @@ export function CodePanel({
   );
 }
 
-const Copyable = ({ children }: { children: React.ReactNode }) => {
+const Copyable = ({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) => {
   const copyText = useRef<string | null>(null);
   return (
-    <>
+    <div className={cn("relative not-prose group", className)}>
       <div
         ref={(el) => {
           copyText.current = el?.textContent ?? null;
@@ -113,7 +119,7 @@ const Copyable = ({ children }: { children: React.ReactNode }) => {
         {children}
       </div>
       <CopyButton content={() => copyText.current ?? ""} />
-    </>
+    </div>
   );
 };
 
@@ -168,7 +174,7 @@ export function ExampleArea({
   return (
     <div
       className={cn(
-        "my-6 overflow-hidden ring-1 ring-zinc-900/25 dark:ring-[white]/15 rounded-md not-prose [&_pre]:rounded-none [&_pre]:my-0",
+        "my-6 overflow-hidden ring-1 ring-zinc-900/25 dark:ring-[white]/15 rounded-md not-prose group/example example-area",
         "group example-area",
         className,
       )}
@@ -206,7 +212,7 @@ export const CodeExamples = ({
         />
         {tabs.map((tab, index) => (
           <CodePanel value={tab} key={tab}>
-            <Copyable>{validChildren[index]}</Copyable>
+            {validChildren[index]}
           </CodePanel>
         ))}
       </Tabs>
@@ -230,14 +236,17 @@ export function Pre({
   ...props
 }: React.ComponentPropsWithoutRef<"pre">) {
   return (
-    <pre
-      {...props}
-      className={cn(
-        "not-prose shiki whitespace-pre-wrap p-3 text-xs rounded-md my-6",
-        "border border-zinc-900/25 dark:border-[white]/15 group-[.example-area]:border-none",
-      )}
-    >
-      {children}
-    </pre>
+    <Copyable className="my-6 group-[.example-area]/example:my-0">
+      <pre
+        {...props}
+        className={cn(
+          "not-prose shiki whitespace-pre-wrap p-3 text-xs rounded-md relative",
+          "border border-zinc-900/25 dark:border-[white]/15 group-[.example-area]:border-none",
+          "group-[.example-area]/example:rounded-none",
+        )}
+      >
+        {children}
+      </pre>
+    </Copyable>
   );
 }
