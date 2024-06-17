@@ -10,6 +10,8 @@ import {
   getFieldTouched,
   getFieldValue,
   getFormId,
+  isEvent,
+  onNativeChange,
 } from "@rvf/core";
 import { GetInputProps, createGetInputProps } from "./inputs/getInputProps";
 import { useFormScopeOrContextInternal } from "./context";
@@ -109,8 +111,10 @@ export const makeFieldImpl = <FormInputData,>({
   validationBehavior,
 }: FieldImplParams<FormInputData>): FieldApi<FormInputData> => {
   const fieldName = form.__field_prefix__;
-  const onChange = (value: unknown) =>
-    trackedState.onFieldChange(fieldName, value, validationBehavior);
+  const onChange = (value: unknown) => {
+    if (isEvent(value)) onNativeChange(value as Event, form.__store__);
+    else trackedState.onFieldChange(fieldName, value, validationBehavior);
+  };
 
   const onBlur = () => trackedState.onFieldBlur(fieldName, validationBehavior);
 
@@ -136,7 +140,6 @@ export const makeFieldImpl = <FormInputData,>({
       name: fieldName,
       createRef: () => createTransientRef(fieldName, form),
       formId: getFormId(trackedState),
-      store: form.__store__,
     }),
 
     getControlProps: (props = {}) => ({
