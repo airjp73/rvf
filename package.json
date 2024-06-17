@@ -21,6 +21,7 @@
     "lint": "eslint --cache .",
     "prettier": "prettier --cache --check .",
     "format": "prettier --write .",
+    "build-packages": "turbo run build --filter=./packages/*",
     "build": "turbo run build",
     "prepare": "husky install"
   },
