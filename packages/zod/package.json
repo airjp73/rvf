@@ -24,7 +24,7 @@
     "@types/semver": "^7.5.0",
     "@rvf/core": "*",
     "semver": "^7.5.1",
-    "set-get": "*",
+    "@rvf/set-get": "*",
     "tsconfig": "*",
     "tsup-config": "*",
     "typescript": "^5.4.5",

@@ -26,7 +26,7 @@ import {
   ValueAtPath,
   getPath,
   pathArrayToString,
-} from "set-get";
+} from "@rvf/set-get";
 import { FieldArrayApi, makeFieldArrayImpl } from "./array";
 import { makeImplFactory } from "./implFactory";
 import {

@@ -1,4 +1,4 @@
-import { getPath } from "set-get";
+import { getPath } from "@rvf/set-get";
 import { FormStoreValue } from "./store";
 
 export const getFieldValue = (

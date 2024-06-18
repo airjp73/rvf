@@ -30,7 +30,7 @@
     "tsconfig": "*",
     "tsup-config": "*",
     "typescript": "^5.4.5",
-    "set-get": "*",
+    "@rvf/set-get": "*",
     "@rvf/core": "*"
   }
 }

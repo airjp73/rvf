@@ -3,7 +3,7 @@ import {
   getPath,
   stringToPathArray,
   pathArrayToString,
-} from "set-get";
+} from "@rvf/set-get";
 import { create } from "zustand/react";
 import { immer } from "./immer";
 import {

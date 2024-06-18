@@ -1,4 +1,4 @@
-import { setPath } from "set-get";
+import { setPath } from "@rvf/set-get";
 import {
   z,
   ZodArray,
@@ -13,7 +13,7 @@ import {
 type InputType<DefaultType extends ZodTypeAny> = {
   (): ZodEffects<DefaultType>;
   <ProvidedType extends ZodTypeAny>(
-    schema: ProvidedType
+    schema: ProvidedType,
   ): ZodEffects<ProvidedType>;
 };
 
@@ -50,9 +50,9 @@ export const numeric: InputType<ZodNumber> = (schema = z.number()) =>
           .string()
           .transform((val) => Number(val))
           .refine((val) => !Number.isNaN(val)),
-      ])
+      ]),
     ),
-    schema
+    schema,
   ) as any;
 
 type CheckboxOpts = {
@@ -95,7 +95,7 @@ export const file: InputType<z.ZodType<File>> = (schema = z.instanceof(File)) =>
  * and will not require any values to be present.
  */
 export const repeatable: InputType<ZodArray<any>> = (
-  schema = z.array(text())
+  schema = z.array(text()),
 ) => {
   return z.preprocess((val) => {
     if (Array.isArray(val)) return val;
@@ -109,7 +109,7 @@ export const repeatable: InputType<ZodArray<any>> = (
  * Instead of passing the schema for an entire array, you pass in the schema for the item type.
  */
 export const repeatableOfType = <T extends ZodTypeAny>(
-  schema: T
+  schema: T,
 ): ZodEffects<ZodArray<T>> => repeatable(z.array(schema));
 
 const entries = z.array(z.tuple([z.string(), z.any()]));
@@ -120,16 +120,16 @@ type FormDataLikeInput = {
 };
 
 type FormDataType = {
-  <T extends z.ZodRawShape>(shape: T): ZodEffects<
+  <T extends z.ZodRawShape>(
+    shape: T,
+  ): ZodEffects<
     ZodObject<T>,
     z.output<ZodObject<T>>,
     FormData | FormDataLikeInput
   >;
-  <T extends z.ZodTypeAny>(schema: T): ZodEffects<
-    T,
-    z.output<T>,
-    FormData | FormDataLikeInput
-  >;
+  <T extends z.ZodTypeAny>(
+    schema: T,
+  ): ZodEffects<T, z.output<T>, FormData | FormDataLikeInput>;
 };
 
 const safeParseJson = (jsonString: string) => {
@@ -143,9 +143,9 @@ const safeParseJson = (jsonString: string) => {
 export const json = <T extends ZodTypeAny>(schema: T): ZodEffects<T> =>
   z.preprocess(
     preprocessIfValid(
-      z.union([stripEmpty, z.string().transform((val) => safeParseJson(val))])
+      z.union([stripEmpty, z.string().transform((val) => safeParseJson(val))]),
     ),
-    schema
+    schema,
   );
 
 const processFormData = preprocessIfValid(
@@ -156,7 +156,7 @@ const processFormData = preprocessIfValid(
     .refine((val) => Symbol.iterator in val)
     .transform((val) => [...val])
     .refine(
-      (val): val is z.infer<typeof entries> => entries.safeParse(val).success
+      (val): val is z.infer<typeof entries> => entries.safeParse(val).success,
     )
     .transform((data): Record<string, unknown | unknown[]> => {
       const map: Map<string, unknown[]> = new Map();
@@ -168,14 +168,17 @@ const processFormData = preprocessIfValid(
         }
       }
 
-      return [...map.entries()].reduce((acc, [key, value]) => {
-        return setPath(acc, key, value.length === 1 ? value[0] : value);
-      }, {} as Record<string, unknown | unknown[]>);
-    })
+      return [...map.entries()].reduce(
+        (acc, [key, value]) => {
+          return setPath(acc, key, value.length === 1 ? value[0] : value);
+        },
+        {} as Record<string, unknown | unknown[]>,
+      );
+    }),
 );
 
 export const preprocessFormData = processFormData as (
-  formData: unknown
+  formData: unknown,
 ) => Record<string, unknown>;
 
 /**
@@ -188,5 +191,5 @@ export const preprocessFormData = processFormData as (
 export const formData: FormDataType = (shapeOrSchema: any): any =>
   z.preprocess(
     processFormData,
-    shapeOrSchema instanceof ZodType ? shapeOrSchema : z.object(shapeOrSchema)
+    shapeOrSchema instanceof ZodType ? shapeOrSchema : z.object(shapeOrSchema),
   );

@@ -1,4 +1,4 @@
-import { pathArrayToString } from "set-get";
+import { pathArrayToString } from "@rvf/set-get";
 import * as R from "remeda";
 
 export const makeImplFactory = <Item,>(

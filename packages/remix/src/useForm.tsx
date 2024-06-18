@@ -11,7 +11,7 @@ import {
   FormEncType,
   SubmitOptions,
 } from "@remix-run/react";
-import { toPathObject } from "../../set-get";
+import { toPathObject } from "@rvf/set-get";
 import { GenericObject, SubmitterOptions } from "@rvf/core";
 
 type PartialProps<T, Props extends keyof T> = Omit<T, Props> &

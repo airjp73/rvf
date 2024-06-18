@@ -24,7 +24,7 @@ import {
   ValidStringPaths,
   ValueAtPath,
   pathArrayToString,
-} from "set-get";
+} from "@rvf/set-get";
 
 type SubmitTypes<FormOutputData> =
   | {

@@ -1,5 +1,6 @@
-import { GenericObject } from "@rvf/core";
 import { pathArrayToString } from "./pathArrayToString";
+
+export type GenericObject = { [key: string]: any };
 
 export const toPathObject = (obj: GenericObject): Record<string, unknown> => {
   const entries = getLeafEntries(obj, []);

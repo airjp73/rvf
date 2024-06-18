@@ -27,7 +27,7 @@
   },
   "devDependencies": {
     "react-tracked": "^2.0.0",
-    "set-get": "*",
+    "@rvf/set-get": "*",
     "tsconfig": "*",
     "tsup-config": "*",
     "typescript": "^5.4.5",
