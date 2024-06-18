@@ -1,6 +1,5 @@
 import { anyString, TestFormData } from "@remix-validated-form/test-utils";
 import { withYup } from "@rvf/yup";
-import * as R from "remeda";
 import { Validator, objectFromPathEntries } from "@rvf/core";
 import { describe, it, expect } from "vitest";
 import * as yup from "yup";

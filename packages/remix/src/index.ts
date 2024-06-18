@@ -35,6 +35,8 @@ export {
   isValidationErrorResponse,
   useFormScope,
   useNativeValidity,
+  type SingleFileInputValue,
+  type MultiFileInputValue,
 } from "@rvf/react";
 export { useForm, type RemixFormOpts as FormScopeRemixOpts } from "./useForm";
 export { ValidatedForm, type ValidatedFormProps } from "./ValidatedForm";

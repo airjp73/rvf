@@ -133,6 +133,11 @@ it("should be possible to observe and clear the value of a file input", async ()
           type="button"
           onClick={() => form.setValue("file", "")}
         />
+        <button
+          data-testid="clear-2"
+          type="button"
+          onClick={() => form.setValue("file", null as never)}
+        />
         <button data-testid="submit" type="submit" />
       </form>
     );
@@ -141,11 +146,23 @@ it("should be possible to observe and clear the value of a file input", async ()
   render(<TestComp />);
 
   const file = new File(["test"], "test.txt", { type: "text/plain" });
-  await userEvent.upload(screen.getByTestId("file"), file);
+  const input = screen.getByTestId("file") as HTMLInputElement;
+
+  await userEvent.upload(input, file);
   expect(getValue()).toEqual(file);
+  expect(input.files).toHaveLength(1);
 
   await userEvent.click(screen.getByTestId("clear"));
   expect(getValue()).toEqual("");
+  expect(input.files).toHaveLength(0);
+
+  await userEvent.upload(screen.getByTestId("file"), file);
+  expect(getValue()).toEqual(file);
+  expect(input.files).toHaveLength(1);
+
+  await userEvent.click(screen.getByTestId("clear-2"));
+  expect(getValue()).toEqual(null);
+  expect(input.files).toHaveLength(0);
 });
 
 it("should be possible to observe and clear the value of a multi-file input", async () => {

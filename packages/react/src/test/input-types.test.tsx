@@ -55,6 +55,11 @@ describe("number inputs", () => {
     await userEvent.type(screen.getByTestId("age"), "4");
     expect(screen.getByTestId("age")).toHaveValue(4);
     expect(screen.getByTestId("age-value").textContent).toEqual("4");
+
+    // Clearing the input
+    await userEvent.clear(screen.getByTestId("age"));
+    expect(screen.getByTestId("age")).toHaveValue("");
+    expect(screen.getByTestId("age-value").textContent).toEqual("");
   });
 
   it("default values set as strings", async () => {
@@ -84,3 +89,8 @@ describe("number inputs", () => {
     expect(screen.getByTestId("age-value").textContent).toEqual('"254"');
   });
 });
+
+it.todo("moving keyboard focus to a radio shouldn't cause validation to run");
+it.todo(
+  "clicking vaguely around a radio without focusing shouldn't cause validation to run",
+);

@@ -11,6 +11,12 @@ and how they interact with RVF.
 
 ## Common traits
 
+### Types
+
+RVF exports helper types for the values of a few different input types.
+For they most part, they're what you expect, but it's worth noting that empty inputs
+are generally represented as `null` in caes where the main type of the input isn't a string.
+
 ### Setting default values
 
 All input types (except for `file`) can have their default value set using a `string`.
@@ -95,4 +101,25 @@ that you would get out of `form.value("myField")`.
 Unfortunately, this means we can't set the default value of a file input
 or modify it with `setValue`, unless that value is an empty string (`""`).
 
-TODO: note about observing the value
+### Relevant types
+
+- `SingleFileInputValue`
+  - `null | File`
+- `MultiFileInputValue`
+  - `null | File[]`
+
+### Setting default values
+
+It isn't possible to set the default value of a file input.
+
+### Using `setValue`
+
+You can use `setValue` if and only if the value you pass in is an empty string (`""`) or `null`.
+This will clear the file input.
+
+### Observing the value
+
+Oberving a file input value works.
+
+- If the input is set to `multiple`, then the value will have the type `null | File[]`.
+- If the input is not set to `multiple`, then the value will have the type `null | File`.

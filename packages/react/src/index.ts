@@ -18,6 +18,8 @@ export {
   type StateSubmitHandler,
   type DomSubmitHandler,
   isValidationErrorResponse,
+  type SingleFileInputValue,
+  type MultiFileInputValue,
 } from "@rvf/core";
 export { type ReactFormApi, type FormFields } from "./base";
 export { useForm, FormOpts } from "./useForm";
