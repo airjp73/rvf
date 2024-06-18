@@ -1,10 +1,6 @@
-import { FormScope, FormStore } from "../form";
+import { FormStore } from "../form";
 import { getFieldValue } from "../getters";
-import { MultiValueMap } from "../native-form-data/MultiValueMap";
-import * as R from "remeda";
-import { FieldErrors } from "../types";
 import { getNextCheckboxValue } from "./getCheckboxChecked";
-import { RefStore } from "../store";
 
 export const setFormControlValue = (element: HTMLElement, value: unknown) => {
   if (element instanceof HTMLInputElement) {
@@ -18,7 +14,7 @@ export const setFormControlValue = (element: HTMLElement, value: unknown) => {
         element.checked = value === element.value;
         break;
       case "number":
-        if (value === undefined) element.value = "";
+        if (value == null || value === "") element.value = "";
         else element.valueAsNumber = Number(value);
         break;
       case "file":
@@ -36,14 +32,19 @@ export const setFormControlValue = (element: HTMLElement, value: unknown) => {
 
 export const getFormControlValue = (element: HTMLElement) => {
   if (element instanceof HTMLInputElement) {
-    switch (element.type) {
+    const input = element as HTMLInputElement;
+    switch (input.type) {
       case "checkbox":
       case "radio":
-        return element.checked;
+        return input.checked;
       case "number":
-        return element.valueAsNumber;
+        if (input.value === "") return null;
+        return input.valueAsNumber;
+      case "file":
+        if (input.multiple) return Array.from(input.files ?? []);
+        return input.files?.[0] ?? null;
       default:
-        return element.value;
+        return input.value;
     }
   }
 
@@ -171,15 +172,9 @@ export const getNextNativeValue = ({
   }
 
   if (element.type === "number") {
+    if (derivedValue == null || derivedValue === "") return null;
     if (typeof currentValue === "string") return String(derivedValue);
     return Number(derivedValue);
-  }
-
-  if (element.type === "file") {
-    const input = element as HTMLInputElement;
-    const files = Array.from(input.files ?? []);
-    if (input.multiple) return files;
-    return files[0];
   }
 
   return derivedValue;

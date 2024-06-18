@@ -58,8 +58,8 @@ describe("number inputs", () => {
 
     // Clearing the input
     await userEvent.clear(screen.getByTestId("age"));
-    expect(screen.getByTestId("age")).toHaveValue("");
-    expect(screen.getByTestId("age-value").textContent).toEqual("");
+    expect(screen.getByTestId("age")).toHaveValue(null);
+    expect(screen.getByTestId("age-value").textContent).toEqual("null");
   });
 
   it("default values set as strings", async () => {
