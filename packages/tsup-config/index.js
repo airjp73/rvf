@@ -13,5 +13,4 @@ exports.config = defineConfig({
   outExtension({ format }) {
     return { js: `.${format}.js` };
   },
-  noExternal: ["@rvf/set-get"],
 });
