@@ -23,7 +23,8 @@
     "typecheck": "tsc --noEmit"
   },
   "peerDependencies": {
-    "zod": ">= 3.11.0"
+    "zod": ">= 3.11.0",
+    "@rvf/set-get": ">= 0.0.0 < 1.0.0"
   },
   "devDependencies": {
     "@rvf/set-get": "*",
