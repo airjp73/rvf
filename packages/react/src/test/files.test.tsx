@@ -2,6 +2,7 @@ import { render, screen } from "@testing-library/react";
 import { successValidator } from "./util/successValidator";
 import { useForm } from "../useForm";
 import userEvent from "@testing-library/user-event";
+import { getFieldValue } from "@rvf/core";
 
 it("should be able to submit file inputs", async () => {
   const submit = vi.fn();
@@ -35,6 +36,7 @@ it("should be able to submit file inputs", async () => {
 
 it("should be able to reset file inputs", async () => {
   const submit = vi.fn();
+  let getValue = () => "" as unknown;
   const TestComp = () => {
     const form = useForm({
       defaultValues: {
@@ -44,13 +46,15 @@ it("should be able to reset file inputs", async () => {
       handleSubmit: submit,
     });
 
+    getValue = () =>
+      getFieldValue(form.scope().__store__.store.getState(), "file");
+
     return (
       <form {...form.getFormProps()}>
         <input
           data-testid="file"
           {...form.field("file").getInputProps({ type: "file" })}
         />
-        <pre data-testid="file-value">{JSON.stringify(form.value("file"))}</pre>
         <button type="reset" data-testid="reset" />
         <button data-testid="submit" type="submit" />
       </form>
@@ -63,10 +67,11 @@ it("should be able to reset file inputs", async () => {
   const fileInput = screen.getByTestId("file") as HTMLInputElement;
   await userEvent.upload(fileInput, file);
   expect(fileInput.files).toHaveLength(1);
-  expect(screen.getByTestId("file-value")).toHaveTextContent(file.name);
+  expect(getValue()).toEqual(file);
 
   await userEvent.click(screen.getByTestId("reset"));
   expect(fileInput.files).toHaveLength(0);
+  expect(getValue()).toEqual("");
 });
 
 it("should not blow up when a file has a default value", async () => {
@@ -104,6 +109,7 @@ it("should not blow up when a file has a default value", async () => {
 
 it("should be possible to observe and clear the value of a file input", async () => {
   const submit = vi.fn();
+  let getValue = () => "" as unknown;
   const TestComp = () => {
     const form = useForm({
       defaultValues: {
@@ -113,13 +119,15 @@ it("should be possible to observe and clear the value of a file input", async ()
       handleSubmit: submit,
     });
 
+    getValue = () =>
+      getFieldValue(form.scope().__store__.store.getState(), "file");
+
     return (
       <form {...form.getFormProps()} encType="multipart/form-data">
         <input
           data-testid="file"
           {...form.getInputProps("file", { type: "file" })}
         />
-        <pre data-testid="file-value">{JSON.stringify(form.value("file"))}</pre>
         <button
           data-testid="clear"
           type="button"
@@ -134,16 +142,15 @@ it("should be possible to observe and clear the value of a file input", async ()
 
   const file = new File(["test"], "test.txt", { type: "text/plain" });
   await userEvent.upload(screen.getByTestId("file"), file);
-  expect(screen.getByTestId("file-value")).toHaveTextContent(
-    JSON.stringify(file),
-  );
+  expect(getValue()).toEqual(file);
 
   await userEvent.click(screen.getByTestId("clear"));
-  expect(screen.getByTestId("file-value")).toHaveTextContent('""');
+  expect(getValue()).toEqual("");
 });
 
 it("should be possible to observe and clear the value of a multi-file input", async () => {
   const submit = vi.fn();
+  let getValue = () => [] as unknown;
   const TestComp = () => {
     const form = useForm({
       defaultValues: {
@@ -152,6 +159,9 @@ it("should be possible to observe and clear the value of a multi-file input", as
       validator: successValidator,
       handleSubmit: submit,
     });
+
+    getValue = () =>
+      getFieldValue(form.scope().__store__.store.getState(), "file");
 
     return (
       <form {...form.getFormProps()} encType="multipart/form-data">
@@ -160,7 +170,6 @@ it("should be possible to observe and clear the value of a multi-file input", as
           {...form.getInputProps("file", { type: "file" })}
           multiple
         />
-        <pre data-testid="file-value">{JSON.stringify(form.value("file"))}</pre>
         <button
           data-testid="clear"
           type="button"
@@ -173,12 +182,11 @@ it("should be possible to observe and clear the value of a multi-file input", as
 
   render(<TestComp />);
 
-  const file = new File(["test"], "test.txt", { type: "text/plain" });
-  await userEvent.upload(screen.getByTestId("file"), file);
-  expect(screen.getByTestId("file-value")).toHaveTextContent(
-    JSON.stringify(file),
-  );
+  const file1 = new File(["test"], "test.txt", { type: "text/plain" });
+  const file2 = new File(["test"], "test.txt", { type: "text/plain" });
+  await userEvent.upload(screen.getByTestId("file"), [file1, file2]);
+  expect(getValue()).toEqual([file1, file2]);
 
   await userEvent.click(screen.getByTestId("clear"));
-  expect(screen.getByTestId("file-value")).toHaveTextContent('""');
+  expect(getValue()).toEqual("");
 });

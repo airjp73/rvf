@@ -175,6 +175,13 @@ export const getNextNativeValue = ({
     return Number(derivedValue);
   }
 
+  if (element.type === "file") {
+    const input = element as HTMLInputElement;
+    const files = Array.from(input.files ?? []);
+    if (input.multiple) return files;
+    return files[0];
+  }
+
   return derivedValue;
 };
 
