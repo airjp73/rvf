@@ -61,6 +61,11 @@ it("should be able to manually focus fields", async () => {
   expect(screen.getByTestId("baz")).toHaveFocus();
 });
 
+it.todo("should be able to specify the focus behavior (smooth, etc)");
+it.todo(
+  "should be able to get a ref to a field input, provided that the user passed a ref to the field",
+);
+
 it("should be automatically focus fields when there are submit validation errors", async () => {
   const submit = vi.fn();
   const TestComp = () => {
