@@ -9,6 +9,8 @@ it should hopefully "just work" the way you expect.
 But for completeness, this page is going to cover all the different input types
 and how they interact with RVF.
 
+---
+
 ## Common traits
 
 ### Types
@@ -36,6 +38,11 @@ will _always_ be a `string` (except for `file` inputs) **OR** a `string[]`.
 
 - If only one input is in the form for a given field, the value will be a `string`.
 - If multiple inputs in the form have the same name, the value will be a `string[]`.
+
+If you _are_ using state mode, then the value passed to your validator will be the same value
+that you would get out of `form.value("myField")`.
+
+---
 
 ## Number inputs
 
@@ -77,6 +84,86 @@ Unless you're using [state mode](/state-mode), your validator should be able to 
 
 If you're using state mode, then the value passed to your validator will be the same value
 that you would get out of `form.value("myField")`.
+
+---
+
+## Checkboxes & Checkbox groups
+
+Checkboxes are pretty versatile. They can be used as a simple boolean flag,
+or as a group of checkboxes represented by an array of strings.
+And this is all without any extra work or controlled components.
+
+### Setting default values
+
+Checkboxes can be set using either a `boolean` or a `string[]` as the default value.
+If you use a `string[]`, the checkbox will be checked if the checkbox's `value` prop
+is in the array.
+
+### Observing / setting values
+
+RVF will keep the value returned from `form.value("myCheckbox")` consistent
+with the type you provided as the default value.
+If you don't set a default value, then it will return a `boolean`.
+
+### Validating
+
+#### Single checkboxes
+<Row>
+  <Col>
+    Checkboxes commonly trip people up.
+    The way checkboxes are represented in `FormData` on form submission is like this:
+
+    - A checked checkbox will be in the FormData as the value of its `value` prop.
+    - If there is no value prop, then the checkbox will be in the FormData as `"on"`.
+    - An unchecked checkbox will not be in the FormData at all.
+
+    Even if you used a `boolean` as the default value, you're validator should expect to
+    receive `"on" | undefined`.
+
+  </Col>
+  <Col>
+    ```tsx
+      // This will be "on" or undefined
+      <input type="checkbox" name="myCheckbox" />
+
+      // This will be "hello" or undefined
+      <input
+        type="checkbox"
+        name="checkboxWithValue"
+        value="hello"
+      />
+    ```
+  </Col>
+</Row>
+
+#### Checkbox groups
+<Row>
+  <Col>
+    Checkbox group add an extra layer of complication here, because there could be more than one value.
+    RVF handles that like this:
+
+    - If only one checkbox is checked, the value is a `string`.
+    - If multiple checkboxes are checked, then the value is a `string[]`.
+
+    This means that your validator should expect to receive `undefined | string | string[]`.
+    If you're using `zod`, you can handle this case easily using
+    [`repeatable` from `zod-form-data`](https://www.remix-validated-form.io/zod-form-data/api-reference#repeatable).
+  </Col>
+  <Col>
+    ```tsx
+      // The value of this group could be
+      // - A single string ("value1")
+      // - An array of strings (["value1", "value2"])
+      // - undefined
+
+      <input type="checkbox" name="group" value="value1" />
+      <input type="checkbox" name="group" value="value2" />
+      <input type="checkbox" name="group" value="value3" />
+    ```
+  </Col>
+</Row>
+
+---
 
 ## File inputs
 

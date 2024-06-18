@@ -603,6 +603,7 @@ it("should naturally work with boolean checkboxes", async () => {
           value="test-value"
           {...form.field("foo").getInputProps({ type: "checkbox" })}
         />
+        <pre data-testid="foo-value">{JSON.stringify(form.value("foo"))}</pre>
         <RenderCounter data-testid="render-count" />
         <button type="submit" data-testid="submit" />
       </form>
@@ -611,13 +612,16 @@ it("should naturally work with boolean checkboxes", async () => {
 
   render(<TestComp />);
   expect(screen.getByTestId("foo")).toBeChecked();
+  expect(screen.getByTestId("foo-value")).toHaveTextContent("true");
   expect(screen.getByTestId("render-count")).toHaveTextContent("1");
 
   await userEvent.click(screen.getByTestId("foo"));
   expect(screen.getByTestId("foo")).not.toBeChecked();
+  expect(screen.getByTestId("foo-value")).toHaveTextContent("false");
 
   await userEvent.click(screen.getByTestId("foo"));
   expect(screen.getByTestId("foo")).toBeChecked();
+  expect(screen.getByTestId("foo-value")).toHaveTextContent("true");
 
   await userEvent.click(screen.getByTestId("submit"));
   await waitFor(() => expect(submit).toHaveBeenCalledTimes(1));
@@ -627,7 +631,53 @@ it("should naturally work with boolean checkboxes", async () => {
     {},
   );
 
+  expect(screen.getByTestId("render-count")).toHaveTextContent("3");
+});
+
+it("should use a boolean as the default value if none is provided", async () => {
+  const submit = vi.fn();
+
+  const TestComp = () => {
+    const form = useForm({
+      validator: successValidator,
+      handleSubmit: submit,
+    });
+
+    return (
+      <form {...form.getFormProps()} data-testid="form">
+        <input
+          data-testid="foo"
+          {...form.field("foo").getInputProps({ type: "checkbox" })}
+        />
+        <pre data-testid="foo-value">{JSON.stringify(form.value("foo"))}</pre>
+        <RenderCounter data-testid="render-count" />
+        <button type="submit" data-testid="submit" />
+      </form>
+    );
+  };
+
+  render(<TestComp />);
+  expect(screen.getByTestId("foo")).not.toBeChecked();
+  expect(screen.getByTestId("foo-value")).toHaveTextContent("");
   expect(screen.getByTestId("render-count")).toHaveTextContent("1");
+
+  await userEvent.click(screen.getByTestId("foo"));
+  expect(screen.getByTestId("foo")).toBeChecked();
+  expect(screen.getByTestId("foo-value")).toHaveTextContent("true");
+
+  await userEvent.click(screen.getByTestId("foo"));
+  expect(screen.getByTestId("foo")).not.toBeChecked();
+  expect(screen.getByTestId("foo-value")).toHaveTextContent("false");
+
+  await userEvent.click(screen.getByTestId("foo"));
+  expect(screen.getByTestId("foo")).toBeChecked();
+  expect(screen.getByTestId("foo-value")).toHaveTextContent("true");
+
+  await userEvent.click(screen.getByTestId("submit"));
+  await waitFor(() => expect(submit).toHaveBeenCalledTimes(1));
+  expect(submit).toHaveBeenCalledWith({ foo: "on" }, expect.any(FormData), {});
+
+  expect(screen.getByTestId("render-count")).toHaveTextContent("4");
 });
 
 it("should naturally work with checkbox groups", async () => {
