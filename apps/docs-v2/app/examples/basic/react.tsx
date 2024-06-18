@@ -53,9 +53,6 @@ export const ReactExample = () => {
     <form {...form.getFormProps()}>
       <MyInput label="Project name" scope={form.scope("projectName")} />
 
-      <input {...form.getInputProps("file", { type: "file" })} />
-      <pre>{JSON.stringify(form.value("file"))}</pre>
-
       <div>
         <h3>Tasks</h3>
         {form.error("tasks") && (
