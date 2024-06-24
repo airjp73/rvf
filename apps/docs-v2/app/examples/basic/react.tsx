@@ -38,7 +38,6 @@ export const ReactExample = () => {
       projectName: "",
       tasks: [] as Array<{ title: string; daysToComplete: number }>,
       file: "" as File | "",
-      sel: [] as string[],
     },
     handleSubmit: async ({ projectName, tasks }) => {
       await createProject({ name: projectName, tasks });
