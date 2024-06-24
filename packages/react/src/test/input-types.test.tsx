@@ -145,6 +145,7 @@ it("should use `undefined` as the value when no radio is checked", async () => {
   expect(submit).toHaveBeenCalledWith({}, expect.any(FormData), {});
 });
 
+// LAUNCH:
 it.todo("moving keyboard focus to a radio shouldn't cause validation to run");
 it.todo(
   "clicking vaguely around a radio without focusing shouldn't cause validation to run",
