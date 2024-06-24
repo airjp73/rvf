@@ -6,10 +6,58 @@ A core feature (and one of the most powerful features) of RVF is the ability to 
 down to just one part of your data.
 This gives us the ability to create flexible abstractions for whole subforms or even just a single field.
 
-## Subforms
+## Subform example
 
 To demonstrate this, let's create a simple form for entering people's names
-and ages. If you want to skip to the final code, go ahead and check out the
+and emails. If you want to skip to the final code, go ahead and check out the
 code in this demo.
 
 <ScopingNameForm />
+
+## Using `scope`
+
+<Row>
+  <Col>
+    When you call `useForm`, it returns a [`ReactFormApi`](/reference/form-api) object.
+    The type of this object takes a single generic paramter, which is the type of the default values.
+  </Col>
+  <Col>
+    ```tsx
+    // `form` has the type `ReactFormApi<{ foo: string }>`
+    const form = useForm<DefaultValuesType>({
+      defaultValues: { foo: "bar" },
+      // ...etc
+    });
+    ```
+  </Col>
+</Row>
+
+<Row>
+  <Col>
+    One of the methods on `ReactFormApi` is `scope`.
+    When you call `scope` and pass it the name of a field, it returns a `FormScope<FieldType>`
+    where `FieldType` is the type of the field.
+    You can even continue chaining `scope` calls to get even deeper, which is useful for deeply nested or recursive data.
+  </Col>
+  <Col>
+    ```tsx
+    const form = useForm<DefaultValuesType>({
+      defaultValues: {
+        foo: "foo",
+        bar: { baz: "baz" }
+      },
+      // ...etc
+    });
+    
+    const fooScope = form.scope("foo");
+    // `fooScope` has the type `FormScope<string>`
+    
+    const barScope = form.scope("bar");
+    // `barScope` has the type `FormScope<{ baz: string }>`
+
+    const bazScope = barScope.scope("baz");
+    // `barScope` has the type `FormScope<string>`
+    ```
+
+  </Col>
+</Row>
