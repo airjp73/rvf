@@ -1226,6 +1226,7 @@ it("should combo well with `useField`", async () => {
   expect(screen.getByTestId("name-1")).toHaveValue("bar");
 });
 
+// TODO: Maybe userland focus overrides, but we should handle it automatically by default
 it("should be possible to await updates from field arrays, move focus in userland to the new inputs", async () => {
   const Comp = () => {
     const form = useForm({
@@ -1265,6 +1266,9 @@ it("should be possible to await updates from field arrays, move focus in userlan
   await userEvent.click(screen.getByTestId("add"));
   expect(screen.getByTestId("foo-2-name")).toHaveFocus();
 });
+
+// LAUNCH:
+it.todo("should focus new inputs automatically");
 
 it("should be possible to set a focus target for array-level errors", async () => {
   const Comp = () => {
