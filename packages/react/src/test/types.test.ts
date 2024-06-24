@@ -34,8 +34,4 @@ describe("types", () => {
     };
     expect(true).toBe(true);
   });
-
-  it.todo(
-    "input props helpers shouldn't infer the field name from the return value",
-  );
 });
