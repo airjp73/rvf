@@ -5,5 +5,4 @@ export type SignupInfo = {
 
 export const signUp = async (data: SignupInfo) => {
   await new Promise((resolve) => setTimeout(resolve, 1000));
-  localStorage.setItem("simple-form-example", JSON.stringify(data));
 };
