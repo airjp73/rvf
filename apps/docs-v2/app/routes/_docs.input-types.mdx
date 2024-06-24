@@ -71,6 +71,7 @@ that you would get out of `form.value("myField")`.
     const numberOfPeople = form.value("numberOfPeople");
     //    ^? number
     ```
+
   </Col>
 </Row>
 
@@ -93,6 +94,38 @@ Checkboxes are pretty versatile. They can be used as a simple boolean flag,
 or as a group of checkboxes represented by an array of strings.
 And this is all without any extra work or controlled components.
 
+### Usage
+
+<Row>
+  <Col>
+    Call `getInputProps` for each checkbox input and pass in a type of `"checkbox"` and the `value` of the checkbox.
+  </Col>
+  <Col>
+    ```tsx
+    <label>
+      Checkbox with a value
+      <input
+        {...form.getInputProps("myCheckbox1", {
+          type: "checkbox",
+          value: "checkbox-value"
+        })}
+      />
+    </label>
+
+    <label>
+      Boolean checkbox
+      <input
+        {...form.getInputProps("regularCheckbox", {
+          type: "checkbox",
+        })}
+      />
+    </label>
+    ```
+
+  </Col>
+
+</Row>
+
 ### Setting default values
 
 Checkboxes can be set using either a `boolean` or a `string[]` as the default value.
@@ -108,6 +141,7 @@ If you don't set a default value, then it will return a `boolean`.
 ### Validating
 
 #### Single checkboxes
+
 <Row>
   <Col>
     Checkboxes commonly trip people up.
@@ -133,21 +167,24 @@ If you don't set a default value, then it will return a `boolean`.
         value="hello"
       />
     ```
+
   </Col>
 </Row>
 
 #### Checkbox groups
+
 <Row>
   <Col>
-    Checkbox group add an extra layer of complication here, because there could be more than one value.
+    Checkbox group add an extra layer of complication here, because the FormData doesn't tell us how many checkboxes there are, just which ones are checked.
     RVF handles that like this:
 
-    - If only one checkbox is checked, the value is a `string`.
+    - If only one checkbox is checked, the value your validator receives is a `string`.
     - If multiple checkboxes are checked, then the value is a `string[]`.
 
     This means that your validator should expect to receive `undefined | string | string[]`.
     If you're using `zod`, you can handle this case easily using
     [`repeatable` from `zod-form-data`](https://www.remix-validated-form.io/zod-form-data/api-reference#repeatable).
+
   </Col>
   <Col>
     ```tsx
@@ -160,8 +197,60 @@ If you don't set a default value, then it will return a `boolean`.
       <input type="checkbox" name="group" value="value2" />
       <input type="checkbox" name="group" value="value3" />
     ```
+
   </Col>
 </Row>
+
+---
+
+## Radio groups
+
+These are much simpler than checkboxes.
+
+### Usage
+
+<Row>
+  <Col>
+    Call `getInputProps` for each radio input and pass in a type of `"radio"` and the `value` of the radio.
+  </Col>
+  <Col>
+    ```tsx
+    <label>
+      Value 1
+      <input
+        {...form.getInputProps("myRadio", {
+          type: "radio",
+          value: "value1"
+        })}
+      />
+    </label>
+
+    <label>
+      Value 2
+      <input
+        {...form.getInputProps("myRadio", {
+          type: "radio",
+          value: "value2"
+        })}
+      />
+    </label>
+    ```
+
+  </Col>
+
+</Row>
+
+### Setting default values
+
+You can only set the default value using a `string`.
+
+### Observing / setting values
+
+The value returned will always be a `string`, unless no radio is checked at all, in which case it will be `undefined`.
+
+### Validating
+
+Like when observing the values, the value will always be a `string`. The exception is when no radio is checked at all, in which case it will be `undefined`.
 
 ---
 
@@ -182,6 +271,7 @@ If you don't set a default value, then it will return a `boolean`.
       return <input type="file" defaultValue="myFile.txt" />;
     }
     ```
+
   </Col>
 </Row>
 

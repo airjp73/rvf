@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import { useForm } from "../useForm";
 import { successValidator } from "./util/successValidator";
 import userEvent from "@testing-library/user-event";
@@ -88,6 +88,61 @@ describe("number inputs", () => {
     expect(screen.getByTestId("age")).toHaveValue(254);
     expect(screen.getByTestId("age-value").textContent).toEqual('"254"');
   });
+});
+
+it("should always treat the value of a radio group as a string", async () => {
+  const TestComp = () => {
+    const form = useForm({
+      validator: successValidator,
+      defaultValues: {
+        radio: "value1",
+      },
+    });
+    return (
+      <div>
+        <input
+          {...form.getInputProps("radio", { type: "radio", value: "value1" })}
+          data-testid="radio1"
+        />
+        <input
+          {...form.getInputProps("radio", { type: "radio", value: "value2" })}
+          data-testid="radio2"
+        />
+        <div data-testid="value">{form.value("radio")}</div>
+      </div>
+    );
+  };
+
+  render(<TestComp />);
+  expect(screen.getByTestId("value").textContent).toBe("value1");
+  await userEvent.click(screen.getByTestId("radio2"));
+  expect(screen.getByTestId("value").textContent).toBe("value2");
+});
+
+it("should use `undefined` as the value when no radio is checked", async () => {
+  const submit = vi.fn();
+  const TestComp = () => {
+    const form = useForm({
+      validator: successValidator,
+      handleSubmit: submit,
+    });
+    return (
+      <form {...form.getFormProps()}>
+        <input type="radio" name="radio" value="value1" />
+        <input type="radio" name="radio" value="value2" />
+        <button type="submit" data-testid="submit">
+          Submit
+        </button>
+      </form>
+    );
+  };
+
+  render(<TestComp />);
+  await userEvent.click(screen.getByTestId("submit"));
+  await waitFor(() => {
+    expect(submit).toHaveBeenCalledTimes(1);
+  });
+  expect(submit).toHaveBeenCalledWith({}, expect.any(FormData), {});
 });
 
 it.todo("moving keyboard focus to a radio shouldn't cause validation to run");
