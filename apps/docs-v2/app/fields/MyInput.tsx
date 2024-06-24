@@ -23,7 +23,7 @@ export const MyInput = ({ label, scope, type }: MyInputProps) => {
   const errorId = useId();
 
   return (
-    <div className="relative">
+    <div data-input className="relative">
       <Label>
         {label}
         <Input

@@ -232,7 +232,13 @@ export const navigation: Array<NavGroup> = [
   },
   {
     title: "Guides",
-    links: [{ title: "Different input types", href: "/input-types" }],
+    links: [
+      {
+        title: "Scoping for powerful abstractions",
+        href: "/scoping",
+      },
+      { title: "Different input types", href: "/input-types" },
+    ],
   },
 ];
 
