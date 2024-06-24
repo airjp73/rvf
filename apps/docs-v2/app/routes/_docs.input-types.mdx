@@ -254,6 +254,55 @@ Like when observing the values, the value will always be a `string`. The excepti
 
 ---
 
+## Selects
+
+### Usage
+
+<Row>
+  <Col>
+    Select elements work naturally with `getInputProps` with no other considerations.
+  </Col>
+  <Col>
+    ```tsx
+    // single select
+    <select {...form.getInputProps("mySelect")}>
+      <option value="foo">Foo</option>
+      <option value="bar">Bar</option>
+      <option value="baz">Baz</option>
+    </select>
+
+    // multi select
+    <select multiple {...form.getInputProps("mySelect")}>
+      <option value="foo">Foo</option>
+      <option value="bar">Bar</option>
+      <option value="baz">Baz</option>
+    </select>
+    ```
+
+  </Col>
+</Row>
+
+### Setting default values
+
+Single selects can be set using a `string` and multi selects can be set using an `array` of `string`.
+
+### Observing / setting values
+
+Just like with default values, single selects will always be a `string` and multi selects will always be an `array` of `string`.
+
+### Validating
+
+This one has a gotcha. When the `FormData` is submitted, it doesn't include any information about whether or not the select is a multi-select.
+Therefore, RVF works around this like this:
+
+- If one option is selected, the value will be a `string`.
+- If multiple options are selected, the value will be an `string[]`.
+
+If you're using `zod`, you can handle this case easily using
+[`repeatable` from `zod-form-data`](https://www.remix-validated-form.io/zod-form-data/api-reference#repeatable).
+
+---
+
 ## File inputs
 
 <Row>

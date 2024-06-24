@@ -27,7 +27,17 @@ export const setFormControlValue = (element: HTMLElement, value: unknown) => {
     }
   }
 
-  // TODO: maybe we can eventually support other form controls
+  if (element instanceof HTMLSelectElement) {
+    for (const option of element.options) {
+      option.selected = Array.isArray(value)
+        ? value.includes(option.value)
+        : value === option.value;
+    }
+  }
+
+  if (element instanceof HTMLTextAreaElement) {
+    element.value = String(value);
+  }
 };
 
 export const getFormControlValue = (element: HTMLElement) => {
@@ -49,6 +59,8 @@ export const getFormControlValue = (element: HTMLElement) => {
   }
 
   if (element instanceof HTMLSelectElement) {
+    if (element.multiple)
+      return Array.from(element.selectedOptions).map((option) => option.value);
     return element.value;
   }
 
@@ -56,7 +68,6 @@ export const getFormControlValue = (element: HTMLElement) => {
     return element.value;
   }
 
-  // TODO: maybe we can eventually support other form controls
   return undefined;
 };
 

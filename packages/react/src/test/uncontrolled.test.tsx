@@ -865,7 +865,6 @@ it("should work with selects", async () => {
 
   const TestComp = () => {
     const form = useForm({
-      submitSource: "state",
       defaultValues: {
         foo: "bar",
       },
@@ -895,7 +894,145 @@ it("should work with selects", async () => {
 
   await userEvent.click(screen.getByTestId("submit"));
   expect(submit).toHaveBeenCalledTimes(1);
-  expect(submit).toHaveBeenCalledWith({ foo: "baz" }, {});
+  expect(submit).toHaveBeenCalledWith({ foo: "baz" }, expect.any(FormData), {});
+});
+
+it("should work with multi-selects", async () => {
+  const submit = vi.fn();
+
+  const TestComp = () => {
+    const form = useForm({
+      defaultValues: {
+        foo: ["bar"],
+      },
+      validator: successValidator,
+      handleSubmit: submit,
+    });
+
+    return (
+      <>
+        <form {...form.getFormProps()}>
+          <select
+            data-testid="foo"
+            multiple
+            {...form.field("foo").getInputProps()}
+          >
+            <option value="bar">Bar</option>
+            <option value="baz">Baz</option>
+          </select>
+          <pre data-testid="foo-value">{JSON.stringify(form.value("foo"))}</pre>
+          <button type="submit" data-testid="submit" />
+        </form>
+      </>
+    );
+  };
+
+  render(<TestComp />);
+
+  const select = screen.getByTestId("foo") as HTMLSelectElement;
+  const opts = () =>
+    Array.from(select.selectedOptions).map((option) => option.value);
+  expect(screen.getByTestId("foo-value")).toHaveTextContent(`["bar"]`);
+  expect(opts()).toEqual(["bar"]);
+
+  await userEvent.selectOptions(screen.getByTestId("foo"), ["bar", "baz"]);
+  expect(opts()).toEqual(["bar", "baz"]);
+  expect(screen.getByTestId("foo-value")).toHaveTextContent(`["bar","baz"]`);
+
+  await userEvent.click(screen.getByTestId("submit"));
+  expect(submit).toHaveBeenCalledTimes(1);
+  expect(submit).toHaveBeenCalledWith(
+    { foo: ["bar", "baz"] },
+    expect.any(FormData),
+    {},
+  );
+});
+
+it("multi-selects should be able to set the default value with multiple elements and submit a signle value", async () => {
+  const submit = vi.fn();
+
+  const TestComp = () => {
+    const form = useForm({
+      defaultValues: {
+        foo: ["bar", "baz"],
+      },
+      validator: successValidator,
+      handleSubmit: submit,
+    });
+
+    return (
+      <>
+        <form {...form.getFormProps()}>
+          <select
+            data-testid="foo"
+            multiple
+            {...form.field("foo").getInputProps()}
+          >
+            <option value="bar">Bar</option>
+            <option value="baz">Baz</option>
+          </select>
+          <pre data-testid="foo-value">{JSON.stringify(form.value("foo"))}</pre>
+          <button type="submit" data-testid="submit" />
+        </form>
+      </>
+    );
+  };
+
+  render(<TestComp />);
+
+  expect(screen.getByTestId("foo-value")).toHaveTextContent(`["bar","baz"]`);
+  await userEvent.deselectOptions(screen.getByTestId("foo"), ["baz"]);
+
+  expect(screen.getByTestId("foo-value")).toHaveTextContent(`["bar"]`);
+  await userEvent.click(screen.getByTestId("submit"));
+  expect(submit).toHaveBeenCalledTimes(1);
+  expect(submit).toHaveBeenCalledWith({ foo: "bar" }, expect.any(FormData), {});
+});
+
+it("should be posssible to set the value of an uncontrolled select", async () => {
+  const submit = vi.fn();
+
+  const TestComp = () => {
+    const form = useForm({
+      defaultValues: {
+        foo: ["bar"] as string | string[],
+      },
+      validator: successValidator,
+      handleSubmit: submit,
+    });
+
+    return (
+      <>
+        <form {...form.getFormProps()}>
+          <select
+            multiple
+            data-testid="foo"
+            {...form.field("foo").getInputProps()}
+          >
+            <option value="bar">Bar</option>
+            <option value="baz">Baz</option>
+          </select>
+          <button
+            type="button"
+            data-testid="set-foo"
+            onClick={() => form.setValue("foo", ["bar", "baz"])}
+          />
+          <button type="submit" data-testid="submit" />
+        </form>
+      </>
+    );
+  };
+
+  render(<TestComp />);
+
+  const select = screen.getByTestId("foo") as HTMLSelectElement;
+  const opts = () =>
+    Array.from(select.selectedOptions).map((option) => option.value);
+
+  expect(opts()).toEqual(["bar"]);
+
+  await userEvent.click(screen.getByTestId("set-foo"));
+  expect(opts()).toEqual(["bar", "baz"]);
 });
 
 it("should be able to set the value of an uncontrolled select", async () => {
@@ -932,7 +1069,7 @@ it("should be able to set the value of an uncontrolled select", async () => {
   render(<TestComp />);
 
   await userEvent.click(screen.getByTestId("set-foo"));
-  expect(screen.getByTestId("foo")).toHaveValue("bar");
+  expect(screen.getByTestId("foo")).toHaveValue("baz");
 
   await userEvent.click(screen.getByTestId("submit"));
   expect(submit).toHaveBeenCalledTimes(1);
