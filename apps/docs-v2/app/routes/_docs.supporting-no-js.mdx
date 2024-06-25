@@ -1,0 +1,26 @@
+export const meta = () => [
+  {
+    title: "Supporting users without JS",
+  },
+];
+
+# Supporting users without JS
+
+If you're using a server-side framework like Remix, you can use RVF even if JS is disabled in the user's browser.
+However, the way you go about doing this may vary depending on how important this is to you.
+
+## If supporting users without JS is important for you
+
+You should fall back to [native browser validation](https://developer.mozilla.org/en-US/docs/Learn/Forms/Form_validation)
+when JS is disabled. This is more work to maintain, but it's a better experience for users.
+
+In order to do this properly, you can pass `noValidate` to your form when JS is available.
+A helpful tool for doing that is [useHydrated from remix-utils](https://github.com/sergiodxa/remix-utils#usehydrated).
+If you aren't using remix, you can copy the recipe [here](/recipes/use-hydrated).
+
+This will allow RVF to take over validation when it can,
+but will fall back to native browser validation when it can't.
+
+## If users without JS are an edge-case
+
+TODO

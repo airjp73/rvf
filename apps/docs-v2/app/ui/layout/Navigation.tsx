@@ -233,12 +233,13 @@ export const navigation: Array<NavGroup> = [
   {
     title: "Guides",
     links: [
-      { title: "Arrays and nested data", href: "/arrays-and-nested" },
       { title: "Different input types", href: "/input-types" },
+      { title: "Arrays and nested data", href: "/arrays-and-nested" },
       {
         title: "Scoped abstractions",
         href: "/scoping",
       },
+      { title: "Support users without JS", href: "/supporting-no-js" },
     ],
   },
   {
