@@ -18,8 +18,7 @@ export const Textarea: FC<TextareaProps> = ({
     <>
       <label htmlFor={name}>{label}</label>
       <textarea
-        id={name}
-        {...getInputProps()}
+        {...getInputProps({ id: name })}
         data-testid={dataTestId}
       ></textarea>
       {error() && <p>{error()}</p>}

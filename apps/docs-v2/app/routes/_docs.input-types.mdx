@@ -278,7 +278,7 @@ Like when observing the values, the value will always be a `string`. The excepti
     </select>
 
     // multi select
-    <select multiple {...form.getInputProps("mySelect")}>
+    <select {...form.getInputProps("mySelect", { multiple: true })}>
       <option value="foo">Foo</option>
       <option value="bar">Bar</option>
       <option value="baz">Baz</option>

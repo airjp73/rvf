@@ -36,10 +36,10 @@ export const Input = forwardRef(
         <label htmlFor={field.name()}>{label}</label>
         <input
           data-testid={dataTestId}
-          id={field.name()}
-          disabled={disabled}
-          form={form}
           {...field.getInputProps({
+            form,
+            disabled,
+            id: field.name(),
             type,
             value,
             ref,

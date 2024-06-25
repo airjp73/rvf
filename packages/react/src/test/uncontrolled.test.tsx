@@ -914,8 +914,7 @@ it("should work with multi-selects", async () => {
         <form {...form.getFormProps()}>
           <select
             data-testid="foo"
-            multiple
-            {...form.field("foo").getInputProps()}
+            {...form.field("foo").getInputProps({ multiple: true })}
           >
             <option value="bar">Bar</option>
             <option value="baz">Baz</option>
@@ -965,8 +964,9 @@ it("multi-selects should be able to set the default value with multiple elements
         <form {...form.getFormProps()}>
           <select
             data-testid="foo"
-            multiple
-            {...form.field("foo").getInputProps()}
+            {...form.field("foo").getInputProps({
+              multiple: true,
+            })}
           >
             <option value="bar">Bar</option>
             <option value="baz">Baz</option>
@@ -1005,9 +1005,10 @@ it("should be posssible to set the value of an uncontrolled select", async () =>
       <>
         <form {...form.getFormProps()}>
           <select
-            multiple
             data-testid="foo"
-            {...form.field("foo").getInputProps()}
+            {...form.field("foo").getInputProps({
+              multiple: true,
+            })}
           >
             <option value="bar">Bar</option>
             <option value="baz">Baz</option>

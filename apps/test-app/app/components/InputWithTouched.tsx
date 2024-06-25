@@ -13,9 +13,8 @@ export const InputWithTouched = forwardRef(
       <div>
         <label htmlFor={name}>{label}</label>
         <input
-          id={name}
-          name={name}
           {...field.getInputProps({
+            id: name,
             ref,
           })}
         />

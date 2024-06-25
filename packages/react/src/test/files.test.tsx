@@ -184,8 +184,7 @@ it("should be possible to observe and clear the value of a multi-file input", as
       <form {...form.getFormProps()} encType="multipart/form-data">
         <input
           data-testid="file"
-          {...form.getInputProps("file", { type: "file" })}
-          multiple
+          {...form.getInputProps("file", { type: "file", multiple: true })}
         />
         <button
           data-testid="clear"

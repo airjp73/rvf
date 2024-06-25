@@ -27,7 +27,6 @@ export default function OccasionalFieldTracking() {
     <form {...form.getFormProps()}>
       <input
         data-testid="occasional"
-        name="token"
         {...form.field("token").getInputProps()}
       />
     </form>

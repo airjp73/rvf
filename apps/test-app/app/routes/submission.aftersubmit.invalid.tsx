@@ -38,7 +38,7 @@ const CustomInput = () => {
   return (
     <div>
       <label htmlFor="testinput">Test input</label>
-      <input {...getInputProps()} id="testinput" />
+      <input {...getInputProps({ id: "testinput" })} />
       {error() && <span style={{ color: "red" }}>{error()}</span>}
     </div>
   );
