@@ -240,6 +240,12 @@ export const navigation: Array<NavGroup> = [
       { title: "Different input types", href: "/input-types" },
     ],
   },
+  {
+    title: "Recipes",
+    links: [
+      { title: "Typesafe input component", href: "/recipes/typesafe-input" },
+    ],
+  },
 ];
 
 export function Navigation({

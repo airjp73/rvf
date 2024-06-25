@@ -2,6 +2,7 @@ import { render, screen, waitFor } from "@testing-library/react";
 import { useForm } from "../useForm";
 import { successValidator } from "./util/successValidator";
 import userEvent from "@testing-library/user-event";
+import { ZeroCurvatureEnding } from "three";
 
 describe("number inputs", () => {
   it("default values set as numbers", async () => {
@@ -29,6 +30,10 @@ describe("number inputs", () => {
     await userEvent.type(screen.getByTestId("age"), "4");
     expect(screen.getByTestId("age")).toHaveValue(254);
     expect(screen.getByTestId("age-value").textContent).toEqual("254");
+
+    await userEvent.clear(screen.getByTestId("age"));
+    expect(screen.getByTestId("age")).toHaveValue(null);
+    expect(screen.getByTestId("age-value").textContent).toEqual("null");
   });
 
   it("no default value", async () => {
@@ -87,6 +92,37 @@ describe("number inputs", () => {
     await userEvent.type(screen.getByTestId("age"), "4");
     expect(screen.getByTestId("age")).toHaveValue(254);
     expect(screen.getByTestId("age-value").textContent).toEqual('"254"');
+
+    await userEvent.clear(screen.getByTestId("age"));
+    expect(screen.getByTestId("age")).toHaveValue(null);
+    expect(screen.getByTestId("age-value").textContent).toEqual("null");
+  });
+
+  it("null default", async () => {
+    const TestComp = () => {
+      const form = useForm({
+        defaultValues: { age: null },
+        validator: successValidator,
+      });
+
+      return (
+        <form {...form.getFormProps()}>
+          <input
+            data-testid="age"
+            {...form.field("age").getInputProps({ type: "number" })}
+          />
+          <pre data-testid="age-value">{JSON.stringify(form.value("age"))}</pre>
+        </form>
+      );
+    };
+    render(<TestComp />);
+
+    expect(screen.getByTestId("age")).toHaveValue(null);
+    expect(screen.getByTestId("age-value").textContent).toEqual("null");
+
+    await userEvent.type(screen.getByTestId("age"), "4");
+    expect(screen.getByTestId("age")).toHaveValue(4);
+    expect(screen.getByTestId("age-value").textContent).toEqual("4");
   });
 });
 

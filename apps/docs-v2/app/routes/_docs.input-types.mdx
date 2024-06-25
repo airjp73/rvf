@@ -46,16 +46,16 @@ that you would get out of `form.value("myField")`.
 
 ## Number inputs
 
+### Relevant types
+
+- `NumberInputValue`
+  - `number | null`
+
 ### Setting default values
 
 <Row>
   <Col>
-    - Number inputs can be set using either a `number` or a `string`,
-    and both approaches can be used for different fields in the same form.
-    - When you access the value of the input using `form.value("age")`, the type
-    of that value will be consistent with the type of the default value, even after
-    the user has changed the value.
-    - If there is no default value, the type of the value will be a `number`.
+    Number inputs can be set using either a `number`, a `string`, or `null`.
   </Col>
   <Col>
     ```tsx
@@ -74,6 +74,12 @@ that you would get out of `form.value("myField")`.
 
   </Col>
 </Row>
+
+### Observing / setting values
+
+- An empty number input will always have a value of `null`.
+- If you set the default value using a `string`, the value will always be a `string` (or `null`).
+- If you set the default value using a `number` or `null`, the value will always be a `number` (or `null`).
 
 ### Validating
 

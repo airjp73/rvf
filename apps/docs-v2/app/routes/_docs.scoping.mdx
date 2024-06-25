@@ -19,12 +19,12 @@ code in this demo.
 <Row>
   <Col>
     When you call `useForm`, it returns a [`ReactFormApi`](/reference/form-api) object.
-    The type of this object takes a single generic paramter, which is the type of the default values.
+    The type of this object takes a single generic parameter, which is the type of the form's default values.
   </Col>
   <Col>
     ```tsx
     // `form` has the type `ReactFormApi<{ foo: string }>`
-    const form = useForm<DefaultValuesType>({
+    const form = useForm({
       defaultValues: { foo: "bar" },
       // ...etc
     });
@@ -35,13 +35,16 @@ code in this demo.
 <Row>
   <Col>
     One of the methods on `ReactFormApi` is `scope`.
-    When you call `scope` and pass it the name of a field, it returns a `FormScope<FieldType>`
-    where `FieldType` is the type of the field.
+    When you call `scope` and pass it the name of a field, it returns a `FormScope`
+    that's been scoped to that field.
     You can even continue chaining `scope` calls to get even deeper, which is useful for deeply nested or recursive data.
+    
+    Once you have a `FormScope`, you can pass it around to any component that needs it.
+    But in order to actually use it, you need to pass it to a `useFormScope`, `useField`, or `useFieldArray` hook.
   </Col>
   <Col>
     ```tsx
-    const form = useForm<DefaultValuesType>({
+    const form = useForm({
       defaultValues: {
         foo: "foo",
         bar: { baz: "baz" }
@@ -61,3 +64,48 @@ code in this demo.
 
   </Col>
 </Row>
+
+## Typesafe text input
+
+<Row>
+  <Col>
+    Scoping allows us to encapsulate input logic in a typesafe way.
+    For this example, let's create an text input component that:
+
+    - Is guranteed by the types to have a `string` value.
+    - Automatically shows the validation error message if there is one.
+    - Can be used without having to think about whether to use `getInputProps` or `getControlProps`.
+
+    We can do this by accepting a `FormScope&lt;string&gt;` as a prop
+    and passing it to `useField`.
+
+  </Col>
+  <Col>
+    ```tsx
+    type MyInputProps = {
+      scope: FormScope<string>;
+      label: string;
+    };
+
+    const MyInput = ({ scope, label }: MyInputProps) => {
+      const field = useField(scope);
+      return (
+        <div>
+          <label>
+            {label}
+            <input {...field.getInputProps()} />
+          </label>
+          {/* There's more work to be done here for accesibility,
+            but we're keeping it simple for now. */}
+          {field.error() && <span>{field.error()}</span>}
+        </div>
+      );
+    }
+    ```
+
+  </Col>
+</Row>
+
+This particular input component can only handle text inputs,
+but it's also possible to create a typesafe input component that can handle any
+`input` type. Checkout the [typesafe input component recipe](/recipes/typesafe-input) for more details.
