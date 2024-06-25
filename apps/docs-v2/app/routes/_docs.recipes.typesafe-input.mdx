@@ -1,1 +1,71 @@
+import { TypesafeInput } from "../examples/typesafe-input/example";
+
 # Typesafe input component
+
+In the guide on [scoping](/scoping), we showed how to create a simple, typesafe text input component.
+However, there are many different types of inputs and those can support different types of values.
+
+This recipe shows how to create a typesafe input component that supports all the different types of inputs.
+
+## Features
+
+Our input component will have the following features:
+
+- Accepts a `scope` prop that is typesafe for the input `type`.
+- Automatically displays its error message if there is one.
+- Sets the correct `aria-*` attributes
+- Can accept all the props normally accepted by the native input element.
+
+## Preview
+
+<TypesafeInput />
+
+## Recipe
+
+```tsx
+import { useField, FormScope, ValueOfInputType } from "@rvf/react";
+import { ComponentPropsWithRef, forwardRef, useId } from "react";
+
+// For our props, we'll take everything from the native input element except for `type`.
+// You can make futher changes here to suite your needs.
+type BaseInputProps = Omit<ComponentPropsWithRef<"input">, "type">;
+
+interface MyInputProps<Type extends string> extends BaseInputProps {
+  label: string;
+  type?: Type;
+  scope: FormScope<ValueOfInputType<Type>>;
+}
+
+// We need to do this in order to get a generic type out of `forwardRef`.
+// In React 19, you won't need this anymore.
+type InputType = <Type extends string>(
+  props: MyInputProps<Type>,
+) => React.ReactNode;
+
+const MyInputImpl = forwardRef<HTMLInputElement, MyInputProps<string>>(
+  ({ label, scope, type, ...rest }) => {
+    const field = useField(scope);
+    const inputId = useId();
+    const errorId = useId();
+
+    return (
+      <div className="myInputStyles">
+        <label htmlFor={inputId}>{label}</label>
+        <input
+          {...field.getInputProps({
+            type,
+            id: inputId,
+            "aria-describedby": errorId,
+            "aria-invalid": !!field.error(),
+            ...rest,
+          })}
+        />
+        {field.error() && <p id={errorId}>{field.error()}</p>}
+      </div>
+    );
+  },
+);
+MyInputImpl.displayName = "MyInput";
+
+export const MyInput = MyInputImpl as InputType;
+```

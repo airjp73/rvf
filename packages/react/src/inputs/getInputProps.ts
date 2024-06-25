@@ -1,4 +1,4 @@
-import { FormEvent, Ref } from "react";
+import { FormEvent, LegacyRef, Ref } from "react";
 import * as R from "remeda";
 import {
   getCheckboxChecked,
@@ -28,8 +28,8 @@ export type MinimalInputProps = {
   defaultChecked?: boolean | undefined;
   name?: string | undefined;
   type?: string | undefined;
-  ref?: Ref<any>;
-  value?: string;
+  ref?: LegacyRef<any>;
+  value?: string | number | readonly string[];
   form?: string;
 };
 
