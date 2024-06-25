@@ -2,7 +2,6 @@ import { render, screen, waitFor } from "@testing-library/react";
 import { useForm } from "../useForm";
 import { successValidator } from "./util/successValidator";
 import userEvent from "@testing-library/user-event";
-import { ZeroCurvatureEnding } from "three";
 
 describe("number inputs", () => {
   it("default values set as numbers", async () => {
