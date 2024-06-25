@@ -1,0 +1,80 @@
+# Arrays and nested data
+
+To handle complex data structures, RVF treats all field names as paths.
+
+## Objects
+
+<Row>
+  <Col>
+    Objects are handled with the same dot notation as JavaScript.
+  </Col>
+  <Col>
+    ```tsx
+    const inputs = (
+      <>
+        <input name="todo.title" />
+        <input name="todo.description" />
+      </>
+    )
+    
+    const result = {
+      todo: {
+        title: "Take out the trash",
+        description: "I should really do this",
+      },
+    }
+    ```
+  </Col>
+</Row>
+
+## Arrays
+
+<Row>
+  <Col>
+    Arrays are handled with the same square-bracket notation as JavaScript.
+    Using dot notation for numbers is not supported.
+    
+    For dynamic arrays (e.g. adding and removing items), you'll want to use [`useFieldArray`](/reference/use-field-array).
+  </Col>
+  <Col>
+    ```tsx
+    const inputs = (
+      <>
+        <input name="todos[0]" />
+        <input name="todos[1]" />
+      </>
+    )
+    
+    const result = {
+      todos: ["Take out the trash", "I should really do this"],
+    }
+    ```
+  </Col>
+</Row>
+
+## Type safety
+
+<Row>
+  <Col>
+    You can use RVF's helpers to handle write these field names in a type-safe way.
+  </Col>
+  <Col>
+    ```tsx
+    const MyForm = () => {
+      const form = useForm({
+        defaultValues: {
+          todos: [{ title: "Take out the trash"}, {title: "I should really do this" }],
+        },
+        // ...etc
+      })
+      
+      return (
+        <>
+          <input name={form.name("todos[0].title")} />
+          <input name={form.scope("todos[1].title")} />
+        </>
+      )
+    }
+    ```
+  </Col>
+</Row>

@@ -18,6 +18,7 @@ describe("types", () => {
             a: "quux",
             b: "quux",
           },
+          jim: [{ name: "jimbob" }],
         },
         handleSubmit: vi.fn(),
       });
@@ -25,6 +26,7 @@ describe("types", () => {
       form.field("foo");
       form.field("baz.a");
       form.field("baz.b");
+      form.scope("jim[0]").scope("name");
 
       // @ts-expect-error
       form.field("baz.c");
@@ -34,7 +36,15 @@ describe("types", () => {
       form.field("baz.a.c");
 
       type result = FormFields<typeof form>;
-      expectTypeOf<result>().toEqualTypeOf<"foo" | "baz" | "baz.a" | "baz.b">();
+      expectTypeOf<result>().toEqualTypeOf<
+        | "foo"
+        | "baz"
+        | "baz.a"
+        | "baz.b"
+        | "jim"
+        | `jim[${number}]`
+        | `jim[${number}].name`
+      >();
     };
     expect(true).toBe(true);
   });
