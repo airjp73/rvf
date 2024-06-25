@@ -1,23 +1,22 @@
-import { FormScope } from "@rvf/core";
+import { FormScope, ValueOfInputType } from "@rvf/core";
 import { useField } from "@rvf/react";
 import { useId } from "react";
 import { Input } from "~/ui/input";
 import { Label } from "~/ui/label";
 import { ErrorMessage } from "./ErrorMessage";
 
-type MyInputProps =
-  | {
-      label: string;
-      scope: FormScope<string>;
-      type?: "text";
-    }
-  | {
-      label: string;
-      scope: FormScope<number>;
-      type: "number";
-    };
+// Try using the new `ValueOfInputType` type
+type MyInputProps<Type extends string> = {
+  label: string;
+  scope: FormScope<ValueOfInputType<Type>>;
+  type?: Type;
+};
 
-export const MyInput = ({ label, scope, type }: MyInputProps) => {
+export const MyInput = <Type extends string>({
+  label,
+  scope,
+  type,
+}: MyInputProps<Type>) => {
   const field = useField(scope);
   const inputId = useId();
   const errorId = useId();

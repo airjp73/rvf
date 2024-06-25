@@ -22,7 +22,7 @@ export {
   type MultiFileInputValue,
   type NumberInputValue,
   type NativeValueByType,
-  type NativeInputValue,
+  type ValueOfInputType,
 } from "@rvf/core";
 export { type ReactFormApi, type FormFields } from "./base";
 export { useForm, FormOpts } from "./useForm";

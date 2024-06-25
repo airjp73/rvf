@@ -39,7 +39,7 @@ export {
   type MultiFileInputValue,
   type NumberInputValue,
   type NativeValueByType,
-  type NativeInputValue,
+  type ValueOfInputType,
 } from "@rvf/react";
 export { useForm, type RemixFormOpts as FormScopeRemixOpts } from "./useForm";
 export { ValidatedForm, type ValidatedFormProps } from "./ValidatedForm";

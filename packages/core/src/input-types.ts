@@ -20,5 +20,7 @@ export type NativeValueByType = {
   file: null | File | File[];
 };
 
-export type NativeInputValue<Type extends string> =
-  Type extends keyof NativeValueByType ? NativeValueByType[Type] : string;
+export type ValueOfInputType<
+  Type extends string,
+  ValueMap extends Record<string, any> = NativeValueByType,
+> = Type extends keyof ValueMap ? ValueMap[Type] : string;
