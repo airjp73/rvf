@@ -34,10 +34,11 @@ jobs:
       - name: Vitest
         run: bun run vitest:run
 
-      - name: Verify Cypress
+      - name: Install and verify Cypress
         env:
           CI: 1
         run: |
+          bunx cypress install
           bunx cypress verify
           bunx cypress info
           bunx cypress version
