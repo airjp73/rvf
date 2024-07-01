@@ -4,7 +4,6 @@ import { withYup } from "@rvf/yup";
 import {
   FormScope,
   FormProvider,
-  useServerValidationErrors,
   useForm,
   useFormScopeOrContext,
 } from "@rvf/remix";
@@ -66,13 +65,9 @@ const DisplayContext = ({
 export default function FrontendValidation() {
   const actionData = useActionData<typeof action>();
 
-  const server = useServerValidationErrors({
-    formId: "test-form",
-    defaultValues: { firstName: "defaultFirstName" },
-  });
   // Verify we don't get an infinite loop
   const form = useForm({
-    ...server.getFormOpts(),
+    id: "test-form",
     validator: withYup(
       yup.object({
         firstName: yup.string().label("First Name").required(),
@@ -88,7 +83,7 @@ export default function FrontendValidation() {
       <DisplayContext testid="external-values" form={form.scope()} />
       <FormProvider scope={form.scope()}>
         <form {...form.getFormProps()}>
-          {server.renderHiddenInput()}
+          {form.renderFormIdInput()}
           <Input name="firstName" label="First Name" />
           <DisplayContext testid="internal-values" />
           <SubmitButton />

@@ -1,11 +1,7 @@
 import { DataFunctionArgs, json } from "@remix-run/node";
 import { withYup } from "@rvf/yup";
 import { useRef } from "react";
-import {
-  ValidatedForm,
-  useServerValidationErrors,
-  validationError,
-} from "@rvf/remix";
+import { ValidatedForm, validationError } from "@rvf/remix";
 import * as yup from "yup";
 import { Input } from "~/components/Input";
 import { SubmitButton } from "~/components/SubmitButton";
@@ -35,33 +31,23 @@ export const action = async ({ request }: DataFunctionArgs) => {
 
 export default function FrontendValidation() {
   const inputRef = useRef<HTMLInputElement>(null);
-  const errors = useServerValidationErrors({
-    formId: "aftersubmit-form",
-    defaultValues: {},
-  });
-  const errors2 = useServerValidationErrors({
-    formId: "other-aftersubmit-form",
-    defaultValues: {},
-  });
   return (
     <>
       <ValidatedForm
-        {...errors.getFormOpts()}
+        id="other-aftersubmit-form"
         validator={validator}
         method="post"
         resetAfterSubmit
       >
-        {errors.renderHiddenInput()}
         <Input name="testinput" label="Test input" ref={inputRef} />
         <SubmitButton label="Submit" submittingLabel="Submitting" />
       </ValidatedForm>
       <ValidatedForm
         validator={validator}
         method="post"
+        id="aftersubmit-form"
         resetAfterSubmit
-        {...errors2.getFormOpts()}
       >
-        {errors2.renderHiddenInput()}
         <Input name="anotherinput" label="Another input" ref={inputRef} />
         <SubmitButton label="Other Submit" submittingLabel="Submitting" />
       </ValidatedForm>

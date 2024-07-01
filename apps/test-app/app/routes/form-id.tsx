@@ -1,7 +1,7 @@
 import { ActionFunctionArgs, json } from "@remix-run/node";
 import { useActionData } from "@remix-run/react";
 import { withZod } from "@rvf/zod";
-import { ValidatedForm, useServerValidationErrors } from "@rvf/remix";
+import { ValidatedForm } from "@rvf/remix";
 import { z } from "zod";
 import { SubmitButton } from "~/components/SubmitButton";
 
@@ -14,17 +14,8 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
 export default function FormId() {
   const actionData = useActionData<typeof action>();
-  const server = useServerValidationErrors({
-    formId: "form-id-test-form",
-    defaultValues: {},
-  });
   return (
-    <ValidatedForm
-      validator={validator}
-      method="post"
-      {...server.getFormOpts()}
-    >
-      {server.renderHiddenInput()}
+    <ValidatedForm id="form-id-test-form" validator={validator} method="post">
       <p>{actionData?.message}</p>
       <SubmitButton />
     </ValidatedForm>

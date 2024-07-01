@@ -1,13 +1,7 @@
 import { DataFunctionArgs, json } from "@remix-run/node";
 import { useActionData } from "@remix-run/react";
 import { withZod } from "@rvf/zod";
-import {
-  validationError,
-  ValidatedForm,
-  useForm,
-  FormProvider,
-  useServerValidationErrors,
-} from "@rvf/remix";
+import { validationError, useForm, FormProvider } from "@rvf/remix";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
 import { Input } from "~/components/Input";
@@ -63,20 +57,15 @@ export const action = async ({ request }: DataFunctionArgs) => {
 
 export default function FrontendValidation() {
   const actionData = useActionData<typeof action>();
-  const response = useServerValidationErrors({
-    formId: "test-form",
-    defaultValues: { firstName: "" },
-  });
   const form = useForm({
+    id: "test-form",
     validator,
     method: "post",
-    ...response.getFormOpts(),
   });
   return (
     <FormProvider scope={form.scope()}>
       <Input name={form.scope("firstName")} label="First Name" />
       <form {...form.getFormProps()}>
-        {response.renderHiddenInput()}
         {actionData && "message" in actionData && <h1>{actionData.message}</h1>}
         <Input name="lastName" label="Last Name" />
         <Input name="email" label="Email" />

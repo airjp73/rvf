@@ -44,4 +44,3 @@ export {
 export { useForm, type RemixFormOpts as FormScopeRemixOpts } from "./useForm";
 export { ValidatedForm, type ValidatedFormProps } from "./ValidatedForm";
 export { validationError } from "./server";
-export { useServerValidationErrors } from "./auto-server-hooks";

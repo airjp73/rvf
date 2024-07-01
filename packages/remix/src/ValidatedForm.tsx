@@ -88,6 +88,7 @@ export const ValidatedForm = <
         })}
         {...rest}
       >
+        {rvf.renderFormIdInput()}
         {typeof children === "function" ? children(rvf) : children}
       </form>
     </FormProvider>
