@@ -253,6 +253,10 @@ export const navigation: Array<NavGroup> = [
       { title: "Typesafe input component", href: "/recipes/typesafe-input" },
     ],
   },
+  {
+    title: "Adapters",
+    links: [{ title: "Remix", href: "/remix" }],
+  },
 ];
 
 export function Navigation({

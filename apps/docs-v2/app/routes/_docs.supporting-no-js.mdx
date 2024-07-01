@@ -25,4 +25,47 @@ If the native HTML api can't handle all of your validation requirements, you'll 
 
 ## If users without JS are an edge-case
 
-TODO
+<Note>
+  This section applies to the plain React adapter. If you're using the `useForm`
+  hook from the Remix adapter, read about [server-side validation for the remix
+  adapter](/remix#server-side-validation).
+</Note>
+
+<Row>
+  <Col>
+    If you really need to support users who don't have JS enabled, you'll need to be rendering the form on your server.
+    If your form submission contains errors, you can pass those errors to your form using the `serverValidationErrors` option.
+
+    When your page loads the errors from the server will be displayed to the user where they normally would be.
+
+  </Col>
+  <Col>
+    ```tsx
+    const form = useForm({
+      // ...other options
+      serverValidationErrors: {
+        firstName: "First name is required",
+        lastName: "Last name is required",
+      },
+    });
+    ```
+  </Col>
+</Row>
+
+### Persisting the form values
+
+<Row>
+  <Col>
+    You likely don'e want the user to lose their progress in your form if your server validation fails.
+    You can handle this by changing what you pass to `defaultValues` when you have server validation errors.
+  </Col>
+  <Col>
+    ```tsx
+    const form = useForm({
+      // ...other options
+      serverValidationErrors: myServerErrors,
+      defaultValues: userSubmittedValues ?? regularDefaultValues,
+    });
+    ```
+  </Col>
+</Row>
