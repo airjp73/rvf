@@ -68,6 +68,7 @@ export default function FrontendValidation() {
   // Verify we don't get an infinite loop
   const form = useForm({
     id: "test-form",
+    defaultValues: { firstName: "defaultFirstName" },
     validator: withYup(
       yup.object({
         firstName: yup.string().label("First Name").required(),

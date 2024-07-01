@@ -59,6 +59,7 @@ export default function FrontendValidation() {
   const actionData = useActionData<typeof action>();
   const form = useForm({
     id: "test-form",
+    defaultValues: { firstName: "" },
     validator,
     method: "post",
   });
@@ -66,6 +67,7 @@ export default function FrontendValidation() {
     <FormProvider scope={form.scope()}>
       <Input name={form.scope("firstName")} label="First Name" />
       <form {...form.getFormProps()}>
+        {form.renderFormIdInput()}
         {actionData && "message" in actionData && <h1>{actionData.message}</h1>}
         <Input name="lastName" label="Last Name" />
         <Input name="email" label="Email" />
