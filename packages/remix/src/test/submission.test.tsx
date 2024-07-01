@@ -90,7 +90,9 @@ it("should respect the validation errors returned from the action", async () => 
   await userEvent.type(screen.getByTestId("foo"), "bar");
   await userEvent.click(screen.getByTestId("submit"));
 
-  expect(await screen.findByTestId("validation error")).toBeInTheDocument();
+  expect(await screen.findByTestId("foo-error")).toHaveTextContent(
+    "validation error",
+  );
 });
 
 it("should not show the validation errors if a form id is returned from the action, but not provided to the form", async () => {
@@ -180,7 +182,9 @@ it("should show the validation errors if a form id is returned from the action, 
 
   await userEvent.type(screen.getByTestId("foo"), "bar");
   await userEvent.click(screen.getByTestId("submit"));
-  expect(await screen.findByTestId("validation error")).toBeInTheDocument();
+  expect(await screen.findByTestId("foo-error")).toHaveTextContent(
+    "validation error",
+  );
 });
 
 it("should not show the validation errors if no form id is returned from the action, but one is provided to the form", async () => {
@@ -274,7 +278,9 @@ it("should automatically take care of the form id for server validation errors",
   await userEvent.type(screen.getByTestId("foo"), "bar");
   await userEvent.click(screen.getByTestId("submit"));
 
-  expect(await screen.findByTestId("validation error")).toBeInTheDocument();
+  expect(await screen.findByTestId("foo-error")).toHaveTextContent(
+    "validation error",
+  );
 });
 
 it("should be able to submit state directly", async () => {
@@ -748,7 +754,6 @@ it("should call onSubmitFailure if the call returns a validation error", async (
   const action = async () => {
     return validationError({
       fieldErrors: { foo: "validation error" },
-      formId: "testing",
     });
   };
 
