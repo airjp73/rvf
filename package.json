@@ -46,7 +46,6 @@
     "eslint-plugin-react": "^7.34.1",
     "globals": "^15.1.0",
     "husky": "^7.0.4",
-    "jest": "^27.4.4",
     "prettier": "^3.2.5",
     "turbo": "latest",
     "typescript-eslint": "^7.8.0",
