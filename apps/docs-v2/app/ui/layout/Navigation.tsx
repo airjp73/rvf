@@ -236,6 +236,10 @@ export const navigation: Array<NavGroup> = [
       { title: "Different input types", href: "/input-types" },
       { title: "Arrays and nested data", href: "/arrays-and-nested" },
       {
+        title: "Validation library support",
+        href: "/validation-library-support",
+      },
+      {
         title: "Scoped abstractions",
         href: "/scoping",
       },

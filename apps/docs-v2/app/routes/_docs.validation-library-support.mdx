@@ -1,0 +1,67 @@
+export const meta = () => [
+  {
+    title: "Validation library support (RVF)",
+  },
+];
+
+# Validation Library Support
+
+There are official adapters available for `zod` and `yup` ,
+but you can easily support whatever library you want by creating your own adapter.
+
+And if you create an adapter for a library, feel free to make a PR to add official support 😊
+
+## Creating an adapter
+
+Any object that conforms to the `Validator` type can be passed into the the `ValidatedForm`'s `validator` prop.
+
+```ts
+type FieldErrors = Record<string, string>;
+
+type Valid<DataType> = { data: DataType; error: undefined };
+type Invalid = { error: FieldErrors; data: undefined };
+
+type ValidationResult<DataType> = SuccessResult<DataType> | ErrorResult;
+
+type Validator<DataType> = {
+  validate: (
+    unvalidatedData: GenericObject | FormData,
+  ) => Promise<ValidationResult<DataType>>;
+};
+```
+
+In order to make an adapter for your validation library of choice,
+you can create a function that accepts a schema from the validation library and turns it into a validator.
+
+Note the use of `createValidator`.
+It takes care of unflattening the data for nested objects and arrays.
+This enables your validator to work with nested objects and arrays in DOM mode.
+For more on this you can check the implementations for `withZod` and `withYup`.
+
+The out-of-the-box support for `yup` in this library works like this:
+
+```ts
+export const withYup = <Schema extends AnyObjectSchema>(
+  validationSchema: Schema,
+  // For best result with Typescript,
+  // we should type the `Validator`
+  // we return based on the provided schema
+): Validator<InferType<Schema>> =>
+  createValidator({
+    validate: async (unvalidatedData) => {
+      // Validate with yup and return the
+      // validated & typed data or the error
+
+      if (isValid)
+        return {
+          data: { field1: "someValue" },
+          error: undefined,
+        };
+      else
+        return {
+          error: { field1: "Some error!" },
+          data: undefined,
+        };
+    },
+  });
+```
