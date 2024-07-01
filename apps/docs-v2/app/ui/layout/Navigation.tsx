@@ -123,8 +123,8 @@ function ActivePageMarker({
   group: NavGroup;
   pathname: string;
 }) {
-  let itemHeight = 32;
-  let offset = 4;
+  let itemHeight = 28;
+  let offset = 2;
   let activePageIndex = group.links.findIndex((link) => link.href === pathname);
   let top = offset + activePageIndex * itemHeight;
 
