@@ -15,20 +15,17 @@ function useErrorResponseForForm({
   formId,
 }: ErrorResponseContext): ValidationErrorResponseData | null {
   const actionData = useActionData<any>();
-  if (fetcher) {
-    if ((fetcher.data as any)?.fieldErrors) return fetcher.data as any;
-    return null;
-  }
+  const data = (fetcher?.data as any) ?? actionData;
+  if (!data?.fieldErrors) return null;
 
-  if (!actionData?.fieldErrors) return null;
-
-  return actionData.formId === formId ? actionData : null;
+  const bothFormAndResponseHaveNoId = (formId ?? null) && (data.formId ?? null);
+  if (bothFormAndResponseHaveNoId || formId === data.formId) return data;
+  return null;
 }
 
-export type ServerValidationErrorOpts<DefaultValues> = (
-  | { formId: string }
-  | { fetcher: FetcherWithComponents<unknown> }
-) & {
+export type ServerValidationErrorOpts<DefaultValues> = {
+  formId?: string;
+  fetcher?: FetcherWithComponents<unknown>;
   defaultValues: DefaultValues;
 };
 
@@ -46,14 +43,9 @@ export const useServerValidationErrors = <DefaultValues extends FieldValues>(
   const errorDefaultValues = errorsFromServer?.repopulateFields;
 
   return {
-    getFormOpts: () => ({
-      serverValidationErrors: errorsFromServer?.fieldErrors,
-      id: formId,
-      fetcher,
-      defaultValues: (errorDefaultValues ?? defaultValues) as DefaultValues,
-    }),
-    renderHiddenInput: () => (
-      <input type="hidden" name={FORM_ID_FIELD_NAME} value={formId} />
-    ),
+    serverValidationErrors: errorsFromServer?.fieldErrors,
+    id: formId,
+    fetcher,
+    defaultValues: (errorDefaultValues ?? defaultValues) as DefaultValues,
   };
 };

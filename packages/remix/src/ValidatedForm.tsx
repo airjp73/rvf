@@ -49,7 +49,6 @@ export const ValidatedForm = <
   navigate,
   otherFormProps,
   reloadDocument,
-  serverValidationErrors,
   ...rest
 }: ValidatedFormProps<FormInputData, FormOutputData, FormResponseData>) => {
   const rvf = useForm<FormInputData, FormOutputData, FormResponseData>({
@@ -75,7 +74,6 @@ export const ValidatedForm = <
     reloadDocument,
     defaultValues,
     fetcher,
-    serverValidationErrors,
   } satisfies AllProps<
     RemixFormOpts<FormInputData, FormOutputData, FormResponseData>
   >);

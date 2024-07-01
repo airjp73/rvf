@@ -18,6 +18,7 @@ import {
   getFormId,
   getFormProps,
   SubmitterOptions,
+  FORM_ID_FIELD_NAME,
 } from "@rvf/core";
 import {
   StringToPathTuple,
@@ -38,7 +39,6 @@ import {
   makeFieldImpl,
 } from "./field";
 import {
-  GetInputProps,
   GetInputPropsParam,
   MinimalInputProps,
   ValidInputPropsValues,
@@ -367,6 +367,13 @@ export interface ReactFormApi<FormInputData> {
    * Pass this to your form's `onSubmit` handler.
    */
   submit: (option?: ManualSubmitOption) => void;
+
+  /**
+   * Renders a hidden input that sets passes the form id to your server.
+   * This is only useful if you're supporting users who don't have JS enabled
+   * and you're returning validation errors from your server.
+   */
+  renderFormIdInput: () => React.ReactNode;
 }
 
 export type BaseReactFormParams<FormInputData> = {
@@ -592,6 +599,12 @@ export const makeBaseReactFormApi = <FormInputData,>({
         formAction: options?.formAction,
       };
       trackedState.onSubmit(submitterData, submitterOptions);
+    },
+
+    renderFormIdInput: () => {
+      const formId = getFormId(trackedState);
+      if (!formId) return null;
+      return <input type="hidden" name={FORM_ID_FIELD_NAME} value={formId} />;
     },
   };
 };

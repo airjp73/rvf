@@ -1,7 +1,6 @@
 import {
   useForm as useFormReact,
   FieldValues,
-  FormScope,
   FormOpts,
   ReactFormApi,
 } from "@rvf/react";
@@ -13,6 +12,8 @@ import {
 } from "@remix-run/react";
 import { toPathObject } from "@rvf/set-get";
 import { GenericObject, SubmitterOptions } from "@rvf/core";
+import { useServerValidationErrors } from "./auto-server-hooks";
+import { FORM_ID_FIELD_NAME } from "./constants";
 
 type PartialProps<T, Props extends keyof T> = Omit<T, Props> &
   Partial<Pick<T, Props>>;
@@ -24,7 +25,7 @@ export type RemixFormOpts<
 > = PartialProps<
   Omit<
     FormOpts<FormInputData, FormOutputData, FormResponseData>,
-    keyof SubmitOptions
+    keyof SubmitOptions | "serverValidationErrors"
   >,
   "handleSubmit"
 > &
@@ -55,12 +56,16 @@ export function useForm<
 ): ReactFormApi<FormInputData> {
   let rvf: ReactFormApi<FormInputData>;
 
-  const {
+  const { fetcher, submitSource = "dom" } = rvfOpts;
+  const serverStuff = useServerValidationErrors({
+    formId: rvfOpts.id,
+    defaultValues: rvfOpts.defaultValues as any,
+    fetcher: rvfOpts.fetcher,
+  });
+  const submitWithRemix = useRemixSubmit(
     fetcher,
-    serverValidationErrors: serverErrors,
-    submitSource = "dom",
-  } = rvfOpts;
-  const submitWithRemix = useRemixSubmit(fetcher, serverErrors);
+    serverStuff.serverValidationErrors,
+  );
 
   const handleSubmission = (
     data: FormOutputData,
@@ -91,11 +96,14 @@ export function useForm<
       if (submitSource === "dom") {
         if (!formData)
           throw new Error("Missing form data. This is likely a bug in RVF");
+        if (rvfOpts.id) formData.set(FORM_ID_FIELD_NAME, rvfOpts.id);
         return formData;
       }
 
       if (rvfOpts.encType === "application/json") return data as GenericObject;
-      return toPathObject(data as GenericObject);
+      const pathObj = toPathObject(data as GenericObject);
+      if (rvfOpts.id) pathObj[FORM_ID_FIELD_NAME] = rvfOpts.id;
+      return pathObj;
     };
 
     const getFormAction = () => {
@@ -125,6 +133,7 @@ export function useForm<
 
   rvf = useFormReact<FormInputData, FormOutputData, FormResponseData>({
     ...rvfOpts,
+    ...serverStuff,
     otherFormProps: {
       method: rvfOpts.method,
       encType: rvfOpts.encType,
