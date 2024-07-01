@@ -233,6 +233,7 @@ export const navigation: Array<NavGroup> = [
   {
     title: "Guides",
     links: [
+      { title: "Default values", href: "/default-values" },
       { title: "Different input types", href: "/input-types" },
       { title: "Arrays and nested data", href: "/arrays-and-nested" },
       {

@@ -1,0 +1,51 @@
+import { DefaultValuesExample } from "../examples/default-values/example";
+
+export const meta = () => [
+  {
+    title: "Default values (RVF)",
+  },
+];
+
+# Default values
+
+<Row>
+  <Col>
+    Setting default values in RVF is easy using the `defaultValues` option in the `useForm` hook.
+  </Col>
+  <Col>
+    ```tsx
+    const form = useForm({
+      // ...validator and other options
+      defaultValues: {
+        firstName: "Jane",
+        lastName: "Doe",
+        email: "jane.doe@example.com",
+      },
+    });
+    ```
+  </Col>
+</Row>
+
+## Type safety
+
+<Row>
+  <Col>
+    For most forms, it's recommended to always set default values.
+    The types of the `form` object returned by `useForm` (`form.value()`, `form.setValue()`, etc) are based entirely around the type you define for the default values.
+    In some cases, this may mean you need to specify the type of a value for values that can be more than one type.
+  </Col>
+  <Col>
+    ```tsx
+    const form = useForm({
+      // ...validator and other options
+      defaultValues: {
+        selectedOption: null as string | null,
+      },
+    });
+    ```
+  </Col>
+</Row>
+
+## Example
+
+<DefaultValuesExample />
