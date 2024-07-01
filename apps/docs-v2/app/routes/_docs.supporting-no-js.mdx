@@ -33,7 +33,8 @@ If the native HTML api can't handle all of your validation requirements, you'll 
 
 <Row>
   <Col>
-    If you really need to support users who don't have JS enabled, you'll need to be rendering the form on your server.
+    If users not having JS enabled is more of an edge case, or you need to handle more complex errors than the native HTML api can handle,
+    you'll need to be rendering the form on your server.
     If your form submission contains errors, you can pass those errors to your form using the `serverValidationErrors` option.
 
     When your page loads the errors from the server will be displayed to the user where they normally would be.
