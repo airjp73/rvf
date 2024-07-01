@@ -7,7 +7,6 @@ import { useForm } from "../useForm";
 import { validationError } from "../server";
 import { ActionFunctionArgs } from "@remix-run/node";
 import { ValidatedForm } from "../ValidatedForm";
-import { useServerValidationErrors } from "../auto-server-hooks";
 
 it("should submit data to the action in dom mode", async () => {
   const validator = createValidator({
@@ -50,6 +49,232 @@ it("should submit data to the action in dom mode", async () => {
   await userEvent.click(screen.getByTestId("submit"));
 
   expect(await screen.findByText("You said: bar")).toBeInTheDocument();
+});
+
+it("should respect the validation errors returned from the action", async () => {
+  const validator = createValidator({
+    validate: (data) => Promise.resolve({ data, error: undefined }),
+  });
+
+  const action = async ({ request }: ActionFunctionArgs) => {
+    return validationError({
+      fieldErrors: { foo: "validation error" },
+    });
+  };
+
+  const Stub = createRemixStub([
+    {
+      path: "/",
+      Component: () => {
+        const form = useForm({
+          defaultValues: { foo: "" },
+          validator,
+          method: "post",
+        });
+        return (
+          <form {...form.getFormProps()}>
+            <input data-testid="foo" {...form.getInputProps("foo")} />
+            {form.error("foo") && (
+              <pre data-testid="foo-error">{form.error("foo")}</pre>
+            )}
+            <button type="submit" data-testid="submit" />
+          </form>
+        );
+      },
+      action,
+    },
+  ]);
+
+  render(<Stub />);
+
+  await userEvent.type(screen.getByTestId("foo"), "bar");
+  await userEvent.click(screen.getByTestId("submit"));
+
+  expect(await screen.findByTestId("validation error")).toBeInTheDocument();
+});
+
+it("should not show the validation errors if a form id is returned from the action, but not provided to the form", async () => {
+  const validator = createValidator({
+    validate: (data) => Promise.resolve({ data, error: undefined }),
+  });
+
+  const action = async ({ request }: ActionFunctionArgs) => {
+    return validationError({
+      fieldErrors: { foo: "validation error" },
+      formId: "testing",
+    });
+  };
+
+  const Stub = createRemixStub([
+    {
+      path: "/",
+      Component: () => {
+        const data = useActionData<typeof action>();
+        const form = useForm({
+          defaultValues: { foo: "" },
+          validator,
+          method: "post",
+        });
+        return (
+          <form {...form.getFormProps()}>
+            {!!data && <p>Done</p>}
+            <input data-testid="foo" {...form.getInputProps("foo")} />
+            {form.error("foo") && (
+              <pre data-testid="foo-error">{form.error("foo")}</pre>
+            )}
+            <button type="submit" data-testid="submit" />
+          </form>
+        );
+      },
+      action,
+    },
+  ]);
+
+  render(<Stub />);
+
+  await userEvent.type(screen.getByTestId("foo"), "bar");
+  await userEvent.click(screen.getByTestId("submit"));
+  expect(await screen.findByText("Done")).toBeInTheDocument();
+  expect(screen.queryByTestId("foo-error")).not.toBeInTheDocument();
+});
+
+it("should show the validation errors if a form id is returned from the action, and it is provided to the form", async () => {
+  const validator = createValidator({
+    validate: (data) => Promise.resolve({ data, error: undefined }),
+  });
+
+  const action = async ({ request }: ActionFunctionArgs) => {
+    return validationError({
+      fieldErrors: { foo: "validation error" },
+      formId: "testing",
+    });
+  };
+
+  const Stub = createRemixStub([
+    {
+      path: "/",
+      Component: () => {
+        const data = useActionData<typeof action>();
+        const form = useForm({
+          defaultValues: { foo: "" },
+          validator,
+          method: "post",
+          id: "testing",
+        });
+        return (
+          <form {...form.getFormProps()}>
+            {!!data && <p>Done</p>}
+            <input data-testid="foo" {...form.getInputProps("foo")} />
+            {form.error("foo") && (
+              <pre data-testid="foo-error">{form.error("foo")}</pre>
+            )}
+            <button type="submit" data-testid="submit" />
+          </form>
+        );
+      },
+      action,
+    },
+  ]);
+
+  render(<Stub />);
+
+  await userEvent.type(screen.getByTestId("foo"), "bar");
+  await userEvent.click(screen.getByTestId("submit"));
+  expect(await screen.findByTestId("validation error")).toBeInTheDocument();
+});
+
+it("should not show the validation errors if no form id is returned from the action, but one is provided to the form", async () => {
+  const validator = createValidator({
+    validate: (data) => Promise.resolve({ data, error: undefined }),
+  });
+
+  const action = async ({ request }: ActionFunctionArgs) => {
+    return validationError({
+      fieldErrors: { foo: "validation error" },
+    });
+  };
+
+  const Stub = createRemixStub([
+    {
+      path: "/",
+      Component: () => {
+        const data = useActionData<typeof action>();
+        const form = useForm({
+          defaultValues: { foo: "" },
+          validator,
+          method: "post",
+          id: "testing",
+        });
+        return (
+          <form {...form.getFormProps()}>
+            {!!data && <p>Done</p>}
+            <input data-testid="foo" {...form.getInputProps("foo")} />
+            {form.error("foo") && (
+              <pre data-testid="foo-error">{form.error("foo")}</pre>
+            )}
+            <button type="submit" data-testid="submit" />
+          </form>
+        );
+      },
+      action,
+    },
+  ]);
+
+  render(<Stub />);
+
+  await userEvent.type(screen.getByTestId("foo"), "bar");
+  await userEvent.click(screen.getByTestId("submit"));
+  expect(await screen.findByText("Done")).toBeInTheDocument();
+  expect(screen.queryByTestId("foo-error")).not.toBeInTheDocument();
+});
+
+it("should automatically take care of the form id for server validation errors", async () => {
+  const validator = createValidator({
+    validate: () =>
+      Promise.resolve({
+        data: undefined,
+        error: { foo: "validation error" },
+      }),
+  });
+
+  const action = async ({ request }: ActionFunctionArgs) => {
+    const data = await validator.validate(await request.formData());
+    if (data.error) return validationError(data.error);
+    return {};
+  };
+
+  const Stub = createRemixStub([
+    {
+      path: "/",
+      Component: () => {
+        const form = useForm({
+          defaultValues: { foo: "" },
+          validator,
+          method: "post",
+          id: "testing",
+        });
+        return (
+          <form {...form.getFormProps()}>
+            {form.renderFormIdInput()}
+
+            <input data-testid="foo" {...form.getInputProps("foo")} />
+            {form.error("foo") && (
+              <pre data-testid="foo-error">{form.error("foo")}</pre>
+            )}
+            <button type="submit" data-testid="submit" />
+          </form>
+        );
+      },
+      action,
+    },
+  ]);
+
+  render(<Stub />);
+
+  await userEvent.type(screen.getByTestId("foo"), "bar");
+  await userEvent.click(screen.getByTestId("submit"));
+
+  expect(await screen.findByTestId("validation error")).toBeInTheDocument();
 });
 
 it("should be able to submit state directly", async () => {
@@ -520,7 +745,7 @@ it("should call onSubmitFailure if the call returns a validation error", async (
     validate: (data) => Promise.resolve({ data, error: undefined }),
   });
 
-  const action = async ({ request }: ActionFunctionArgs) => {
+  const action = async () => {
     return validationError({
       fieldErrors: { foo: "validation error" },
       formId: "testing",
@@ -531,12 +756,7 @@ it("should call onSubmitFailure if the call returns a validation error", async (
     {
       path: "/",
       Component: () => {
-        const response = useServerValidationErrors({
-          formId: "testing",
-          defaultValues: { foo: "" },
-        });
         const form = useForm({
-          ...response.getFormOpts(),
           validator,
           method: "post",
           onSubmitSuccess: success,
@@ -544,7 +764,6 @@ it("should call onSubmitFailure if the call returns a validation error", async (
         });
         return (
           <form {...form.getFormProps()}>
-            {response.renderHiddenInput()}
             <input data-testid="foo" {...form.field("foo").getInputProps()} />
             <pre>{form.error("foo")}</pre>
             <button type="submit" data-testid="submit" />
