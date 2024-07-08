@@ -147,6 +147,20 @@ describe("zod helpers", () => {
       const s2 = zfd.repeatable(z.array(zfd.text(z.string().optional())));
       expect(s2.parse(["", ""])).toEqual([undefined, undefined]);
     });
+
+    it("should handle arrays of Files", () => {
+      const s = zfd.formData({
+        myRepeatable: zfd.repeatable(z.any()),
+      });
+      const fd = new FormData();
+      const f1 = new File(["test"], "test.txt", { type: "text/plain" });
+      const f2 = new File(["test2"], "test2.txt", { type: "text/plain" });
+      fd.append("myRepeatable", f1);
+      fd.append("myRepeatable", f2);
+      const res = s.parse(fd);
+      expect(res).toEqual({ myRepeatable: [f1, f2] });
+      expect(res.myRepeatable[0]?.name).toEqual("test.txt");
+    });
   });
 
   describe("repeatableOfType", () => {
@@ -177,7 +191,7 @@ describe("zod helpers", () => {
             message: "Number must be greater than 0",
             path: [1],
           },
-        ])
+        ]),
       );
       expect(s.parse("13")).toEqual([13]);
     });
@@ -243,7 +257,7 @@ describe("zod helpers", () => {
       {
         value: [{ foo: "bar" }, { bar: "baz" }],
         schema: z.array(
-          z.object({ foo: z.string().optional(), bar: z.string().optional() })
+          z.object({ foo: z.string().optional(), bar: z.string().optional() }),
         ),
       },
       { value: "simpleString", schema: z.string() },
@@ -293,7 +307,7 @@ describe("zod helpers", () => {
     it("should handle arrays of objects", () => {
       const s = zfd.formData({
         todos: zfd.repeatable(
-          z.array(z.object({ title: zfd.text(), description: zfd.text() }))
+          z.array(z.object({ title: zfd.text(), description: zfd.text() })),
         ),
       });
 
@@ -316,7 +330,7 @@ describe("zod helpers", () => {
         z.object({
           name: z.any(),
           checkboxGroup: z.any(),
-        })
+        }),
       );
 
       const formData = new TestFormData();
