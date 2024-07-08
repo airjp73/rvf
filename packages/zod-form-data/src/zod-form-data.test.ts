@@ -150,7 +150,7 @@ describe("zod helpers", () => {
 
     it("should handle arrays of Files", () => {
       const s = zfd.formData({
-        myRepeatable: zfd.repeatable(z.any()),
+        myRepeatable: zfd.repeatable(z.array(zfd.file())),
       });
       const fd = new FormData();
       const f1 = new File(["test"], "test.txt", { type: "text/plain" });
