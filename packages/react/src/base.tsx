@@ -541,10 +541,9 @@ export const makeBaseReactFormApi = <FormInputData,>({
         const nativeEvent = event.nativeEvent as HTMLSubmitEvent["nativeEvent"];
         const submitter = nativeEvent.submitter as HTMLFormSubmitter | null;
 
-        const submitterData =
-          submitter?.name != null
-            ? { [submitter.name]: submitter.value }
-            : undefined;
+        const submitterData = submitter?.name
+          ? { [submitter.name]: submitter.value }
+          : undefined;
 
         // Don't include option at all if the aren't provided
         const submitterOptions: SubmitterOptions = {};
