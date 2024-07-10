@@ -12,7 +12,7 @@ import { FORM_ID_FIELD_NAME } from "./constants";
  * extracting the values from FormData.
  */
 export function createValidator<T>(
-  validator: CreateValidatorArg<T>
+  validator: CreateValidatorArg<T>,
 ): Validator<T> {
   return {
     validate: async (value) => {
@@ -43,7 +43,7 @@ export function createValidator<T>(
 }
 
 export const isValidationErrorResponse = <T>(
-  response: T | ValidationErrorResponseData
+  response: T | ValidationErrorResponseData,
 ): response is ValidationErrorResponseData =>
   typeof response === "object" &&
   response !== null &&
