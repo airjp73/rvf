@@ -10,8 +10,6 @@ import {
   getFieldTouched,
   getFieldValue,
   getFormId,
-  isEvent,
-  onNativeChange,
 } from "@rvf/core";
 import { GetInputProps, createGetInputProps } from "./inputs/getInputProps";
 import { useFormScopeOrContextInternal } from "./context";

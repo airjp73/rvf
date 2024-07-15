@@ -27,12 +27,21 @@ export {
 export { type ReactFormApi, type FormFields } from "./base";
 export { useForm, FormOpts } from "./useForm";
 export {
+  GetInputProps,
+  GetInputPropsParam,
+  MinimalInputProps,
+} from "./inputs/getInputProps";
+export {
   useField,
   FieldApi,
   UseFieldOpts,
   Field,
   FieldPropsWithName,
   FieldPropsWithScope,
+  GetControlPropsParam,
+  GetControlPropsResult,
+  GetHiddenInputPropsParam,
+  GetHiddenInputPropsResult,
 } from "./field";
 export {
   useFieldArray,

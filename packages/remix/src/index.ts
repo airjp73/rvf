@@ -40,6 +40,13 @@ export {
   type NumberInputValue,
   type NativeValueByType,
   type ValueOfInputType,
+  type GetControlPropsParam,
+  type GetControlPropsResult,
+  type GetHiddenInputPropsParam,
+  type GetHiddenInputPropsResult,
+  type GetInputProps,
+  type GetInputPropsParam,
+  type MinimalInputProps,
 } from "@rvf/react";
 export { useForm, type RemixFormOpts as FormScopeRemixOpts } from "./useForm";
 export { ValidatedForm, type ValidatedFormProps } from "./ValidatedForm";
