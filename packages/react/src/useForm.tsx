@@ -49,15 +49,18 @@ export type FormOpts<
   validator: Validator<FormOutputData>;
 
   /**
-   * Called when the form is successfully submitted using `handleSubmit`.
+   * Called after the form has been successfully submitted with whatever data was returned from the `handleSubmit` function.
+   * Can be useful for showing a toast message or redirecting the user to a different page.
+   * If you return a `Promise` from this callback, the `isSubmitting` state will still be `true` while this callback is running.
    */
   onSubmitSuccess?: (
     handleSubmitResponse: NoInfer<SubmitResponseData>,
   ) => void | Promise<void>;
 
   /**
-   * Called when handleSubmit throws an error, and provides the error from the handleSubmit function.
-   * This will not be called if the validator prevents the submission from happening.
+   * Called when the `handleSubmit` function throws an error.
+   * Can be useful for showing a toast message or redirecting the user to a different page.
+   * If you return a `Promise` from this callback, the `isSubmitting` state will still be `true` while this callback is running.
    */
   onSubmitFailure?: (error: unknown) => void | Promise<void>;
 

@@ -93,3 +93,8 @@ If you return a `Promise` from this callback, the `isSubmitting` state will stil
 Called when the `handleSubmit` function throws an error.
 Can be useful for showing a toast message or redirecting the user to a different page.
 If you return a `Promise` from this callback, the `isSubmitting` state will still be `true` while this callback is running.
+
+### `resetAfterSubmit`
+
+A shortcut setting that resets the form to the default values after the form has been successfully submitted.
+This is equivalent to calling `resetForm` in the `onSubmitSuccess` callback.
