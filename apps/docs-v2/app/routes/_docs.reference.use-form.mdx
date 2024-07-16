@@ -57,3 +57,39 @@ Configures what RVF uses as the source of truth for form validation submission.
 By default, this is set to `"dom"`, which means RVF will pull data directly out of the HTML form element.
 If you set this to `"state"`, RVF will use the data stored in the form state as the source of truth.
 You can read more about state mode [here](/state-mode).
+
+### `handleSubmit`
+
+A function that is called when the form is submitted, if the data is valid.
+Depending on the `submitSource` you chose, this function will be called with different arguments.
+
+#### "dom"
+
+```ts
+(data: FormInputData, formData: FormData, options: SubmitterOptions) => void | Promise<void>
+```
+
+- `data` is the fully validated form data.
+- `formData` is the raw `FormData` extracted from the HTML form element.
+- `options` is an object that contains a few props pulled off of the submitter of the form (usually the sumbit button).
+
+#### "state"
+
+```ts
+(data: FormInputData, options: SubmitterOptions) => void | Promise<void>
+```
+
+- `data` is the fully validated form data.
+- `options` is an object that contains a few props pulled off of the submitter of the form (usually the sumbit button).
+
+### `onSubmitSuccess`
+
+Called after the form has been successfully submitted with whatever data was returned from the `handleSubmit` function.
+Can be useful for showing a toast message or redirecting the user to a different page.
+If you return a `Promise` from this callback, the `isSubmitting` state will still be `true` while this callback is running.
+
+### `onSubmitFailure`
+
+Called when the `handleSubmit` function throws an error.
+Can be useful for showing a toast message or redirecting the user to a different page.
+If you return a `Promise` from this callback, the `isSubmitting` state will still be `true` while this callback is running.
