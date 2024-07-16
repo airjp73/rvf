@@ -1,5 +1,4 @@
 import { useEffect, useMemo } from "react";
-import * as R from "remeda";
 import {
   FormScope,
   scopeFormScope,
@@ -381,13 +380,16 @@ export type BaseReactFormParams<FormInputData> = {
   trackedState: FormStoreValue;
 };
 
+const isNonNullish = <T,>(value: T | null | undefined): value is T =>
+  value != null;
+
 export const makeBaseFormApi = <FormInputData,>({
   trackedState,
   form,
 }: BaseReactFormParams<FormInputData>): FormApi<FormInputData> => {
   const prefix = form.__field_prefix__;
   const f = (fieldName?: string) =>
-    pathArrayToString([prefix, fieldName].filter(R.isNonNullish));
+    pathArrayToString([prefix, fieldName].filter(isNonNullish));
   const transientState = () => form.__store__.store.getState();
 
   type WithOptionalField<T> = [string, T] | [T];

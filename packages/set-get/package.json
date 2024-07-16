@@ -10,9 +10,6 @@
     "prepublishOnly": "bun run build",
     "typecheck": "tsc --noEmit"
   },
-  "dependencies": {
-    "remeda": "^1.2.0"
-  },
   "devDependencies": {
     "tsconfig": "*"
   }

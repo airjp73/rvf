@@ -1,5 +1,7 @@
 import { pathArrayToString } from "@rvf/set-get";
-import * as R from "remeda";
+
+const isNonNullish = <T,>(value: T | null | undefined): value is T =>
+  value != null;
 
 export const makeImplFactory = <Item,>(
   prefix: string,
@@ -9,7 +11,7 @@ export const makeImplFactory = <Item,>(
 
   return (fieldName?: string) => {
     const fullName = pathArrayToString(
-      [prefix, fieldName].filter(R.isNonNullish),
+      [prefix, fieldName].filter(isNonNullish),
     );
 
     const existingImpl = implCache.get(fullName);

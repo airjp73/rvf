@@ -1,12 +1,20 @@
 import { FormEvent, LegacyRef, Ref } from "react";
-import * as R from "remeda";
 import {
+  GenericObject,
   getCheckboxChecked,
   getNextNativeValue,
   getRadioChecked,
   isEvent,
   isFormControl,
 } from "@rvf/core";
+
+const omitBy = <T extends GenericObject>(
+  obj: T,
+  predicate: (value: T[keyof T], key: keyof T) => boolean,
+): Partial<T> =>
+  Object.fromEntries(
+    Object.entries(obj).filter(([key, value]) => !predicate(value, key)),
+  ) as Partial<T>;
 
 export type CreateGetInputPropsOptions = {
   onChange: (value: unknown) => void;
@@ -99,6 +107,6 @@ export const createGetInputProps = ({
       console.warn("File inputs cannot have a default value.");
     }
 
-    return R.omitBy(inputProps, (value) => value === undefined) as T;
+    return omitBy(inputProps, (value) => value === undefined) as T;
   };
 };
