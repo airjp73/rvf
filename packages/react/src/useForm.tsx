@@ -30,25 +30,40 @@ export type FormOpts<
   SubmitResponseData = unknown,
 > = {
   /**
-   * The initial values of the form.
+   * Sets the default values of the form.
+   *
+   * For Typescript users, `defaultValues` is one of the most important props you'll use.
+   * The type of the object you pass here, will determine the type of the data you get
+   * when interacting with the form. For example, `form.value('myField')` will be typed based on
+   * the type of `defaultValues.myField`.
+   *
    * It's recommended that you provide a default value for every field in the form.
    */
   defaultValues?: FormInputData;
 
   /**
-   * Can be used to set the default errors of the entire form.
-   * This is most useful went integrating with server-side validation.
-   *
-   * **CAREFUL**: this will cause an update every time the identity of `serverValidationErrors` changes.
-   * So make sure the identity of `serverValidationErrors` is stable.
-   */
-  serverValidationErrors?: FieldErrors;
-
-  /**
-   * A function that validates the form's values.
-   * This is most commonly used in combination with an adapter for a particular validation library like `zod`.
+   * A validator object created by a validation adapter such a `withZod` or `withYup`.
+   * See [these docs](https://rvf-js.io/validation-library-support) for more details
+   * and information on how to create a validator for other validation libraries.
    */
   validator: Validator<FormOutputData>;
+
+  /**
+   * Called when the form is successfully submitted using `handleSubmit`.
+   */
+  onSubmitSuccess?: (handleSubmitResponse: NoInfer<SubmitResponseData>) => void;
+
+  /**
+   * Called when handleSubmit throws an error, and provides the error from the handleSubmit function.
+   * This will not be called if the validator prevents the submission from happening.
+   */
+  onSubmitFailure?: (error: unknown) => void;
+
+  /**
+   * A shortcut setting that resets the form to the default values after the form has been successfully submitted.
+   * This is equivalent to calling `resetForm` in the `onSubmitSuccess` callback.
+   */
+  resetAfterSubmit?: boolean;
 
   /**
    * Allows you to customize the validation behavior of the form.
@@ -84,21 +99,13 @@ export type FormOpts<
   otherFormProps?: Omit<ComponentProps<"form">, "id" | "action">;
 
   /**
-   * Called when the form is successfully submitted using `handleSubmit`.
+   * Can be used to set the default errors of the entire form.
+   * This is most useful went integrating with server-side validation.
+   *
+   * **CAREFUL**: this will cause an update every time the identity of `serverValidationErrors` changes.
+   * So make sure the identity of `serverValidationErrors` is stable.
    */
-  onSubmitSuccess?: (handleSubmitResponse: NoInfer<SubmitResponseData>) => void;
-
-  /**
-   * Called when handleSubmit throws an error, and provides the error from the handleSubmit function.
-   * This will not be called if the validator prevents the submission from happening.
-   */
-  onSubmitFailure?: (error: unknown) => void;
-
-  /**
-   * A shortcut setting that resets the form to the default values after the form has been successfully submitted.
-   * This is equivalent to calling `resetForm` in the `onSubmitSuccess` callback.
-   */
-  resetAfterSubmit?: boolean;
+  serverValidationErrors?: FieldErrors;
 } & FormSubmitOpts<FormOutputData, SubmitResponseData>;
 
 const isFormScope = (form: any): form is FormScope<any> =>

@@ -244,6 +244,10 @@ export const navigation: Array<NavGroup> = [
         title: "Scoped abstractions",
         href: "/scoping",
       },
+      {
+        title: "State mode",
+        href: "/state-mode",
+      },
       { title: "Support users without JS", href: "/supporting-no-js" },
     ],
   },

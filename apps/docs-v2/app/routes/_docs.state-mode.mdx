@@ -1,0 +1,46 @@
+import { StateMode } from "../examples/state-mode/example";
+
+export const meta = () => [
+  {
+    title: "State mode (RVF)",
+  },
+];
+
+# State mode
+
+<Row>
+  <Col>
+    State mode is one of the most powerful features of RVF.
+    You can enable it using the `submitSource` option in `useForm`.
+  </Col>
+  <Col>
+    ```tsx
+    const form = useForm({
+      submitSource: "state",
+      // ...other options
+    });
+    ```
+  </Col>
+</Row>
+
+## Differences
+
+One thing that makes RVF unique is that it uses the native HTML form element as the source of truth
+when it comes time to validate and submit the form data.
+This is great for progressive enhancement, and keeping your app as functional as possible even before JS is ready.
+
+However, sometimes you have a complex form with lots of fields that aren't always visible.
+Or you have a lot of controlled fields that don't fit nicely into the normal form data.
+Native FormData _can_ handle those cases, but it's not always as straightforward as it could be.
+
+When using state mode, RVF acts a bit more like a traditional form library.
+When validating, RVF will only look at the form data stored in the form state.
+This means that fields no longer have to be present in the dom to be validated.
+And you no longer have to write your validator around everything being encoded in the form data as strings.
+
+## Example
+
+This example is a bit contrived, but it shows how you can take full control of the data in the form
+using state mode.
+
+<StateMode />

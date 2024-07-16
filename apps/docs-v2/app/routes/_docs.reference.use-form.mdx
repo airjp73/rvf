@@ -1,11 +1,59 @@
+export const meta = () => [
+  {
+    title: "useForm (RVF)",
+  },
+];
+
 # `useForm`
 
+`useForm` is the main hook that you'll use to interact with RVF.
+It accepts a `FormOpts` object you use to configure the form (see below),
+and returns a `FormApi` object that you can use to interact with the form (see [FormApi](/reference/form-api)).
+
+### Type
+
 ```tsx
-export function useForm<
+function useForm<
   FormInputData extends FieldValues,
   FormOutputData,
   SubmitResponseData,
 >(
   options: FormOpts<FormInputData, FormOutputData, SubmitResponseData>,
-): FormApi<FormInputData> {
+): FormApi<FormInputData>;
 ```
+
+### Usage
+
+```tsx
+const form = useForm({
+  defaultValues: { foo: "bar" },
+  validator: myValidator,
+  handleSubmit: (validatedData) => console.log(validatedData),
+});
+```
+
+## `FormOpts`
+
+### `defaultValues`
+
+Sets the default values of the form.
+
+For Typescript users, `defaultValues` is one of the most important props you'll use.
+The type of the object you pass here, will determine the type of the data you get
+when interacting with the form. For example, `form.value('myField')` will be typed based on
+the type of `defaultValues.myField`.
+
+It's recommended that you provide a default value for every field in the form.
+
+### `validator`
+
+A validator object created by a validation adapter such a `withZod` or `withYup`.
+See [these docs](https://rvf-js.io/validation-library-support) for more details
+and information on how to create a validator for other validation libraries.
+
+### `submitSource`
+
+Configures what RVF uses as the source of truth for form validation submission.
+By default, this is set to `"dom"`, which means RVF will pull data directly out of the HTML form element.
+If you set this to `"state"`, RVF will use the data stored in the form state as the source of truth.
+You can read more about state mode [here](/state-mode).
