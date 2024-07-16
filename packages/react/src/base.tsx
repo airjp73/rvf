@@ -157,14 +157,14 @@ export interface FormApi<FormInputData> {
 
   /**
    * Focus the field with the specified name.
-   * This only works if the `ref` provided by `field`, `control`, or `checkbox` was passed to a focusable element.
+   * This only works if the `ref` provided by `getInputProps` or `getControlProp` was passed to a focusable element.
    */
   focus: (fieldName: ValidStringPaths<FormInputData>) => void;
 
   /**
    * Sets the value of the field with the specified name.
    * This works for both controlled and uncontrolled fields.
-   * For uncontrolled fields, this will manually set the value of the form control using the `ref` returned by `field`.
+   * For uncontrolled fields, this will manually set the value of the form control using the `ref` returned by `getInputProps`.
    */
   setValue<Field extends ValidStringPaths<FormInputData>>(
     fieldName: Field,
@@ -278,6 +278,22 @@ export interface FormApi<FormInputData> {
    */
   scope(): FormScope<FormInputData>;
 
+  /**
+   * You should call this in every form you have and pass the result to your form element.
+   *
+   * @example
+   * ```tsx
+   * const form = useForm({
+   *   // ...
+   * });
+   *
+   * return (
+   *   <form {...form.getFormProps()}>
+   *     <YourFormElements />
+   *   </form>
+   * );
+   * ```
+   */
   getFormProps: (props?: Partial<FormProps>) => FormProps;
 
   /**
@@ -309,9 +325,17 @@ export interface FormApi<FormInputData> {
 
   /**
    * Returns props that can be spread onto native form controls or thin wrappers around them.
+   * It's generally recommended to use this with native form controls.
+   * And pass any other props through this helper.
+   *
    * It's important that the component you spread the props into accepts the `ref` prop.
    * This allows RVF to set the value of the field when setValue is called, and is used
    * to focus the field when it has an error.
+   *
+   * @example
+   * ```tsx
+   * <input {...form.getInputProps("myField", { type: "number" })} />
+   * ```
    */
   getInputProps: <
     Field extends ValidStringPaths<FormInputData, ValidInputPropsValues>,

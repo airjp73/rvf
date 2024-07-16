@@ -259,6 +259,7 @@ export const navigation: Array<NavGroup> = [
     title: "Base API Reference",
     links: [
       { title: "useForm", href: "/reference/use-form" },
+      { title: "FormApi", href: "/reference/form-api" },
       { title: "ValidatedForm", href: "/reference/validated-form" },
     ],
   },
