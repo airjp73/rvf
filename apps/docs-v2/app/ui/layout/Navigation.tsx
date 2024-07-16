@@ -254,6 +254,10 @@ export const navigation: Array<NavGroup> = [
     ],
   },
   {
+    title: "API Reference",
+    links: [{ title: "useForm", href: "/reference/use-form" }],
+  },
+  {
     title: "Adapters",
     links: [{ title: "Remix", href: "/remix" }],
   },

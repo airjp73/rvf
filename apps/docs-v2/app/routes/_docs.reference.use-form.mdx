@@ -1,0 +1,11 @@
+# `useForm`
+
+```tsx
+export function useForm<
+  FormInputData extends FieldValues,
+  FormOutputData,
+  SubmitResponseData,
+>(
+  options: FormOpts<FormInputData, FormOutputData, SubmitResponseData>,
+): FormApi<FormInputData> {
+```
