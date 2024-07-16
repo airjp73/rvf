@@ -9,7 +9,7 @@ import {
   StateSubmitHandler,
   DomSubmitHandler,
 } from "@rvf/core";
-import { ReactFormApi, useFormInternal } from "./base";
+import { FormApi, useFormInternal } from "./base";
 import { FieldErrors } from "@rvf/core";
 
 const noOp = () => {};
@@ -113,7 +113,7 @@ export function useForm<
   SubmitResponseData,
 >(
   options: FormOpts<FormInputData, FormOutputData, SubmitResponseData>,
-): ReactFormApi<FormInputData> {
+): FormApi<FormInputData> {
   // everything from below
   const {
     validator,

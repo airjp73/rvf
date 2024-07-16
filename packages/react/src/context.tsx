@@ -6,7 +6,7 @@ import {
   useContext,
   useEffect,
 } from "react";
-import { ReactFormApi } from "./base";
+import { FormApi } from "./base";
 import { useFormScope } from "./useFormScope";
 
 type FormContextValue = {
@@ -31,7 +31,7 @@ export const useFormContext = <TData,>() => {
   const value = useContext(FormContext);
   if (!value)
     throw new Error("useFormContext must be used within a FormProvider");
-  return useFormScope(value.scope) as ReactFormApi<TData>;
+  return useFormScope(value.scope) as FormApi<TData>;
 };
 
 export const useFormScopeOrContextInternal = (
@@ -65,7 +65,7 @@ export const useFormScopeOrContextInternal = (
 
 export const useFormScopeOrContext = <TData,>(
   rvf?: FormScope<TData>,
-): ReactFormApi<TData> => {
+): FormApi<TData> => {
   const value = useContext(FormContext);
   const scope = value?.scope ?? rvf;
 
@@ -74,5 +74,5 @@ export const useFormScopeOrContext = <TData,>(
       "useFormScopeOrContext must be passed an FormScope or be used within a FormProvider",
     );
 
-  return useFormScope(scope) as ReactFormApi<TData>;
+  return useFormScope(scope) as FormApi<TData>;
 };

@@ -24,7 +24,7 @@ export {
   type NativeValueByType,
   type ValueOfInputType,
 } from "@rvf/core";
-export { type ReactFormApi, type FormFields } from "./base";
+export { type FormApi, type FormFields } from "./base";
 export { useForm, FormOpts } from "./useForm";
 export {
   GetInputProps,

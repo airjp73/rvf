@@ -1,6 +1,6 @@
 import { FieldValues, AllProps } from "@rvf/core";
 import { FormOpts, useForm } from "./useForm";
-import { ReactFormApi } from "./base";
+import { FormApi } from "./base";
 import { FormProvider } from "./context";
 
 export type ValidatedFormProps<
@@ -17,7 +17,7 @@ export type ValidatedFormProps<
 
     children:
       | React.ReactNode
-      | ((form: ReactFormApi<FormInputData>) => React.ReactNode);
+      | ((form: FormApi<FormInputData>) => React.ReactNode);
   };
 
 export const ValidatedForm = <

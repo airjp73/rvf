@@ -24,12 +24,12 @@ code in this demo.
 
 <Row>
   <Col>
-    When you call `useForm`, it returns a [`ReactFormApi`](/reference/form-api) object.
+    When you call `useForm`, it returns a [`FormApi`](/reference/form-api) object.
     The type of this object takes a single generic parameter, which is the type of the form's default values.
   </Col>
   <Col>
     ```tsx
-    // `form` has the type `ReactFormApi<{ foo: string }>`
+    // `form` has the type `FormApi<{ foo: string }>`
     const form = useForm({
       defaultValues: { foo: "bar" },
       // ...etc
@@ -40,7 +40,7 @@ code in this demo.
 
 <Row>
   <Col>
-    One of the methods on `ReactFormApi` is `scope`.
+    One of the methods on `FormApi` is `scope`.
     When you call `scope` and pass it the name of a field, it returns a `FormScope`
     that's been scoped to that field.
     You can even continue chaining `scope` calls to get even deeper, which is useful for deeply nested or recursive data.

@@ -2,7 +2,7 @@ import {
   useForm as useFormReact,
   FieldValues,
   FormOpts,
-  ReactFormApi,
+  FormApi,
 } from "@rvf/react";
 import { useRemixSubmit } from "./remix-submission-handling";
 import {
@@ -53,8 +53,8 @@ export function useForm<
   FormResponseData,
 >(
   rvfOpts: RemixFormOpts<FormInputData, FormOutputData, FormResponseData>,
-): ReactFormApi<FormInputData> {
-  let rvf: ReactFormApi<FormInputData>;
+): FormApi<FormInputData> {
+  let rvf: FormApi<FormInputData>;
 
   const { fetcher, submitSource = "dom" } = rvfOpts;
   const serverStuff = useServerValidationErrors({

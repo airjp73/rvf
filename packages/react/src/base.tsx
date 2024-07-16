@@ -64,7 +64,7 @@ export type ManualSubmitOption = SubmitterOptions & {
   value?: string;
 };
 
-export interface ReactFormApi<FormInputData> {
+export interface FormApi<FormInputData> {
   /**
    * Gets whether the field has been touched.
    * @willRerender
@@ -381,10 +381,10 @@ export type BaseReactFormParams<FormInputData> = {
   trackedState: FormStoreValue;
 };
 
-export const makeBaseReactFormApi = <FormInputData,>({
+export const makeBaseFormApi = <FormInputData,>({
   trackedState,
   form,
-}: BaseReactFormParams<FormInputData>): ReactFormApi<FormInputData> => {
+}: BaseReactFormParams<FormInputData>): FormApi<FormInputData> => {
   const prefix = form.__field_prefix__;
   const f = (fieldName?: string) =>
     pathArrayToString([prefix, fieldName].filter(R.isNonNullish));
@@ -625,7 +625,7 @@ export const useFormInternal = <FormInputData,>(
 
   const base = useMemo(
     () =>
-      makeBaseReactFormApi({
+      makeBaseFormApi({
         form,
         trackedState,
       }),

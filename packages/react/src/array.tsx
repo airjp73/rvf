@@ -9,7 +9,7 @@ import {
   FieldArrayValidationBehaviorConfig,
 } from "@rvf/core";
 import { makeImplFactory } from "./implFactory";
-import { ReactFormApi, makeBaseReactFormApi } from "./base";
+import { FormApi, makeBaseFormApi } from "./base";
 import { useFormScopeOrContextInternal } from "./context";
 import { createControlledRef } from "./refs";
 
@@ -46,7 +46,7 @@ export interface FieldArrayApi<FormInputData extends Array<any>> {
   map: (
     callback: (
       key: string,
-      form: ReactFormApi<FormInputData[number]>,
+      form: FormApi<FormInputData[number]>,
       index: number,
     ) => ReactNode,
   ) => ReactNode;
@@ -114,7 +114,7 @@ export const makeFieldArrayImpl = <FormInputData extends Array<any>>({
 }: FieldArrayParams<FormInputData>): FieldArrayApi<FormInputData> => {
   const arrayFieldName = form.__field_prefix__;
   const itemImpl = makeImplFactory(arrayFieldName, (itemFieldName) =>
-    makeBaseReactFormApi({
+    makeBaseFormApi({
       form: scopeFormScope(form, itemFieldName) as FormScope<
         FormInputData[number]
       >,

@@ -20,7 +20,7 @@ export {
   Field,
   type FieldPropsWithName,
   type FieldPropsWithScope,
-  type ReactFormApi,
+  type FormApi,
   type FormFields,
   useField,
   type FieldApi,
