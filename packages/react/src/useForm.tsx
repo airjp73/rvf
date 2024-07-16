@@ -77,11 +77,13 @@ export type FormOpts<
 
   /**
    * The action prop of the form element.
+   * This will be automatically set on the form element if you use `getFormProps`.
    */
   action?: string;
 
   /**
    * The id of the form element.
+   * This will be automatically set on the form element if you use `getFormProps`.
    */
   id?: string;
 

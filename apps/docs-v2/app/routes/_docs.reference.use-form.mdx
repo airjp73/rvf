@@ -98,3 +98,45 @@ If you return a `Promise` from this callback, the `isSubmitting` state will stil
 
 A shortcut setting that resets the form to the default values after the form has been successfully submitted.
 This is equivalent to calling `resetForm` in the `onSubmitSuccess` callback.
+
+### `validationBehaviorConfig`
+
+Allows you to customize the validation behavior of the form.
+Takes three options:
+
+- `initial` - When the form first mounts, when should the validation be triggered?
+- `whenTouched` - Once a given field has been touched, when should the validation be triggered?
+- `whenSubmitted` - Once the form has been submitted unnsuccessfully, when should the validation be triggered?
+
+### `action`
+
+The action prop of the form element.
+This will be automatically set on the form element if you use `getFormProps`.
+
+### `id`
+
+The id of the form element.
+This will be automatically set on the form element if you use `getFormProps`.
+
+### `disableFocusOnError`
+
+Disables the default behavior of focusing the first invalid field when a submit fails due to validation errors.
+
+### `reloadDocument`
+
+When set to true, a valid form will be submitted natively with a full page reload.
+_Note_: This is only supported in the `dom` submit source.
+
+### `otherFormProps`
+
+Optionally, you can pass other props to the form element here.
+This is primarily useful for writing custom hooks around `useForm`.
+For most use-cases, you can simply pass the props directly to the form element.
+
+### `serverValidationErrors`
+
+Can be used to set the default errors of the entire form.
+This is most useful went integrating with server-side validation.
+
+**CAREFUL**: this will cause an update every time the identity of `serverValidationErrors` changes.
+So make sure the identity of `serverValidationErrors` is stable.
