@@ -1,0 +1,29 @@
+export const meta = () => [
+  {
+    title: "ValidatedForm (RVF)",
+  },
+];
+
+# `ValidatedForm`
+
+`ValidatedForm` is a thin wrapper around `useForm` that lets you use RVF as a component instead of a hook.
+You can use it with a render prop to get access to the [`FormApi`](/reference/form-api) object.
+
+## Behavior differences
+
+`ValidatedForm` automatically connects your form with [`getFormProps`](/reference/form-api#get-form-props)
+and automatically calls [`renderFormIdInput`](/reference/form-api#render-form-id-input).
+
+## Additional props
+
+The props are all the same as the [`FormOpts` passed to `useForm`](/reference/use-form#form-opts),
+except with the following additions:
+
+### `formRef`
+
+A ref to the form element.
+
+### `children`
+
+A render prop that accepts a `FormApi` object.
+Or just normal react children.

@@ -5,8 +5,6 @@ import { Link, useLocation } from "@remix-run/react";
 import clsx from "clsx";
 import { AnimatePresence, motion } from "framer-motion";
 import { cn } from "~/lib/utils";
-import { useMobileNavigationStore } from "./MobileNavigation";
-import { ArrowLeftIcon, ArrowRightIcon } from "lucide-react";
 
 interface NavGroup {
   title: string;
@@ -258,8 +256,11 @@ export const navigation: Array<NavGroup> = [
     ],
   },
   {
-    title: "API Reference",
-    links: [{ title: "useForm", href: "/reference/use-form" }],
+    title: "Base API Reference",
+    links: [
+      { title: "useForm", href: "/reference/use-form" },
+      { title: "ValidatedForm", href: "/reference/validated-form" },
+    ],
   },
   {
     title: "Adapters",
