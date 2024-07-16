@@ -51,13 +51,15 @@ export type FormOpts<
   /**
    * Called when the form is successfully submitted using `handleSubmit`.
    */
-  onSubmitSuccess?: (handleSubmitResponse: NoInfer<SubmitResponseData>) => void;
+  onSubmitSuccess?: (
+    handleSubmitResponse: NoInfer<SubmitResponseData>,
+  ) => void | Promise<void>;
 
   /**
    * Called when handleSubmit throws an error, and provides the error from the handleSubmit function.
    * This will not be called if the validator prevents the submission from happening.
    */
-  onSubmitFailure?: (error: unknown) => void;
+  onSubmitFailure?: (error: unknown) => void | Promise<void>;
 
   /**
    * A shortcut setting that resets the form to the default values after the form has been successfully submitted.
@@ -108,8 +110,16 @@ export type FormOpts<
   serverValidationErrors?: FieldErrors;
 } & FormSubmitOpts<FormOutputData, SubmitResponseData>;
 
-const isFormScope = (form: any): form is FormScope<any> =>
-  "__brand__" in form && form.__brand__ === "rvf";
+const maybeThen = <T,>(
+  maybePromise: T | Promise<T>,
+  then: (value: T) => void,
+) => {
+  if (maybePromise instanceof Promise) {
+    return maybePromise.then(then);
+  } else {
+    return then(maybePromise);
+  }
+};
 
 /**
  * Create and use an `FormScope`.
@@ -182,12 +192,14 @@ export function useForm<
       validator: validator as any,
       onSubmit,
       onSubmitSuccess: (data: unknown) => {
-        onSubmitSuccess?.(data as SubmitResponseData);
-        if (resetAfterSubmit) {
-          const formElement = form.__store__.formRef.current;
-          if (formElement) formElement.reset();
-          else form.__store__.store.getState().reset();
-        }
+        const successResult = onSubmitSuccess?.(data as SubmitResponseData);
+        return maybeThen(successResult, () => {
+          if (resetAfterSubmit) {
+            const formElement = form.__store__.formRef.current;
+            if (formElement) formElement.reset();
+            else form.__store__.store.getState().reset();
+          }
+        });
       },
       onSubmitFailure,
     });

@@ -275,8 +275,8 @@ export type DomSubmitHandler<Data = any, ResponseData = any> = (
 export type MutableImplStore = {
   validator: Validator<any>;
   onSubmit: StateSubmitHandler | DomSubmitHandler;
-  onSubmitSuccess: (responseData: unknown) => void;
-  onSubmitFailure: (error: unknown) => void;
+  onSubmitSuccess: (responseData: unknown) => void | Promise<void>;
+  onSubmitFailure: (error: unknown) => void | Promise<void>;
 };
 
 const defaultValidationBehaviorConfig: ValidationBehaviorConfig = {
@@ -726,15 +726,21 @@ export const createFormStateStore = ({
             );
           }
 
-          set((state) => {
-            state.submitStatus = "success";
-          });
-          mutableImplStore.onSubmitSuccess?.(response);
+          try {
+            await mutableImplStore.onSubmitSuccess?.(response);
+          } finally {
+            set((state) => {
+              state.submitStatus = "success";
+            });
+          }
         } catch (err) {
-          set((state) => {
-            state.submitStatus = "error";
-          });
-          mutableImplStore.onSubmitFailure?.(err);
+          try {
+            await mutableImplStore.onSubmitFailure?.(err);
+          } finally {
+            set((state) => {
+              state.submitStatus = "error";
+            });
+          }
         }
       },
 

@@ -42,8 +42,8 @@ type FormInit<FormInputData extends FieldValues, FormOutputData> = {
   validator: Validator<FormOutputData>;
   validationBehaviorConfig?: ValidationBehaviorConfig;
   onSubmit: StateSubmitHandler | DomSubmitHandler;
-  onSubmitSuccess: (responseData: unknown) => void;
-  onSubmitFailure: (error: unknown) => void;
+  onSubmitSuccess: (responseData: unknown) => void | Promise<void>;
+  onSubmitFailure: (error: unknown) => void | Promise<void>;
   formProps: StoreFormProps;
   flags: StoreFlags;
 } & SubmitTypes<FormOutputData>;

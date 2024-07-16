@@ -3,10 +3,25 @@ import { useForm } from "../useForm";
 import { successValidator } from "./util/successValidator";
 import userEvent from "@testing-library/user-event";
 import { Validator } from "@rvf/core";
+import { act } from "react";
+
+const withResolvers = () => {
+  let resolve;
+  let reject;
+  const promise = new Promise<void>((_resolve, _reject) => {
+    resolve = _resolve;
+    reject = _reject;
+  });
+  return {
+    promise,
+    resolve: resolve as never as () => void,
+    reject: reject as never as () => void,
+  };
+};
 
 it("should call onSubmitSuccess", async () => {
-  const submit = vi.fn();
   const submitSuccess = vi.fn();
+  let resolveSuccess: (() => void) | null = null;
 
   const TestComp = () => {
     const form = useForm({
@@ -14,7 +29,7 @@ it("should call onSubmitSuccess", async () => {
       defaultValues: { foo: 123 },
       validator: successValidator as Validator<{ foo: number }>,
 
-      handleSubmit: async (data) => {
+      handleSubmit: async (_) => {
         return {
           bar: "baz",
         };
@@ -22,11 +37,15 @@ it("should call onSubmitSuccess", async () => {
       onSubmitSuccess: (res) => {
         expectTypeOf(res).toEqualTypeOf<{ bar: string }>();
         submitSuccess(res);
+        const { resolve, promise } = withResolvers();
+        resolveSuccess = resolve;
+        return promise;
       },
     });
 
     return (
       <form {...form.getFormProps()} data-testid="form">
+        <pre data-testid="loading">{form.formState.submitStatus}</pre>
         <input readOnly data-testid="foo" value="456" name="foo" />
         <button type="submit" data-testid="submit" />
       </form>
@@ -35,16 +54,25 @@ it("should call onSubmitSuccess", async () => {
 
   render(<TestComp />);
 
+  expect(screen.getByTestId("loading")).toHaveTextContent("idle");
+
   await userEvent.click(screen.getByTestId("submit"));
   await waitFor(() => {
     expect(submitSuccess).toHaveBeenCalledTimes(1);
   });
+  expect(screen.getByTestId("loading")).toHaveTextContent("submitting");
   expect(submitSuccess).toHaveBeenCalledWith({ bar: "baz" });
+
+  act(() => resolveSuccess?.());
+  await waitFor(() => {
+    expect(screen.getByTestId("loading")).toHaveTextContent("success");
+  });
 });
 
 it("should call onSubmitFailure", async () => {
   const submitFailure = vi.fn();
   const error = new Error("test");
+  let resolveFailure: (() => void) | null = null;
 
   const TestComp = () => {
     const form = useForm({
@@ -53,6 +81,9 @@ it("should call onSubmitFailure", async () => {
 
       onSubmitFailure: (err) => {
         submitFailure(err);
+        const { resolve, promise } = withResolvers();
+        resolveFailure = resolve;
+        return promise;
       },
       handleSubmit: async () => {
         throw error;
@@ -61,6 +92,7 @@ it("should call onSubmitFailure", async () => {
 
     return (
       <form {...form.getFormProps()} data-testid="form">
+        <pre data-testid="loading">{form.formState.submitStatus}</pre>
         <input readOnly data-testid="foo" value="456" name="foo" />
         <button type="submit" data-testid="submit" />
       </form>
@@ -69,9 +101,17 @@ it("should call onSubmitFailure", async () => {
 
   render(<TestComp />);
 
+  expect(screen.getByTestId("loading")).toHaveTextContent("idle");
+
   await userEvent.click(screen.getByTestId("submit"));
   await waitFor(() => {
     expect(submitFailure).toHaveBeenCalledTimes(1);
   });
+  expect(screen.getByTestId("loading")).toHaveTextContent("submitting");
   expect(submitFailure).toHaveBeenCalledWith(error);
+
+  act(() => resolveFailure?.());
+  await waitFor(() => {
+    expect(screen.getByTestId("loading")).toHaveTextContent("error");
+  });
 });
