@@ -59,4 +59,61 @@ it("should subscribe to changes in the dirty state", async () => {
   expect(screen.getByTestId("render-count")).toHaveTextContent("5");
   expect(screen.getByTestId("foo-dirty")).toHaveTextContent("true");
   expect(screen.getByTestId("baz.a-dirty")).toHaveTextContent("true");
+
+  await userEvent.clear(screen.getByTestId("baz.a"));
+  await userEvent.clear(screen.getByTestId("foo"));
+  expect(screen.getByTestId("foo-dirty")).toHaveTextContent("false");
+  expect(screen.getByTestId("baz.a-dirty")).toHaveTextContent("false");
+});
+
+it("should keep newly added field array fields dirty", async () => {
+  const submit = vi.fn();
+  const TestComp = () => {
+    const form = useForm({
+      defaultValues: {
+        foo: [""],
+      },
+      validator: successValidator,
+      handleSubmit: submit,
+    });
+
+    return (
+      <form {...form.getFormProps()} data-testid="form">
+        {form.array("foo").map((key, item, index) => (
+          <div key={key}>
+            <input data-testid={`${index}`} {...item.field().getInputProps()} />
+            <pre data-testid={`${index}-dirty`}>
+              {item.dirty() ? "true" : "false"}
+            </pre>
+          </div>
+        ))}
+        <button
+          type="button"
+          data-testid="add"
+          onClick={() => form.array("foo").push("new")}
+        />
+        <button type="submit" data-testid="submit" />
+      </form>
+    );
+  };
+
+  render(<TestComp />);
+  expect(screen.getByTestId("0-dirty")).toHaveTextContent("false");
+
+  await userEvent.click(screen.getByTestId("add"));
+  expect(screen.getByTestId("0-dirty")).toHaveTextContent("false");
+  expect(screen.getByTestId("1-dirty")).toHaveTextContent("false");
+
+  await userEvent.type(screen.getByTestId("0"), "test");
+  expect(screen.getByTestId("0-dirty")).toHaveTextContent("true");
+  expect(screen.getByTestId("1-dirty")).toHaveTextContent("false");
+
+  await userEvent.type(screen.getByTestId("1"), "test");
+  expect(screen.getByTestId("0-dirty")).toHaveTextContent("true");
+  expect(screen.getByTestId("1-dirty")).toHaveTextContent("true");
+
+  await userEvent.clear(screen.getByTestId("0"));
+  await userEvent.clear(screen.getByTestId("1"));
+  expect(screen.getByTestId("0-dirty")).toHaveTextContent("false");
+  expect(screen.getByTestId("1-dirty")).toHaveTextContent("true"); // since this was added, it's essentially dirty
 });

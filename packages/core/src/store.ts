@@ -24,7 +24,7 @@ import {
 import { GenericObject, preprocessFormData } from "./native-form-data/flatten";
 import { MultiValueMap } from "./native-form-data/MultiValueMap";
 import { insert, move, remove, replace, toSwapped } from "./arrayUtil";
-import { getFieldValue } from "./getters";
+import { getFieldDefaultValue, getFieldValue } from "./getters";
 
 export type FieldSerializer = (value: unknown) => string;
 
@@ -367,11 +367,13 @@ export const toArrayBehavior = (
 ): FieldArrayValidationBehaviorConfig => {
   return {
     initial:
-      config?.initial === "onBlur" ? "onSubmit" : config?.initial ?? "onSubmit",
+      config?.initial === "onBlur"
+        ? "onSubmit"
+        : (config?.initial ?? "onSubmit"),
     whenSubmitted:
       config?.whenSubmitted === "onBlur"
         ? "onSubmit"
-        : config?.whenSubmitted ?? "onChange",
+        : (config?.whenSubmitted ?? "onChange"),
   };
 };
 
@@ -646,7 +648,8 @@ export const createFormStateStore = ({
       onFieldChange: (fieldName, value, validationBehaviorConfig) => {
         set((state) => {
           setPath(state.values, fieldName, value);
-          state.dirtyFields[fieldName] = true;
+          const defaultValue = getFieldDefaultValue(state, fieldName);
+          state.dirtyFields[fieldName] = value !== defaultValue;
         });
 
         if (
