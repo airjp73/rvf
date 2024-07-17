@@ -15,6 +15,7 @@ export {
   type SubmitStatus,
   type FormScope,
   FieldArray,
+  Isolate,
   type FieldArrayPropsWithName,
   type FieldArrayPropsWithScope,
   Field,
