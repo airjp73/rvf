@@ -23,6 +23,8 @@ export {
   type NumberInputValue,
   type NativeValueByType,
   type ValueOfInputType,
+  type ScopedValues,
+  type FieldValue,
 } from "@rvf/core";
 export { type FormApi, type FormFields } from "./base";
 export { useForm, FormOpts } from "./useForm";

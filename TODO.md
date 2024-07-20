@@ -1,5 +1,3 @@
-- Consider adding a `beforeSubmit` callback
-
 // follows
 
 - Globally setting some settings with a context or something.
