@@ -3,12 +3,12 @@ import { FormScope } from "@rvf/core";
 import { FormApi, useFormInternal } from "./base";
 
 export const Isolate = <FormValue,>({
-  form,
+  scope,
   render,
 }: {
-  form: FormScope<FormValue>;
-  render: (form: FormApi<FormValue>) => ReactNode;
+  scope: FormScope<FormValue>;
+  render: (scope: FormApi<FormValue>) => ReactNode;
 }) => {
-  const rvf = useFormInternal(form);
+  const rvf = useFormInternal(scope);
   return render(rvf);
 };
