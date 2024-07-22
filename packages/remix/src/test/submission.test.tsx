@@ -2,7 +2,11 @@ import { json, redirect, useActionData, useFetcher } from "@remix-run/react";
 import { createRemixStub } from "@remix-run/testing";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { createValidator, isValidationErrorResponse } from "@rvf/core";
+import {
+  createValidator,
+  FORM_ID_FIELD_NAME,
+  isValidationErrorResponse,
+} from "@rvf/core";
 import { useForm } from "../useForm";
 import { validationError } from "../server";
 import { ActionFunctionArgs } from "@remix-run/node";
@@ -840,4 +844,53 @@ it("should reset the form after a successful submission when resetAfterSubmit is
   expect(await screen.findByText("You said: foo")).toBeInTheDocument();
   expect(screen.getByTestId("foo")).toHaveValue("");
   expect(screen.getByTestId("bar")).toHaveValue("");
+});
+
+it("should set the rvfFormId prop on submit", async () => {
+  const validator = createValidator({
+    validate: (data) => Promise.resolve({ data, error: undefined }),
+  });
+
+  const action = async ({ request }: ActionFunctionArgs) => {
+    const formData = await request.formData();
+    const data = await validator.validate(formData);
+    if (data.error) return validationError(data.error);
+    return { formId: formData.get(FORM_ID_FIELD_NAME) as string };
+  };
+
+  const Stub = createRemixStub([
+    {
+      path: "/",
+      Component: () => {
+        const fetcher = useFetcher<typeof action>();
+        const form = useForm({
+          fetcher,
+          defaultValues: { foo: "", bar: "" },
+          id: "form-id-value",
+          validator,
+          method: "post",
+          submitSource: "state",
+        });
+        return (
+          <form {...form.getFormProps()}>
+            {fetcher.data && !isValidationErrorResponse(fetcher.data) && (
+              <p>{fetcher.data.formId}</p>
+            )}
+            <input data-testid="foo" {...form.field("foo").getInputProps()} />
+            <input data-testid="bar" name="bar" />
+            <button type="submit" data-testid="submit" />
+          </form>
+        );
+      },
+      action,
+    },
+  ]);
+
+  render(<Stub />);
+
+  await userEvent.type(screen.getByTestId("foo"), "foo");
+  await userEvent.type(screen.getByTestId("bar"), "bar");
+  await userEvent.click(screen.getByTestId("submit"));
+
+  expect(await screen.findByText("form-id-value")).toBeInTheDocument();
 });
