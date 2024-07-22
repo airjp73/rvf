@@ -29,7 +29,7 @@ describe("Isolate", () => {
           <RenderCounter data-testid="outer-render-count" />
 
           <Isolate
-            form={form.scope()}
+            scope={form.scope()}
             render={(iso) => (
               <>
                 <pre data-testid="iso-value">{iso.value("foo")}</pre>
