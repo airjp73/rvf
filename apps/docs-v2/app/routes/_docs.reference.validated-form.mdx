@@ -27,3 +27,9 @@ A ref to the form element.
 
 A render prop that accepts a `FormApi` object.
 Or just normal react children.
+
+```tsx
+<ValidatedForm validator={validator} method="post">
+  {(form) => <Etc />}
+</ValidatedForm>
+```
