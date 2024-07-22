@@ -31,6 +31,7 @@ export const StateMode = () => {
               "py-6 px-8 [&_form]:space-y-10 [&_ul]:space-y-6 [&_li]:flex [&_li]:items-end [&_li]:gap-4 [&_li_:not(button)]:grow [&_h3]:text-lg [&_h3]:font-semibold [&_hr]:mt-2 [&_hr]:mb-4",
               "[&_div:has([data-input])]:flex [&_div:has([data-input])]:gap-4 [&_div:has([data-input])>*]:grow",
               "[&_fieldset]:flex [&_fieldset]:gap-4 [&_fieldset]:flex-col",
+              "[&_label_input]:mr-2",
             )}
           >
             <ReactExample />
