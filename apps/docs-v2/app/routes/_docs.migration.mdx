@@ -27,7 +27,7 @@ Several APIs have been removed, because they aren't necessary anymore.
 Even though the RVF api is simpler and more predictable, it's also a lot more powerful.
 There's also an additional escape hatch for advanced use-cases called [state mode](/state-mode).
 
-### Bender render optimizations
+### Better render optimizations
 
 The RVF api now makes use of proxy-based access tracking to ensure that renders are only triggered when necessary.
 
@@ -193,7 +193,7 @@ and will be removed in a future major version.
 - Unmounting controlled fields no longer clears the value stored for that field.
   This should result in more predictable behavior and give you more control over your form state.
 
-- `form.validate` now simply returns an object of validtion errors, rather than an object with an `error` and `data` field.
+- `form.validate` now simply returns an object of validation errors, rather than an object with an `error` and `data` field.
 
 - The `handleReceiveFocus` API no longer exists. To set the focus target for a controlled field,
   pass the a `ref` from `getControlProps` or `useField().refs.controlled` to a focusable html element.
