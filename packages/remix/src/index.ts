@@ -1,4 +1,3 @@
-export * from "./compatability/misc";
 export {
   type FieldErrors,
   type Validator,
@@ -50,6 +49,10 @@ export {
   type MinimalInputProps,
   type ScopedValues,
   type FieldValue,
+  useControlField,
+  useUpdateControlledField,
+  useIsValid,
+  useIsSubmitting,
 } from "@rvf/react";
 export { useForm, type RemixFormOpts as FormScopeRemixOpts } from "./useForm";
 export { ValidatedForm, type ValidatedFormProps } from "./ValidatedForm";

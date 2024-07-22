@@ -62,3 +62,4 @@ export {
 export { useFormScope } from "./useFormScope";
 export { useNativeValidity } from "./useNativeValidity";
 export { Isolate } from "./isolation";
+export * from "./compatability/misc";
