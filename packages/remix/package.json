@@ -1,6 +1,6 @@
 {
   "name": "@rvf/remix",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "description": "Easy, predictable form state management for React",
   "main": "./dist/index.cjs.js",
   "module": "./dist/index.esm.js",
