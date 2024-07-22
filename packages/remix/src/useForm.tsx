@@ -11,9 +11,8 @@ import {
   SubmitOptions,
 } from "@remix-run/react";
 import { toPathObject } from "@rvf/set-get";
-import { GenericObject, SubmitterOptions } from "@rvf/core";
+import { GenericObject, SubmitterOptions, FORM_ID_FIELD_NAME } from "@rvf/core";
 import { useServerValidationErrors } from "./auto-server-hooks";
-import { FORM_ID_FIELD_NAME } from "./constants";
 
 type PartialProps<T, Props extends keyof T> = Omit<T, Props> &
   Partial<Pick<T, Props>>;
