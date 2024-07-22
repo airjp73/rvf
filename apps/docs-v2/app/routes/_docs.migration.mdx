@@ -1,0 +1,211 @@
+import { render } from "@testing-library/react";
+
+export const meta = () => [
+  {
+    title: "Migrating to v6",
+  },
+];
+
+# Migrating to v6
+
+RVF v6 is a ground-up rewrite of remix-validated-form, where some of the core design desicisions have been reconsidered
+and updated.
+
+## Overview
+
+### Decoupled from Remix
+
+RVF no longer requires Remix. It can be with any flavor of React, but there's also an adapter specifically for Remix.
+
+### Simplified, more predictable API
+
+Many of the idiosyncrasies of remix-validated-form have been improved upon.
+Several APIs have been removed, because they aren't necessary anymore.
+
+### More powerful
+
+Even though the RVF api is simpler and more predictable, it's also a lot more powerful.
+There's also an additional escape hatch for advanced use-cases called [state mode](/state-mode).
+
+### Bender render optimizations
+
+The RVF api now makes use of proxy-based access tracking to ensure that renders are only triggered when necessary.
+
+## Migrating
+
+### New package names
+
+`remix-validated-form` has been renamed to only `RVF`, and has new package names.
+
+- @rvf/react
+- @rvf/remix
+- @rvf/zod
+- @rvf/yup
+
+This has the benefit of making it possible to adopt RVF gradually, instead of migrating your entire app at once.
+You can install the RVF packages alongside your existing remix-validated-form packages and start using it for new code right away.
+
+### Hook-first API
+
+The recommended, default API for RVF is now the [`useForm`](/reference/use-form) hook, rather than [`ValidatedForm`](/reference/validated-form).
+_However_, `ValidatedForm` is still supported and isn't going anywhere -- it even supports a render-prop now.
+
+### Removed "use outside of form" APIs
+
+You can no longer pass a form id to RVF hooks in order to access the form context outside of a `ValidatedForm` component.
+RVF _still_ supports putting inputs outside of your `form` element, but it's supported naturally by the `useForm` hook
+rather than requiring extra API support. If you're using `getInputProps`, RVF will automatically add the `form` prop for you,
+so you don't need to do anything special.
+
+In `remix-validated-form`, a common pattern was to use this feature in the parent of the form like this:
+
+```tsx
+export const MyForm = () => {
+  const [value, setValue] = useControlledField("name", "myFormId");
+
+  return (
+    <ValidatedForm validator={myValidator} method="post" id="myFormId">
+      <MyInput
+        name="name"
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+      />
+    </ValidatedForm>
+  );
+};
+```
+
+This is no longer supported or necessary. To migrate this situation, you could either switch to the `useForm` hook,
+or use the render prop API of `ValidatedForm`.
+
+<CodeExamples title="Migrating" tabs={["useForm hook", "ValidatedForm render prop"]}>
+
+```tsx
+const MyForm = () => {
+  const form = useForm({
+    validator: myValidator,
+    method: "post",
+  });
+
+  return (
+    <FormProvider scope={form.scope()}>
+      <form {...form.getFormProps()}>
+        <MyInput
+          name="name"
+          value={form.value("name")}
+          onChange={(e) => form.setValue("name", e.target.value)}
+        />
+      </form>
+    </FormProvider>
+  );
+};
+```
+
+```tsx
+const MyForm = () => {
+  return (
+    <ValidatedForm validator={myValidator} method="post">
+      {(form) => (
+        <MyInput
+          name="name"
+          value={form.value("name")}
+          onChange={(e) => form.setValue("name", e.target.value)}
+        />
+      )}
+    </ValidatedForm>
+  );
+};
+```
+
+</CodeExamples>
+
+### Deprecated hooks
+
+These hooks are deprecated because they're no longer necessary with the new api.
+Each hook below includes a recipe for how you could re-implement it in userland using the new APIs.
+
+Many of these relied on being used within the context of a `ValidatedForm` component.
+If you're using `ValidatedForm`, that will still work. But if you're using `useForm` directly,
+you'll need to use a `FormProvider` in order to provide the context for these hooks.
+These recipes also support being directly passed a `FormScope` instead of being rendered inside a `FormProvider`.
+
+<details>
+  <summary>useIsSubmitting</summary>
+
+```typescript
+export const useIsSubmitting = (rvf?: FormScope<any>) =>
+  useFormScopeOrContext(rvf).formState.isSubmitting;
+```
+
+</details>
+
+<details>
+  <summary>useIsValid</summary>
+
+```typescript
+export const useIsValid = (rvf?: FormScope<any>) =>
+  useFormScopeOrContext(rvf).formState.isValid;
+```
+
+</details>
+
+<details>
+  <summary>useControlField</summary>
+
+```typescript
+export const useControlField = <T>(name: string, rvf?: FormScope<any>) => {
+  const form = useFormScopeOrContext(rvf);
+  const value: T = form.value(name);
+  const setValue = useCallback(
+    (value: T) => form.setValue(name, value),
+    [form, name],
+  );
+  return [value, setValue] as const;
+};
+```
+
+</details>
+
+<details>
+  <summary>useUpdateControlledField</summary>
+
+```typescript
+export const useUpdateControlledField = (rvf?: FormScope<any>) => {
+  const form = useFormScopeOrContext(rvf);
+  return useCallback(
+    (name: string, value: any) => form.setValue(name, value),
+    [form],
+  );
+};
+```
+
+</details>
+
+`setFormDefaults` is also deprecated, but there's no userland replacement. It will continue to work for now,
+and will be removed in a future major version.
+
+### Removed `useFormContext`
+
+`useFormContext` has been removed in favor of `useFormScope` and `useFormScopeOrContext`.
+
+### Other breaking changes
+
+- Unmounting controlled fields no longer clears the value stored for that field.
+  This should result in more predictable behavior and give you more control over your form state.
+
+- `form.validate` now simply returns an object of validtion errors, rather than an object with an `error` and `data` field.
+
+- The `handleReceiveFocus` API no longer exists. To set the focus target for a controlled field,
+  pass the a `ref` from `getControlProps` or `useField().refs.controlled` to a focusable html element.
+
+- There is no longer a dedicated `subaction` prop. You can add this to your forms manually with a hidden input,
+  or you can use the `rvfFormId` field instead. The `rvfFormId` field is set automtically when JS is enabled or when using `ValidatedForm`,
+  but you must render it with `form.renderFormIdInput` when using `useForm`.
+
+- `Validator.validateField` was deprecated and has now been removed.
+
+- `defaultValues` can no longer be configured using a flat object of string paths (e.g. `defaultValues: { "foo.bar": "baz" }`).
+  This feature was unintended and undocumented, but there were a few users who were using it.
+
+- Field paths can no longer use dot notation for array indeces (e.g. `foo.0.bar`).
+  This was unintended and undocumented, but there were a few users who were using it.
