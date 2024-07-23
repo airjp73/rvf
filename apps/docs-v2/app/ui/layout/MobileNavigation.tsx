@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { MenuIcon } from "lucide-react";
-import { Sheet, SheetContent, SheetTrigger } from "../sheet";
+import { Sheet, SheetBody, SheetContent, SheetTrigger } from "../sheet";
 import { Navigation, TopLevelNavItem } from "./Navigation";
 import { Button } from "../button";
 import { GithubIcon } from "../icons/GithubIcon";
@@ -50,23 +50,25 @@ export function MobileNavigation() {
         </Button>
       </SheetTrigger>
       <SheetContent side="left">
-        <Navigation
-          topLevelItems={
-            <>
-              <li className="mb-4">
-                <Link to="/" aria-label="Home">
-                  <Logo className="h-8" />
-                </Link>
-              </li>
-              <TopLevelNavItem
-                href="https://www.github.com/airjp73/remix-validated-form"
-                className="mb-8"
-              >
-                <GithubIcon className="size-4 fill-current" /> Github
-              </TopLevelNavItem>
-            </>
-          }
-        ></Navigation>
+        <SheetBody>
+          <Navigation
+            topLevelItems={
+              <>
+                <li className="mb-4">
+                  <Link to="/" aria-label="Home">
+                    <Logo className="h-8" />
+                  </Link>
+                </li>
+                <TopLevelNavItem
+                  href="https://www.github.com/airjp73/remix-validated-form"
+                  className="mb-8"
+                >
+                  <GithubIcon className="size-4 fill-current" /> Github
+                </TopLevelNavItem>
+              </>
+            }
+          />
+        </SheetBody>
       </SheetContent>
     </Sheet>
   );
