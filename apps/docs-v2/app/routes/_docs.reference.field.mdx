@@ -1,0 +1,19 @@
+export const meta = () => [
+  {
+    title: "Field (RVF)",
+  },
+];
+
+# `Field`
+
+`Field` is a thin wrapper around `useField`. This can be useful if you don't want to create whole components just to call `useField`,
+but you still want to optimize the rendering behavior of individual fields.
+
+The props of `Field` are the same as `useField`, but it takes a function as its children.
+Any state accessed through this render prop will only cause that particular field to re-render.
+
+```tsx
+<Field scope={form.scope("myField")}>
+  {(field) => <input {...field.getInputProps()} />}
+</Field>
+```

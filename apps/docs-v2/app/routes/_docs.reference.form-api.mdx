@@ -1,5 +1,3 @@
-import { textSpanContainsPosition } from "typescript";
-
 export const meta = () => [
   {
     title: "FormApi (RVF)",
@@ -46,7 +44,7 @@ to focus the field when it has an error.
 ### `getControlProps`
 
 Returns props that can be spread into [controlled components](/controlled-fields) to use as a field.
-It's important to pass the provided `ref` to something with a `focus` method.
+It's important to pass the provided `ref` to a focusable HTML element.
 This allows the field to be focused when it has an error and also disables RVF's default
 behavior of automatically listening to changes in the field.
 

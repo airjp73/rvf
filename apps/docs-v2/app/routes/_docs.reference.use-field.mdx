@@ -1,0 +1,70 @@
+export const meta = () => [
+  {
+    title: "useField (RVF)",
+  },
+];
+
+# `useField`
+
+`useField` can be used to tap into an RVF form in a nested field component.
+
+## Arguments
+
+<Row>
+  <Col>
+    The recommended way to use `useField` is to pass a `FormScope` to it that's been scoped down to the field you want to interact with.
+    This method is especially recommended Typescript users, because it provides solid type-safety.
+
+    However, you can also pass a string to `useField` and it will tap React context to find the `FormScope` for you.
+
+  </Col>
+  <Col>
+
+    ```tsx
+      const field = useField(form.scope("myField"));
+
+      // or
+
+      const field = useField("myField");
+    ```
+
+  </Col>
+</Row>
+
+### Additional options
+
+<Row>
+  <Col>
+    `useField` also accepts an optional second argument with additional options.
+    Currently, there's only one option here, and that's `validationBehavior`.
+    This option allows you to customize _when_ RVF validates the field.
+    
+    - `initial`
+      - How the field should be validated initially
+      - default: `"onBlur"`
+    - `whenTouched`
+      - How the field should be validated once it has been touched
+      - default: `"onChange"`
+    - `whenSubmitted`
+      - How the field should be validated once the form has been submitted
+      - default: `"onChange"`
+    
+  </Col>
+  <Col>
+  
+    ```tsx
+      const field = useField(form.scope("myField"), {
+        validationBehavior: {
+          initial: "onBlur",
+          whenTouched: "onChange",
+          whenSubmitted: "onChange",
+        },
+      });
+    ```
+  
+  </Col>
+</Row>
+
+## Return type
+
+`useField` returns a [`FieldApi`](/reference/field-api) object.
