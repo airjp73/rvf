@@ -2,8 +2,7 @@
 
 import { Link, useLocation } from "@remix-run/react";
 import { ArrowLeftIcon, ArrowRightIcon } from "lucide-react";
-
-const flatNavLinks = []; //navigation.flatMap((item) => item.links);
+import { flatNavLinks } from "./Navigation";
 
 function PageNavigation() {
   const location = useLocation();

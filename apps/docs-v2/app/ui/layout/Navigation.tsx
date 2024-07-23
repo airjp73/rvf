@@ -110,7 +110,12 @@ const NavItem = ({
   );
 };
 
-const itemPropsSchema = z.object({ href: z.string() });
+const itemPropsSchema = z
+  .object({ children: z.string(), href: z.string() })
+  .transform((val) => ({
+    href: val.href,
+    title: val.children,
+  }));
 
 function NavigationGroup({
   title,
@@ -178,6 +183,64 @@ function NavigationGroup({
   );
 }
 
+const navigation = (
+  <>
+    <NavigationGroup className="md:mt-0" title="Getting started">
+      <NavItem href="/">Introduction</NavItem>
+      <NavItem href="/installation">Installation</NavItem>
+      <NavItem href="/quick-start">Quick start</NavItem>
+    </NavigationGroup>
+    <NavigationGroup title="Guides">
+      <NavItem href="/default-values">Default values</NavItem>
+      <NavItem href="/input-types">Different input types</NavItem>
+      <NavItem href="/arrays-and-nested">Arrays and nested data</NavItem>
+      <NavItem href="/validation-library-support">
+        Validation library support
+      </NavItem>
+      <NavItem href="/scoping">Scoped abstractions</NavItem>
+      <NavItem href="/state-mode">State mode</NavItem>
+      <NavItem href="/supporting-no-js">Support users without JS</NavItem>
+    </NavigationGroup>
+    <NavigationGroup title="Recipes">
+      <NavItem href="/recipes/typesafe-input">Typesafe input component</NavItem>
+    </NavigationGroup>
+    <NavigationGroup title="Base API Reference">
+      <NavigationGroup title="Form API">
+        <NavItem href="/reference/use-form">useForm</NavItem>
+        <NavItem href="/reference/validated-form">ValidatedForm</NavItem>
+        <NavItem href="/reference/form-api">FormApi</NavItem>
+      </NavigationGroup>
+      <NavigationGroup title="Field API">
+        <NavItem href="/reference/use-field">useField</NavItem>
+        <NavItem href="/reference/field">Field</NavItem>
+        <NavItem href="/reference/field-api">FieldApi</NavItem>
+      </NavigationGroup>
+      <NavigationGroup title="Field Array API">
+        <NavItem href="/reference/use-field-array">useFieldArray</NavItem>
+        <NavItem href="/reference/field-array">FieldArray</NavItem>
+        <NavItem href="/reference/field-array-api">FieldArrayApi</NavItem>
+      </NavigationGroup>
+    </NavigationGroup>
+    <NavigationGroup title="Adapters">
+      <NavItem href="/remix">Remix</NavItem>
+    </NavigationGroup>
+  </>
+);
+
+const getFlatNavLinks = (nav: JSX.Element): z.infer<typeof itemPropsSchema>[] =>
+  Children.toArray(nav.props.children)
+    .filter(isValidElement)
+    .flatMap((item) => {
+      if (item.type === NavigationGroup) return getFlatNavLinks(item);
+      const props = itemPropsSchema.safeParse(item.props);
+      if (!props.success) return [];
+      return [props.data];
+    });
+
+export const flatNavLinks = getFlatNavLinks(navigation);
+
+console.log(flatNavLinks);
+
 export function Navigation({
   children,
   topLevelItems,
@@ -188,47 +251,7 @@ export function Navigation({
       {children}
       <ul role="list">
         {topLevelItems}
-        <NavigationGroup className="md:mt-0" title="Getting started">
-          <NavItem href="/">Introduction</NavItem>
-          <NavItem href="/installation">Installation</NavItem>
-          <NavItem href="/quick-start">Quick start</NavItem>
-        </NavigationGroup>
-        <NavigationGroup title="Guides">
-          <NavItem href="/default-values">Default values</NavItem>
-          <NavItem href="/input-types">Different input types</NavItem>
-          <NavItem href="/arrays-and-nested">Arrays and nested data</NavItem>
-          <NavItem href="/validation-library-support">
-            Validation library support
-          </NavItem>
-          <NavItem href="/scoping">Scoped abstractions</NavItem>
-          <NavItem href="/state-mode">State mode</NavItem>
-          <NavItem href="/supporting-no-js">Support users without JS</NavItem>
-        </NavigationGroup>
-        <NavigationGroup title="Recipes">
-          <NavItem href="/recipes/typesafe-input">
-            Typesafe input component
-          </NavItem>
-        </NavigationGroup>
-        <NavigationGroup title="Base API Reference">
-          <NavigationGroup title="Form API">
-            <NavItem href="/reference/use-form">useForm</NavItem>
-            <NavItem href="/reference/validated-form">ValidatedForm</NavItem>
-            <NavItem href="/reference/form-api">FormApi</NavItem>
-          </NavigationGroup>
-          <NavigationGroup title="Field API">
-            <NavItem href="/reference/use-field">useField</NavItem>
-            <NavItem href="/reference/field">Field</NavItem>
-            <NavItem href="/reference/field-api">FieldApi</NavItem>
-          </NavigationGroup>
-          <NavigationGroup title="Field Array API">
-            <NavItem href="/reference/use-field-array">useFieldArray</NavItem>
-            <NavItem href="/reference/field-array">FieldArray</NavItem>
-            <NavItem href="/reference/field-array-api">FieldArrayApi</NavItem>
-          </NavigationGroup>
-        </NavigationGroup>
-        <NavigationGroup title="Adapters">
-          <NavItem href="/remix">Remix</NavItem>
-        </NavigationGroup>
+        {navigation}
       </ul>
     </nav>
   );
