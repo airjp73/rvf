@@ -237,8 +237,6 @@ const getFlatNavLinks = (nav: JSX.Element): z.infer<typeof itemPropsSchema>[] =>
 
 export const flatNavLinks = getFlatNavLinks(navigation);
 
-console.log(flatNavLinks);
-
 export function Navigation({
   children,
   topLevelItems,
