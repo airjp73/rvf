@@ -1,0 +1,69 @@
+export const meta = () => [
+  {
+    title: "useFieldArray (RVF)",
+  },
+];
+
+# `useFieldArray`
+
+`useFieldArray` can be used to tap into an RVF form in a nested field-array component.
+
+## Arguments
+
+<Row>
+  <Col>
+    The recommended way to use `useFieldArray` is to pass a `FormScope` to it that's been scoped down to the array you want to interact with.
+    This method is especially recommended Typescript users, because it provides solid type-safety.
+
+    However, you can also pass a string to `useFieldArray` and it will tap React context to find the `FormScope` for you.
+
+  </Col>
+  <Col>
+
+    ```tsx
+      const field = useFieldArray(form.scope("myFieldArray"));
+
+      // or
+
+      const field = useFieldArray("myFieldArray");
+    ```
+
+  </Col>
+</Row>
+
+### Additional options
+
+<Row>
+  <Col>
+    `useFieldArray` also accepts an optional second argument with additional options.
+    Currently, there's only one option here, and that's `validationBehavior`.
+    This option allows you to customize _when_ RVF validates the field array in response to array operations.
+    
+    This has one less option than the validation behavior for individual fields,
+    because arrays of fields can't really be "touched".
+    
+    - `initial`
+      - How the field array should be validated initially
+      - default: `"onSubmit"`
+    - `whenSubmitted`
+      - How the field array should be validated once the form has been submitted
+      - default: `"onChange"`
+    
+  </Col>
+  <Col>
+  
+    ```tsx
+      const field = useFieldArray(form.scope("myFieldArray"), {
+        validationBehavior: {
+          initial: "onChange",
+          whenSubmitted: "onChange",
+        },
+      });
+    ```
+  
+  </Col>
+</Row>
+
+## Return type
+
+`useFieldArray` returns a [`FieldArrayApi`](/reference/field-array-api) object.

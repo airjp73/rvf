@@ -1,0 +1,148 @@
+export const meta = () => [
+  {
+    title: "FieldArrayApi (RVF)",
+  },
+];
+
+# `FieldArrayApi`
+
+The `FieldArrayApi` provides helpers for interacting with field arrays.
+
+## `FieldApi` methods
+
+### `map`
+
+<Row>
+  <Col>
+    Maps over the items in the array and renders them.
+    Your map function will receive the following arguments:
+
+    - `key`: A unique string key you can use as the `key` prop when rendering the list of items.
+      When you have your own key available (like the `id` of an item), it's recommended to use that instead.
+    - `item`: A [`FormApi`](/reference/form-api) scoped to that item in the array.
+    - `index`: The index of the item in the array.
+
+  </Col>
+
+  <Col>
+
+    ```tsx
+    myArray.map((key, item, index) => (
+      <div key={key}>
+        {item.value("name")}
+        <button
+          type="button"
+          onClick={() => {
+            myArray.remove(index);
+          }}
+        >
+          Delete
+        </button>
+      </div>
+    ));
+    ```
+
+  </Col>
+</Row>
+
+### `error`
+
+Returns the array-level error message, if there is one.
+This is commonly something along the lines of "Must have at least one item".
+
+### `length`
+
+Returns the length of the array.
+
+```typescript
+const length = myArray.length();
+```
+
+### `name`
+
+Returns the name of the field.
+
+```typescript
+const name = myArray.name();
+```
+
+### `push`
+
+Adds an item to the end of the array.
+
+```typescript
+myArray.push({ name: "New item" });
+```
+
+### `pop`
+
+Removes the last item in the array.
+
+```typescript
+myArray.pop();
+```
+
+### `shift`
+
+Removes the first item in the array.
+
+```typescript
+myArray.shift();
+```
+
+### `unshift`
+
+Adds an item to the start of the array.
+
+```typescript
+myArray.unshift({ name: "New item" });
+```
+
+### `insert`
+
+Inserts an item at a specific index in the array.
+
+```typescript
+myArray.insert(1, { name: "New item" });
+```
+
+### `move`
+
+Moves an item from `fromIndex` to `toIndex` in the array.
+This process happens by removing the item at `fromIndex` and inserting it at `toIndex`.
+Keep this in mind if your `toIndex` is after the `fromIndex`.
+
+```typescript
+myArray.move(0, 1);
+```
+
+### `swap`
+
+Swaps the items at `fromIndex` and `toIndex`.
+
+```typescript
+myArray.swap(0, 1);
+```
+
+### `remove`
+
+Removes an item at the given index from the array.
+
+```typescript
+myArray.remove(1);
+```
+
+### `replace`
+
+Replaces an item in the array.
+
+```typescript
+myArray.replace(1, { name: "New item" });
+```
+
+### `errorFocusElement`
+
+Normally, when a user submits a form and it contains validation error,
+the first invalid element in the form will be focused.
+Pass this ref to a focusable element to simulate this behavior when there are array-level errors
+for this field array.

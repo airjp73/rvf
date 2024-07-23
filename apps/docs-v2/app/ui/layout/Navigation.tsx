@@ -264,6 +264,9 @@ export const navigation: Array<NavGroup> = [
       { title: "useField", href: "/reference/use-field" },
       { title: "Field", href: "/reference/field" },
       { title: "FieldApi", href: "/reference/field-api" },
+      { title: "useFieldArray", href: "/reference/use-field-array" },
+      { title: "FieldArray", href: "/reference/field-array" },
+      { title: "FieldArrayApi", href: "/reference/field-array-api" },
     ],
   },
   {
