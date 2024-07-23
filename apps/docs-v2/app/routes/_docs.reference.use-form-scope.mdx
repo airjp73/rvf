@@ -1,0 +1,18 @@
+export const meta = () => [
+  {
+    title: "useForm (RVF)",
+  },
+];
+
+# `useFormScope`
+
+Takes an existing `FormScope` and returns a [`FormApi`](/reference/form-api) object.
+Read more about scoping [here](/scoping).
+
+### Type
+
+```tsx
+function useFormScope<FormInputData>(
+  scope: FormScope<FormInputData>,
+): FormApi<FormInputData>;
+```

@@ -199,6 +199,7 @@ const navigation = (
     <NavigationGroup title="Base API Reference">
       <NavigationGroup title="Form API">
         <NavItem href="/reference/use-form">useForm</NavItem>
+        <NavItem href="/reference/use-form-scope">useFormScope</NavItem>
         <NavItem href="/reference/validated-form">ValidatedForm</NavItem>
         <NavItem href="/reference/form-api">FormApi</NavItem>
       </NavigationGroup>
