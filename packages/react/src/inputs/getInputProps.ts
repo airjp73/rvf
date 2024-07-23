@@ -63,6 +63,7 @@ export const createGetInputProps = ({
   getCurrentValue,
 }: CreateGetInputPropsOptions): GetInputProps => {
   return <T extends MinimalInputProps>(props = {} as any) => {
+    const rvfRef = createRef();
     const inputProps: MinimalInputProps = {
       ...props,
       form: formId,
@@ -91,7 +92,13 @@ export const createGetInputProps = ({
         onBlur();
       },
       name,
-      ref: createRef(),
+      ref: (element) => {
+        if (typeof props.ref === "function") props.ref(element);
+        else if (props.ref) props.ref.current = element;
+
+        if (typeof rvfRef === "function") rvfRef(element);
+        else if (rvfRef) (rvfRef as any).current = element;
+      },
     };
 
     if (props.type === "checkbox") {
