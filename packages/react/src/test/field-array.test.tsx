@@ -37,6 +37,29 @@ it("should only accept array values", () => {
   };
 });
 
+it("should be able to reduce array values", async () => {
+  const Comp = () => {
+    const form = useForm({
+      defaultValues: {
+        foo: [{ val: 0 }, { val: 1 }, { val: 2 }],
+      },
+      validator: successValidator,
+      handleSubmit: vi.fn(),
+    });
+
+    return (
+      <form {...form.getFormProps()} data-testid="form">
+        <pre data-testid="value">
+          {form.value("foo").reduce((agg, item) => agg + item.val, 0)}
+        </pre>
+      </form>
+    );
+  };
+
+  render(<Comp />);
+  expect(screen.getByTestId("value")).toHaveTextContent("3");
+});
+
 describe("controlled items", () => {
   it("should render every item in the array", async () => {
     const Comp = () => {

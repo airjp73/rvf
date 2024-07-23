@@ -6,11 +6,36 @@ import {
   createValidator,
   FORM_ID_FIELD_NAME,
   isValidationErrorResponse,
+  Validator,
 } from "@rvf/core";
 import { useForm } from "../useForm";
 import { validationError } from "../server";
 import { ActionFunctionArgs } from "@remix-run/node";
 import { ValidatedForm } from "../ValidatedForm";
+
+it("should have the correct type for handleSubmit", async () => {
+  const validator = createValidator({
+    validate: (data) => Promise.resolve({ data, error: undefined }),
+  });
+
+  const Comp = () => {
+    const form = useForm({
+      validator: validator as Validator<{ foo: string }>,
+      handleSubmit: async (data) => {
+        expectTypeOf(data).toEqualTypeOf<{ foo: string }>();
+        return {};
+      },
+    });
+    return (
+      <form {...form.getFormProps()}>
+        <input data-testid="foo" {...form.field("foo").getInputProps()} />
+        <button type="submit" data-testid="submit" />
+      </form>
+    );
+  };
+
+  expect(true).toBe(true);
+});
 
 it("should submit data to the action in dom mode", async () => {
   const validator = createValidator({

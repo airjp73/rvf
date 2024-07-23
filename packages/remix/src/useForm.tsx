@@ -11,22 +11,37 @@ import {
   SubmitOptions,
 } from "@remix-run/react";
 import { toPathObject } from "@rvf/set-get";
-import { GenericObject, SubmitterOptions, FORM_ID_FIELD_NAME } from "@rvf/core";
+import {
+  GenericObject,
+  SubmitterOptions,
+  FORM_ID_FIELD_NAME,
+  StateSubmitHandler,
+  DomSubmitHandler,
+} from "@rvf/core";
 import { useServerValidationErrors } from "./auto-server-hooks";
 
-type PartialProps<T, Props extends keyof T> = Omit<T, Props> &
-  Partial<Pick<T, Props>>;
+// Trying to manipulate the existing types for this breaks the type inference
+// for the handleSubmit argument. So we'll just spell it out again
+type FormSubmitOpts<FormOutputData, ResponseData> =
+  | {
+      submitSource: "state";
+      handleSubmit?: StateSubmitHandler<FormOutputData, ResponseData>;
+    }
+  | {
+      submitSource?: "dom";
+      handleSubmit?: DomSubmitHandler<FormOutputData, ResponseData>;
+    };
 
 export type RemixFormOpts<
   FormInputData extends FieldValues,
   FormOutputData,
   FormResponseData,
-> = PartialProps<
-  Omit<
-    FormOpts<FormInputData, FormOutputData, FormResponseData>,
-    keyof SubmitOptions | "serverValidationErrors"
-  >,
-  "handleSubmit"
+> = Omit<
+  FormOpts<FormInputData, FormOutputData, FormResponseData>,
+  | keyof SubmitOptions
+  | "serverValidationErrors"
+  | "handleSubmit"
+  | "submitSource"
 > &
   Pick<
     SubmitOptions,
@@ -39,7 +54,8 @@ export type RemixFormOpts<
     | "navigate"
     | "preventScrollReset"
     | "relative"
-  > & {
+  > &
+  FormSubmitOpts<FormOutputData, FormResponseData> & {
     fetcher?: FetcherWithComponents<unknown>;
   };
 

@@ -2,16 +2,19 @@ import { describe, expectTypeOf, it } from "vitest";
 import { useForm } from "../useForm";
 import { successValidator } from "./util/successValidator";
 import { FormFields } from "../base";
-import { FormScope } from "@rvf/core";
+import { FormScope, Validator } from "@rvf/core";
 import { useField } from "../field";
 import { ChangeEvent, FocusEvent, useRef } from "react";
-import { MinimalInputProps } from "../inputs/getInputProps";
 
 describe("types", () => {
   it("should only allow valid paths", () => {
     const Component = () => {
       const form = useForm({
-        validator: successValidator,
+        validator: successValidator as Validator<{
+          foo: string;
+          baz: { a: string; b: string };
+          jim: { name: string }[];
+        }>,
         defaultValues: {
           foo: "bar",
           baz: {
@@ -20,7 +23,14 @@ describe("types", () => {
           },
           jim: [{ name: "jimbob" }],
         },
-        handleSubmit: vi.fn(),
+        handleSubmit: async (data) => {
+          expectTypeOf(data).toEqualTypeOf<{
+            foo: string;
+            baz: { a: string; b: string };
+            jim: { name: string }[];
+          }>();
+          return {};
+        },
       });
 
       form.field("foo");
