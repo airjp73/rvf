@@ -1,18 +1,18 @@
 "use client";
 
-import { ReactNode, useRef } from "react";
+import {
+  Children,
+  cloneElement,
+  isValidElement,
+  PropsWithChildren,
+  ReactNode,
+  useRef,
+} from "react";
 import { Link, useLocation } from "@remix-run/react";
 import clsx from "clsx";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, LayoutGroup, motion } from "framer-motion";
 import { cn } from "~/lib/utils";
-
-interface NavGroup {
-  title: string;
-  links: Array<{
-    title: string;
-    href: string;
-  }>;
-}
+import { z } from "zod";
 
 function useInitialValue<T>(value: T, condition = true) {
   let initialValue = useRef(value).current;
@@ -72,87 +72,60 @@ function NavLink({
   );
 }
 
-// function VisibleSectionHighlight({
-//   group,
-//   pathname,
-// }: {
-//   group: NavGroup;
-//   pathname: string;
-// }) {
-//   let [sections, visibleSections] = useInitialValue(
-//     [
-//       useSectionStore((s) => s.sections),
-//       useSectionStore((s) => s.visibleSections),
-//     ],
-//     useIsInsideMobileNavigation()
-//   );
-
-//   let isPresent = useIsPresent();
-//   let firstVisibleSectionIndex = Math.max(
-//     0,
-//     [{ id: "_top" }, ...sections].findIndex(
-//       (section) => section.id === visibleSections[0]
-//     )
-//   );
-//   let itemHeight = remToPx(2);
-//   let height = isPresent
-//     ? Math.max(1, visibleSections.length) * itemHeight
-//     : itemHeight;
-//   let top =
-//     group.links.findIndex((link) => link.href === pathname) * itemHeight +
-//     firstVisibleSectionIndex * itemHeight;
-
-//   return (
-//     <motion.div
-//       layout
-//       initial={{ opacity: 0 }}
-//       animate={{ opacity: 1, transition: { delay: 0.2 } }}
-//       exit={{ opacity: 0 }}
-//       className="absolute inset-x-0 top-0 bg-zinc-800/2.5 will-change-transform dark:bg-white/2.5"
-//       style={{ borderRadius: 8, height, top }}
-//     />
-//   );
-// }
-
-function ActivePageMarker({
-  group,
-  pathname,
+const NavItem = ({
+  href,
+  children,
+  isGroupActive = false,
 }: {
-  group: NavGroup;
-  pathname: string;
-}) {
-  let itemHeight = 28;
-  let offset = 2;
-  let activePageIndex = group.links.findIndex((link) => link.href === pathname);
-  let top = offset + activePageIndex * itemHeight;
+  href: string;
+  children: ReactNode;
+  isGroupActive?: boolean;
+}) => {
+  let [pathname] = useInitialValue([useLocation().pathname], false);
+  const active = href === pathname;
 
   return (
-    <motion.div
-      layout
-      className="absolute left-2 h-6 w-px bg-fuchsia-500"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1, transition: { delay: 0.2 } }}
-      exit={{ opacity: 0 }}
-      style={{ top }}
-    />
+    <motion.li layout="position" className="relative">
+      <AnimatePresence custom={isGroupActive} initial={false}>
+        {isGroupActive && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            exit={{ opacity: 0 }}
+            animate={{ opacity: 1, transition: { delay: 0.1 } }}
+          >
+            {active && (
+              <motion.div
+                layoutId="active-indicator"
+                className="absolute left-0 h-full w-px bg-fuchsia-500"
+                custom={isGroupActive}
+              />
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
+      <NavLink href={href} active={active}>
+        {children}
+      </NavLink>
+    </motion.li>
   );
-}
+};
 
+const itemPropsSchema = z.object({ href: z.string() });
 function NavigationGroup({
-  group,
+  title,
   className,
-}: {
-  group: NavGroup;
+  children,
+}: PropsWithChildren<{
+  title: string;
   className?: string;
-}) {
-  // If this is the mobile navigation then we always render the initial
-  // state, so that the state does not change during the close animation.
-  // The state will still update when we re-open (re-render) the navigation.
-  // let isInsideMobileNavigation = useIsInsideMobileNavigation();
+}>) {
   let [pathname] = useInitialValue([useLocation().pathname], false);
-
-  let isActiveGroup =
-    group.links.findIndex((link) => link.href === pathname) !== -1;
+  const validChildren = Children.toArray(children).filter(isValidElement);
+  const groupLinks = validChildren
+    .map((child) => itemPropsSchema.safeParse(child.props))
+    .filter((r) => r.success)
+    .map((r) => r.data.href);
+  const isGroupActive = groupLinks.includes(pathname);
 
   return (
     <li className={clsx("relative mt-6", className)}>
@@ -160,120 +133,24 @@ function NavigationGroup({
         layout="position"
         className="text-xs font-semibold text-zinc-900 dark:text-white"
       >
-        {group.title}
+        {title}
       </motion.h2>
       <div className="relative mt-3 pl-2">
-        {/* <AnimatePresence initial={!isInsideMobileNavigation}>
-          {isActiveGroup && (
-            <VisibleSectionHighlight group={group} pathname={pathname} />
-          )}
-        </AnimatePresence> */}
         <motion.div
           layout
           className="absolute inset-y-0 left-2 w-px bg-zinc-900/10 dark:bg-white/5"
         />
-        <AnimatePresence initial={false}>
-          {isActiveGroup && (
-            <ActivePageMarker group={group} pathname={pathname} />
-          )}
-        </AnimatePresence>
         <ul role="list" className="border-l border-transparent">
-          {group.links.map((link) => (
-            <motion.li key={link.href} layout="position" className="relative">
-              <NavLink href={link.href} active={link.href === pathname}>
-                {link.title}
-              </NavLink>
-              {/* <AnimatePresence mode="popLayout" initial={false}>
-                {link.href === pathname && sections.length > 0 && (
-                  <motion.ul
-                    role="list"
-                    initial={{ opacity: 0 }}
-                    animate={{
-                      opacity: 1,
-                      transition: { delay: 0.1 },
-                    }}
-                    exit={{
-                      opacity: 0,
-                      transition: { duration: 0.15 },
-                    }}
-                  >
-                    {sections.map((section) => (
-                      <li key={section.id}>
-                        <NavLink
-                          href={`${link.href}#${section.id}`}
-                          tag={section.tag}
-                          isAnchorLink
-                        >
-                          {section.title}
-                        </NavLink>
-                      </li>
-                    ))}
-                  </motion.ul>
-                )}
-              </AnimatePresence> */}
-            </motion.li>
-          ))}
+          <LayoutGroup id={title}>
+            {validChildren.map((child) =>
+              cloneElement(child, { isGroupActive } as never),
+            )}
+          </LayoutGroup>
         </ul>
       </div>
     </li>
   );
 }
-
-export const navigation: Array<NavGroup> = [
-  {
-    title: "Getting started",
-    links: [
-      { title: "Introduction", href: "/" },
-      { title: "Installation", href: "/installation" },
-      { title: "Quick start", href: "/quick-start" },
-    ],
-  },
-  {
-    title: "Guides",
-    links: [
-      { title: "Default values", href: "/default-values" },
-      { title: "Different input types", href: "/input-types" },
-      { title: "Arrays and nested data", href: "/arrays-and-nested" },
-      {
-        title: "Validation library support",
-        href: "/validation-library-support",
-      },
-      {
-        title: "Scoped abstractions",
-        href: "/scoping",
-      },
-      {
-        title: "State mode",
-        href: "/state-mode",
-      },
-      { title: "Support users without JS", href: "/supporting-no-js" },
-    ],
-  },
-  {
-    title: "Recipes",
-    links: [
-      { title: "Typesafe input component", href: "/recipes/typesafe-input" },
-    ],
-  },
-  {
-    title: "Base API Reference",
-    links: [
-      { title: "useForm", href: "/reference/use-form" },
-      { title: "ValidatedForm", href: "/reference/validated-form" },
-      { title: "FormApi", href: "/reference/form-api" },
-      { title: "useField", href: "/reference/use-field" },
-      { title: "Field", href: "/reference/field" },
-      { title: "FieldApi", href: "/reference/field-api" },
-      { title: "useFieldArray", href: "/reference/use-field-array" },
-      { title: "FieldArray", href: "/reference/field-array" },
-      { title: "FieldArrayApi", href: "/reference/field-array-api" },
-    ],
-  },
-  {
-    title: "Adapters",
-    links: [{ title: "Remix", href: "/remix" }],
-  },
-];
 
 export function Navigation({
   children,
@@ -285,13 +162,45 @@ export function Navigation({
       {children}
       <ul role="list">
         {topLevelItems}
-        {navigation.map((group, groupIndex) => (
-          <NavigationGroup
-            key={group.title}
-            group={group}
-            className={groupIndex === 0 ? "md:mt-0" : ""}
-          />
-        ))}
+        <NavigationGroup className="md:mt-0" title="Getting started">
+          <NavItem href="/">Introduction</NavItem>
+          <NavItem href="/installation">Installation</NavItem>
+          <NavItem href="/quick-start">Quick start</NavItem>
+        </NavigationGroup>
+        <NavigationGroup title="Guides">
+          <NavItem href="/default-values">Default values</NavItem>
+          <NavItem href="/input-types">Different input types</NavItem>
+          <NavItem href="/arrays-and-nested">Arrays and nested data</NavItem>
+          <NavItem href="/validation-library-support">
+            Validation library support
+          </NavItem>
+          <NavItem href="/scoping">Scoped abstractions</NavItem>
+          <NavItem href="/state-mode">State mode</NavItem>
+          <NavItem href="/supporting-no-js">Support users without JS</NavItem>
+        </NavigationGroup>
+        <NavigationGroup title="Recipes">
+          <NavItem href="/recipes/typesafe-input">
+            Typesafe input component
+          </NavItem>
+        </NavigationGroup>
+        <NavigationGroup title="Form API">
+          <NavItem href="/reference/use-form">useForm</NavItem>
+          <NavItem href="/reference/validated-form">ValidatedForm</NavItem>
+          <NavItem href="/reference/form-api">FormApi</NavItem>
+        </NavigationGroup>
+        <NavigationGroup title="Field API">
+          <NavItem href="/reference/use-field">useField</NavItem>
+          <NavItem href="/reference/field">Field</NavItem>
+          <NavItem href="/reference/field-api">FieldApi</NavItem>
+        </NavigationGroup>
+        <NavigationGroup title="Field Array API">
+          <NavItem href="/reference/use-field-array">useFieldArray</NavItem>
+          <NavItem href="/reference/field-array">FieldArray</NavItem>
+          <NavItem href="/reference/field-array-api">FieldArrayApi</NavItem>
+        </NavigationGroup>
+        <NavigationGroup title="Adapters">
+          <NavItem href="/remix">Remix</NavItem>
+        </NavigationGroup>
       </ul>
     </nav>
   );

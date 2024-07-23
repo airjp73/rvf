@@ -1,10 +1,9 @@
 "use client";
 
 import { Link, useLocation } from "@remix-run/react";
-import { navigation } from "./Navigation";
 import { ArrowLeftIcon, ArrowRightIcon } from "lucide-react";
 
-const flatNavLinks = navigation.flatMap((item) => item.links);
+const flatNavLinks = []; //navigation.flatMap((item) => item.links);
 
 function PageNavigation() {
   const location = useLocation();

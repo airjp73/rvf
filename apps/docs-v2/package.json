@@ -26,7 +26,7 @@
     "@xstate/react": "^4.1.1",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
-    "framer-motion": "^11.2.10",
+    "framer-motion": "^11.3.12",
     "isbot": "^4.1.0",
     "lucide-react": "^0.394.0",
     "react": "^18.2.0",

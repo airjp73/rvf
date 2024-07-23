@@ -14,7 +14,7 @@ import { Sidebar } from "../components/Sidebar";
 import { Footer } from "./Footer";
 import { GithubIcon } from "./GithubIcon";
 import { Alert } from "./Alert";
-import { Button, ButtonLink } from "./Button";
+import { ButtonLink } from "./Button";
 
 type Section = {
   header: string;
