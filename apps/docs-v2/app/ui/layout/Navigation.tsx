@@ -111,13 +111,16 @@ const NavItem = ({
 };
 
 const itemPropsSchema = z.object({ href: z.string() });
+
 function NavigationGroup({
   title,
   className,
   children,
+  level = 1,
 }: PropsWithChildren<{
   title: string;
   className?: string;
+  level?: number;
 }>) {
   let [pathname] = useInitialValue([useLocation().pathname], false);
   const validChildren = Children.toArray(children).filter(isValidElement);
@@ -127,23 +130,46 @@ function NavigationGroup({
     .map((r) => r.data.href);
   const isGroupActive = groupLinks.includes(pathname);
 
+  const hasChildGroups = validChildren.some(
+    (child) => child.type === NavigationGroup,
+  );
+
   return (
-    <li className={clsx("relative mt-6", className)}>
-      <motion.h2
-        layout="position"
-        className="text-xs font-semibold text-zinc-900 dark:text-white"
-      >
-        {title}
-      </motion.h2>
+    <li
+      className={clsx(
+        "relative",
+        level === 1 && "mt-6",
+        level === 2 && "mt-3",
+        className,
+      )}
+    >
+      {level === 1 && (
+        <motion.h2
+          layout="position"
+          className="text-sm font-semibold text-zinc-900 dark:text-white"
+        >
+          {title}
+        </motion.h2>
+      )}
+      {level === 2 && (
+        <motion.h3
+          layout="position"
+          className="text-xs font-semibold text-zinc-900 dark:text-white"
+        >
+          {title}
+        </motion.h3>
+      )}
       <div className="relative mt-3 pl-2">
-        <motion.div
-          layout
-          className="absolute inset-y-0 left-2 w-px bg-zinc-900/10 dark:bg-white/5"
-        />
+        {!hasChildGroups && (
+          <motion.div
+            layout
+            className="absolute inset-y-0 left-2 w-px bg-zinc-900/10 dark:bg-white/5"
+          />
+        )}
         <ul role="list" className="border-l border-transparent">
           <LayoutGroup id={title}>
             {validChildren.map((child) =>
-              cloneElement(child, { isGroupActive } as never),
+              cloneElement(child, { isGroupActive, level: level + 1 } as never),
             )}
           </LayoutGroup>
         </ul>
@@ -183,20 +209,22 @@ export function Navigation({
             Typesafe input component
           </NavItem>
         </NavigationGroup>
-        <NavigationGroup title="Form API">
-          <NavItem href="/reference/use-form">useForm</NavItem>
-          <NavItem href="/reference/validated-form">ValidatedForm</NavItem>
-          <NavItem href="/reference/form-api">FormApi</NavItem>
-        </NavigationGroup>
-        <NavigationGroup title="Field API">
-          <NavItem href="/reference/use-field">useField</NavItem>
-          <NavItem href="/reference/field">Field</NavItem>
-          <NavItem href="/reference/field-api">FieldApi</NavItem>
-        </NavigationGroup>
-        <NavigationGroup title="Field Array API">
-          <NavItem href="/reference/use-field-array">useFieldArray</NavItem>
-          <NavItem href="/reference/field-array">FieldArray</NavItem>
-          <NavItem href="/reference/field-array-api">FieldArrayApi</NavItem>
+        <NavigationGroup title="Base API Reference">
+          <NavigationGroup title="Form API">
+            <NavItem href="/reference/use-form">useForm</NavItem>
+            <NavItem href="/reference/validated-form">ValidatedForm</NavItem>
+            <NavItem href="/reference/form-api">FormApi</NavItem>
+          </NavigationGroup>
+          <NavigationGroup title="Field API">
+            <NavItem href="/reference/use-field">useField</NavItem>
+            <NavItem href="/reference/field">Field</NavItem>
+            <NavItem href="/reference/field-api">FieldApi</NavItem>
+          </NavigationGroup>
+          <NavigationGroup title="Field Array API">
+            <NavItem href="/reference/use-field-array">useFieldArray</NavItem>
+            <NavItem href="/reference/field-array">FieldArray</NavItem>
+            <NavItem href="/reference/field-array-api">FieldArrayApi</NavItem>
+          </NavigationGroup>
         </NavigationGroup>
         <NavigationGroup title="Adapters">
           <NavItem href="/remix">Remix</NavItem>
