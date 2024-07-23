@@ -1,0 +1,35 @@
+export const meta = () => [
+  {
+    title: "useNativeValidity (RVF)",
+  },
+];
+
+# `useNativeValidity`
+
+Takes an input to a form control and an error message, then sets the custom validity of that form control
+in an effect.
+
+## Usage
+
+```tsx
+const MyInput = ({
+  scope,
+  label,
+}: {
+  scope: FormScope<string>;
+  label: string;
+}) => {
+  const field = useField(scope);
+  const id = useId();
+
+  const ref = useRef<HTMLInputElement>(null);
+  useNativeValidity(ref, field.error());
+
+  return (
+    <div>
+      <label htmlFor={id}>{label}</label>
+      <input {...field.getInputProps({ id, ref })} />
+    </div>
+  );
+};
+```

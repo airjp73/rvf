@@ -213,6 +213,11 @@ const navigation = (
         <NavItem href="/reference/field-array">FieldArray</NavItem>
         <NavItem href="/reference/field-array-api">FieldArrayApi</NavItem>
       </NavigationGroup>
+      <NavigationGroup title="Misc">
+        <NavItem href="/reference/use-native-validity">
+          useNativeValidity
+        </NavItem>
+      </NavigationGroup>
     </NavigationGroup>
     <NavigationGroup title="Adapters">
       <NavItem href="/remix">Remix</NavItem>
