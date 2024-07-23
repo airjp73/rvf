@@ -72,37 +72,12 @@ function NavLink({
   );
 }
 
-const NavItem = ({
-  href,
-  children,
-  isGroupActive = false,
-}: {
-  href: string;
-  children: ReactNode;
-  isGroupActive?: boolean;
-}) => {
+const NavItem = ({ href, children }: { href: string; children: ReactNode }) => {
   let [pathname] = useInitialValue([useLocation().pathname], false);
   const active = href === pathname;
 
   return (
     <motion.li layout="position" className="relative">
-      <AnimatePresence custom={isGroupActive} initial={false}>
-        {isGroupActive && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            exit={{ opacity: 0 }}
-            animate={{ opacity: 1, transition: { delay: 0.1 } }}
-          >
-            {active && (
-              <motion.div
-                layoutId="active-indicator"
-                className="absolute left-0 h-full w-px bg-fuchsia-500"
-                custom={isGroupActive}
-              />
-            )}
-          </motion.div>
-        )}
-      </AnimatePresence>
       <NavLink href={href} active={active}>
         {children}
       </NavLink>
@@ -139,6 +114,11 @@ function NavigationGroup({
     (child) => child.type === NavigationGroup,
   );
 
+  const itemHeight = 28;
+  const offset = 2;
+  let activePageIndex = groupLinks.findIndex((link) => link === pathname);
+  let top = offset + activePageIndex * itemHeight;
+
   return (
     <li
       className={clsx(
@@ -165,6 +145,18 @@ function NavigationGroup({
         </motion.h3>
       )}
       <div className="relative mt-3 pl-2">
+        <AnimatePresence initial={false}>
+          {isGroupActive && !hasChildGroups && (
+            <motion.div
+              layout
+              className="absolute left-2 h-6 w-px bg-fuchsia-500"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1, transition: { delay: 0.2 } }}
+              exit={{ opacity: 0 }}
+              style={{ top }}
+            />
+          )}
+        </AnimatePresence>
         {!hasChildGroups && (
           <motion.div
             layout
