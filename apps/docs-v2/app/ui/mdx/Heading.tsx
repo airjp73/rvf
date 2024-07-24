@@ -2,7 +2,8 @@
 
 import { useRef } from "react";
 import { useInView } from "framer-motion";
-import { Link } from "@remix-run/react";
+import { Link, useLocation } from "@remix-run/react";
+import { cn } from "~/lib/utils";
 
 function AnchorIcon(props: React.ComponentPropsWithoutRef<"svg">) {
   return (
@@ -68,17 +69,17 @@ export function Heading<Level extends 2 | 3>({
     amount: "all",
   });
 
-  // useEffect(() => {
-  //   if (level === 2) {
-  //     registerHeading({ id: props.id, ref, offsetRem: tag || label ? 8 : 6 })
-  //   }
-  // })
+  const location = useLocation();
 
   return (
     <>
       <Component
         ref={ref}
-        className={tag || label ? "mt-2 scroll-mt-32" : "scroll-mt-24"}
+        className={cn(
+          tag || label ? "mt-2 scroll-mt-32" : "scroll-mt-24",
+          location.hash === `#${props.id}` &&
+            "text-fuchsia-500 ring-1 ring-offset-4 rounded-md ring-offset-background ring-fuchsia-500",
+        )}
         {...props}
       >
         {anchor ? (
