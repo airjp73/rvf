@@ -217,6 +217,7 @@ const navigation = (
         <NavItem href="/reference/use-native-validity">
           useNativeValidity
         </NavItem>
+        <NavItem href="/reference/isolate">Isolate</NavItem>
       </NavigationGroup>
     </NavigationGroup>
     <NavigationGroup title="Adapters">

@@ -1,0 +1,28 @@
+export const meta = () => [
+  {
+    title: "Isolate (RVF)",
+  },
+];
+
+# `Isolate`
+
+A simple render prop component that consumes a `FormScope` and passes it to its children via a render prop.
+Any state accessed through this render prop will only cause the `Isolate` component to re-render.
+
+## Usage
+
+```tsx
+const MyForm = () => {
+  const form = useForm({
+    // ...etc
+  });
+
+  return (
+    <form {...form.getFormProps()}>
+      <Isolate scope={form.scope()}>
+        {(isolated) => isolated.value("name")}
+      </Isolate>
+    </form>
+  );
+};
+```
