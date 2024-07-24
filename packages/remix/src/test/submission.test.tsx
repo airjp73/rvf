@@ -23,7 +23,6 @@ it("should have the correct type for handleSubmit", async () => {
       validator: validator as Validator<{ foo: string }>,
       handleSubmit: async (data) => {
         expectTypeOf(data).toEqualTypeOf<{ foo: string }>();
-        return {};
       },
     });
     return (

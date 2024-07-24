@@ -6,7 +6,7 @@ export type ValidatedFormProps<
   FormInputData extends FieldValues,
   FormOutputData,
   FormResponseData,
-> = RemixFormOpts<FormInputData, FormOutputData, FormResponseData> &
+> = RemixFormOpts<FormInputData, FormOutputData> &
   Omit<React.ComponentProps<"form">, "children"> & {
     /**
      * A ref to the form element.
@@ -51,7 +51,7 @@ export const ValidatedForm = <
   reloadDocument,
   ...rest
 }: ValidatedFormProps<FormInputData, FormOutputData, FormResponseData>) => {
-  const rvf = useForm<FormInputData, FormOutputData, FormResponseData>({
+  const rvf = useForm<FormInputData, FormOutputData>({
     action,
     id,
     disableFocusOnError,
@@ -74,9 +74,7 @@ export const ValidatedForm = <
     reloadDocument,
     defaultValues,
     fetcher,
-  } satisfies AllProps<
-    RemixFormOpts<FormInputData, FormOutputData, FormResponseData>
-  >);
+  } satisfies AllProps<RemixFormOpts<FormInputData, FormOutputData>>);
 
   return (
     <FormProvider scope={rvf.scope()}>

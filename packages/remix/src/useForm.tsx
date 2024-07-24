@@ -35,9 +35,8 @@ type FormSubmitOpts<FormOutputData, ResponseData> =
 export type RemixFormOpts<
   FormInputData extends FieldValues,
   FormOutputData,
-  FormResponseData,
 > = Omit<
-  FormOpts<FormInputData, FormOutputData, FormResponseData>,
+  FormOpts<FormInputData, FormOutputData, void>,
   | keyof SubmitOptions
   | "serverValidationErrors"
   | "handleSubmit"
@@ -55,19 +54,15 @@ export type RemixFormOpts<
     | "preventScrollReset"
     | "relative"
   > &
-  FormSubmitOpts<FormOutputData, FormResponseData> & {
+  FormSubmitOpts<FormOutputData, void> & {
     fetcher?: FetcherWithComponents<unknown>;
   };
 
 /**
  * Create and use an `FormScope`.
  */
-export function useForm<
-  FormInputData extends FieldValues,
-  FormOutputData,
-  FormResponseData,
->(
-  rvfOpts: RemixFormOpts<FormInputData, FormOutputData, FormResponseData>,
+export function useForm<FormInputData extends FieldValues, FormOutputData>(
+  rvfOpts: RemixFormOpts<FormInputData, FormOutputData>,
 ): FormApi<FormInputData> {
   let rvf: FormApi<FormInputData>;
 
@@ -146,7 +141,7 @@ export function useForm<
     });
   };
 
-  rvf = useFormReact<FormInputData, FormOutputData, FormResponseData>({
+  rvf = useFormReact<FormInputData, FormOutputData, void>({
     ...rvfOpts,
     ...serverStuff,
     otherFormProps: {
