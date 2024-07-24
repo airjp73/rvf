@@ -1,0 +1,91 @@
+import { string } from "three/examples/jsm/nodes/Nodes.js";
+
+export const meta = () => [
+  {
+    title: "Controlled fields (RVF)",
+  },
+];
+
+# Controlled fields
+
+Sometimes you have a component that _isn't_ a native form control.
+Those cases are really straigthforward to handle with RVF.
+
+## Simple cases
+
+<Row>
+  <Col>
+    For many controlled components, you can simply spread `getControlProps` onto the component.
+    In order for a component to support this, it needs to:
+
+    - Accept a `ref` to a focusable HTML element.
+      - **This is important!** -- if you omit this, RVF will try to manage the field like an uncontrolled field.
+    - Have `onChange` and `onBlur` handlers.
+    - Accept a `value` prop.
+    - Optionally, can accept a `name` prop
+
+  </Col>
+  <Col>
+  
+    ```tsx
+    const form = useForm({
+      // ...etc
+    });
+
+    return (
+      <form {...form.getFormProps()}>
+        <MyControlledInput {...form.getControlProps("myField")} />
+      </form>
+    )
+    ```
+
+  </Col>
+</Row>
+
+<Row>
+  <Col>
+    If your controlled component renders a native form control with the provided `name` prop,
+    or if you're exclusively using [state mode](/state-mode), then that's all you need to do.
+    
+    If that isn't the case, you'll also need to serialize the value into a hidden input
+    in order for the value to appear in the forms `FormData`.
+    Fortunately, there's a `getHiddenInputProps` helper to help with that.
+
+  </Col>
+  <Col>
+  
+    ```tsx
+    const form = useForm({
+      // ...etc
+    });
+    
+    const field = form.field("myField");
+
+    return (
+      <form {...form.getFormProps()}>
+        <MyControlledInput {...field.getControlProps()} />
+        <input
+          type="hidden"
+          {...field.getHiddenInputProps({
+            // If you leave out `serialize`, RVF will assume the value is already a string
+            serialize: val => JSON.stringify(val),
+          })}
+        />
+      </form>
+    );
+    ```
+
+  </Col>
+</Row>
+
+## More complicated cases
+
+If simply spreading `getControlProps` isn't enough for your use-case,
+the [`FieldApi`](/reference/field-api) exposes all the tools you need to wire up your component manually.
+
+The key APIs to look at are:
+
+- [`refs.controlled`](/reference/field-api#refs)
+- [`onChange`](/reference/field-api#on-change)
+- [`onBlur`](/reference/field-api#on-blur)
+- [`value`](/reference/field-api#value)

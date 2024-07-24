@@ -185,6 +185,7 @@ const navigation = (
     <NavigationGroup title="Guides">
       <NavItem href="/default-values">Default values</NavItem>
       <NavItem href="/input-types">Different input types</NavItem>
+      <NavItem href="/controlled-fields">Controlled fields</NavItem>
       <NavItem href="/arrays-and-nested">Arrays and nested data</NavItem>
       <NavItem href="/validation-library-support">
         Validation library support
