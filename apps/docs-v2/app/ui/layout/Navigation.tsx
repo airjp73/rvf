@@ -213,6 +213,13 @@ const navigation = (
         <NavItem href="/reference/field-array">FieldArray</NavItem>
         <NavItem href="/reference/field-array-api">FieldArrayApi</NavItem>
       </NavigationGroup>
+      <NavigationGroup title="Context">
+        <NavItem href="/reference/form-provider">FormProvider</NavItem>
+        <NavItem href="/reference/use-form-context">useFormContext</NavItem>
+        <NavItem href="/reference/use-form-scope-or-context">
+          useFormScopeOrContext
+        </NavItem>
+      </NavigationGroup>
       <NavigationGroup title="Misc">
         <NavItem href="/reference/use-native-validity">
           useNativeValidity
