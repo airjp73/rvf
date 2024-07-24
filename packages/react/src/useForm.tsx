@@ -52,6 +52,8 @@ export type FormOpts<
    * Called after the form has been successfully submitted with whatever data was returned from the `handleSubmit` function.
    * Can be useful for showing a toast message or redirecting the user to a different page.
    * If you return a `Promise` from this callback, the `isSubmitting` state will still be `true` while this callback is running.
+   *
+   * If you're using an adapter like `@rvf/remix`, this will be called even if you aren't using `handleSubmit`.
    */
   onSubmitSuccess?: (
     handleSubmitResponse: NoInfer<SubmitResponseData>,
@@ -61,6 +63,8 @@ export type FormOpts<
    * Called when the `handleSubmit` function throws an error.
    * Can be useful for showing a toast message or redirecting the user to a different page.
    * If you return a `Promise` from this callback, the `isSubmitting` state will still be `true` while this callback is running.
+   *
+   * If you're using an adapter like `@rvf/remix`, this will be called even if you aren't using `handleSubmit`.
    */
   onSubmitFailure?: (error: unknown) => void | Promise<void>;
 
