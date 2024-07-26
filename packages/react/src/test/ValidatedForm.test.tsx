@@ -7,15 +7,16 @@ import { useField } from "../field";
 import { Validator } from "@rvf/core";
 
 it("provides a render prop to wire up the form", async () => {
-  const validator = successValidator as Validator<{
+  type DataType = {
     foo: string;
     bar: { a: string };
-  }>;
+  };
+  const validator = successValidator as Validator<DataType>;
   const submit = vi.fn();
 
   const TestComp = () => {
     return (
-      <ValidatedForm
+      <ValidatedForm<any, DataType>
         data-testid="form"
         defaultValues={{
           foo: "bar",
@@ -25,10 +26,7 @@ it("provides a render prop to wire up the form", async () => {
         }}
         validator={validator}
         handleSubmit={(data) => {
-          expectTypeOf(data).toEqualTypeOf<{
-            foo: string;
-            bar: { a: string };
-          }>();
+          expectTypeOf(data).toEqualTypeOf<DataType>();
           submit(data);
         }}
       >

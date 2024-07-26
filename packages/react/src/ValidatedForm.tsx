@@ -6,10 +6,8 @@ import { FormProvider } from "./context";
 export type ValidatedFormProps<
   FormInputData extends FieldValues,
   FormOutputData,
-> = Omit<FormOpts<FormInputData, FormOutputData>, "formId"> &
+> = FormOpts<FormInputData, FormOutputData> &
   Omit<React.ComponentProps<"form">, "children"> & {
-    id?: string;
-
     /**
      * A ref to the form element.
      */
