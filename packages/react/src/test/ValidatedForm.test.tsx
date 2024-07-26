@@ -4,8 +4,13 @@ import { RenderCounter } from "./util/RenderCounter";
 import { successValidator } from "./util/successValidator";
 import userEvent from "@testing-library/user-event";
 import { useField } from "../field";
+import { Validator } from "@rvf/core";
 
 it("provides a render prop to wire up the form", async () => {
+  const validator = successValidator as Validator<{
+    foo: string;
+    bar: { a: string };
+  }>;
   const submit = vi.fn();
 
   const TestComp = () => {
@@ -18,8 +23,14 @@ it("provides a render prop to wire up the form", async () => {
             a: "quux",
           },
         }}
-        validator={successValidator}
-        handleSubmit={submit}
+        validator={validator}
+        handleSubmit={(data) => {
+          expectTypeOf(data).toEqualTypeOf<{
+            foo: string;
+            bar: { a: string };
+          }>();
+          submit(data);
+        }}
       >
         {(form) => (
           <>
