@@ -25,9 +25,9 @@ it("provides a render prop to wire up the form", async () => {
           },
         }}
         validator={validator}
-        handleSubmit={(data) => {
+        handleSubmit={(data, ...rest) => {
           expectTypeOf(data).toEqualTypeOf<DataType>();
-          submit(data);
+          submit(data, ...rest);
         }}
       >
         {(form) => (
