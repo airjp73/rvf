@@ -43,13 +43,13 @@ export interface FieldArrayApi<FormInputData extends Array<any>> {
    * Using the `form` parameter passed to the callback will isolate rerenders to each individual item.
    * Changes to the length of the array will also be isoated to this `map` call.
    */
-  map: (
+  map: <Value>(
     callback: (
       key: string,
       form: FormApi<FormInputData[number]>,
       index: number,
-    ) => ReactNode,
-  ) => ReactNode;
+    ) => Value,
+  ) => Value[];
 
   /**
    * Adds an item to the array. Just like `Array.push`.

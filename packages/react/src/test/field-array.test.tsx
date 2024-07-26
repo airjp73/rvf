@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, renderHook, screen, waitFor } from "@testing-library/react";
 import { useForm } from "../useForm";
 import userEvent from "@testing-library/user-event";
 import { Fragment } from "react/jsx-runtime";
@@ -58,6 +58,24 @@ it("should be able to reduce array values", async () => {
 
   render(<Comp />);
   expect(screen.getByTestId("value")).toHaveTextContent("3");
+});
+
+it("should be able to return any data from `map` operation", async () => {
+  const res = renderHook(() => {
+    const form = useForm({
+      defaultValues: {
+        foo: [{ name: "bar" }, { name: "baz" }],
+      },
+      validator: successValidator,
+      handleSubmit: vi.fn(),
+    });
+
+    return form.array("foo").map((key, item, index) => {
+      return item.value("name");
+    });
+  });
+
+  expect(res.result.current).toEqual(["bar", "baz"]);
 });
 
 describe("controlled items", () => {
