@@ -14,13 +14,16 @@ The `FieldArrayApi` provides helpers for interacting with field arrays.
 
 <Row>
   <Col>
-    Maps over the items in the array and renders them.
+    Maps over the items in the array and return the results.
     Your map function will receive the following arguments:
 
     - `key`: A unique string key you can use as the `key` prop when rendering the list of items.
       When you have your own key available (like the `id` of an item), it's recommended to use that instead.
     - `item`: A [`FormApi`](/reference/form-api) scoped to that item in the array.
     - `index`: The index of the item in the array.
+
+    This is most commonly used to render the items in the array,
+    but you can return anything you want from the map function.
 
   </Col>
 
