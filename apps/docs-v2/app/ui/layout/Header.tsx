@@ -1,13 +1,12 @@
 import { forwardRef } from "react";
-import { Link } from "@remix-run/react";
+import { Link, useLocation } from "@remix-run/react";
 import clsx from "clsx";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { ThemeToggle } from "../theme/theme";
 import { Logo } from "../branding/Logo";
 import { GithubIcon } from "../icons/GithubIcon";
 import { MobileNavigation } from "./MobileNavigation";
-import { TopLevelNavItem } from "./Navigation";
-import { ConstructionIcon } from "lucide-react";
+import { flatNavLinks, TopLevelNavItem } from "./Navigation";
 
 export const Header = forwardRef<
   React.ElementRef<"div">,
@@ -17,12 +16,17 @@ export const Header = forwardRef<
   let bgOpacityLight = useTransform(scrollY, [0, 72], [0.5, 0.7]);
   let bgOpacityDark = useTransform(scrollY, [0, 72], [0.2, 0.8]);
 
+  const location = useLocation();
+  const currentPage = flatNavLinks.find(
+    (link) => link.href === location.pathname,
+  );
+
   return (
     <motion.div
       ref={ref}
       className={clsx(
         className,
-        "fixed inset-x-0 top-0 z-50 flex h-14 items-center justify-between gap-12 px-4 transition sm:px-6 lg:left-72 lg:z-30 lg:px-8 xl:left-80",
+        "fixed inset-x-0 top-0 z-50 flex h-14 items-center justify-between gap-8 px-4 transition sm:px-6 lg:left-72 lg:z-30 lg:px-8 xl:left-80",
         "backdrop-blur-sm lg:left-72 xl:left-80 dark:backdrop-blur",
         "bg-white/[var(--bg-opacity-light)] dark:bg-zinc-900/[var(--bg-opacity-dark)]",
         "border-b border-zinc-900/25 dark:border-zinc-100/15",
@@ -41,10 +45,8 @@ export const Header = forwardRef<
           <Logo className="h-8" />
         </Link>
       </div>
-      <div className="flex gap-2 ml-auto">
-        <ConstructionIcon className="text-orange-500" />
-        Under construction
-        <ConstructionIcon className="text-orange-500" />
+      <div className="gap-2 ml-auto overflow-hidden overflow-ellipsis hidden sm:flex">
+        <span>{currentPage?.title}</span>
       </div>
       <div className="flex items-center gap-5 ml-auto">
         <nav className="hidden md:block">
