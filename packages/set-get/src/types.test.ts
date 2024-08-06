@@ -55,6 +55,21 @@ describe("ValueAtPath type", () => {
     expectTypeOf<ValueAtPath<state, ["a", "b", 2, "c"]>>().toMatchTypeOf<3>();
   });
 
+  it("should work with records", () => {
+    type state = {
+      a: Record<string, { name: string }>;
+    };
+    expectTypeOf<ValueAtPath<state, ["a", "b"]>>().toMatchTypeOf<{
+      name: string;
+    }>();
+    expectTypeOf<ValidStringPaths<state>>().toEqualTypeOf<
+      "a" | `a.${string}` | `a.${string}.name`
+    >();
+    expectTypeOf<ValueAtPath<state, StringToPathTuple<"a.b">>>().toMatchTypeOf<{
+      name: string;
+    }>();
+  });
+
   it("should work with arrays and path strings", () => {
     type state = {
       a: {
