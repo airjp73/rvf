@@ -60,25 +60,27 @@ export type StringToPathTuple<S extends string> = StringToPathTupleImpl<
 
 type Path<Obj, Prefix extends Array<PathKey> = [], AssignableTo = any> =
   | (Obj extends AssignableTo ? Prefix : never)
-  | (Obj extends Primitive
+  | (Prefix["length"] extends 10
       ? never
-      : IsAny<Obj> extends true // prevent infinite recursion when using `any` (usually for generic base types)
+      : Obj extends Primitive
         ? never
-        : Obj extends Array<infer Item>
-          ? Path<Item, [...Prefix, number], AssignableTo>
-          : PathsOfObject<Obj, Prefix, AssignableTo>);
+        : IsAny<Obj> extends true // prevent infinite recursion when using `any` (usually for generic base types)
+          ? never
+          : Obj extends Array<infer Item>
+            ? PathsOfArray<Item, Prefix, AssignableTo>
+            : PathsOfObject<Obj, Prefix, AssignableTo>);
 
-type PathsOfObject<
+type PathsOfArray<
   Obj,
   Prefix extends Array<PathKey>,
   AssignableTo = any,
-> = Prefix["length"] extends 10
-  ? never
-  : {
-      [K in keyof Obj]: K extends PathKey
-        ? Path<Obj[K], [...Prefix, K], AssignableTo>
-        : never;
-    }[keyof Obj];
+> = Path<Obj, [...Prefix, number], AssignableTo>;
+
+type PathsOfObject<Obj, Prefix extends Array<PathKey>, AssignableTo = any> = {
+  [K in keyof Obj]: K extends PathKey
+    ? Path<Obj[K], [...Prefix, K], AssignableTo>
+    : never;
+}[keyof Obj];
 
 export type ValueAtPath<
   Obj,

@@ -1,4 +1,4 @@
-import { describe, expect, expectTypeOf, it } from "vitest";
+import { describe, expectTypeOf, it } from "vitest";
 import {
   StringToPathTuple,
   ValidStringPaths,
@@ -29,6 +29,26 @@ describe("ValueAtPath type", () => {
 
     type res = ValueAtPath<state, ["a", "b", "c", "d"]>;
     expectTypeOf<res>().toMatchTypeOf<never>();
+  });
+
+  it("should work with recursive types", () => {
+    type Node = {
+      value: number;
+      children: Node[];
+    };
+    type Tree = {
+      tree: Node;
+    };
+    expectTypeOf<
+      ValueAtPath<Tree, ["tree", "children", 0, "value"]>
+    >().toMatchTypeOf<number>();
+    expectTypeOf<
+      | "tree.value"
+      | "tree.children"
+      | `tree.children[${number}]`
+      | `tree.children[${number}].value`
+      | `tree.children[${number}].children`
+    >().toMatchTypeOf<ValidStringPaths<Tree>>();
   });
 
   it("should work with tuples", () => {

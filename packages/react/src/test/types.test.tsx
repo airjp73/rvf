@@ -67,10 +67,11 @@ describe("types", () => {
 
   it("should infer form scope correctly", () => {
     const Component = () => {
-      const scope = {} as any as FormScope<Record<string, number>>;
+      type Node = { value: number; children: Node[] };
+      const scope = {} as any as FormScope<{ tree: Node }>;
       const form = useFormScope(scope);
-      expectTypeOf(form.scope("bob")).toEqualTypeOf<FormScope<number>>();
-      expectTypeOf(form.value("bob")).toEqualTypeOf<number>();
+      expectTypeOf(form.scope("tree.value")).toEqualTypeOf<FormScope<number>>();
+      expectTypeOf(form.value("tree.value")).toEqualTypeOf<number>();
     };
   });
 
