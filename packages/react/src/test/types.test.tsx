@@ -5,6 +5,7 @@ import { FormFields } from "../base";
 import { FormScope, Validator } from "@rvf/core";
 import { useField } from "../field";
 import { ChangeEvent, FocusEvent, useRef } from "react";
+import { useFormScope } from "../useFormScope";
 
 describe("types", () => {
   it("should only allow valid paths", () => {
@@ -22,6 +23,7 @@ describe("types", () => {
             b: "quux",
           },
           jim: [{ name: "jimbob" }],
+          record: {} as Record<string, number>,
         },
         handleSubmit: async (data) => {
           expectTypeOf(data).toEqualTypeOf<{
@@ -37,6 +39,8 @@ describe("types", () => {
       form.field("baz.a");
       form.field("baz.b");
       form.scope("jim[0]").scope("name");
+
+      expectTypeOf(form.scope("record.bob")).toEqualTypeOf<FormScope<number>>;
 
       // @ts-expect-error
       form.field("baz.c");
@@ -54,9 +58,20 @@ describe("types", () => {
         | "jim"
         | `jim[${number}]`
         | `jim[${number}].name`
+        | "record"
+        | `record.${string}`
       >();
     };
     expect(true).toBe(true);
+  });
+
+  it("should infer form scope correctly", () => {
+    const Component = () => {
+      const scope = {} as any as FormScope<Record<string, number>>;
+      const form = useFormScope(scope);
+      expectTypeOf(form.scope("bob")).toEqualTypeOf<FormScope<number>>();
+      expectTypeOf(form.value("bob")).toEqualTypeOf<number>();
+    };
   });
 
   it("should infer input props", () => {
