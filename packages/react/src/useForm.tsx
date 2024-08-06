@@ -219,6 +219,7 @@ export function useForm<
           }
         });
       },
+      onInvalidSubmit,
       onSubmitFailure,
     });
   }, [
@@ -230,6 +231,7 @@ export function useForm<
     form.__store__.store,
     resetAfterSubmit,
     form.__store__.formRef,
+    onInvalidSubmit,
   ]);
 
   useEffect(() => {
