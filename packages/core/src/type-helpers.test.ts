@@ -1,4 +1,4 @@
-import { FormScope } from "../dist";
+import { FormScope } from "./form";
 import { FieldValue } from "./type-helpers";
 
 describe("FieldValue", () => {
