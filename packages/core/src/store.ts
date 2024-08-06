@@ -277,6 +277,7 @@ export type MutableImplStore = {
   onSubmit: StateSubmitHandler | DomSubmitHandler;
   onSubmitSuccess: (responseData: unknown) => void | Promise<void>;
   onSubmitFailure: (error: unknown) => void | Promise<void>;
+  onInvalidSubmit: () => void | Promise<void>;
 };
 
 const defaultValidationBehaviorConfig: ValidationBehaviorConfig = {
@@ -693,6 +694,7 @@ export const createFormStateStore = ({
 
         if (result.errors) {
           get().focusFirstInvalidField();
+          await mutableImplStore.onInvalidSubmit?.();
           return;
         }
 

@@ -44,6 +44,7 @@ type FormInit<FormInputData extends FieldValues, FormOutputData> = {
   onSubmit: StateSubmitHandler | DomSubmitHandler;
   onSubmitSuccess: (responseData: unknown) => void | Promise<void>;
   onSubmitFailure: (error: unknown) => void | Promise<void>;
+  onInvalidSubmit: () => void | Promise<void>;
   formProps: StoreFormProps;
   flags: StoreFlags;
 } & SubmitTypes<FormOutputData>;
@@ -80,6 +81,7 @@ export const createFormScope = <
   onSubmit,
   onSubmitSuccess,
   onSubmitFailure,
+  onInvalidSubmit,
   validationBehaviorConfig,
   submitSource,
   formProps,
@@ -95,6 +97,7 @@ export const createFormScope = <
     onSubmit,
     onSubmitSuccess,
     onSubmitFailure,
+    onInvalidSubmit,
   } satisfies MutableImplStore;
   const store = createFormStateStore({
     defaultValues,

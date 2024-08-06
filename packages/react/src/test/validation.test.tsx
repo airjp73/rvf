@@ -87,6 +87,7 @@ it("should validate on onBlur, then on change after that", async () => {
 
 it("should validate on onSubmit, if validationBehavior is onSubmit", async () => {
   const submit = vi.fn();
+  const onInvalidSubmit = vi.fn();
   const TestComp = () => {
     const form = useForm({
       validationBehaviorConfig: {
@@ -94,6 +95,7 @@ it("should validate on onSubmit, if validationBehavior is onSubmit", async () =>
         whenTouched: "onSubmit",
         whenSubmitted: "onChange",
       },
+      onInvalidSubmit,
       defaultValues: {
         foo: "",
         baz: { a: "" },
@@ -119,6 +121,10 @@ it("should validate on onSubmit, if validationBehavior is onSubmit", async () =>
         <input data-testid="baz.a" {...form.field("baz.a").getInputProps()} />
         <pre data-testid="baz.a-error">{form.error("baz.a")}</pre>
 
+        <pre data-testid="is-submitting">
+          {form.formState.isSubmitting ? "true" : "false"}
+        </pre>
+
         <RenderCounter data-testid="render-count" />
       </form>
     );
@@ -142,12 +148,17 @@ it("should validate on onSubmit, if validationBehavior is onSubmit", async () =>
     `"1"`,
   );
 
+  expect(screen.getByTestId("is-submitting")).toHaveTextContent("false");
+  expect(onInvalidSubmit).not.toHaveBeenCalled();
   fireEvent.submit(screen.getByTestId("form"));
 
   await waitFor(() =>
     expect(screen.getByTestId("foo-error")).toHaveTextContent("too short"),
   );
   expect(screen.getByTestId("baz.a-error")).toHaveTextContent("too long");
+
+  expect(screen.getByTestId("is-submitting")).toHaveTextContent("false");
+  expect(onInvalidSubmit).toHaveBeenCalled();
 
   await userEvent.type(screen.getByTestId("foo"), "b");
   await userEvent.type(screen.getByTestId("baz.a"), "{Backspace}");
@@ -175,7 +186,7 @@ it("should validate on onSubmit, if validationBehavior is onSubmit", async () =>
     expect(submit).toBeCalledTimes(1);
   });
   expect(screen.getByTestId("render-count").textContent).toMatchInlineSnapshot(
-    `"4"`,
+    `"7"`,
   );
 });
 

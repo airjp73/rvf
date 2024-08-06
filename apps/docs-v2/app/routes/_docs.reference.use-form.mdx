@@ -98,6 +98,12 @@ If you return a `Promise` from this callback, the `isSubmitting` state will stil
 
 If you're using an adapter like `@rvf/remix`, this will be called even if you aren't using `handleSubmit`.
 
+### `onInvalidSubmit`
+
+Called when the user attempts to submit the form with invalid data.
+This is called after the first invalid field is focused.
+Can be useful if you want to take deeper control over how you handle invalid forms.
+
 ### `resetAfterSubmit`
 
 A shortcut setting that resets the form to the default values after the form has been successfully submitted.

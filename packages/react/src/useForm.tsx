@@ -69,6 +69,13 @@ export type FormOpts<
   onSubmitFailure?: (error: unknown) => void | Promise<void>;
 
   /**
+   * Called when the user attempts to submit the form with invalid data.
+   * This is called after the first invalid field is focused.
+   * Can be useful if you want to take deeper control over how you handle invalid forms.
+   */
+  onInvalidSubmit?: () => void | Promise<void>;
+
+  /**
    * A shortcut setting that resets the form to the default values after the form has been successfully submitted.
    * This is equivalent to calling `resetForm` in the `onSubmitSuccess` callback.
    */
@@ -146,6 +153,7 @@ export function useForm<
     handleSubmit: onSubmit,
     onSubmitSuccess,
     onSubmitFailure,
+    onInvalidSubmit,
     submitSource,
     action,
     disableFocusOnError,
@@ -173,6 +181,7 @@ export function useForm<
           else form.__store__.store.getState().reset();
         }
       },
+      onInvalidSubmit: onInvalidSubmit ?? noOp,
       onSubmitFailure: onSubmitFailure ?? noOp,
       validationBehaviorConfig: validationBehaviorConfig,
       submitSource: submitSource ?? "dom",
