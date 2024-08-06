@@ -2,7 +2,7 @@ import { render, screen, waitFor } from "@testing-library/react";
 import { useForm } from "../useForm";
 import { successValidator } from "./util/successValidator";
 import userEvent from "@testing-library/user-event";
-import { Validator } from "@rvf/core";
+import { createValidator, Validator } from "@rvf/core";
 import { act } from "react";
 
 const withResolvers = () => {
@@ -67,6 +67,55 @@ it("should call onSubmitSuccess", async () => {
   await waitFor(() => {
     expect(screen.getByTestId("loading")).toHaveTextContent("success");
   });
+});
+
+it("should still call onInvalidSubmit when submitting manually", async () => {
+  const invalidSubmit = vi.fn();
+
+  const TestComp = () => {
+    const form = useForm({
+      submitSource: "state",
+      defaultValues: { foo: 123 },
+      validator: createValidator({
+        validate: () => {
+          return Promise.resolve({ data: undefined, error: { foo: "bar" } });
+        },
+      }),
+
+      handleSubmit: async (_) => {
+        return {
+          bar: "baz",
+        };
+      },
+      onInvalidSubmit: invalidSubmit,
+    });
+
+    return (
+      <div>
+        <pre data-testid="loading">{form.formState.submitStatus}</pre>
+        <input
+          data-testid="foo"
+          name="foo"
+          {...form.field("foo").getInputProps()}
+        />
+        <button
+          type="button"
+          data-testid="submit"
+          onClick={() => form.submit()}
+        />
+      </div>
+    );
+  };
+
+  render(<TestComp />);
+
+  expect(screen.getByTestId("loading")).toHaveTextContent("idle");
+
+  await userEvent.click(screen.getByTestId("submit"));
+  await waitFor(() => {
+    expect(invalidSubmit).toHaveBeenCalledTimes(1);
+  });
+  expect(screen.getByTestId("foo")).toHaveFocus();
 });
 
 it("should call onSubmitFailure", async () => {
