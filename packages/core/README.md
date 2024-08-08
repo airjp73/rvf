@@ -7,5 +7,5 @@ The core implementation of [RVF](https://github.com/airjp73/remix-validated-form
 This is primarily used internally by the other adapters.
 It isn't recommended for use by most people.
 
-The API of this package is not currently stable, but it will eventually be possible to use it
-to make your own RVF adapters.
+The API of this package is not currently stable and does not follow semver. The version reflects the current
+version of the other RVF pacakges. Eventually this API will be stablized for you to make your own RVF adapters.
