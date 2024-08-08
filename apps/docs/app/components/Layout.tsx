@@ -233,16 +233,22 @@ export const Layout = ({ children }: LayoutProps) => {
       <div className="flex flex-col flex-1">
         <Alert
           className="not-prose"
-          variant="info"
-          title="v6 is coming!"
-          details="Check out the RFC to get an early look or leave a comment."
+          variant="warning"
+          title="RVF v6 has been released!"
+          details="For new projects, we recommend starting with v6. For existing projects, there's a migration guide available."
           action={
-            <ButtonLink
-              href="https://github.com/airjp73/remix-validated-form/discussions/364"
-              variant="primary"
-              label="View RFC"
-              aria-label="Dismiss"
-            />
+            <div className="flex gap-2 items-center">
+              <ButtonLink
+                href="https://rvf-js.io/migration"
+                variant="tertiary"
+                label="Migration guide"
+              />
+              <ButtonLink
+                href="https://rvf-js.io"
+                variant="tertiary"
+                label="v6 Docs"
+              />
+            </div>
           }
         />
 

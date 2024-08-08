@@ -40,17 +40,17 @@ export const Alert: FC<AlertProps> = ({
   return (
     <div
       className={classNames(
-        "rounded-md p-4 border border-red-400",
+        "rounded-md p-4 border",
         variant === "error" && "border-red-400 bg-red-50",
         variant === "info" && "border-blue-400 bg-blue-50",
         variant === "warning" &&
           "border-yellow-400 bg-yellow-50",
         variant === "success" &&
           "border-green-400 bg-green-50",
-        className
+        className,
       )}
     >
-      <div className="flex items-center">
+      <div className={"flex flex-wrap items-center"}>
         <div className="flex-shrink-0">
           <Icon
             className={classNames(
@@ -58,7 +58,7 @@ export const Alert: FC<AlertProps> = ({
               variant === "error" && "text-red-500",
               variant === "info" && "text-blue-500",
               variant === "warning" && "text-yellow-500",
-              variant === "success" && "text-green-500"
+              variant === "success" && "text-green-500",
             )}
           />
         </div>
@@ -70,7 +70,7 @@ export const Alert: FC<AlertProps> = ({
                 variant === "error" && "text-red-800",
                 variant === "info" && "text-blue-800",
                 variant === "warning" && "text-yellow-800",
-                variant === "success" && "text-green-800"
+                variant === "success" && "text-green-800",
               )}
             >
               {title}
@@ -84,7 +84,7 @@ export const Alert: FC<AlertProps> = ({
                 variant === "error" && "text-red-700",
                 variant === "info" && "text-blue-700",
                 variant === "warning" && "text-yellow-700",
-                variant === "success" && "text-green-700"
+                variant === "success" && "text-green-700",
               )}
             >
               {details}
@@ -92,7 +92,9 @@ export const Alert: FC<AlertProps> = ({
           )}
         </div>
         {action && (
-          <div className="flex-shrink-0">{action}</div>
+          <div className="flex-shrink-0 basis-full mt-4 ml-8 sm:ml-0 sm:mt-0 sm:basis-auto">
+            {action}
+          </div>
         )}
       </div>
     </div>
