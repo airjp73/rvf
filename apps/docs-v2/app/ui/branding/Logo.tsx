@@ -31,9 +31,6 @@ export const Logo = (props: React.ComponentPropsWithoutRef<"svg">) => {
           </linearGradient>
         </defs>
       </svg>
-      <span className="text-violet-800 dark:text-violet-300 font-semibold">
-        (Beta)
-      </span>
     </div>
   );
 };
