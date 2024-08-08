@@ -1,3 +1,4 @@
+- compareDocumentPosition errors if the ref doesn't point to an element
 - manually validate a single field to use smart-validate functionality
 - Some sort of "lenient" api to support using form methods with plain `string`s
 
