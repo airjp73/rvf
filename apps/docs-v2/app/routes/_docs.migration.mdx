@@ -184,9 +184,9 @@ export const useUpdateControlledField = (rvf?: FormScope<any>) => {
 `setFormDefaults` is also deprecated, but there's no userland replacement. It will continue to work for now,
 and will be removed in a future major version.
 
-### Removed `useFormContext`
+### Reworked `useFormContext`
 
-`useFormContext` has been removed in favor of `useFormScope` and `useFormScopeOrContext`.
+`useFormContext` now returns a [`FormApi`](/reference/form-api).
 
 ### Other breaking changes
 
