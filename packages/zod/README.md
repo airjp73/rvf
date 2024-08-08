@@ -2,6 +2,6 @@
 
 The Zod adapter for [RVF](https://github.com/airjp73/remix-validated-form).
 
-## BETA RELEASE
+## Docs
 
-This is an beta version. The API should be relatively stable, but there may be some small breaking changes before the final release.
+The best place to learn about RVF is the [documentation](https://rvf-js.io).
