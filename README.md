@@ -4,8 +4,6 @@
 
 Easy form validation and state management for React.
 
-Easy form validation and state management for React.
-
 ### Progressively enhanced
 
 RVF leans into native form APIs, so it's easy to add to your existing forms.
