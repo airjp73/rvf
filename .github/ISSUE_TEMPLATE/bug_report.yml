@@ -40,9 +40,11 @@ body:
     attributes:
       label: Please provide a link to a minimal reproduction of the issue.
       description: |
-        You can click the reproduction starter link above and edit the sandbox.
-        Note:
-        - Please read these tips for providing a minimal example: https://stackoverflow.com/help/mcve.
+        Note: If you don't provide a reproduction, we will likely ask for one and your issue may get closed.
+
+        - [Why reproductions are required?](https://antfu.me/posts/why-reproductions-are-required)
+        - [How to create a minimal reproducible example](https://stackoverflow.com/help/mcve)
+        - [wtf-is-a-minimal-reproduction](https://minimum-reproduction.wtf)
       placeholder: |
         e.g. https://codesanbox.io/edit/...... OR Github Repo
     validations:
