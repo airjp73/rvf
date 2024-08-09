@@ -14,9 +14,6 @@ body:
         The issue tracker is meant for feature requests and bug reports only.
         If you need help or have a question, feel free to ask in [Discussions](https://github.com/airjp73/remix-validated-form/discussions).
 
-        ### Reproduction starter:
-        https://codesandbox.io/s/github/airjp73/remix-validated-form/tree/main/apps/bug-repro
-
   - type: checkboxes
     id: packages
     attributes:
