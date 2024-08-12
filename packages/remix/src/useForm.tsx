@@ -136,7 +136,7 @@ export function useForm<FormInputData extends FieldValues, FormOutputData>(
       // Can't really validate because remix doesn't provide a validator for it
       // and I don't want to hardcode the types.
       method:
-        (submitterOpts?.formMethod as typeof rvfOpts.method) ?? rvfOpts.method,
+        (submitterOpts?.formMethod as typeof rvfOpts.method) ?? rvfOpts.method ?? 'post',
       encType: (submitterOpts?.formEnctype as FormEncType) ?? rvfOpts.encType,
     });
   };
@@ -145,7 +145,7 @@ export function useForm<FormInputData extends FieldValues, FormOutputData>(
     ...rvfOpts,
     ...serverStuff,
     otherFormProps: {
-      method: rvfOpts.method,
+      method: rvfOpts.method ?? 'post',
       encType: rvfOpts.encType,
       ...rvfOpts.otherFormProps,
     },
