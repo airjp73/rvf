@@ -17,6 +17,7 @@ import {
   FORM_ID_FIELD_NAME,
   StateSubmitHandler,
   DomSubmitHandler,
+  preprocessFormData,
 } from "@rvf/core";
 import { useServerValidationErrors } from "./auto-server-hooks";
 
@@ -107,6 +108,9 @@ export function useForm<FormInputData extends FieldValues, FormOutputData>(
         if (!formData)
           throw new Error("Missing form data. This is likely a bug in RVF");
         if (rvfOpts.id) formData.set(FORM_ID_FIELD_NAME, rvfOpts.id);
+        if (rvfOpts.encType === "application/json") {
+          return preprocessFormData(formData);
+        }
         return formData;
       }
 

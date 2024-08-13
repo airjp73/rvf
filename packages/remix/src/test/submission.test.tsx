@@ -419,6 +419,55 @@ it("should be able to submit state directly as form data", async () => {
   expect(a).toHaveBeenCalledWith({ foo: "bar", bar: { baz: ["123123"] } });
 });
 
+it("should be able to submit dom data as json", async () => {
+  const validator = createValidator({
+    validate: (data) => Promise.resolve({ data, error: undefined }),
+  });
+  const a = vi.fn();
+
+  const action = async ({ request }: ActionFunctionArgs) => {
+    const data = await validator.validate(await request.json());
+    if (data.error) return validationError(data.error);
+    a(data.data);
+    return { message: `You said: ${data.data.foo}` };
+  };
+
+  const Stub = createRemixStub([
+    {
+      path: "/",
+      Component: () => {
+        const result = useActionData<typeof action>();
+        const form = useForm({
+          defaultValues: { foo: "" },
+          validator,
+          method: "post",
+          encType: "application/json",
+          submitSource: "dom",
+        });
+        return (
+          <form {...form.getFormProps()}>
+            {result && !isValidationErrorResponse(result) && (
+              <p>{result.message}</p>
+            )}
+            <input data-testid="foo" {...form.field("foo").getInputProps()} />
+            <button type="submit" data-testid="submit" />
+          </form>
+        );
+      },
+      action,
+    },
+  ]);
+
+  render(<Stub />);
+
+  await userEvent.type(screen.getByTestId("foo"), "bar");
+  await userEvent.click(screen.getByTestId("submit"));
+
+  expect(a).toHaveBeenCalledTimes(1);
+  expect(await screen.findByText("You said: bar")).toBeInTheDocument();
+  expect(a).toHaveBeenCalledWith({ foo: "bar" });
+});
+
 it("should respect the formMethod of the submitter", async () => {
   const validator = createValidator({
     validate: (data) => Promise.resolve({ data, error: undefined }),
