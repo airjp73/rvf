@@ -20,6 +20,7 @@ const testStore = (init?: Partial<FormStoreInit>) =>
     mutableImplStore: {
       onSubmitFailure: vi.fn(),
       onSubmitSuccess: vi.fn(),
+      onBeforeSubmit: vi.fn(),
       onInvalidSubmit: vi.fn(),
       validator: createValidator({
         validate: () => Promise.resolve({ data: null, error: undefined }),
@@ -44,6 +45,7 @@ describe("validation", () => {
       mutableImplStore: {
         onSubmitFailure: vi.fn(),
         onSubmitSuccess: vi.fn(),
+        onBeforeSubmit: vi.fn(),
         onInvalidSubmit: vi.fn(),
         validator: createValidator({
           validate: (data) => {
@@ -101,6 +103,7 @@ describe("validation", () => {
       mutableImplStore: {
         onSubmitSuccess: vi.fn(),
         onSubmitFailure: vi.fn(),
+        onBeforeSubmit: vi.fn(),
         onInvalidSubmit: vi.fn(),
         validator: createValidator({
           validate: (data) => {
