@@ -982,3 +982,103 @@ it("should set the rvfFormId prop on submit", async () => {
 
   expect(await screen.findByText("form-id-value")).toBeInTheDocument();
 });
+
+it("should behave correctly when onBeforeSubmit is provided", async () => {
+  const onBeforeSubmit = vi.fn();
+  const validator = createValidator({
+    validate: (data) => Promise.resolve({ data, error: undefined }),
+  });
+
+  const action = async ({ request }: ActionFunctionArgs) => {
+    const data = await validator.validate(await request.formData());
+    if (data.error) return validationError(data.error);
+    return { message: `You said: ${data.data.foo}` };
+  };
+
+  const Stub = createRemixStub([
+    {
+      path: "/",
+      Component: () => {
+        const data = useActionData<typeof action>();
+        const form = useForm({
+          defaultValues: { foo: "" },
+          validator,
+          method: "post",
+          onBeforeSubmit,
+        });
+        return (
+          <form {...form.getFormProps()}>
+            <input data-testid="foo" {...form.field("foo").getInputProps()} />
+            <pre data-testid="message">
+              {data && "message" in data && data?.message}
+            </pre>
+            <button type="submit" data-testid="submit" />
+          </form>
+        );
+      },
+      action,
+    },
+  ]);
+
+  render(<Stub />);
+
+  await userEvent.type(screen.getByTestId("foo"), "bar");
+  await userEvent.click(screen.getByTestId("submit"));
+
+  await waitFor(() => {
+    expect(screen.getByTestId("message")).toHaveTextContent("You said: bar");
+  });
+  expect(onBeforeSubmit).toHaveBeenCalledTimes(1);
+});
+
+it("should cancel submit correctly when onBeforeSubmit cancels the submit", async () => {
+  const success = vi.fn();
+  const onBeforeSubmit = vi.fn();
+  const validator = createValidator({
+    validate: (data) => Promise.resolve({ data, error: undefined }),
+  });
+
+  const action = async ({ request }: ActionFunctionArgs) => {
+    const data = await validator.validate(await request.formData());
+    if (data.error) return validationError(data.error);
+    return { message: `You said: ${data.data.foo}` };
+  };
+
+  const Stub = createRemixStub([
+    {
+      path: "/",
+      Component: () => {
+        const data = useActionData<typeof action>();
+        const form = useForm({
+          defaultValues: { foo: "" },
+          validator,
+          method: "post",
+          onBeforeSubmit: (api) => {
+            onBeforeSubmit();
+            api.cancelSubmit();
+          },
+        });
+        return (
+          <form {...form.getFormProps()}>
+            <input data-testid="foo" {...form.field("foo").getInputProps()} />
+            <pre data-testid="message">
+              {data && "message" in data && data?.message}
+            </pre>
+            <button type="submit" data-testid="submit" />
+          </form>
+        );
+      },
+      action,
+    },
+  ]);
+
+  render(<Stub />);
+
+  await userEvent.type(screen.getByTestId("foo"), "bar");
+  await userEvent.click(screen.getByTestId("submit"));
+
+  await waitFor(() => {
+    expect(onBeforeSubmit).toHaveBeenCalledTimes(1);
+  });
+  expect(screen.getByTestId("message")).toBeEmptyDOMElement();
+});
