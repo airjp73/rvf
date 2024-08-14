@@ -752,13 +752,17 @@ export const createFormStateStore = ({
             submitterOptions,
           });
         } catch (err) {
-          if (err instanceof CancelSubmitError) {
+          try {
+            if (!(err instanceof CancelSubmitError)) {
+              console.error(err);
+              await mutableImplStore.onSubmitFailure?.(err);
+            }
+          } finally {
             set((state) => {
               state.submitStatus = "error";
             });
-            return;
           }
-          throw err;
+          return;
         }
 
         if (!result) result = await doValidation();

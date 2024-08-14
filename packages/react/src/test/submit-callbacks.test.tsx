@@ -164,3 +164,206 @@ it("should call onSubmitFailure", async () => {
     expect(screen.getByTestId("loading")).toHaveTextContent("error");
   });
 });
+
+describe("onBeforeSubmit", () => {
+  it("should only validate once when onBeforeSubmit performs validations", async () => {
+    const callback = vi.fn();
+    const submit = vi.fn();
+
+    const TestComp = () => {
+      const form = useForm({
+        defaultValues: { foo: 123 },
+        validator: successValidator as Validator<{ foo: 123 }>,
+        onBeforeSubmit: async (api) => {
+          callback(api.unvalidatedData, await api.getValidatedData());
+        },
+        handleSubmit: async (data) => submit(data),
+      });
+
+      return (
+        <form {...form.getFormProps()} data-testid="form">
+          <input data-testid="foo" {...form.getInputProps("foo")} />
+          <button type="submit" data-testid="submit" />
+        </form>
+      );
+    };
+
+    render(<TestComp />);
+    await userEvent.click(screen.getByTestId("submit"));
+
+    expect(callback).toBeCalledWith({ foo: "123" }, { foo: "123" });
+    expect(successValidator.validate).toHaveBeenCalledTimes(1);
+    expect(submit).toHaveBeenCalledTimes(1);
+  });
+
+  it("should cancel submit", async () => {
+    const callback = vi.fn();
+    const submit = vi.fn();
+
+    const TestComp = () => {
+      const form = useForm({
+        defaultValues: { foo: 123 },
+        validator: successValidator as Validator<{ foo: 123 }>,
+        onBeforeSubmit: async (api) => {
+          callback();
+          api.cancelSubmit();
+          callback();
+        },
+        handleSubmit: async (data) => submit(data),
+      });
+
+      return (
+        <form {...form.getFormProps()} data-testid="form">
+          <input data-testid="foo" {...form.getInputProps("foo")} />
+          <button type="submit" data-testid="submit" />
+        </form>
+      );
+    };
+
+    render(<TestComp />);
+    await userEvent.click(screen.getByTestId("submit"));
+
+    expect(callback).toBeCalledTimes(1);
+    expect(successValidator.validate).not.toBeCalled();
+    expect(submit).not.toBeCalled();
+  });
+
+  it("should provide submitter options", async () => {
+    const callback = vi.fn();
+    const submit = vi.fn();
+
+    const TestComp = () => {
+      const form = useForm({
+        defaultValues: { foo: 123 },
+        validator: successValidator as Validator<{ foo: 123 }>,
+        onBeforeSubmit: (api) => {
+          callback(api.submitterOptions.formMethod);
+        },
+        handleSubmit: async (data) => submit(data),
+      });
+
+      return (
+        <form {...form.getFormProps()} data-testid="form">
+          <input data-testid="foo" {...form.getInputProps("foo")} />
+          <button
+            type="button"
+            data-testid="submit"
+            onClick={() => {
+              // JSDOM doesn't handle submitters, so we'll do this manually
+              form.submit({
+                formMethod: "post",
+              });
+            }}
+          />
+        </form>
+      );
+    };
+
+    render(<TestComp />);
+    await userEvent.click(screen.getByTestId("submit"));
+
+    expect(callback).toBeCalledWith("post");
+    expect(successValidator.validate).toBeCalled();
+    expect(submit).toBeCalled();
+  });
+
+  it("should cancel submit if form is invalid", async () => {
+    const callback = vi.fn();
+    const submit = vi.fn();
+
+    const TestComp = () => {
+      const form = useForm({
+        defaultValues: { foo: 123 },
+        validator: createValidator({
+          validate: () => {
+            return Promise.resolve({
+              error: { foo: "invalid" },
+              data: undefined,
+            });
+          },
+        }),
+        onBeforeSubmit: async (api) => {
+          callback();
+          await api.getValidatedData();
+          callback();
+        },
+        handleSubmit: async (data) => submit(data),
+      });
+
+      return (
+        <form {...form.getFormProps()} data-testid="form">
+          <input data-testid="foo" {...form.getInputProps("foo")} />
+          <button type="submit" data-testid="submit" />
+        </form>
+      );
+    };
+
+    render(<TestComp />);
+    await userEvent.click(screen.getByTestId("submit"));
+
+    expect(callback).toBeCalledTimes(1);
+    expect(submit).not.toBeCalled();
+  });
+
+  it("should return form data in dom mode", async () => {
+    const callback = vi.fn();
+    const submit = vi.fn();
+
+    const TestComp = () => {
+      const form = useForm({
+        defaultValues: { foo: 123 },
+        validator: successValidator as Validator<{ foo: 123 }>,
+        onBeforeSubmit: async (api) => {
+          callback(api.getFormData());
+        },
+        handleSubmit: async (data) => submit(data),
+      });
+
+      return (
+        <form {...form.getFormProps()} data-testid="form">
+          <input data-testid="foo" {...form.getInputProps("foo")} />
+          <button type="submit" data-testid="submit" />
+        </form>
+      );
+    };
+
+    render(<TestComp />);
+    await userEvent.click(screen.getByTestId("submit"));
+
+    expect(callback).toBeCalledWith(expect.any(FormData));
+    expect(submit).toBeCalled();
+  });
+
+  it("should not return form data in state mode", async () => {
+    const callback = vi.fn();
+    const submit = vi.fn();
+    const error = vi.fn();
+
+    const TestComp = () => {
+      const form = useForm({
+        submitSource: "state",
+        defaultValues: { foo: 123 },
+        validator: successValidator as Validator<{ foo: 123 }>,
+        onBeforeSubmit: async (api) => {
+          callback(api.getFormData());
+        },
+        onSubmitFailure: error,
+        handleSubmit: async (data) => submit(data),
+      });
+
+      return (
+        <form {...form.getFormProps()} data-testid="form">
+          <input data-testid="foo" {...form.getInputProps("foo")} />
+          <button type="submit" data-testid="submit" />
+        </form>
+      );
+    };
+
+    render(<TestComp />);
+    await userEvent.click(screen.getByTestId("submit"));
+
+    expect(callback).not.toBeCalled();
+    expect(submit).not.toBeCalled();
+    expect(error).toBeCalled();
+  });
+});
