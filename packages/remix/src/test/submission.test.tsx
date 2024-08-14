@@ -429,7 +429,7 @@ it("should be able to submit dom data as json", async () => {
     const data = await validator.validate(await request.json());
     if (data.error) return validationError(data.error);
     a(data.data);
-    return { message: `You said: ${data.data.foo}` };
+    return { message: `You said: ${data.data.foo.bar}` };
   };
 
   const Stub = createRemixStub([
@@ -438,7 +438,7 @@ it("should be able to submit dom data as json", async () => {
       Component: () => {
         const result = useActionData<typeof action>();
         const form = useForm({
-          defaultValues: { foo: "" },
+          defaultValues: { foo: { bar: "" } },
           validator,
           method: "post",
           encType: "application/json",
@@ -449,7 +449,10 @@ it("should be able to submit dom data as json", async () => {
             {result && !isValidationErrorResponse(result) && (
               <p>{result.message}</p>
             )}
-            <input data-testid="foo" {...form.field("foo").getInputProps()} />
+            <input
+              data-testid="foo.bar"
+              {...form.field("foo.bar").getInputProps()}
+            />
             <button type="submit" data-testid="submit" />
           </form>
         );
@@ -460,12 +463,12 @@ it("should be able to submit dom data as json", async () => {
 
   render(<Stub />);
 
-  await userEvent.type(screen.getByTestId("foo"), "bar");
+  await userEvent.type(screen.getByTestId("foo.bar"), "bar");
   await userEvent.click(screen.getByTestId("submit"));
 
   expect(a).toHaveBeenCalledTimes(1);
   expect(await screen.findByText("You said: bar")).toBeInTheDocument();
-  expect(a).toHaveBeenCalledWith({ foo: "bar" });
+  expect(a).toHaveBeenCalledWith({ foo: { bar: "bar" } });
 });
 
 it("should respect the formMethod of the submitter", async () => {
@@ -545,6 +548,7 @@ it("should respect the specified action", async () => {
         });
         return (
           <form {...form.getFormProps()}>
+            <pre data-testid="status">{form.formState.submitStatus}</pre>
             <button type="submit" data-testid="submit-action" />
           </form>
         );
@@ -554,7 +558,7 @@ it("should respect the specified action", async () => {
       path: "/action",
       async action({ request }) {
         a();
-        await request.json();
+        await request.formData();
         return redirect("/");
       },
     },
@@ -564,6 +568,7 @@ it("should respect the specified action", async () => {
 
   await userEvent.click(screen.getByTestId("submit-action"));
   expect(a).toHaveBeenCalledTimes(1);
+  expect(screen.getByTestId("status")).toHaveTextContent("success");
 });
 
 it("should respect the specified action with the ValidatedForm component", async () => {
@@ -578,7 +583,12 @@ it("should respect the specified action with the ValidatedForm component", async
       Component: () => {
         return (
           <ValidatedForm validator={validator} method="post" action="/action">
-            <button type="submit" data-testid="submit-action" />
+            {(form) => (
+              <>
+                <pre data-testid="status">{form.formState.submitStatus}</pre>
+                <button type="submit" data-testid="submit-action" />
+              </>
+            )}
           </ValidatedForm>
         );
       },
@@ -587,7 +597,7 @@ it("should respect the specified action with the ValidatedForm component", async
       path: "/action",
       async action({ request }) {
         a();
-        await request.json();
+        await request.formData();
         return redirect("/");
       },
     },
@@ -597,6 +607,7 @@ it("should respect the specified action with the ValidatedForm component", async
 
   await userEvent.click(screen.getByTestId("submit-action"));
   expect(a).toHaveBeenCalledTimes(1);
+  expect(screen.getByTestId("status")).toHaveTextContent("success");
 });
 
 it("should correctly strip down fully qualified urls", async () => {
@@ -615,6 +626,7 @@ it("should correctly strip down fully qualified urls", async () => {
         });
         return (
           <form {...form.getFormProps()}>
+            <pre data-testid="status">{form.formState.submitStatus}</pre>
             <button
               type="button"
               data-testid="submit-action"
@@ -633,7 +645,7 @@ it("should correctly strip down fully qualified urls", async () => {
       path: "/action",
       async action({ request }) {
         a();
-        await request.json();
+        await request.formData();
         return redirect("/");
       },
     },
@@ -643,6 +655,7 @@ it("should correctly strip down fully qualified urls", async () => {
 
   await userEvent.click(screen.getByTestId("submit-action"));
   expect(a).toHaveBeenCalledTimes(1);
+  expect(screen.getByTestId("status")).toHaveTextContent("success");
 });
 
 it("should function correctly with nested urls", async () => {
@@ -662,6 +675,7 @@ it("should function correctly with nested urls", async () => {
         });
         return (
           <form {...form.getFormProps()}>
+            <pre data-testid="status">{form.formState.submitStatus}</pre>
             <button type="submit" data-testid="submit-action" />
           </form>
         );
@@ -671,8 +685,8 @@ it("should function correctly with nested urls", async () => {
       path: "/test/action/route",
       async action({ request }) {
         a();
-        await request.json();
-        return redirect("/");
+        await request.formData();
+        return redirect("/test/action");
       },
     },
   ]);
@@ -681,6 +695,7 @@ it("should function correctly with nested urls", async () => {
 
   await userEvent.click(screen.getByTestId("submit-action"));
   expect(a).toHaveBeenCalledTimes(1);
+  expect(screen.getByTestId("status")).toHaveTextContent("success");
 });
 
 it("should correctly handle submitting with a fetcher", async () => {
