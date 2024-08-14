@@ -82,6 +82,36 @@ Depending on the `submitSource` you chose, this function will be called with dif
 - `data` is the fully validated form data.
 - `options` is an object that contains a few props pulled off of the submitter of the form (usually the sumbit button).
 
+### `onBeforeSubmit`
+
+Called before when the form is submitted before any validations are run.
+Can be used to run custom, async validations and/or cancel the form submission.
+Is called with an object containing these properties:
+
+#### `unvalidatedData`
+
+The data inside the form before validations are run.
+
+#### `getValidatedData`
+
+Runs the validations and returns the validated data.
+If the form is not valid, it will throw an error.
+
+#### `getFormData`
+
+Get's the raw `FormData` object.
+This is only available when `submitSource` is set to `dom`.
+
+#### `cancelSubmit`
+
+Cancels the form submission and sets the submit status to `error`.
+
+#### `submitterOptions`
+
+The options passed to the form submission by the submitter.
+This usually comes from props passed to your submit button,
+but can also be passed to when calling `submit` manually.
+
 ### `onSubmitSuccess`
 
 Called after the form has been successfully submitted with whatever data was returned from the `handleSubmit` function.
