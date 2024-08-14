@@ -63,6 +63,20 @@ export type ManualSubmitOption = SubmitterOptions & {
   value?: string;
 };
 
+export type FormState = {
+  isSubmitting: boolean;
+  hasBeenSubmitted: boolean;
+  submitStatus: SubmitStatus;
+
+  isValid: boolean;
+  isDirty: boolean;
+  isTouched: boolean;
+
+  touchedFields: Record<string, boolean>;
+  dirtyFields: Record<string, boolean>;
+  fieldErrors: Record<string, string>;
+};
+
 export interface FormApi<FormInputData> {
   /**
    * Gets whether the field has been touched.
@@ -157,6 +171,8 @@ export interface FormApi<FormInputData> {
     defaultValue<Field extends ValidStringPaths<FormInputData>>(
       fieldName: Field,
     ): ValueAtPath<FormInputData, StringToPathTuple<Field>>;
+
+    formState: FormState;
   };
 
   formOptions: {
@@ -164,19 +180,7 @@ export interface FormApi<FormInputData> {
     formId: string;
   };
 
-  formState: {
-    isSubmitting: boolean;
-    hasBeenSubmitted: boolean;
-    submitStatus: SubmitStatus;
-
-    isValid: boolean;
-    isDirty: boolean;
-    isTouched: boolean;
-
-    touchedFields: Record<string, boolean>;
-    dirtyFields: Record<string, boolean>;
-    fieldErrors: Record<string, string>;
-  };
+  formState: FormState;
 
   /**
    * Various subscription helpers. These should be used in an effect and do not cause rerenders.
@@ -481,6 +485,39 @@ export const makeBaseFormApi = <FormInputData,>({
     }),
   );
 
+  const makeFormState = (state: () => typeof trackedState): FormState => ({
+    get isSubmitting() {
+      return state().submitStatus === "submitting";
+    },
+    get hasBeenSubmitted() {
+      return state().submitStatus !== "idle";
+    },
+    get isDirty() {
+      return Object.values(state().dirtyFields).some(Boolean);
+    },
+    get isTouched() {
+      return Object.values(state().touchedFields).some(Boolean);
+    },
+    get isValid() {
+      return Object.values(state().validationErrors).every((error) => !error);
+    },
+    get submitStatus() {
+      return state().submitStatus;
+    },
+
+    get touchedFields() {
+      return getAllTouched(state());
+    },
+
+    get dirtyFields() {
+      return getAllDirty(state());
+    },
+
+    get fieldErrors() {
+      return getAllErrors(state());
+    },
+  });
+
   return {
     value: (fieldName?: string) =>
       getFieldValue(trackedState, f(fieldName)) as any,
@@ -498,6 +535,7 @@ export const makeBaseFormApi = <FormInputData,>({
       touched: (fieldName) => getFieldTouched(transientState(), f(fieldName)),
       dirty: (fieldName) => getFieldDirty(transientState(), f(fieldName)),
       error: (fieldName) => getFieldError(transientState(), f(fieldName)),
+      formState: makeFormState(transientState),
     },
 
     formOptions: {
@@ -509,40 +547,7 @@ export const makeBaseFormApi = <FormInputData,>({
       },
     },
 
-    formState: {
-      get isSubmitting() {
-        return trackedState.submitStatus === "submitting";
-      },
-      get hasBeenSubmitted() {
-        return trackedState.submitStatus !== "idle";
-      },
-      get isDirty() {
-        return Object.values(trackedState.dirtyFields).some(Boolean);
-      },
-      get isTouched() {
-        return Object.values(trackedState.touchedFields).some(Boolean);
-      },
-      get isValid() {
-        return Object.values(trackedState.validationErrors).every(
-          (error) => !error,
-        );
-      },
-      get submitStatus() {
-        return trackedState.submitStatus;
-      },
-
-      get touchedFields() {
-        return getAllTouched(trackedState);
-      },
-
-      get dirtyFields() {
-        return getAllDirty(trackedState);
-      },
-
-      get fieldErrors() {
-        return getAllErrors(trackedState);
-      },
-    },
+    formState: makeFormState(() => trackedState),
 
     subscribe: {
       value: (...args: unknown[]) => {
