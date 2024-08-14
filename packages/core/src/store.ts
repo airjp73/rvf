@@ -58,6 +58,36 @@ export const createRefStore = <Data>() => {
   };
 };
 
+export type BeforeSubmitApi<
+  FormInputData = unknown,
+  FormOutputData = unknown,
+> = {
+  /**
+   * The data inside the form before validations are run.
+   */
+  unvalidatedData: FormInputData;
+  /**
+   * Runs the validations and returns the validated data.
+   * If the form is not valid, it will throw an error.
+   */
+  getValidatedData: () => Promise<FormOutputData>;
+  /**
+   * Get's the raw `FormData` object.
+   * This is only available when `submitSource` is set to `dom`.
+   */
+  getFormData: () => FormData;
+  /**
+   * Cancels the form submission and sets the submit status to `error`.
+   */
+  cancelSubmit: () => never;
+  /**
+   * The options passed to the form submission by the submitter.
+   * This usually comes from props passed to your submit button,
+   * but can also be passed to when calling `submit` manually.
+   */
+  submitterOptions: SubmitterOptions;
+};
+
 export type RefStore<Data = HTMLElement> = ReturnType<
   typeof createRefStore<Data>
 >;
@@ -114,6 +144,8 @@ export type StoreFlags = {
   disableFocusOnError: boolean;
   reloadDocument: boolean;
 };
+
+class CancelSubmitError extends Error {}
 
 type StoreState = {
   values: FieldValues;
@@ -277,6 +309,7 @@ export type MutableImplStore = {
   onSubmit: StateSubmitHandler | DomSubmitHandler;
   onSubmitSuccess: (responseData: unknown) => void | Promise<void>;
   onSubmitFailure: (error: unknown) => void | Promise<void>;
+  onBeforeSubmit: (beforeSubmitApi: BeforeSubmitApi) => void | Promise<void>;
   onInvalidSubmit: () => void | Promise<void>;
 };
 
@@ -690,7 +723,45 @@ export const createFormStateStore = ({
         const [rawValues, formData] = get().getFormValuesForValidation({
           injectedData: submitterData,
         });
-        const result = await get().validate(rawValues, true);
+
+        const doValidation = () => get().validate(rawValues, true);
+        let result: Awaited<ReturnType<typeof doValidation>> | undefined =
+          undefined;
+
+        try {
+          await mutableImplStore.onBeforeSubmit?.({
+            unvalidatedData: rawValues,
+            getValidatedData: async () => {
+              result = await doValidation();
+              if (result.errors) {
+                throw new CancelSubmitError();
+              }
+              return result.data;
+            },
+            getFormData: () => {
+              if (!formData) {
+                throw new Error(
+                  "FormData can only be accessed when `submitSource` is set to `dom`",
+                );
+              }
+              return formData;
+            },
+            cancelSubmit: () => {
+              throw new CancelSubmitError();
+            },
+            submitterOptions,
+          });
+        } catch (err) {
+          if (err instanceof CancelSubmitError) {
+            set((state) => {
+              state.submitStatus = "error";
+            });
+            return;
+          }
+          throw err;
+        }
+
+        if (!result) result = await doValidation();
 
         if (result.errors) {
           get().focusFirstInvalidField();

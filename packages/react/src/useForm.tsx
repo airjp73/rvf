@@ -8,6 +8,7 @@ import {
   registerFormElementEvents,
   StateSubmitHandler,
   DomSubmitHandler,
+  BeforeSubmitApi,
 } from "@rvf/core";
 import { FormApi, useFormInternal } from "./base";
 import { FieldErrors } from "@rvf/core";
@@ -47,6 +48,14 @@ export type FormOpts<
    * and information on how to create a validator for other validation libraries.
    */
   validator: Validator<FormOutputData>;
+
+  /**
+   * Called before when the form is submitted before any validations are run.
+   * Can be used to run custom, async validations and/or cancel the form submission.
+   */
+  onBeforeSubmit?: (
+    beforeSubmitApi: BeforeSubmitApi<FormInputData, FormOutputData>,
+  ) => void | Promise<void>;
 
   /**
    * Called after the form has been successfully submitted with whatever data was returned from the `handleSubmit` function.
@@ -153,6 +162,7 @@ export function useForm<
     handleSubmit: onSubmit,
     onSubmitSuccess,
     onSubmitFailure,
+    onBeforeSubmit,
     onInvalidSubmit,
     submitSource,
     action,
@@ -172,6 +182,7 @@ export function useForm<
       defaultValues: options.defaultValues ?? {},
       serverValidationErrors: serverValidationErrors ?? {},
       validator,
+      onBeforeSubmit: onBeforeSubmit as never,
       onSubmit: onSubmit as never,
       onSubmitSuccess: (data) => {
         onSubmitSuccess?.(data as SubmitResponseData);
@@ -208,6 +219,7 @@ export function useForm<
   useEffect(() => {
     Object.assign(form.__store__.mutableImplStore, {
       validator: validator as any,
+      onBeforeSubmit,
       onSubmit,
       onSubmitSuccess: (data: unknown) => {
         const successResult = onSubmitSuccess?.(data as SubmitResponseData);
@@ -232,6 +244,7 @@ export function useForm<
     resetAfterSubmit,
     form.__store__.formRef,
     onInvalidSubmit,
+    onBeforeSubmit,
   ]);
 
   useEffect(() => {

@@ -49,6 +49,7 @@ export {
   type MinimalInputProps,
   type ScopedValues,
   type FieldValue,
+  type BeforeSubmitApi,
   useControlField,
   useUpdateControlledField,
   useIsValid,

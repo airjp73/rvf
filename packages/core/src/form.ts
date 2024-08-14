@@ -5,6 +5,7 @@ import {
   Validator,
 } from "./types";
 import {
+  BeforeSubmitApi,
   DomSubmitHandler,
   FieldSerializer,
   FormStoreValue,
@@ -44,6 +45,7 @@ type FormInit<FormInputData extends FieldValues, FormOutputData> = {
   onSubmit: StateSubmitHandler | DomSubmitHandler;
   onSubmitSuccess: (responseData: unknown) => void | Promise<void>;
   onSubmitFailure: (error: unknown) => void | Promise<void>;
+  onBeforeSubmit: (beforeSubmitApi: BeforeSubmitApi) => void | Promise<void>;
   onInvalidSubmit: () => void | Promise<void>;
   formProps: StoreFormProps;
   flags: StoreFlags;
@@ -81,6 +83,7 @@ export const createFormScope = <
   onSubmit,
   onSubmitSuccess,
   onSubmitFailure,
+  onBeforeSubmit,
   onInvalidSubmit,
   validationBehaviorConfig,
   submitSource,
@@ -97,6 +100,7 @@ export const createFormScope = <
     onSubmit,
     onSubmitSuccess,
     onSubmitFailure,
+    onBeforeSubmit,
     onInvalidSubmit,
   } satisfies MutableImplStore;
   const store = createFormStateStore({

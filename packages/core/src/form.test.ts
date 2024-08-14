@@ -18,6 +18,7 @@ it("should be able to nest scopes arbitrarily deep", () => {
     onSubmit: vi.fn(),
     onSubmitSuccess: vi.fn(),
     onSubmitFailure: vi.fn(),
+    onBeforeSubmit: vi.fn(),
     onInvalidSubmit: vi.fn(),
     flags: {
       disableFocusOnError: false,

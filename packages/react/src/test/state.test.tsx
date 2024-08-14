@@ -132,8 +132,14 @@ it("should return form dirty/touched/valid state", async () => {
 
   act(() => {
     result.current.submit();
+  });
+  await waitFor(() => {
+    expect(prom).not.toBeNull();
+  });
+  act(() => {
     prom?.resolve({ error: { foo: "bar" } });
   });
+
   await waitFor(() => {
     expect(result.current.state).toEqual({
       dirty: false,

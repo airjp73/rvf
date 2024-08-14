@@ -26,6 +26,7 @@ export {
   type ScopedValues,
   type FieldValue,
   getOriginalObject,
+  type BeforeSubmitApi,
 } from "@rvf/core";
 export { type FormApi, type FormFields } from "./base";
 export { useForm, FormOpts } from "./useForm";
