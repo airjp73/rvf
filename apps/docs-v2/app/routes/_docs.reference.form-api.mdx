@@ -9,7 +9,7 @@ export const meta = () => [
 The `FormApi` object is the main way to interact with RVF.
 It's returned by [`useForm`](/reference/use-form) and can be [scoped to a specific part of the form](/scoping).
 
-## `FormApi` methods
+## Prop getters
 
 ### `getFormProps`
 
@@ -53,6 +53,8 @@ behavior of automatically listening to changes in the field.
 Returns props that can be spread into a native form control to use as a hidden field.
 This is useful in combination with `getControlProps`.
 
+## Fields and arrays
+
 ### `field`
 
 Returns a [`FieldApi`](/reference/field-api) object for the specified field.
@@ -62,6 +64,17 @@ Can be called without a field name to get an field api currently in-scope form d
 
 Returns a [`FieldArrayApi`](/reference/field-array-api) object for the specified field.
 Can be called without a field name to get an array api currently in-scope form data.
+
+## State accessors
+
+These functions can all be used to access the current state of the form during the render phase.
+
+<Note>
+  Even though these are functions, they're still tied to the render phase.
+  Calling one of these functions in an event handler or a `useEffect` may not
+  return the latest state. For those use-cases, you should use the
+  [transient](#transient-state-accessors) api.
+</Note>
 
 ### `name`
 
@@ -81,16 +94,6 @@ Can also be called with no arguments to get the entire form data.
 If the `FormApi` is scoped to a specific part of the form,
 this will be limited to the scope.
 
-## `setValue`
-
-Sets the value of the field with the specified name.
-This works for both controlled and uncontrolled fields.
-For uncontrolled fields, this will manually set the value of the form control using the `ref` returned by `getInputProps`.
-
-Can also be called without a field name, to set the value of the entire form.
-If the `FormApi` is scoped to a specific part of the form,
-this will be limited to the scope.
-
 ### `error`
 
 Returns the error message for the specified field, if there is one.
@@ -102,11 +105,6 @@ Can also be called with no arguments to get the error for the field currently in
 RVF takes the opinion that errors that won't be visible to a user aren't made
 available through this API. So you don't need to do any additional logic to determine if
 an error should be displayed to the user beyond checking if there's an error.
-
-### `clearError`
-
-Clears the error message for the specified field.
-Can be called without a field name to clear the error message for the field in scope.
 
 ### `defaultValue`
 
@@ -125,11 +123,6 @@ it will return whether or not the currently scoped field has been touched.
 A field has been "touched" after the user has interacted with it and moved on
 to another field in the form.
 
-### `setTouched`
-
-Manually set the `touched` state of the specified field.
-Can be called without a field name to set the touched state of the field in scope.
-
 ### `dirty`
 
 Can be called with the name of a field to get whether or not that field has been changed.
@@ -143,48 +136,6 @@ If the user changes the value back to the default, the field will no longer be d
   Fields added dynamically in a field array, will always be dirty after the
   first change.
 </Note>
-
-### `setDirty`
-
-Manually set the `dirty` state of the specified field.
-Can be called without a field name to set the dirty state of the field in scope.
-
-### `focus`
-
-Focus the field with the specified name.
-This only works if the `ref` provided by `getInputProps` or `getControlProp` was passed to a focusable element.
-
-### `validate`
-
-Manually validates the form.
-You usually don't need to do this.
-
-### `resetForm`
-
-Resets the form to its initial state.
-All fields will be reset to their initial values.
-All touched, dirty, and validation errors will be reset.
-Optionally, you can provide new initial values to reset.
-
-This will work on the root-level form, even if the `FormApi` is scoped to a specific part of the form.
-
-### `resetField`
-
-Resets the field with the specified name to its initial value.
-This also resets any touched, dirty, or validation errors for the field.
-This works for both controlled and uncontrolled fields.
-For uncontrolled fields, this will manually set the value of the form control using the `ref` returned by `field`.
-
-### `scope`
-
-Scopes the `FormApi` to a specific part of the form.
-See the docs on [scoping](/scoping) for more details.
-
-### `renderFormIdInput`
-
-Renders a hidden input that sets passes the form id to your server.
-This is only useful if you're supporting users who don't have JS enabled
-and you're returning validation errors from your server.
 
 ### `formOptions`
 
@@ -227,6 +178,99 @@ Contains all the valid/dirty/touched data for every field in the form.
 - `touchedFields`
 - `dirtyFields`
 - `fieldErrors`
+
+## Transient state accessors
+
+### `transient`
+
+The `transient` object contains many of the same state accessors mentioned above,
+except that these will not trigger rerenders and will always return the latest state.
+This is useful for things like event handlers.
+
+the included state accessors are:
+
+- `value`
+- `defaultValue`
+- `touched`
+- `dirty`
+- `error`
+- `formState`
+
+Example:
+
+```tsx
+<button
+  type="button"
+  // Always logs the latest value of `myField` without causing rerenders
+  onClick={() => console.log(form.transient.value("myField"))}
+>
+  Log value
+</button>
+```
+
+## State setters
+
+### `setValue`
+
+Sets the value of the field with the specified name.
+This works for both controlled and uncontrolled fields.
+For uncontrolled fields, this will manually set the value of the form control using the `ref` returned by `getInputProps`.
+
+Can also be called without a field name, to set the value of the entire form.
+If the `FormApi` is scoped to a specific part of the form,
+this will be limited to the scope.
+
+### `clearError`
+
+Clears the error message for the specified field.
+Can be called without a field name to clear the error message for the field in scope.
+
+### `setTouched`
+
+Manually set the `touched` state of the specified field.
+Can be called without a field name to set the touched state of the field in scope.
+
+### `setDirty`
+
+Manually set the `dirty` state of the specified field.
+Can be called without a field name to set the dirty state of the field in scope.
+
+### `focus`
+
+Focus the field with the specified name.
+This only works if the `ref` provided by `getInputProps` or `getControlProp` was passed to a focusable element.
+
+### `validate`
+
+Manually validates the form.
+You usually don't need to do this.
+
+### `resetForm`
+
+Resets the form to its initial state.
+All fields will be reset to their initial values.
+All touched, dirty, and validation errors will be reset.
+Optionally, you can provide new initial values to reset.
+
+This will work on the root-level form, even if the `FormApi` is scoped to a specific part of the form.
+
+### `resetField`
+
+Resets the field with the specified name to its initial value.
+This also resets any touched, dirty, or validation errors for the field.
+This works for both controlled and uncontrolled fields.
+For uncontrolled fields, this will manually set the value of the form control using the `ref` returned by `field`.
+
+### `scope`
+
+Scopes the `FormApi` to a specific part of the form.
+See the docs on [scoping](/scoping) for more details.
+
+### `renderFormIdInput`
+
+Renders a hidden input that sets passes the form id to your server.
+This is only useful if you're supporting users who don't have JS enabled
+and you're returning validation errors from your server.
 
 ### `subscribe`
 
