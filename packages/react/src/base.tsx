@@ -112,6 +112,53 @@ export interface FormApi<FormInputData> {
     fieldName: Field,
   ): ValueAtPath<FormInputData, StringToPathTuple<Field>>;
 
+  /**
+   * State accessors that always return the latest value and don't cause rerenders.
+   * This is mostly useful for event handlers.
+   */
+  transient: {
+    /**
+     * Gets whether the field has been touched.
+     */
+    touched: (fieldName?: ValidStringPaths<FormInputData>) => boolean;
+
+    /**
+     * Gets whether the field has been dirty.
+     */
+    dirty: (fieldName?: ValidStringPaths<FormInputData>) => boolean;
+
+    /**
+     * Gets the current error for the field if any.
+     */
+    error: (fieldName?: ValidStringPaths<FormInputData>) => string | null;
+
+    /**
+     * Gets the current value of the entire form.
+     * If using a scoped form, this will be the value of the scoped form.
+     */
+    value(): FormInputData;
+
+    /**
+     * Gets the current value of the specified field.
+     */
+    value<Field extends ValidStringPaths<FormInputData>>(
+      fieldName: Field,
+    ): ValueAtPath<FormInputData, StringToPathTuple<Field>>;
+
+    /**
+     * Gets the default value of the entire form.
+     * If using a scoped form, this will be the value of the scoped form.
+     */
+    defaultValue(): FormInputData;
+
+    /**
+     * Gets the default value of the specified field.
+     */
+    defaultValue<Field extends ValidStringPaths<FormInputData>>(
+      fieldName: Field,
+    ): ValueAtPath<FormInputData, StringToPathTuple<Field>>;
+  };
+
   formOptions: {
     action?: string;
     formId: string;
@@ -442,6 +489,16 @@ export const makeBaseFormApi = <FormInputData,>({
     touched: (fieldName) => getFieldTouched(trackedState, f(fieldName)),
     dirty: (fieldName) => getFieldDirty(trackedState, f(fieldName)),
     error: (fieldName) => getFieldError(trackedState, f(fieldName)),
+
+    transient: {
+      value: (fieldName?: string) =>
+        getFieldValue(transientState(), f(fieldName)) as any,
+      defaultValue: (fieldName?: string) =>
+        getFieldDefaultValue(transientState(), f(fieldName)) as any,
+      touched: (fieldName) => getFieldTouched(transientState(), f(fieldName)),
+      dirty: (fieldName) => getFieldDirty(transientState(), f(fieldName)),
+      error: (fieldName) => getFieldError(transientState(), f(fieldName)),
+    },
 
     formOptions: {
       get action() {

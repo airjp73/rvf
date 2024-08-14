@@ -1,9 +1,16 @@
-import { act, renderHook, waitFor } from "@testing-library/react";
+import {
+  act,
+  render,
+  renderHook,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import { useForm } from "../useForm";
 import { successValidator } from "./util/successValidator";
 import { useEffect, useRef } from "react";
 import { createValidator } from "@rvf/core";
 import { useFormScope } from "../useFormScope";
+import userEvent from "@testing-library/user-event";
 
 const withResolvers = () => {
   let resolve;
@@ -426,4 +433,46 @@ it("should be possible to set the value for the entire form scope or a field", a
   expect(result.current.value).toEqual({
     foo: "quux",
   });
+});
+
+it("should be possible to access the latest value of a field in a callback", async () => {
+  const show = vi.fn();
+  const Component = () => {
+    const form = useForm({
+      defaultValues: {
+        foo: "bar",
+      },
+      validator: successValidator,
+    });
+
+    return (
+      <form {...form.getFormProps()} data-testid="form">
+        <input data-testid="foo" {...form.getInputProps("foo")} />
+        <button
+          type="button"
+          data-testid="show-value"
+          onClick={() => show(form.transient.value("foo"))}
+        />
+        <button
+          type="button"
+          data-testid="show-stale-value"
+          onClick={() => show(form.value("foo"))}
+        />
+      </form>
+    );
+  };
+
+  render(<Component />);
+
+  await userEvent.click(screen.getByTestId("show-value"));
+  expect(show).toHaveBeenLastCalledWith("bar");
+  await userEvent.click(screen.getByTestId("show-stale-value"));
+  expect(show).toHaveBeenLastCalledWith("bar");
+
+  await userEvent.type(screen.getByTestId("foo"), "test");
+
+  await userEvent.click(screen.getByTestId("show-value"));
+  expect(show).toHaveBeenLastCalledWith("bartest");
+  await userEvent.click(screen.getByTestId("show-stale-value"));
+  expect(show).toHaveBeenLastCalledWith("bart"); // not sure why it still updates once
 });
