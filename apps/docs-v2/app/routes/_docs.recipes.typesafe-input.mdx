@@ -61,11 +61,11 @@ const MyInputImpl = forwardRef<HTMLInputElement, MyInputProps<string>>(
           {...field.getInputProps({
             type,
             id: inputId,
+            ref,
             "aria-describedby": errorId,
             "aria-invalid": !!field.error(),
             ...rest,
           })}
-          ref={ref}
         />
         {field.error() && <p id={errorId}>{field.error()}</p>}
       </div>
