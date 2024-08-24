@@ -49,7 +49,7 @@ type InputType = <Type extends string>(
 ) => React.ReactNode;
 
 const MyInputImpl = forwardRef<HTMLInputElement, MyInputProps<string>>(
-  ({ label, scope, type, ...rest }) => {
+  ({ label, scope, type, ...rest }, ref) => {
     const field = useField(scope);
     const inputId = useId();
     const errorId = useId();
@@ -65,6 +65,7 @@ const MyInputImpl = forwardRef<HTMLInputElement, MyInputProps<string>>(
             "aria-invalid": !!field.error(),
             ...rest,
           })}
+          ref={ref}
         />
         {field.error() && <p id={errorId}>{field.error()}</p>}
       </div>
