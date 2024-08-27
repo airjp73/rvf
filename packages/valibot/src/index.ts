@@ -1,9 +1,9 @@
 import { type FieldErrors, type Validator, createValidator } from "@rvf/core";
 import {
-  BaseIssue,
+  type BaseIssue,
   type Config,
   type GenericSchema,
-  GenericSchemaAsync,
+  type GenericSchemaAsync,
   type InferIssue,
   type InferOutput,
   safeParseAsync,
