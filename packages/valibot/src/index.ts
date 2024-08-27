@@ -1,36 +1,50 @@
 import { type FieldErrors, type Validator, createValidator } from "@rvf/core";
 import {
+  BaseIssue,
   type Config,
   type GenericSchema,
+  GenericSchemaAsync,
   type InferIssue,
   type InferOutput,
-  flatten,
   safeParseAsync,
 } from "valibot";
 
-function parseIssues<Schema extends GenericSchema>(
-  issues: [InferIssue<Schema>, ...InferIssue<Schema>[]],
-): FieldErrors {
-  const transformedObj: FieldErrors = {};
-  const flattenErrors = flatten<Schema>(issues);
+type MaybeAsyncSchema = GenericSchema | GenericSchemaAsync
 
-  if (!flattenErrors.nested) return transformedObj;
+function formatIssuePath(issue: BaseIssue<unknown>): string | null {
+  if (!issue.path || issue.path.length === 0) return null;
 
-  const regex = /\.(\d+)/g;
-
-  for (const [key, value] of Object.entries(flattenErrors.nested)) {
-    const transformedKey = key.replace(regex, "[$1]");
-    const transformedValue = Array.isArray(value) ? value[0] : "";
-
-    if (!transformedValue) continue;
-
-    transformedObj[transformedKey] = transformedValue;
+  let result = '';
+  
+  for (const item of issue.path) {
+    if (typeof item.key === 'string') {
+      result += result === '' ? item.key : `.${item.key}`;
+    } else if (typeof item.key === 'number') {
+      result += `[${item.key}]`;
+    } else {
+      return null;
+    }
   }
 
-  return transformedObj;
+  return result;
 }
 
-export function withValibot<Schema extends GenericSchema>(
+function parseIssues<Schema extends GenericSchema>(
+  issues: [InferIssue<Schema>, ...InferIssue<Schema>[]]
+): FieldErrors {
+  const parsedIssues: FieldErrors = {};
+
+  for (const issue of issues) {
+    const path = formatIssuePath(issue);
+    if (path) {
+      parsedIssues[path] = issue.message;
+    }
+  }
+
+  return parsedIssues;
+}
+
+export function withValibot<Schema extends MaybeAsyncSchema>(
   schema: Schema,
   config?: Config<InferIssue<Schema>>,
 ): Validator<InferOutput<Schema>> {
