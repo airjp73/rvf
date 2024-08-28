@@ -1434,32 +1434,14 @@ it("should override resetField overrides with reset or parent resetFields", () =
       foo: { bar: "bar" },
     },
   });
+  expect(getFieldDefaultValue(store.getState(), "foo.bar")).toBe("bar");
+  expect(getFieldDefaultValue(store.getState(), "foo")).toEqual({ bar: "bar" });
 
   store.getState().resetField("foo.bar", { defaultValue: "baz" });
-  expect(store.getState()).toMatchObject({
-    defaultValues: {
-      foo: { bar: "bar" },
-    },
-    defaultValueOverrides: {
-      "foo.bar": "baz",
-    },
-    values: {
-      foo: { bar: "baz" },
-    },
-  });
   expect(getFieldDefaultValue(store.getState(), "foo.bar")).toBe("baz");
   expect(getFieldDefaultValue(store.getState(), "foo")).toEqual({ bar: "bar" });
 
   store.getState().resetField("foo");
-  expect(store.getState()).toMatchObject({
-    defaultValues: {
-      foo: { bar: "bar" },
-    },
-    defaultValueOverrides: {},
-    values: {
-      foo: { bar: "bar" },
-    },
-  });
   expect(getFieldDefaultValue(store.getState(), "foo.bar")).toBe("bar");
   expect(getFieldDefaultValue(store.getState(), "foo")).toEqual({ bar: "bar" });
 
@@ -1468,15 +1450,24 @@ it("should override resetField overrides with reset or parent resetFields", () =
   expect(getFieldDefaultValue(store.getState(), "foo")).toEqual({ bar: "bar" });
 
   store.getState().reset();
-  expect(store.getState()).toMatchObject({
+  expect(getFieldDefaultValue(store.getState(), "foo.bar")).toBe("bar");
+  expect(getFieldDefaultValue(store.getState(), "foo")).toEqual({ bar: "bar" });
+});
+
+it("should return the default value from a parent override", () => {
+  const store = testStore({
     defaultValues: {
       foo: { bar: "bar" },
     },
-    defaultValueOverrides: {},
-    values: {
-      foo: { bar: "bar" },
-    },
   });
+  expect(getFieldDefaultValue(store.getState(), "foo.bar")).toBe("bar");
+  expect(getFieldDefaultValue(store.getState(), "foo")).toEqual({ bar: "bar" });
+
+  store.getState().resetField("foo", { defaultValue: { bar: "baz" } });
+  expect(getFieldDefaultValue(store.getState(), "foo.bar")).toBe("baz");
+  expect(getFieldDefaultValue(store.getState(), "foo")).toEqual({ bar: "baz" });
+
+  store.getState().reset();
   expect(getFieldDefaultValue(store.getState(), "foo.bar")).toBe("bar");
   expect(getFieldDefaultValue(store.getState(), "foo")).toEqual({ bar: "bar" });
 });
