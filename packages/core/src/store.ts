@@ -945,7 +945,6 @@ export const createFormStateStore = ({
 
       resetField: (fieldName, opts = {}) => {
         const currentDefaultValue = getFieldDefaultValue(get(), fieldName);
-        const originalDefaultValue = get().defaultValues[fieldName];
 
         const nextValue = opts.defaultValue ?? currentDefaultValue;
 
