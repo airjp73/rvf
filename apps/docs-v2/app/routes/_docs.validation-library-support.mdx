@@ -6,7 +6,7 @@ export const meta = () => [
 
 # Validation Library Support
 
-There are official adapters available for `zod` and `yup` ,
+There are official adapters available for `zod`, `yup` and `valibot`,
 but you can easily support whatever library you want by creating your own adapter.
 
 And if you create an adapter for a library, feel free to make a PR to add official support 😊
@@ -15,7 +15,7 @@ And if you create an adapter for a library, feel free to make a PR to add offici
 
 In order to make an adapter for your validation library of choice,
 you can create a function that accepts a schema from the validation library and turns it into a validator using `createValidator`.
-For more on this you can check the implementations for `withZod` and `withYup`.
+For more on this you can check the implementations for `withZod`, `withYup` and `withValibot`.
 
 The out-of-the-box support for `yup` in this library works like this:
 

@@ -18,10 +18,9 @@
 	"peerDependencies": {
 		"@rvf/core": ">= 0.0.0 < 7.0.0",
 		"@rvf/set-get": ">= 0.0.0 < 1.0.0",
-		"valibot": ">= 0.31.0"
+		"valibot": ">= 0.39.0"
 	},
 	"devDependencies": {
-		"@rvf/yup": "*",
 		"@types/semver": "^7.5.0",
 		"@rvf/core": "*",
 		"semver": "^7.5.1",
