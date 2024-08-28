@@ -169,6 +169,8 @@ export type SubmitterOptions = {
   formAction?: string;
 };
 
+export type ResetFieldOpts = { defaultValue?: unknown };
+
 type StoreEvents = {
   onFieldChange: (
     fieldName: string,
@@ -240,7 +242,7 @@ type StoreActions = {
   syncServerValidationErrors: (errors: FieldErrors) => void;
 
   reset: (nextValues?: FieldValues) => void;
-  resetField: (fieldName: string, nextValue?: unknown) => void;
+  resetField: (fieldName: string, opts?: ResetFieldOpts) => void;
 
   getFieldArrayKeys: (fieldName: string) => Array<string>;
   arrayPush: (
@@ -938,12 +940,16 @@ export const createFormStateStore = ({
         });
       },
 
-      resetField: (
-        fieldName,
-        nextValue = getPath(get().defaultValues, fieldName),
-      ) => {
+      resetField: (fieldName, opts = {}) => {
+        const currentDefaultValue = getPath(get().defaultValues, fieldName);
+
+        const { defaultValue = currentDefaultValue } = opts;
+
         set((state) => {
-          setPath(state.values, fieldName, nextValue);
+          setPath(state.values, fieldName, defaultValue);
+          if (defaultValue !== currentDefaultValue)
+            setPath(state.defaultValues, fieldName, defaultValue);
+
           deleteFieldsWithPrefix(
             [
               state.touchedFields,
@@ -966,7 +972,7 @@ export const createFormStateStore = ({
 
         transientFieldRefs.forEach((fieldName, ref) => {
           if (!ref) return;
-          setFormControlValue(ref, nextValue);
+          setFormControlValue(ref, defaultValue);
         });
       },
 

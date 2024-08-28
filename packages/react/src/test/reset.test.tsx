@@ -193,7 +193,9 @@ it("should reset individual fields using custom initial values", async () => {
         <button
           type="button"
           data-testid="reset"
-          onClick={() => form.resetField("foo", "testing 123")}
+          onClick={() =>
+            form.resetField("foo", { defaultValue: "testing 123" })
+          }
         />
       </form>
     );
@@ -248,7 +250,11 @@ it("should reset field array fields, then the whole field array", async () => {
             <button
               data-testid={`foo-${index}-reset`}
               type="button"
-              onClick={() => form.resetField(`foo[${index}]`, "testing 123")}
+              onClick={() =>
+                form.resetField(`foo[${index}]`, {
+                  defaultValue: "testing 123",
+                })
+              }
             />
           </div>
         ))}
