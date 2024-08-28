@@ -150,6 +150,10 @@ class CancelSubmitError extends Error {}
 type StoreState = {
   values: FieldValues;
   defaultValues: FieldValues;
+  /**
+   * These will differ from `defaultValues` if the user has called `resetField` with a default value override.
+   */
+  currentDefaultValues: FieldValues;
   touchedFields: Record<string, boolean>;
   dirtyFields: Record<string, boolean>;
   validationErrors: Record<string, string>;
@@ -432,6 +436,7 @@ export const createFormStateStore = ({
       /////// State
       values: defaultValues,
       defaultValues,
+      currentDefaultValues: defaultValues,
       touchedFields: {},
       dirtyFields: {},
       validationErrors: serverValidationErrors,
@@ -922,6 +927,7 @@ export const createFormStateStore = ({
         set((state) => {
           state.values = nextValues;
           state.defaultValues = nextValues;
+          state.currentDefaultValues = nextValues;
           state.touchedFields = {};
           state.dirtyFields = {};
           state.validationErrors = {};
@@ -941,14 +947,17 @@ export const createFormStateStore = ({
       },
 
       resetField: (fieldName, opts = {}) => {
-        const currentDefaultValue = getPath(get().defaultValues, fieldName);
+        const currentDefaultValue = getPath(
+          get().currentDefaultValues,
+          fieldName,
+        );
 
         const { defaultValue = currentDefaultValue } = opts;
 
         set((state) => {
           setPath(state.values, fieldName, defaultValue);
           if (defaultValue !== currentDefaultValue)
-            setPath(state.defaultValues, fieldName, defaultValue);
+            setPath(state.currentDefaultValues, fieldName, defaultValue);
 
           deleteFieldsWithPrefix(
             [

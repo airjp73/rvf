@@ -9,7 +9,7 @@ export const getFieldValue = (
 export const getFieldDefaultValue = (
   state: FormStoreValue,
   fieldName: string,
-): unknown => getPath(state.defaultValues, fieldName);
+): unknown => getPath(state.currentDefaultValues, fieldName);
 
 export const getFieldTouched = (state: FormStoreValue, fieldName: string) =>
   state.touchedFields[fieldName] ?? false;

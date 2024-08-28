@@ -1407,6 +1407,9 @@ it("should be able to `resetField` on a whole array", () => {
     defaultValues: {
       foo: [{ name: "baz", notes: [{ text: "jimbo" }] }],
     },
+    currentDefaultValues: {
+      foo: [{ name: "baz", notes: [{ text: "jimbo" }] }],
+    },
     values: {
       foo: [
         { name: "foo", notes: [{ text: "bar" }] },
@@ -1423,6 +1426,40 @@ it("should be able to `resetField` on a whole array", () => {
 
   expect(store.getState().values).toEqual({
     foo: [{ name: "baz", notes: [{ text: "jimbo" }] }],
+  });
+});
+
+it("should override resetField overrides with reset", () => {
+  const store = testStore({
+    defaultValues: {
+      foo: "bar",
+    },
+  });
+
+  store.getState().resetField("foo", { defaultValue: "baz" });
+  expect(store.getState()).toMatchObject({
+    defaultValues: {
+      foo: "bar",
+    },
+    currentDefaultValues: {
+      foo: "baz",
+    },
+    values: {
+      foo: "baz",
+    },
+  });
+
+  store.getState().reset();
+  expect(store.getState()).toMatchObject({
+    defaultValues: {
+      foo: "bar",
+    },
+    currentDefaultValues: {
+      foo: "bar",
+    },
+    values: {
+      foo: "bar",
+    },
   });
 });
 
