@@ -1,9 +1,11 @@
 import { anyString, TestFormData } from "@remix-validated-form/test-utils";
 import { withYup } from "@rvf/yup";
+import { withValibot } from "@rvf/valibot";
 import { Validator, objectFromPathEntries } from "@rvf/core";
 import { describe, it, expect } from "vitest";
 import * as yup from "yup";
 import { z } from "zod";
+import * as v from 'valibot';
 import { withZod } from ".";
 
 // If adding an adapter, write a validator that validates this shape
@@ -76,6 +78,33 @@ const validationTestCases: ValidationTestCase[] = [
       }),
     ),
   },
+  {
+    name: 'valibot',
+    validator: withValibot(
+      v.object({
+        firstName: v.string(),
+        lastName: v.string(),
+        age: v.optional(v.number()),
+        address: v.pipe(
+          v.unknown(),
+          v.transform((input) => input ?? {}),
+          v.object({
+            streetAddress: v.string(),
+            city: v.string(),
+            country: v.string(),
+          }),
+        ),
+        pets: v.optional(
+          v.array(
+            v.object({
+              animal: v.string(),
+              name: v.string(),
+            }),
+          ),
+        ),
+      })
+    )
+  }
 ];
 
 describe("Validation", () => {
