@@ -150,10 +150,7 @@ class CancelSubmitError extends Error {}
 type StoreState = {
   values: FieldValues;
   defaultValues: FieldValues;
-  /**
-   * These will differ from `defaultValues` if the user has called `resetField` with a default value override.
-   */
-  currentDefaultValues: FieldValues;
+  defaultValueOverrides: Record<string, unknown>;
   touchedFields: Record<string, boolean>;
   dirtyFields: Record<string, boolean>;
   validationErrors: Record<string, string>;
@@ -436,7 +433,7 @@ export const createFormStateStore = ({
       /////// State
       values: defaultValues,
       defaultValues,
-      currentDefaultValues: defaultValues,
+      defaultValueOverrides: {},
       touchedFields: {},
       dirtyFields: {},
       validationErrors: serverValidationErrors,
@@ -927,7 +924,7 @@ export const createFormStateStore = ({
         set((state) => {
           state.values = nextValues;
           state.defaultValues = nextValues;
-          state.currentDefaultValues = nextValues;
+          state.defaultValueOverrides = {};
           state.touchedFields = {};
           state.dirtyFields = {};
           state.validationErrors = {};
@@ -947,17 +944,13 @@ export const createFormStateStore = ({
       },
 
       resetField: (fieldName, opts = {}) => {
-        const currentDefaultValue = getPath(
-          get().currentDefaultValues,
-          fieldName,
-        );
+        const currentDefaultValue = getFieldDefaultValue(get(), fieldName);
+        const originalDefaultValue = get().defaultValues[fieldName];
 
-        const { defaultValue = currentDefaultValue } = opts;
+        const nextValue = opts.defaultValue ?? currentDefaultValue;
 
         set((state) => {
-          setPath(state.values, fieldName, defaultValue);
-          if (defaultValue !== currentDefaultValue)
-            setPath(state.currentDefaultValues, fieldName, defaultValue);
+          setPath(state.values, fieldName, nextValue);
 
           deleteFieldsWithPrefix(
             [
@@ -965,10 +958,14 @@ export const createFormStateStore = ({
               state.validationErrors,
               state.dirtyFields,
               state.fieldArrayKeys,
+              state.defaultValueOverrides,
             ],
             fieldName,
           );
           state.arrayUpdateKeys[fieldName] = genKey();
+
+          if ("defaultValue" in opts)
+            state.defaultValueOverrides[fieldName] = opts.defaultValue;
         });
 
         if (
@@ -981,7 +978,7 @@ export const createFormStateStore = ({
 
         transientFieldRefs.forEach((fieldName, ref) => {
           if (!ref) return;
-          setFormControlValue(ref, defaultValue);
+          setFormControlValue(ref, nextValue);
         });
       },
 

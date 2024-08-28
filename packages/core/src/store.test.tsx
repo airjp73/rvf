@@ -7,6 +7,7 @@ import {
 } from "./store";
 import { ValidationBehavior } from "./types";
 import { createValidator } from "./createValidator";
+import { getFieldDefaultValue } from "./getters";
 
 const testStore = (init?: Partial<FormStoreInit>) =>
   createFormStateStore({
@@ -1407,9 +1408,7 @@ it("should be able to `resetField` on a whole array", () => {
     defaultValues: {
       foo: [{ name: "baz", notes: [{ text: "jimbo" }] }],
     },
-    currentDefaultValues: {
-      foo: [{ name: "baz", notes: [{ text: "jimbo" }] }],
-    },
+    defaultValueOverrides: {},
     values: {
       foo: [
         { name: "foo", notes: [{ text: "bar" }] },
@@ -1429,38 +1428,57 @@ it("should be able to `resetField` on a whole array", () => {
   });
 });
 
-it("should override resetField overrides with reset", () => {
+it("should override resetField overrides with reset or parent resetFields", () => {
   const store = testStore({
     defaultValues: {
-      foo: "bar",
+      foo: { bar: "bar" },
     },
   });
 
-  store.getState().resetField("foo", { defaultValue: "baz" });
+  store.getState().resetField("foo.bar", { defaultValue: "baz" });
   expect(store.getState()).toMatchObject({
     defaultValues: {
-      foo: "bar",
+      foo: { bar: "bar" },
     },
-    currentDefaultValues: {
-      foo: "baz",
+    defaultValueOverrides: {
+      "foo.bar": "baz",
     },
     values: {
-      foo: "baz",
+      foo: { bar: "baz" },
     },
   });
+  expect(getFieldDefaultValue(store.getState(), "foo.bar")).toBe("baz");
+  expect(getFieldDefaultValue(store.getState(), "foo")).toEqual({ bar: "bar" });
+
+  store.getState().resetField("foo");
+  expect(store.getState()).toMatchObject({
+    defaultValues: {
+      foo: { bar: "bar" },
+    },
+    defaultValueOverrides: {},
+    values: {
+      foo: { bar: "bar" },
+    },
+  });
+  expect(getFieldDefaultValue(store.getState(), "foo.bar")).toBe("bar");
+  expect(getFieldDefaultValue(store.getState(), "foo")).toEqual({ bar: "bar" });
+
+  store.getState().resetField("foo.bar", { defaultValue: "baz" });
+  expect(getFieldDefaultValue(store.getState(), "foo.bar")).toBe("baz");
+  expect(getFieldDefaultValue(store.getState(), "foo")).toEqual({ bar: "bar" });
 
   store.getState().reset();
   expect(store.getState()).toMatchObject({
     defaultValues: {
-      foo: "bar",
+      foo: { bar: "bar" },
     },
-    currentDefaultValues: {
-      foo: "bar",
-    },
+    defaultValueOverrides: {},
     values: {
-      foo: "bar",
+      foo: { bar: "bar" },
     },
   });
+  expect(getFieldDefaultValue(store.getState(), "foo.bar")).toBe("bar");
+  expect(getFieldDefaultValue(store.getState(), "foo")).toEqual({ bar: "bar" });
 });
 
 describe("resolver queue", () => {
