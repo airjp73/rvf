@@ -35,12 +35,12 @@ Most of the time your code will look like this:
 ```tsx
 const action = async ({ request }: DataFunctionArgs) => {
   const result = await validator.validate(
-    await request.formData()
+    await request.formData(),
   );
   if (result.error)
     return validationError(
       result.error,
-      result.submittedData
+      result.submittedData,
     );
   // do something with result.data
 };

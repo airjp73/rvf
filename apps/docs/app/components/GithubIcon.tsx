@@ -1,5 +1,5 @@
 export const GithubIcon = (
-  props: JSX.IntrinsicElements["svg"]
+  props: JSX.IntrinsicElements["svg"],
 ) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"

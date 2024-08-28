@@ -12,7 +12,7 @@ Cypress.Commands.add("visitWithoutJs", (url) => {
   const iframe = parentDocument.querySelector(".iframes-container iframe");
   if (false !== Cypress.config("chromeWebSecurity")) {
     throw new TypeError(
-      "When you disable script you also have to set 'chromeWebSecurity' in your config to 'false'"
+      "When you disable script you also have to set 'chromeWebSecurity' in your config to 'false'",
     );
   }
   iframe.sandbox = "allow-forms";

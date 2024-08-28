@@ -1,5 +1,5 @@
 export const stringToPathArray = <T extends string>(
-  path: T
+  path: T,
 ): (string | number)[] => {
   if (path.length === 0) return [];
 

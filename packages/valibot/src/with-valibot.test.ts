@@ -12,62 +12,61 @@ const packageJsonPath = path.join(packageDir, "package.json");
 const corePackageJsonPath = path.join(packageDir, "../core/package.json");
 
 describe("withValibot", () => {
-	it("returns coherent errors for complex schemas", async () => {
-		const schema = v.union( [
-			v.object({
-				type: v.literal("foo"),
-				foo: v.string(),
-			}),
-			v.object({
-				type: v.literal("bar"),
-				bar: v.string(),
-			}),
-		]);
-		const obj = {
-			type: "foo",
-			bar: 123,
-			foo: 123,
-		};
+  it("returns coherent errors for complex schemas", async () => {
+    const schema = v.union([
+      v.object({
+        type: v.literal("foo"),
+        foo: v.string(),
+      }),
+      v.object({
+        type: v.literal("bar"),
+        bar: v.string(),
+      }),
+    ]);
+    const obj = {
+      type: "foo",
+      bar: 123,
+      foo: 123,
+    };
 
-		expect(await withValibot(schema).validate(obj)).toEqual({
-			data: undefined,
-			error: {
-				fieldErrors: {
-					type: anyString,
-					bar: anyString,
-					foo: anyString,
-				},
-				subaction: undefined,
-			},
-			submittedData: obj,
-		});
-	});
+    expect(await withValibot(schema).validate(obj)).toEqual({
+      data: undefined,
+      error: {
+        fieldErrors: {
+          type: anyString,
+          bar: anyString,
+          foo: anyString,
+        },
+        subaction: undefined,
+      },
+      submittedData: obj,
+    });
+  });
 
-	it("returns errors for fields that are unions", async () => {
-		const schema = v.object({
-			field1: v.union([v.literal("foo"), v.literal("bar")]),
-			field2: v.union([v.literal("foo"), v.literal("bar")]),
-		});
-		const obj = {
-			field1: "a value",
-			// field2 missing
-		};
+  it("returns errors for fields that are unions", async () => {
+    const schema = v.object({
+      field1: v.union([v.literal("foo"), v.literal("bar")]),
+      field2: v.union([v.literal("foo"), v.literal("bar")]),
+    });
+    const obj = {
+      field1: "a value",
+      // field2 missing
+    };
 
-		const validator = withValibot(schema);
-		expect(await validator.validate(obj)).toEqual({
-			data: undefined,
-			error: {
-				fieldErrors: {
-					field1: anyString,
-					field2: anyString,
-				},
-				subaction: undefined,
-			},
-			submittedData: obj,
-		});
-	});
+    const validator = withValibot(schema);
+    expect(await validator.validate(obj)).toEqual({
+      data: undefined,
+      error: {
+        fieldErrors: {
+          field1: anyString,
+          field2: anyString,
+        },
+        subaction: undefined,
+      },
+      submittedData: obj,
+    });
+  });
 });
-
 
 describe("peer dependecy version", () => {
   it("should have a peer dependency version that matches the lastet version of RVF", async () => {

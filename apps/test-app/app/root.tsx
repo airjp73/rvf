@@ -58,7 +58,7 @@ export function useHydrated() {
   return React.useSyncExternalStore(
     subscribe,
     () => true,
-    () => false
+    () => false,
   );
 }
 

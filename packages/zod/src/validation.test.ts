@@ -5,7 +5,7 @@ import { Validator, objectFromPathEntries } from "@rvf/core";
 import { describe, it, expect } from "vitest";
 import * as yup from "yup";
 import { z } from "zod";
-import * as v from 'valibot';
+import * as v from "valibot";
 import { withZod } from ".";
 
 // If adding an adapter, write a validator that validates this shape
@@ -79,7 +79,7 @@ const validationTestCases: ValidationTestCase[] = [
     ),
   },
   {
-    name: 'valibot',
+    name: "valibot",
     validator: withValibot(
       v.object({
         firstName: v.string(),
@@ -102,9 +102,9 @@ const validationTestCases: ValidationTestCase[] = [
             }),
           ),
         ),
-      })
-    )
-  }
+      }),
+    ),
+  },
 ];
 
 describe("Validation", () => {

@@ -2,9 +2,8 @@ import { Tab } from "@headlessui/react";
 import classNames from "classnames";
 import { ComponentType, FC } from "react";
 
-type ExtractProps<T> = T extends ComponentType<infer P>
-  ? P
-  : T;
+type ExtractProps<T> =
+  T extends ComponentType<infer P> ? P : T;
 
 type TabsType = FC<ExtractProps<typeof Tab.Group>> & {
   List: FC<ExtractProps<typeof Tab.List>>;
@@ -29,7 +28,7 @@ const TabItem: TabsType["Item"] = ({
           : "text-gray-300 hover:text-indigo-300 hover:outline-indigo-3 hover:outline",
         "px-3 py-2 font-medium text-sm rounded-md",
         "flex-1",
-        className
+        className,
       )
     }
     {...rest}

@@ -55,7 +55,7 @@ const schema = zfd.formData(
   z.object({
     field1: zfd.text(),
     field2: zfd.text(),
-  })
+  }),
 );
 ```
 
@@ -135,13 +135,13 @@ const baseSchema = z.object({
 const clientSchema = z.formData(
   baseSchema.and({
     file: zfd.file(),
-  })
+  }),
 );
 
 const serverSchema = z.formData(
   baseSchema.and({
     file: z.string(),
-  })
+  }),
 );
 ```
 
@@ -220,7 +220,7 @@ you can use [repeatableOfType](#repeatableOfType).
 const schema = zfd.formData({
   myCheckboxGroup: zfd.repeatable(),
   atLeastOneItem: zfd.repeatable(
-    z.array(zfd.text()).min(1)
+    z.array(zfd.text()).min(1),
   ),
 });
 ```
@@ -238,7 +238,7 @@ Instead of passing the schema for an entire array, you pass in the schema for th
 ```ts
 const schema = zfd.formData({
   repeatableNumberField: zfd.repeatableOfType(
-    zfd.numeric()
+    zfd.numeric(),
   ),
 });
 ```
@@ -263,8 +263,8 @@ const schema = zfd.formData({
       z.object({
         label: z.string(),
         value: z.string(),
-      })
-    )
+      }),
+    ),
   ),
 });
 ```

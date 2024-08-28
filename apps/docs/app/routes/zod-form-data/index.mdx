@@ -29,7 +29,7 @@ const schema = zfd.formData({
 // with any FormData or URLSearchParams
 export const action = async ({ request }) => {
   const { name, age, likesPizza } = schema.parse(
-    await request.formData()
+    await request.formData(),
   );
   // do something with parsed data
 };
@@ -44,7 +44,7 @@ const validator = withZod(
     name: zfd.text(),
     age: zfd.numeric(z.number().min(25).max(50)),
     likesPizza: zfd.checkbox(),
-  })
+  }),
 );
 ```
 

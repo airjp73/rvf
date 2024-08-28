@@ -5,7 +5,7 @@ export const action = async ({ request }: DataFunctionArgs) => {
   const formData = await request.formData();
   return json({
     message: `Submitted to action prop action from form: ${formData.get(
-      "whichForm"
+      "whichForm",
     )}`,
   });
 };

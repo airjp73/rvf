@@ -1,7 +1,7 @@
 // Plugin taken from Kent C Dodds' Remix app
 export default (
   on: Cypress.PluginEvents,
-  config: Cypress.PluginConfigOptions
+  config: Cypress.PluginConfigOptions,
 ) => {
   const port = process.env.PORT ?? "3000";
   const configOverrides: Partial<Cypress.PluginConfigOptions> = {
@@ -21,7 +21,7 @@ export default (
         "--allow-file-access-from-files",
         "--use-fake-ui-for-media-stream",
         "--use-fake-device-for-media-stream",
-        "--use-file-for-fake-audio-capture=cypress/fixtures/sample.wav"
+        "--use-file-for-fake-audio-capture=cypress/fixtures/sample.wav",
       );
     }
     return options;

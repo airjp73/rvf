@@ -1,7 +1,7 @@
 export const db = {
   isUsernameAvailable: async (username: string) => {
     await new Promise((resolve) =>
-      setTimeout(resolve, 1000)
+      setTimeout(resolve, 1000),
     );
 
     if (

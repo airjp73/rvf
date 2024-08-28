@@ -85,7 +85,7 @@ const schema = zfd.formData(
   z.object({
     field1: zfd.text(),
     field2: zfd.text(),
-  })
+  }),
 );
 ```
 
@@ -203,13 +203,13 @@ const baseSchema = z.object({
 const clientSchema = z.formData(
   baseSchema.and({
     file: zfd.file(),
-  })
+  }),
 );
 
 const serverSchema = z.formData(
   baseSchema.and({
     file: z.string(),
-  })
+  }),
 );
 ```
 

@@ -25,11 +25,11 @@ type ValidateFieldResult = { error?: string };
 
 type Validator<DataType> = {
   validate: (
-    unvalidatedData: unknown
+    unvalidatedData: unknown,
   ) => Promise<ValidationResult<DataType>>;
   validateField: (
     unvalidatedData: unknown,
-    field: string
+    field: string,
   ) => Promise<ValidateFieldResult>;
 };
 ```
@@ -46,7 +46,7 @@ The out-of-the-box support for `yup` in this library works like this:
 
 ```ts
 export const withYup = <Schema extends AnyObjectSchema>(
-  validationSchema: Schema
+  validationSchema: Schema,
   // For best result with Typescript,
   // we should type the `Validator`
   // we return based on the provided schema

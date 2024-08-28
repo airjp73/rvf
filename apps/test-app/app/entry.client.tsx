@@ -8,5 +8,5 @@ hydrate(
   <React.StrictMode>
     <RemixBrowser />
   </React.StrictMode>,
-  document
+  document,
 );

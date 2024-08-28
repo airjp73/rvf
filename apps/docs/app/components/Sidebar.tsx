@@ -49,7 +49,7 @@ export const Sidebar: SidebarType = ({
     <motion.div
       className={classNames(
         "flex-1 flex flex-col min-h-0 bg-zinc-900",
-        className
+        className,
       )}
       {...rest}
     >
@@ -94,7 +94,7 @@ const NavItem: SidebarType["NavItem"] = ({
           ? "bg-zinc-800 text-white font-bold"
           : "text-zinc-300 hover:bg-zinc-700 hover:text-white",
         "focus-visible:text-white focus-visible:bg-zinc-700",
-        className
+        className,
       )
     }
     prefetch="intent"
@@ -123,7 +123,7 @@ const ExternalLink: SidebarType["ExternalLink"] = ({
       "group flex items-center p-2 text-sm font-medium rounded-md w-min",
       "focus-visible:text-white focus-visible:bg-zinc-700",
       "text-zinc-300 hover:bg-zinc-700 hover:text-white",
-      className
+      className,
     )}
     {...rest}
   >
@@ -139,7 +139,7 @@ const Header: SidebarType["Header"] = ({ children }) => {
         "group flex items-center px-2 py-2 text-sm font-medium rounded-md",
         "text-white font-bold",
         "focus-visible:text-white focus-visible:bg-zinc-700",
-        "text-lg"
+        "text-lg",
       )}
     >
       {children}

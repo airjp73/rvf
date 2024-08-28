@@ -16,12 +16,12 @@ const variantStyles = {
 
 const buttonStyles = (
   variant: keyof typeof variantStyles,
-  className?: string
+  className?: string,
 ) =>
   classNames(
     "button-base",
     variantStyles[variant],
-    className
+    className,
   );
 
 type BaseButtonProps = {
@@ -47,7 +47,7 @@ export const Button = forwardRef<
       rightIcon,
       ...rest
     },
-    ref
+    ref,
   ) => (
     <button
       className={buttonStyles(variant, className)}
@@ -64,7 +64,7 @@ export const Button = forwardRef<
           className: "h-4 w-4 ml-2",
         })}
     </button>
-  )
+  ),
 );
 
 export type ButtonLinkProps = BaseButtonProps &
@@ -83,7 +83,7 @@ export const ButtonLink = forwardRef<
       rightIcon,
       ...rest
     },
-    ref
+    ref,
   ) => (
     <a
       className={buttonStyles(variant, className)}
@@ -98,5 +98,5 @@ export const ButtonLink = forwardRef<
           className: "h-4 w-4 ml-2",
         })}
     </a>
-  )
+  ),
 );

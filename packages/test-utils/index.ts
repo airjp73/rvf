@@ -36,9 +36,9 @@ export class TestFormData implements FormData {
     callbackfn: (
       value: FormDataEntryValue,
       key: string,
-      parent: FormData
+      parent: FormData,
     ) => void,
-    thisArg?: any
+    thisArg?: any,
   ): void {
     this._params.forEach(callbackfn as any, thisArg);
   }

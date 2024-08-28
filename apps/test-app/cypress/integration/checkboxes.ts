@@ -16,7 +16,7 @@ describe("Checkboxes", () => {
 
     cy.findByText("Submit").click();
     cy.findByText("You like pizza, mushrooms, cheese, pepperoni").should(
-      "exist"
+      "exist",
     );
   });
 });

@@ -26,7 +26,7 @@ export const Footer = ({
     <footer
       className={classNames(
         "flex items-center justify-between",
-        className
+        className,
       )}
     >
       {prev ? (

@@ -19,7 +19,7 @@ Most of the time, your code will look like this:
 ```tsx
 const action = async ({ request }: DataFunctionArgs) => {
   const result = await validator.validate(
-    await request.formData()
+    await request.formData(),
   );
   if (result.error) return validationError(result.error);
   // do something with result.data
@@ -71,7 +71,7 @@ const action = async ({ request }: DataFunctionArgs) => {
   // We should check the correctness of the data first,
   // before doing our custom check
   const result = await validator.validate(
-    await request.formData()
+    await request.formData(),
   );
   if (result.error) return validationError(result.error);
 
@@ -94,7 +94,7 @@ const action = async ({ request }: DataFunctionArgs) => {
         // if your form has an `id` prop
         formId: result.formId,
       },
-      result.data
+      result.data,
     );
   }
 

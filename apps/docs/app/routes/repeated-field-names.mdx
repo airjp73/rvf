@@ -55,7 +55,7 @@ The easiest way to handle this is with `repeatable` from [zod-form-data](/zod-fo
 import { zfd } from "zod-form-data";
 
 export const validator = withZod(
-  z.object({ likes: zfd.repeatable() })
+  z.object({ likes: zfd.repeatable() }),
 );
 ```
 

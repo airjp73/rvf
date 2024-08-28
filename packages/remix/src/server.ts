@@ -21,7 +21,7 @@ import { ValidationErrorResponseData, ValidatorError } from "@rvf/core";
 export function validationError(
   error: ValidatorError,
   repopulateFields?: unknown,
-  init?: ResponseInit
+  init?: ResponseInit,
 ) {
   return new Response(
     JSON.stringify({
@@ -35,6 +35,6 @@ export function validationError(
       headers: {
         "Content-Type": "application/json; utf-8",
       },
-    }
+    },
   ) as TypedResponse<ValidationErrorResponseData>;
 }

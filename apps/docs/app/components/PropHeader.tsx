@@ -40,7 +40,7 @@ export const PropHeader = ({
             href={`#${prop}`}
             className={classNames(
               "-ml-6 flex items-center group",
-              focusedProp !== prop && "no-underline"
+              focusedProp !== prop && "no-underline",
             )}
           >
             <LinkIcon className="h-4 w-4 mr-2 invisible group-hover:visible" />
@@ -53,7 +53,7 @@ export const PropHeader = ({
           className={classNames(
             "text-zinc-500",
             "whitespace-pre-wrap",
-            variantTypeSizes[Variant]
+            variantTypeSizes[Variant],
           )}
         >
           {type}

@@ -1,5 +1,5 @@
 import { type FieldErrors, type Validator, createValidator } from "@rvf/core";
-import { pathArrayToString } from '@rvf/set-get';
+import { pathArrayToString } from "@rvf/set-get";
 import {
   type BaseIssue,
   type Config,
@@ -10,23 +10,23 @@ import {
   safeParseAsync,
 } from "valibot";
 
-type MaybeAsyncSchema = GenericSchema | GenericSchemaAsync
+type MaybeAsyncSchema = GenericSchema | GenericSchemaAsync;
 
 function formatIssuePath(issue: BaseIssue<unknown>): string | null {
   if (!issue.path || issue.path.length === 0) return null;
-  const pathArray = issue.path.map(path => path.key as string | number);
-  
+  const pathArray = issue.path.map((path) => path.key as string | number);
+
   return pathArrayToString(pathArray);
 }
 
 function parseIssues<Schema extends GenericSchema>(
-  issues: [InferIssue<Schema>, ...InferIssue<Schema>[]]
+  issues: [InferIssue<Schema>, ...InferIssue<Schema>[]],
 ): FieldErrors {
   const parsedIssues: FieldErrors = {};
 
   for (const issue of issues) {
     // More about unions: https://valibot.dev/guides/unions/
-    if (issue.type === 'union' && issue.issues) {
+    if (issue.type === "union" && issue.issues) {
       const unionIssues = parseIssues(issue.issues);
       Object.assign(parsedIssues, unionIssues);
     }
