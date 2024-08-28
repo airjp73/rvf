@@ -18,6 +18,10 @@ cd ../zod
 npm version $1
 npm publish
 
+cd ../valibot
+npm version $1
+npm publish
+
 cd ../set-get
 npm version $1
 npm publish
