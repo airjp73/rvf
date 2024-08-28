@@ -297,7 +297,7 @@ it("should reset field array fields, then the whole field array", async () => {
   expect(screen.getByTestId("foo-0")).toHaveValue("bar");
   expect(screen.getByTestId("foo-0-touched")).toHaveTextContent("false");
   expect(screen.getByTestId("foo-0-default")).toHaveTextContent("bar");
-  expect(screen.getByTestId("foo-1")).not.toBeInTheDocument();
+  expect(screen.queryByTestId("foo-1")).not.toBeInTheDocument();
 });
 
 it("should reset the whole form when a reset button is clicked", async () => {
