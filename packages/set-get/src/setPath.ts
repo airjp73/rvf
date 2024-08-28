@@ -1,8 +1,12 @@
 import { stringToPathArray } from "./stringToPathArray";
 
-export function setPath<T>(object: T, path: string, value: any) {
+export function setPath<T>(
+  object: T,
+  path: string | (string | number)[],
+  value: unknown,
+) {
   // deeply mutate the data
-  const parts = stringToPathArray(path);
+  const parts = Array.isArray(path) ? path : stringToPathArray(path);
   let obj: any = object;
 
   for (let i = 0; i < parts.length - 1; i++) {
