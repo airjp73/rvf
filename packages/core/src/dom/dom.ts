@@ -31,7 +31,7 @@ export const setFormControlValue = (element: HTMLElement, value: unknown) => {
     for (const option of element.options) {
       option.selected = Array.isArray(value)
         ? value.includes(option.value)
-        : value === option.value;
+        : String(value) === option.value;
     }
   }
 
