@@ -81,7 +81,9 @@ export const isFormControl = (el: EventTarget): el is FormControl =>
   el instanceof HTMLSelectElement ||
   el instanceof HTMLTextAreaElement;
 
-const sortByPosition = (elements: HTMLElement[]) => {
+export const sortByPosition = <ElementType extends HTMLElement>(
+  elements: ElementType[],
+) => {
   return [...elements].sort((a, b) => {
     const comparison = a.compareDocumentPosition(b);
     if (comparison & Node.DOCUMENT_POSITION_FOLLOWING) {
@@ -157,7 +159,7 @@ export const getElementsWithNames = (
 
   return [...els].filter(
     (el) => isFormControl(el) && el.form === formElement,
-  ) as HTMLElement[];
+  ) as FormControl[];
 };
 
 export const getNextNativeValue = ({

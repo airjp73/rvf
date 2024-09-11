@@ -1,3 +1,9 @@
+import {
+  FormScope,
+  getElementsWithNames,
+  isFormControl,
+  sortByPosition,
+} from "@rvf/core";
 import { RefObject, useEffect } from "react";
 
 export const useNativeValidity = (
@@ -9,3 +15,65 @@ export const useNativeValidity = (
     ref.current.setCustomValidity(error ?? "");
   }, [error, ref]);
 };
+
+/**
+ * UNSTABLE: This is an unstable API and may change in the future.
+ *
+ * Automatically sets the validity of all form controls in the form using the
+ * native HTML `setCustomValidity` method.
+ *
+ * If you need more granular control over which fields use this method,
+ * you can use `useNativeValidity` instead for each input.
+ */
+const useNativeValidityForForm = (scope: FormScope<any>) => {
+  useEffect(() => {
+    return scope.__store__.store.subscribe((state, prevState) => {
+      const currentErrors = state.validationErrors;
+      const prevErrors = prevState.validationErrors;
+
+      const getElements = (field: string) => {
+        const allRefs = [
+          ...scope.__store__.transientFieldRefs.getRefs(field),
+          ...scope.__store__.controlledFieldRefs.getRefs(field),
+        ];
+
+        if (allRefs.length > 0) {
+          const registeredFormControls = sortByPosition(
+            allRefs.filter(isFormControl),
+          );
+          return registeredFormControls;
+        }
+
+        const formElement = scope.__store__.formRef.current;
+        if (!formElement) return [];
+
+        const unregisteredFormControls = sortByPosition(
+          getElementsWithNames([field], formElement),
+        );
+        return unregisteredFormControls;
+      };
+
+      // Add or change errors to fields that need them
+      Object.keys(currentErrors)
+        .filter(
+          (field) =>
+            !prevErrors[field] || prevErrors[field] !== currentErrors[field],
+        )
+        .forEach((field) => {
+          getElements(field).forEach((element) =>
+            element.setCustomValidity(currentErrors[field]),
+          );
+        });
+
+      Object.keys(prevErrors)
+        .filter((key) => !currentErrors[key])
+        .forEach((field) => {
+          getElements(field).forEach((element) =>
+            element.setCustomValidity(""),
+          );
+        });
+    });
+  }, [scope]);
+};
+
+export const unstable_useNativeValidityForForm = useNativeValidityForForm;
