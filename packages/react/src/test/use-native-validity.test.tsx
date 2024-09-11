@@ -1,7 +1,7 @@
 import { useId, useRef, useState } from "react";
 import {
   useNativeValidity,
-  unstable_useNativeValidityForForm as useNativeValidityForForm,
+  useNativeValidityForForm,
 } from "../useNativeValidity";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";

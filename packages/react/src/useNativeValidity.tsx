@@ -25,7 +25,7 @@ export const useNativeValidity = (
  * If you need more granular control over which fields use this method,
  * you can use `useNativeValidity` instead for each input.
  */
-const useNativeValidityForForm = (scope: FormScope<any>) => {
+export const useNativeValidityForForm = (scope: FormScope<any>) => {
   useEffect(() => {
     return scope.__store__.store.subscribe((state, prevState) => {
       const currentErrors = state.validationErrors;
@@ -75,5 +75,3 @@ const useNativeValidityForForm = (scope: FormScope<any>) => {
     });
   }, [scope]);
 };
-
-export const unstable_useNativeValidityForForm = useNativeValidityForForm;

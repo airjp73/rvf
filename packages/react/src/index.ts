@@ -63,6 +63,9 @@ export {
   useFormScopeOrContext,
 } from "./context";
 export { useFormScope } from "./useFormScope";
-export { useNativeValidity } from "./useNativeValidity";
+export {
+  useNativeValidity,
+  useNativeValidityForForm as unstable_useNativeValidityForForm,
+} from "./useNativeValidity";
 export { Isolate } from "./isolation";
 export * from "./compatability/misc";
