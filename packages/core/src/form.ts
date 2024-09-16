@@ -25,6 +25,7 @@ import {
   ValidStringPaths,
   ValueAtPath,
   pathArrayToString,
+  stringToPathArray,
 } from "@rvf/set-get";
 
 type SubmitTypes<FormOutputData> =
@@ -143,7 +144,11 @@ const instantiateFormScope = <FormInputData extends FieldValues>(
   __field_prefix__: prefix,
   __store__: store,
   scope(field) {
-    const newPrefix = pathArrayToString([prefix, field].filter(Boolean));
+    const newPrefix = pathArrayToString(
+      [...stringToPathArray(prefix), ...stringToPathArray(field)].filter(
+        (segment) => segment !== "",
+      ),
+    );
     if (store.subformCache.has(newPrefix))
       return store.subformCache.get(newPrefix);
 
