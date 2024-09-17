@@ -1,4 +1,8 @@
-cd packages/core
+cd packages/set-get
+npm version $1
+npm publish
+
+cd ../core
 npm version $1
 npm publish
 
@@ -19,9 +23,5 @@ npm version $1
 npm publish
 
 cd ../valibot
-npm version $1
-npm publish
-
-cd ../set-get
 npm version $1
 npm publish
