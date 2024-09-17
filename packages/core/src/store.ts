@@ -2,7 +2,7 @@ import {
   setPath,
   getPath,
   stringToPathArray,
-  pathArrayToString,
+  mergePathStrings,
 } from "@rvf/set-get";
 import { create } from "zustand/react";
 import { immer } from "./immer";
@@ -391,7 +391,7 @@ export const moveFieldArrayKeys = (
       if (Number.isNaN(index))
         throw new Error(`Attempted to update a non-array field, ${fieldName}`);
       const newIndex = updater(index);
-      return pathArrayToString([fieldName, newIndex, ...parts]);
+      return mergePathStrings(fieldName, newIndex, ...parts);
     });
   });
 };

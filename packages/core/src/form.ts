@@ -24,8 +24,7 @@ import {
   StringToPathTuple,
   ValidStringPaths,
   ValueAtPath,
-  pathArrayToString,
-  stringToPathArray,
+  mergePathStrings,
 } from "@rvf/set-get";
 
 type SubmitTypes<FormOutputData> =
@@ -144,11 +143,7 @@ const instantiateFormScope = <FormInputData extends FieldValues>(
   __field_prefix__: prefix,
   __store__: store,
   scope(field) {
-    const newPrefix = pathArrayToString(
-      [...stringToPathArray(prefix), ...stringToPathArray(field)].filter(
-        (segment) => segment !== "",
-      ),
-    );
+    const newPrefix = mergePathStrings(prefix, field);
     if (store.subformCache.has(newPrefix))
       return store.subformCache.get(newPrefix);
 

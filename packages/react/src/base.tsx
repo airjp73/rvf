@@ -25,7 +25,7 @@ import {
   ValidStringPathsToArrays,
   ValueAtPath,
   getPath,
-  pathArrayToString,
+  mergePathStrings,
 } from "@rvf/set-get";
 import { FieldArrayApi, makeFieldArrayImpl } from "./array";
 import { makeImplFactory } from "./implFactory";
@@ -463,8 +463,7 @@ export const makeBaseFormApi = <FormInputData,>({
   form,
 }: BaseReactFormParams<FormInputData>): FormApi<FormInputData> => {
   const prefix = form.__field_prefix__;
-  const f = (fieldName?: string) =>
-    pathArrayToString([prefix, fieldName].filter(isNonNullish));
+  const f = (fieldName?: string) => mergePathStrings(prefix, fieldName);
   const transientState = () => form.__store__.store.getState();
 
   type WithOptionalField<T> = [string, T] | [T];

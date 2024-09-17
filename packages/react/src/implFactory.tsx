@@ -1,4 +1,4 @@
-import { pathArrayToString } from "@rvf/set-get";
+import { mergePathStrings } from "@rvf/set-get";
 
 const isNonNullish = <T,>(value: T | null | undefined): value is T =>
   value != null;
@@ -10,9 +10,7 @@ export const makeImplFactory = <Item,>(
   const implCache = new Map<string, Item>();
 
   return (fieldName?: string) => {
-    const fullName = pathArrayToString(
-      [prefix, fieldName].filter(isNonNullish),
-    );
+    const fullName = mergePathStrings(prefix, fieldName);
 
     const existingImpl = implCache.get(fullName);
     if (existingImpl) return existingImpl;
