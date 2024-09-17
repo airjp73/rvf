@@ -1,5 +1,4 @@
 import { expect, it } from "vitest";
-import { toPathObject } from "./toPathObject";
 import { mergePathStrings } from "./mergePathStrings";
 
 it("should merge regular paths", () => {
