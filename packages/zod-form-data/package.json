@@ -24,7 +24,7 @@
   },
   "peerDependencies": {
     "zod": ">= 3.11.0",
-    "@rvf/set-get": ">= 0.0.0 < 7.0.0"
+    "@rvf/set-get": ">= 6.0.3 < 7.0.0"
   },
   "devDependencies": {
     "@rvf/set-get": "*",
