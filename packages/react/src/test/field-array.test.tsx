@@ -2,7 +2,7 @@ import { render, renderHook, screen, waitFor } from "@testing-library/react";
 import { useForm } from "../useForm";
 import userEvent from "@testing-library/user-event";
 import { Fragment } from "react/jsx-runtime";
-import { RenderCounter } from "./util/RenderCounter";
+import { RenderCounter, useRenderCounter } from "./util/RenderCounter";
 import { describe, expect, it, vi } from "vitest";
 import { successValidator } from "./util/successValidator";
 import { controlInput } from "./util/controlInput";
@@ -1306,6 +1306,122 @@ it("should be possible to await updates from field arrays, move focus in userlan
 
   await userEvent.click(screen.getByTestId("add"));
   expect(screen.getByTestId("foo-2-name")).toHaveFocus();
+});
+
+it("should return the keys of the array", async () => {
+  const Comp = () => {
+    const form = useForm({
+      defaultValues: {
+        foo: [{ name: "bar" }, { name: "baz" }],
+      },
+      validator: successValidator,
+      handleSubmit: vi.fn(),
+    });
+
+    const keys = form.array("foo").keys();
+
+    const count = useRenderCounter();
+
+    return (
+      <form {...form.getFormProps()} data-testid="form">
+        <pre data-testid="num-keys">{keys.length}</pre>
+        <pre data-testid="render-count">{count}</pre>
+        <button
+          type="button"
+          data-testid="change"
+          onClick={() => form.setValue("foo[0].name", "test")}
+        />
+        <button
+          type="button"
+          data-testid="add"
+          onClick={() => form.array("foo").push({ name: "" })}
+        />
+        <button
+          type="button"
+          data-testid="remove"
+          onClick={() => form.array("foo").pop()}
+        />
+        <button type="submit" data-testid="submit" />
+      </form>
+    );
+  };
+
+  render(<Comp />);
+
+  expect(screen.getByTestId("num-keys")).toHaveTextContent("2");
+  expect(screen.getByTestId("render-count")).toHaveTextContent("1");
+
+  await userEvent.click(screen.getByTestId("add"));
+  expect(screen.getByTestId("num-keys")).toHaveTextContent("3");
+  expect(screen.getByTestId("render-count")).toHaveTextContent("2");
+
+  await userEvent.click(screen.getByTestId("change"));
+  expect(screen.getByTestId("num-keys")).toHaveTextContent("3");
+  expect(screen.getByTestId("render-count")).toHaveTextContent("2");
+
+  await userEvent.click(screen.getByTestId("remove"));
+  expect(screen.getByTestId("num-keys")).toHaveTextContent("2");
+  expect(screen.getByTestId("render-count")).toHaveTextContent("3");
+});
+
+it("should be possible to map from the keys array", async () => {
+  const Comp = () => {
+    const form = useForm({
+      defaultValues: {
+        foo: [{ name: "bar" }, { name: "baz" }],
+      },
+      validator: successValidator,
+      handleSubmit: vi.fn(),
+    });
+
+    const keys = form.array("foo").keys();
+
+    const count = useRenderCounter();
+
+    return (
+      <form {...form.getFormProps()} data-testid="form">
+        <pre data-testid="values">
+          {keys
+            .map((_key, index) => form.value(`foo[${index}].name`))
+            .join(",")}
+        </pre>
+        <pre data-testid="render-count">{count}</pre>
+        <button
+          type="button"
+          data-testid="change"
+          onClick={() => form.setValue("foo[0].name", "test")}
+        />
+        <button
+          type="button"
+          data-testid="add"
+          onClick={() => form.array("foo").push({ name: "" })}
+        />
+        <button
+          type="button"
+          data-testid="remove"
+          onClick={() => form.array("foo").pop()}
+        />
+        <button type="submit" data-testid="submit" />
+      </form>
+    );
+  };
+
+  render(<Comp />);
+
+  expect(screen.getByTestId("values")).toHaveTextContent("bar,baz");
+  expect(screen.getByTestId("render-count")).toHaveTextContent("1");
+
+  await userEvent.click(screen.getByTestId("add"));
+  expect(screen.getByTestId("values")).toHaveTextContent("bar,baz,");
+  expect(screen.getByTestId("render-count")).toHaveTextContent("2");
+
+  await userEvent.click(screen.getByTestId("change"));
+  expect(screen.getByTestId("values")).toHaveTextContent("test,baz,");
+  expect(screen.getByTestId("render-count")).toHaveTextContent("3");
+
+  await userEvent.click(screen.getByTestId("remove"));
+  expect(screen.getByTestId("values")).toHaveTextContent("test,baz");
+  expect(screen.getByTestId("render-count")).toHaveTextContent("4");
 });
 
 // LAUNCH:

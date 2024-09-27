@@ -39,6 +39,14 @@ export interface FieldArrayApi<FormInputData extends Array<any>> {
   length: () => number;
 
   /**
+   * Returns an array of the keys used when mapping over the array.
+   * The identity of the array is stable and only updates (and causes a rerender)
+   * when the number of items in the array changes, or the array is reset.
+   * This is usually not necesary, but can be useful for some advanced scenarios.
+   */
+  keys: () => string[];
+
+  /**
    * Maps over and renders the array items.
    * Using the `form` parameter passed to the callback will isolate rerenders to each individual item.
    * Changes to the length of the array will also be isoated to this `map` call.
@@ -147,6 +155,10 @@ export const makeFieldArrayImpl = <FormInputData extends Array<any>>({
           const itemFormScope = itemImpl(String(index));
           return callback(key, itemFormScope, index);
         });
+    },
+    keys: () => {
+      getArrayUpdateKey(trackedState, arrayFieldName);
+      return trackedState.getFieldArrayKeys(arrayFieldName);
     },
     push: (value) => {
       trackedState.arrayPush(arrayFieldName, value, validationBehavior);

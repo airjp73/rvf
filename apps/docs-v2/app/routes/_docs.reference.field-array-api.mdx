@@ -149,3 +149,10 @@ Normally, when a user submits a form and it contains validation error,
 the first invalid element in the form will be focused.
 Pass this ref to a focusable element to simulate this behavior when there are array-level errors
 for this field array.
+
+### `keys`
+
+Returns an array of the keys used when mapping over the array.
+The identity of the array is stable and only updates (and causes a rerender)
+when the number of items in the array changes, or the array is reset.
+This is usually not necesary, but can be useful for some advanced scenarios.
