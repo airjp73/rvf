@@ -27,7 +27,16 @@ export const useNativeValidity = (
  */
 export const useNativeValidityForForm = (scope: FormScope<any>) => {
   useEffect(() => {
-    return scope.__store__.store.subscribe((state, prevState) => {
+    let abortController: AbortController | undefined;
+
+    const unsubscribe = scope.__store__.store.subscribe((state, prevState) => {
+      // Clean up any previously applied event listeners
+      abortController?.abort();
+
+      // New abort controller for each run of `subscribe`
+      abortController = new AbortController();
+      const signal = abortController.signal;
+
       const currentErrors = state.validationErrors;
       const prevErrors = prevState.validationErrors;
 
@@ -53,17 +62,17 @@ export const useNativeValidityForForm = (scope: FormScope<any>) => {
         return unregisteredFormControls;
       };
 
-      // Add or change errors to fields that need them
-      Object.keys(currentErrors)
-        .filter(
-          (field) =>
-            !prevErrors[field] || prevErrors[field] !== currentErrors[field],
-        )
-        .forEach((field) => {
-          getElements(field).forEach((element) =>
-            element.setCustomValidity(currentErrors[field]),
-          );
+      Object.keys(currentErrors).forEach((field) => {
+        getElements(field).forEach((element) => {
+          element.setCustomValidity(currentErrors[field]);
+          if (element === document.activeElement) {
+            element.reportValidity();
+          }
+          element.addEventListener("focus", () => element.reportValidity(), {
+            signal,
+          });
         });
+      });
 
       Object.keys(prevErrors)
         .filter((key) => !currentErrors[key])
@@ -73,5 +82,10 @@ export const useNativeValidityForForm = (scope: FormScope<any>) => {
           );
         });
     });
+
+    return () => {
+      unsubscribe();
+      abortController?.abort();
+    };
   }, [scope]);
 };
