@@ -45,7 +45,7 @@ export const Input = forwardRef(
             ref,
           })}
         />
-        {field.error() && !noErrors && (
+        {!noErrors && field.error() && (
           <span style={{ color: "red" }}>{field.error()}</span>
         )}
       </div>

@@ -5,6 +5,7 @@ export type TextareaProps = {
   name: string;
   label: string;
   value?: string;
+  hideErrors?: boolean;
   "data-testid"?: string;
 };
 
@@ -12,6 +13,7 @@ export const Textarea: FC<TextareaProps> = ({
   name,
   label,
   "data-testid": dataTestId,
+  hideErrors,
 }) => {
   const { error, getInputProps } = useField(name);
   return (
@@ -21,7 +23,7 @@ export const Textarea: FC<TextareaProps> = ({
         {...getInputProps({ id: name })}
         data-testid={dataTestId}
       ></textarea>
-      {error() && <p>{error()}</p>}
+      {!hideErrors && error() && <p>{error()}</p>}
     </>
   );
 };

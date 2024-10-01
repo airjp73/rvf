@@ -79,6 +79,26 @@ describe("Validation", () => {
     cy.findByText("Submitted for John Doe!").should("exist");
   });
 
+  it("should use native validation api when using useNativeValidityForForm", () => {
+    cy.visit("/validation-native").waitForJs();
+
+    cy.findByLabelText("First Name")
+      .invoke("prop", "validationMessage")
+      .should("equal", "First Name is a required field");
+    cy.findByLabelText("Last Name")
+      .invoke("prop", "validationMessage")
+      .should("equal", "Last Name is a required field");
+    cy.findByLabelText("Email")
+      .invoke("prop", "validationMessage")
+      .should("equal", "Email is a required field");
+    cy.findByLabelText("Name of a contact")
+      .invoke("prop", "validationMessage")
+      .should("equal", "Name of a contact is a required field");
+    cy.findByLabelText("Comment")
+      .invoke("prop", "validationMessage")
+      .should("equal", "Comment is a required field");
+  });
+
   it("should reset isValid to true when errors resolved", () => {
     cy.visit("/validation-isvalid").waitForJs();
 
