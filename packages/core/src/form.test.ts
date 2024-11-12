@@ -25,6 +25,7 @@ it("should be able to nest scopes arbitrarily deep", () => {
       reloadDocument: false,
     },
     formProps: { id: "test-form" },
+    defaultFormId: "default-form-id",
   });
 
   expect(form.__field_prefix__).toBe("");
@@ -65,6 +66,7 @@ it("should be able to nest scopes with arrays", () => {
       reloadDocument: false,
     },
     formProps: { id: "test-form" },
+    defaultFormId: "default-form-id",
   });
 
   expect(form.__field_prefix__).toBe("");
