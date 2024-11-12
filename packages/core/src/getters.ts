@@ -48,7 +48,7 @@ export const getFormIdOption = (state: FormStoreValue) => state.formProps.id;
 
 export const getFormProps = (state: FormStoreValue) => ({
   ...state.formProps,
-  id: state.formProps.id ?? state.defaultFormId,
+  id: getFormId(state),
 });
 
 export const getFormAction = (state: FormStoreValue) => state.formProps.action;

@@ -20,7 +20,6 @@ import {
   preprocessFormData,
 } from "@rvf/core";
 import { useServerValidationErrors } from "./auto-server-hooks";
-import { useId } from "react";
 
 // Trying to manipulate the existing types for this breaks the type inference
 // for the handleSubmit argument. So we'll just spell it out again
@@ -149,7 +148,6 @@ export function useForm<FormInputData extends FieldValues, FormOutputData>(
   rvf = useFormReact<FormInputData, FormOutputData, void>({
     ...rvfOpts,
     ...serverStuff,
-    id: rvfOpts.id,
     otherFormProps: {
       method: rvfOpts.method,
       encType: rvfOpts.encType,

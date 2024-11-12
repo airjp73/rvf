@@ -175,6 +175,7 @@ export function useForm<
     id,
   } = options;
 
+  const defaultFormId = useId();
   const [form] = useState<FormScope<unknown>>(() => {
     const rvf = createFormScope({
       defaultValues: options.defaultValues ?? {},
@@ -203,6 +204,7 @@ export function useForm<
         disableFocusOnError: disableFocusOnError ?? false,
         reloadDocument: reloadDocument ?? false,
       },
+      defaultFormId,
     });
     return rvf;
   });

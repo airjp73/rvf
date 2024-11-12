@@ -347,6 +347,7 @@ export type FormStoreInit = {
   formProps: StoreFormProps;
   flags: StoreFlags;
   serverValidationErrors: FieldErrors;
+  defaultFormId: string;
 };
 
 const genKey = () => `${Math.round(Math.random() * 10_000)}-${Date.now()}`;
@@ -439,6 +440,7 @@ export const createFormStateStore = ({
   formProps,
   flags,
   serverValidationErrors = {},
+  defaultFormId,
 }: FormStoreInit) =>
   create<FormStoreValue>()(
     immer((set, get) => ({
@@ -459,7 +461,7 @@ export const createFormStateStore = ({
         ...formProps,
         id: formProps.id,
       },
-      defaultFormId: genKey(),
+      defaultFormId,
       flags,
 
       /////// Validation

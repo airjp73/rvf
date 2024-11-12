@@ -35,6 +35,7 @@ const testStore = (init?: Partial<FormStoreInit>) =>
     formProps: {
       id: "test-form",
     },
+    defaultFormId: "test-form",
     ...init,
   });
 

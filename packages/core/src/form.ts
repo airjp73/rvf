@@ -49,6 +49,7 @@ type FormInit<FormInputData extends FieldValues, FormOutputData> = {
   onInvalidSubmit: () => void | Promise<void>;
   formProps: StoreFormProps;
   flags: StoreFlags;
+  defaultFormId: string;
 } & SubmitTypes<FormOutputData>;
 
 export interface FormScope<FormInputData> {
@@ -89,6 +90,7 @@ export const createFormScope = <
   submitSource,
   formProps,
   flags,
+  defaultFormId,
 }: FormInit<FormInputData, FormOutputData>): FormScope<FormInputData> => {
   const transientFieldRefs = createRefStore<HTMLElement>();
   const controlledFieldRefs = createRefStore<HTMLElement>();
@@ -116,6 +118,7 @@ export const createFormScope = <
     validationBehaviorConfig,
     formProps: formProps,
     flags,
+    defaultFormId,
   });
   const subformCache = new Map<string, any>();
 
