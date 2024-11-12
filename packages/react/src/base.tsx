@@ -18,6 +18,7 @@ import {
   getFormProps,
   SubmitterOptions,
   FORM_ID_FIELD_NAME,
+  getFormIdOption,
 } from "@rvf/core";
 import {
   StringToPathTuple,
@@ -685,7 +686,7 @@ export const makeBaseFormApi = <FormInputData,>({
     },
 
     renderFormIdInput: () => {
-      const formId = getFormId(trackedState);
+      const formId = getFormIdOption(trackedState);
       if (!formId) return null;
       return <input type="hidden" name={FORM_ID_FIELD_NAME} value={formId} />;
     },

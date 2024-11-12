@@ -68,12 +68,9 @@ export function useForm<FormInputData extends FieldValues, FormOutputData>(
 ): FormApi<FormInputData> {
   let rvf: FormApi<FormInputData>;
 
-  const defaultId = useId();
-  const formId = rvfOpts.id ?? defaultId;
-
   const { fetcher, submitSource = "dom" } = rvfOpts;
   const serverStuff = useServerValidationErrors({
-    formId,
+    formId: rvfOpts.id,
     defaultValues: rvfOpts.defaultValues as any,
     fetcher: rvfOpts.fetcher,
   });
@@ -152,7 +149,7 @@ export function useForm<FormInputData extends FieldValues, FormOutputData>(
   rvf = useFormReact<FormInputData, FormOutputData, void>({
     ...rvfOpts,
     ...serverStuff,
-    id: formId,
+    id: rvfOpts.id,
     otherFormProps: {
       method: rvfOpts.method,
       encType: rvfOpts.encType,

@@ -25,7 +25,6 @@ import { GenericObject, preprocessFormData } from "./native-form-data/flatten";
 import { MultiValueMap } from "./native-form-data/MultiValueMap";
 import { insert, move, remove, replace, toSwapped } from "./arrayUtil";
 import { getFieldDefaultValue, getFieldValue } from "./getters";
-import { F } from "vitest/dist/reporters-yx5ZTtEV";
 
 export type FieldSerializer = (value: unknown) => string;
 
@@ -152,7 +151,7 @@ export type ResolverQueue = ReturnType<typeof createResolverQueue>;
 
 export type StoreFormProps = {
   action?: string;
-  id: string;
+  id?: string;
 };
 
 export type StoreFlags = {
@@ -175,6 +174,7 @@ type StoreState = {
   submitSource: "state" | "dom";
   formProps: StoreFormProps;
   flags: StoreFlags;
+  defaultFormId: string;
 };
 
 export type SubmitterOptions = {
@@ -455,7 +455,11 @@ export const createFormStateStore = ({
       arrayUpdateKeys: {},
       validationBehaviorConfig,
       submitSource,
-      formProps,
+      formProps: {
+        ...formProps,
+        id: formProps.id,
+      },
+      defaultFormId: genKey(),
       flags,
 
       /////// Validation
@@ -862,7 +866,10 @@ export const createFormStateStore = ({
         set((state) => {
           state.submitSource = submitSource;
           state.validationBehaviorConfig = validationBehaviorConfig;
-          state.formProps = formProps;
+          state.formProps = {
+            ...formProps,
+            id: formProps.id ?? state.formProps.id,
+          };
           state.flags = flags;
         });
       },
