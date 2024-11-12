@@ -34,7 +34,7 @@ export default function FrontendValidation() {
   return (
     <>
       <ValidatedForm
-        id="other-aftersubmit-form"
+        id="aftersubmit-form"
         validator={validator}
         method="post"
         resetAfterSubmit
@@ -45,7 +45,7 @@ export default function FrontendValidation() {
       <ValidatedForm
         validator={validator}
         method="post"
-        id="aftersubmit-form"
+        id="other-aftersubmit-form"
         resetAfterSubmit
       >
         <Input name="anotherinput" label="Another input" ref={inputRef} />
