@@ -823,6 +823,8 @@ export const createFormStateStore = ({
           return;
         }
 
+        if (submitted) return;
+
         if (!result) result = await doValidation();
 
         if (result.errors) {
@@ -847,7 +849,7 @@ export const createFormStateStore = ({
           return;
         }
 
-        if (!submitted) await runSubmission(result.data);
+        await runSubmission(result.data);
       },
 
       /////// Actions
