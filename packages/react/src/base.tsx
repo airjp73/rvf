@@ -455,9 +455,6 @@ export type BaseReactFormParams<FormInputData> = {
   trackedState: FormStoreValue;
 };
 
-const isNonNullish = <T,>(value: T | null | undefined): value is T =>
-  value != null;
-
 export const makeBaseFormApi = <FormInputData,>({
   trackedState,
   form,

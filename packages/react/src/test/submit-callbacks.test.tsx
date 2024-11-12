@@ -199,6 +199,7 @@ describe("onBeforeSubmit", () => {
   it("should cancel submit", async () => {
     const callback = vi.fn();
     const submit = vi.fn();
+    const failure = vi.fn();
 
     const TestComp = () => {
       const form = useForm({
@@ -209,6 +210,7 @@ describe("onBeforeSubmit", () => {
           api.cancelSubmit();
           callback();
         },
+        onSubmitFailure: failure,
         handleSubmit: async (data) => submit(data),
       });
 
@@ -226,6 +228,42 @@ describe("onBeforeSubmit", () => {
     expect(callback).toBeCalledTimes(1);
     expect(successValidator.validate).not.toBeCalled();
     expect(submit).not.toBeCalled();
+    expect(failure).not.toBeCalled();
+  });
+
+  it("should complete submit", async () => {
+    const callback = vi.fn();
+    const submit = vi.fn();
+    const success = vi.fn();
+
+    const TestComp = () => {
+      const form = useForm({
+        defaultValues: { foo: 123 },
+        validator: successValidator as Validator<{ foo: 123 }>,
+        onBeforeSubmit: async (api) => {
+          callback();
+          api.completeSubmit();
+          callback();
+        },
+        onSubmitSuccess: success,
+        handleSubmit: async (data) => submit(data),
+      });
+
+      return (
+        <form {...form.getFormProps()} data-testid="form">
+          <input data-testid="foo" {...form.getInputProps("foo")} />
+          <button type="submit" data-testid="submit" />
+        </form>
+      );
+    };
+
+    render(<TestComp />);
+    await userEvent.click(screen.getByTestId("submit"));
+
+    expect(callback).toBeCalledTimes(1);
+    expect(successValidator.validate).not.toBeCalled();
+    expect(submit).not.toBeCalled();
+    expect(success).not.toBeCalled();
   });
 
   it("should provide submitter options", async () => {

@@ -106,6 +106,18 @@ This is only available when `submitSource` is set to `dom`.
 
 Cancels the form submission and sets the submit status to `error`.
 
+This is intended for advanced use-cases.
+By using this, you're taking control of the submission lifecycle.
+`onSubmitFailure` will _not_ be called as a result of this.
+
+#### `completeSubmit`
+
+Aborts the default submission behavior and marks the submit as a success.
+
+This is intended for advanced use-cases.
+By using this, you're taking control of the submission lifecycle.
+`onSubmitSuccess` will _not_ be called as a result of this.
+
 #### `submitterOptions`
 
 The options passed to the form submission by the submitter.

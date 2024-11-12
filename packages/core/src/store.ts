@@ -78,8 +78,20 @@ export type BeforeSubmitApi<
   getFormData: () => FormData;
   /**
    * Cancels the form submission and sets the submit status to `error`.
+   *
+   * This is intended for advanced use-cases.
+   * By using this, you're taking control of the submission lifecycle.
+   * `onSubmitFailure` will _not_ be called as a result of this.
    */
   cancelSubmit: () => never;
+  /**
+   * Aborts the default submission behavior and marks the submit as a success.
+   *
+   * This is intended for advanced use-cases.
+   * By using this, you're taking control of the submission lifecycle.
+   * `onSubmitSuccess` will _not_ be called as a result of this.
+   */
+  completeSubmit: () => never;
   /**
    * The options passed to the form submission by the submitter.
    * This usually comes from props passed to your submit button,
@@ -146,6 +158,7 @@ export type StoreFlags = {
 };
 
 class CancelSubmitError extends Error {}
+class CompleteSubmitError extends Error {}
 
 type StoreState = {
   values: FieldValues;
@@ -749,17 +762,23 @@ export const createFormStateStore = ({
             cancelSubmit: () => {
               throw new CancelSubmitError();
             },
+            completeSubmit: () => {
+              throw new CompleteSubmitError();
+            },
             submitterOptions,
           });
         } catch (err) {
+          const shouldComplete = err instanceof CompleteSubmitError;
+          const shouldFail = err instanceof CancelSubmitError;
           try {
-            if (!(err instanceof CancelSubmitError)) {
+            if (!shouldComplete && !shouldFail) {
               console.error(err);
               await mutableImplStore.onSubmitFailure?.(err);
             }
           } finally {
             set((state) => {
-              state.submitStatus = "error";
+              if (shouldFail) state.submitStatus = "error";
+              else if (shouldComplete) state.submitStatus = "success";
             });
           }
           return;
