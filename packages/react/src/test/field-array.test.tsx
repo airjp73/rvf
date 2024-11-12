@@ -1424,6 +1424,65 @@ it("should be possible to map from the keys array", async () => {
   expect(screen.getByTestId("render-count")).toHaveTextContent("4");
 });
 
+it("should validate correctly on blur", async () => {
+  let id = 0;
+  const Comp = () => {
+    const form = useForm({
+      validator: createValidator({
+        validate: (data) => {
+          const errors: FieldErrors = {};
+          data.foo?.forEach((val: any, index: number) => {
+            console.log(val);
+            if (!val.title) errors[`foo[${index}].title`] = "required";
+          });
+          if (Object.keys(errors).length > 0)
+            return Promise.resolve({ error: errors, data: undefined });
+          return Promise.resolve({ data, error: undefined });
+        },
+      }),
+      handleSubmit: vi.fn(),
+    });
+
+    return (
+      <form {...form.getFormProps()} data-testid="form">
+        {form.array("foo").map((key, item, index) => (
+          <div key={key}>
+            <input
+              data-testid={`foo-${index}`}
+              {...item.getInputProps("title")}
+            />
+            <span data-testid={`foo-${index}-error`}>
+              {form.error(`foo[${index}].title`)}
+            </span>
+          </div>
+        ))}
+        <button
+          type="button"
+          data-testid="add"
+          onClick={() => form.array("foo").push({ id: id++ })}
+        />
+        <button
+          type="button"
+          data-testid="remove"
+          onClick={() => form.array("foo").pop()}
+        />
+        <button type="submit" data-testid="submit" />
+        {form.formState.submitStatus === "success" && <span>success</span>}
+      </form>
+    );
+  };
+
+  render(<Comp />);
+
+  await userEvent.click(screen.getByTestId("add"));
+  await userEvent.click(screen.getByTestId("submit"));
+  expect(screen.getByTestId("foo-0-error")).toHaveTextContent("required");
+
+  await userEvent.type(screen.getByTestId("foo-0"), "foo");
+  await userEvent.click(screen.getByTestId("submit"));
+  expect(screen.getByText("success")).toBeInTheDocument();
+});
+
 // LAUNCH:
 it.todo("should focus new inputs automatically");
 
