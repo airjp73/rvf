@@ -110,13 +110,15 @@ This is intended for advanced use-cases.
 By using this, you're taking control of the submission lifecycle.
 `onSubmitFailure` will _not_ be called as a result of this.
 
-#### `completeSubmit`
-
-Aborts the default submission behavior and marks the submit as a success.
+#### `performSubmit`
 
 This is intended for advanced use-cases.
 By using this, you're taking control of the submission lifecycle.
-`onSubmitSuccess` will _not_ be called as a result of this.
+
+Manually invokes the `handleSubmit` function,
+allowing you to customize the data that is submitted.
+This will not trigger any validations, so make sure to use `getValidatedData`
+if you want to run validations before submitting.
 
 #### `submitterOptions`
 

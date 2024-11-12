@@ -25,6 +25,7 @@ import { GenericObject, preprocessFormData } from "./native-form-data/flatten";
 import { MultiValueMap } from "./native-form-data/MultiValueMap";
 import { insert, move, remove, replace, toSwapped } from "./arrayUtil";
 import { getFieldDefaultValue, getFieldValue } from "./getters";
+import { F } from "vitest/dist/reporters-yx5ZTtEV";
 
 export type FieldSerializer = (value: unknown) => string;
 
@@ -85,13 +86,15 @@ export type BeforeSubmitApi<
    */
   cancelSubmit: () => never;
   /**
-   * Aborts the default submission behavior and marks the submit as a success.
-   *
    * This is intended for advanced use-cases.
    * By using this, you're taking control of the submission lifecycle.
-   * `onSubmitSuccess` will _not_ be called as a result of this.
+   *
+   * Manually invokes the `handleSubmit` function,
+   * allowing you to customize the data that is submitted.
+   * This will not trigger any validations, so make sure to use `getValidatedData`
+   * if you want to run validations before submitting.
    */
-  completeSubmit: () => never;
+  performSubmit: (data: FormOutputData) => Promise<void>;
   /**
    * The options passed to the form submission by the submitter.
    * This usually comes from props passed to your submit button,
@@ -158,7 +161,6 @@ export type StoreFlags = {
 };
 
 class CancelSubmitError extends Error {}
-class CompleteSubmitError extends Error {}
 
 type StoreState = {
   values: FieldValues;
@@ -741,6 +743,45 @@ export const createFormStateStore = ({
         let result: Awaited<ReturnType<typeof doValidation>> | undefined =
           undefined;
 
+        const runSubmission = async (data: unknown) => {
+          try {
+            let response: unknown;
+            if (get().submitSource === "state") {
+              response = await (
+                mutableImplStore.onSubmit as StateSubmitHandler
+              )(data, submitterOptions);
+            } else {
+              if (!formData)
+                throw new Error(
+                  "Missing form data. This is likely a bug in RVF",
+                );
+              response = await (mutableImplStore.onSubmit as DomSubmitHandler)(
+                data,
+                formData,
+                submitterOptions,
+              );
+            }
+
+            try {
+              await mutableImplStore.onSubmitSuccess?.(response);
+            } finally {
+              set((state) => {
+                state.submitStatus = "success";
+              });
+            }
+          } catch (err) {
+            try {
+              await mutableImplStore.onSubmitFailure?.(err);
+            } finally {
+              set((state) => {
+                state.submitStatus = "error";
+              });
+            }
+          }
+        };
+
+        let submitted = false;
+
         try {
           await mutableImplStore.onBeforeSubmit?.({
             unvalidatedData: rawValues,
@@ -762,23 +803,21 @@ export const createFormStateStore = ({
             cancelSubmit: () => {
               throw new CancelSubmitError();
             },
-            completeSubmit: () => {
-              throw new CompleteSubmitError();
+            performSubmit: async (data) => {
+              submitted = true;
+              await runSubmission(data);
             },
             submitterOptions,
           });
         } catch (err) {
-          const shouldComplete = err instanceof CompleteSubmitError;
-          const shouldFail = err instanceof CancelSubmitError;
           try {
-            if (!shouldComplete && !shouldFail) {
+            if (!(err instanceof CancelSubmitError)) {
               console.error(err);
               await mutableImplStore.onSubmitFailure?.(err);
             }
           } finally {
             set((state) => {
-              if (shouldFail) state.submitStatus = "error";
-              else if (shouldComplete) state.submitStatus = "success";
+              state.submitStatus = "error";
             });
           }
           return;
@@ -808,39 +847,7 @@ export const createFormStateStore = ({
           return;
         }
 
-        try {
-          let response: unknown;
-          if (get().submitSource === "state") {
-            response = await (mutableImplStore.onSubmit as StateSubmitHandler)(
-              result.data,
-              submitterOptions,
-            );
-          } else {
-            if (!formData)
-              throw new Error("Missing form data. This is likely a bug in RVF");
-            response = await (mutableImplStore.onSubmit as DomSubmitHandler)(
-              result.data,
-              formData,
-              submitterOptions,
-            );
-          }
-
-          try {
-            await mutableImplStore.onSubmitSuccess?.(response);
-          } finally {
-            set((state) => {
-              state.submitStatus = "success";
-            });
-          }
-        } catch (err) {
-          try {
-            await mutableImplStore.onSubmitFailure?.(err);
-          } finally {
-            set((state) => {
-              state.submitStatus = "error";
-            });
-          }
-        }
+        if (!submitted) await runSubmission(result.data);
       },
 
       /////// Actions
