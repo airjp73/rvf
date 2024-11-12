@@ -293,6 +293,7 @@ describe("onBeforeSubmit", () => {
       return (
         <form {...form.getFormProps()} data-testid="form">
           <input data-testid="foo" {...form.getInputProps("foo")} />
+          <pre data-testid="foo-error">{form.error("foo")}</pre>
           <button type="submit" data-testid="submit" />
         </form>
       );
@@ -303,6 +304,7 @@ describe("onBeforeSubmit", () => {
 
     expect(callback).toBeCalledTimes(1);
     expect(submit).not.toBeCalled();
+    expect(screen.getByTestId("foo-error")).toHaveTextContent("invalid");
   });
 
   it("should return form data in dom mode", async () => {
