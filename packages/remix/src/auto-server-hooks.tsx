@@ -1,9 +1,5 @@
 import { FetcherWithComponents, useActionData } from "@remix-run/react";
-import {
-  ValidationErrorResponseData,
-  FORM_ID_FIELD_NAME,
-  FieldValues,
-} from "@rvf/core";
+import { ValidationErrorResponseData, FieldValues } from "@rvf/core";
 
 type ErrorResponseContext = {
   fetcher?: FetcherWithComponents<unknown>;
@@ -18,7 +14,7 @@ function useErrorResponseForForm({
   const data = (fetcher?.data as any) ?? actionData;
   if (!data?.fieldErrors) return null;
 
-  const bothFormAndResponseHaveNoId = (formId ?? null) && (data.formId ?? null);
+  const bothFormAndResponseHaveNoId = formId == null && data.formId == null;
   if (bothFormAndResponseHaveNoId || formId === data.formId) return data;
   return null;
 }

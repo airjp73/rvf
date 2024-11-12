@@ -261,16 +261,18 @@ it("should not show the validation errors if no form id is returned from the act
 });
 
 it("should automatically take care of the form id for server validation errors", async () => {
-  const validator = createValidator({
-    validate: () =>
-      Promise.resolve({
-        data: undefined,
-        error: { foo: "validation error" },
-      }),
-  });
+  const validator = (msg: string) =>
+    createValidator({
+      validate: (data) =>
+        msg === "server side"
+          ? Promise.resolve({ data: undefined, error: { foo: msg } })
+          : Promise.resolve({ data, error: undefined }),
+    });
 
   const action = async ({ request }: ActionFunctionArgs) => {
-    const data = await validator.validate(await request.formData());
+    const data = await validator("server side").validate(
+      await request.formData(),
+    );
     if (data.error) return validationError(data.error);
     return {};
   };
@@ -281,7 +283,7 @@ it("should automatically take care of the form id for server validation errors",
       Component: () => {
         const form = useForm({
           defaultValues: { foo: "" },
-          validator,
+          validator: validator("client side"),
           method: "post",
           id: "testing",
         });
@@ -307,7 +309,59 @@ it("should automatically take care of the form id for server validation errors",
   await userEvent.click(screen.getByTestId("submit"));
 
   expect(await screen.findByTestId("foo-error")).toHaveTextContent(
-    "validation error",
+    "server side",
+  );
+});
+
+it("should show server validation errors even if there's no form id and renderFormIdInput is used", async () => {
+  const validator = (msg: string) =>
+    createValidator({
+      validate: (data) =>
+        msg === "server side"
+          ? Promise.resolve({ data: undefined, error: { foo: msg } })
+          : Promise.resolve({ data, error: undefined }),
+    });
+
+  const action = async ({ request }: ActionFunctionArgs) => {
+    const data = await validator("server side").validate(
+      await request.formData(),
+    );
+    if (data.error) return validationError(data.error);
+    return {};
+  };
+
+  const Stub = createRemixStub([
+    {
+      path: "/",
+      Component: () => {
+        const form = useForm({
+          defaultValues: { foo: "" },
+          validator: validator("client side"),
+          method: "post",
+        });
+        return (
+          <form {...form.getFormProps()}>
+            {form.renderFormIdInput()}
+
+            <input data-testid="foo" {...form.getInputProps("foo")} />
+            {form.error("foo") && (
+              <pre data-testid="foo-error">{form.error("foo")}</pre>
+            )}
+            <button type="submit" data-testid="submit" />
+          </form>
+        );
+      },
+      action,
+    },
+  ]);
+
+  render(<Stub />);
+
+  await userEvent.type(screen.getByTestId("foo"), "bar");
+  await userEvent.click(screen.getByTestId("submit"));
+
+  expect(await screen.findByTestId("foo-error")).toHaveTextContent(
+    "server side",
   );
 });
 

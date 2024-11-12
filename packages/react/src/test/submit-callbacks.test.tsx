@@ -267,7 +267,39 @@ describe("onBeforeSubmit", () => {
     expect(success).toBeCalledTimes(1);
   });
 
-  it("should customizeData for submission", async () => {
+  it("should be possible to skip validation with onBeforeSubmit", async () => {
+    const submit = vi.fn();
+    const success = vi.fn();
+
+    const TestComp = () => {
+      const form = useForm({
+        defaultValues: { foo: 123 },
+        validator: successValidator as Validator<{ foo: 123 }>,
+        onBeforeSubmit: async (api) => {
+          await api.performSubmit(api.unvalidatedData as any);
+        },
+        onSubmitSuccess: success,
+        handleSubmit: async (data) => submit(data),
+      });
+
+      return (
+        <form {...form.getFormProps()} data-testid="form">
+          <input data-testid="foo" {...form.getInputProps("foo")} />
+          <button type="submit" data-testid="submit" />
+        </form>
+      );
+    };
+
+    render(<TestComp />);
+    await userEvent.click(screen.getByTestId("submit"));
+
+    expect(successValidator.validate).not.toBeCalled();
+    expect(submit).toBeCalledTimes(1);
+    expect(submit).toBeCalledWith({ foo: "123" });
+    expect(success).toBeCalledTimes(1);
+  });
+
+  it("should customize data for submission", async () => {
     const submit = vi.fn();
     const success = vi.fn();
 
@@ -293,7 +325,7 @@ describe("onBeforeSubmit", () => {
     render(<TestComp />);
     await userEvent.click(screen.getByTestId("submit"));
 
-    expect(successValidator.validate).toBeCalled();
+    expect(successValidator.validate).not.toBeCalled();
     expect(submit).toBeCalledTimes(1);
     expect(submit).toBeCalledWith({ foo: 456 });
     expect(success).toBeCalledTimes(1);

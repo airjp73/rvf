@@ -20,6 +20,7 @@ import {
   preprocessFormData,
 } from "@rvf/core";
 import { useServerValidationErrors } from "./auto-server-hooks";
+import { useId } from "react";
 
 // Trying to manipulate the existing types for this breaks the type inference
 // for the handleSubmit argument. So we'll just spell it out again
@@ -67,9 +68,12 @@ export function useForm<FormInputData extends FieldValues, FormOutputData>(
 ): FormApi<FormInputData> {
   let rvf: FormApi<FormInputData>;
 
+  const defaultId = useId();
+  const formId = rvfOpts.id ?? defaultId;
+
   const { fetcher, submitSource = "dom" } = rvfOpts;
   const serverStuff = useServerValidationErrors({
-    formId: rvfOpts.id,
+    formId,
     defaultValues: rvfOpts.defaultValues as any,
     fetcher: rvfOpts.fetcher,
   });
@@ -148,6 +152,7 @@ export function useForm<FormInputData extends FieldValues, FormOutputData>(
   rvf = useFormReact<FormInputData, FormOutputData, void>({
     ...rvfOpts,
     ...serverStuff,
+    id: formId,
     otherFormProps: {
       method: rvfOpts.method,
       encType: rvfOpts.encType,
