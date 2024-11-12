@@ -79,7 +79,7 @@ describe("Field arrays", () => {
     cy.findByText("Todo 3: This one gets deleted").should("not.exist");
   });
 
-  it.only("should maintain state correctly", () => {
+  it("should maintain state correctly", () => {
     cy.visit("/field-array/state").waitForJs();
 
     cy.findByText("Push").click();
