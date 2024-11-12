@@ -81,6 +81,7 @@ describe("Validation", () => {
 
   it("should use native validation api when using useNativeValidityForForm", () => {
     cy.visit("/validation-native").waitForJs();
+    cy.findByText("Submit").click();
 
     cy.findByLabelText("First Name")
       .invoke("prop", "validationMessage")
