@@ -1,5 +1,5 @@
-import { DataFunctionArgs, json } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
+import { DataFunctionArgs, json } from "react-router";
+import { useLoaderData } from "react-router";
 import { withYup } from "@rvf/yup";
 import { useForm } from "@rvf/remix";
 import * as yup from "yup";

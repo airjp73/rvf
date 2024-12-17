@@ -1,4 +1,4 @@
-import { RemixBrowser } from "@remix-run/react";
+import { HydratedRouter } from "react-router/dom";
 import React from "react";
 import { hydrate } from "react-dom";
 
@@ -6,7 +6,7 @@ import { hydrate } from "react-dom";
 // https://github.com/remix-run/remix/issues/2570
 hydrate(
   <React.StrictMode>
-    <RemixBrowser />
+    <HydratedRouter />
   </React.StrictMode>,
   document,
 );

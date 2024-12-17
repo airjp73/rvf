@@ -1,4 +1,4 @@
-import { redirect } from "@remix-run/node";
+import { redirect } from "react-router";
 import { withZod } from "@rvf/zod";
 import { ValidatedForm } from "@rvf/remix";
 import { z } from "zod";

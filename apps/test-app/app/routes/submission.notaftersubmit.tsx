@@ -1,4 +1,4 @@
-import { DataFunctionArgs, json } from "@remix-run/node";
+import { DataFunctionArgs, json } from "react-router";
 import { withYup } from "@rvf/yup";
 import { useRef } from "react";
 import { ValidatedForm } from "@rvf/remix";

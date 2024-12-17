@@ -3,9 +3,9 @@
  * to actually write a test for this with cypress.
  * It's left here form manual testing.
  */
-import { json } from "@remix-run/node";
-import type { DataFunctionArgs } from "@remix-run/node";
-import { useActionData } from "@remix-run/react";
+import { json } from "react-router";
+import type { DataFunctionArgs } from "react-router";
+import { useActionData } from "react-router";
 import { withYup } from "@rvf/yup";
 import { useEffect, useState } from "react";
 import { ValidatedForm } from "@rvf/remix";

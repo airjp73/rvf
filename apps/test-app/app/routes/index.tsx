@@ -1,5 +1,5 @@
-import { MetaFunction, LoaderFunctionArgs, json } from "@remix-run/node";
-import { useLoaderData, Link } from "@remix-run/react";
+import { MetaFunction, LoaderFunctionArgs, json } from "react-router";
+import { useLoaderData, Link } from "react-router";
 
 type IndexData = {
   resources: Array<{ name: string; url: string }>;

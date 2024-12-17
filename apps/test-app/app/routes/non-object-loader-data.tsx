@@ -1,4 +1,4 @@
-import { json, DataFunctionArgs } from "@remix-run/node";
+import { json, DataFunctionArgs } from "react-router";
 import { withZod } from "@rvf/zod";
 import { ValidatedForm } from "@rvf/remix";
 import { zfd } from "zod-form-data";
