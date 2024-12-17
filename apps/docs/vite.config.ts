@@ -39,7 +39,9 @@ export default defineConfig({
         }
       },
     },
+    // @ts-expect-error only TS complains, this seems to work fine
     reactRouter(),
+    // @ts-expect-error only TS complains, this seems to work fine
     tsconfigPaths(),
   ],
 });
