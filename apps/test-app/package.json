@@ -15,7 +15,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@headlessui/react": "^1.5.0",
+    "@headlessui/react": "^2.2.0",
     "@react-router/node": "^7.0.0",
     "@rvf/react-router": "*",
     "@rvf/yup": "*",
@@ -33,8 +33,8 @@
     "@react-router/dev": "^7.0.0",
     "@react-router/serve": "^7.0.0",
     "@testing-library/cypress": "^8.0.2",
-    "@types/react": "^18.0.9",
-    "@types/react-dom": "^18.0.3",
+    "@types/react": "^19.0.1",
+    "@types/react-dom": "^19.0.2",
     "cypress": "^9.1.0",
     "har-validator": "^5.1.5",
     "start-server-and-test": "^1.14.0",
