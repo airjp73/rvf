@@ -27,12 +27,13 @@
     "@rvf/set-get": ">= 6.0.3 < 7.0.0"
   },
   "devDependencies": {
-    "react-tracked": "^2.0.0",
     "@rvf/set-get": "*",
+    "react": "^19.0.0",
+    "react-tracked": "^2.0.0",
     "tsconfig": "*",
     "tsup-config": "*",
     "typescript": "^5.4.5",
-    "zustand": "5.0.0-alpha.6"
+    "zustand": "^5.0.2"
   },
   "dependencies": {
     "immer": "^10.0.4"
