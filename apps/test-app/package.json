@@ -8,11 +8,11 @@
     "build": "react-router build",
     "dev": "start-server-and-test dev:remix http-get://localhost:3000 cy:open",
     "test": "start-server-and-test start http-get://localhost:3000 cy:run",
-    "dev:remix": "remix vite:dev",
+    "dev:remix": "react-router dev",
     "cy:open": "cypress open",
     "cy:run": "cypress run",
     "start": "react-router-serve ./build/server/index.js",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "react-router typegen && tsc --noEmit"
   },
   "dependencies": {
     "@headlessui/react": "^2.2.0",

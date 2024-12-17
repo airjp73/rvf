@@ -8,7 +8,7 @@
     "dev": "react-router dev",
     "lint": "eslint --ignore-path .gitignore --cache --cache-location ./node_modules/.cache/eslint .",
     "start": "react-router-serve ./build/server/index.js",
-    "typecheck": "react-router typegen && tsc"
+    "typecheck": "react-router typegen && tsc --noEmit"
   },
   "dependencies": {
     "@mdx-js/react": "^3.0.1",
