@@ -1,6 +1,6 @@
 import { redirect } from "react-router";
 import { withZod } from "@rvf/zod";
-import { ValidatedForm } from "@rvf/remix";
+import { ValidatedForm } from "../../../../packages/react-router/dist";
 import { z } from "zod";
 import { SubmitButton } from "~/components/SubmitButton";
 

@@ -6,7 +6,7 @@ import {
   FormProvider,
   useForm,
   useFormScopeOrContext,
-} from "@rvf/remix";
+} from "../../../../packages/react-router/dist";
 import * as yup from "yup";
 import { Input } from "~/components/Input";
 import { SubmitButton } from "~/components/SubmitButton";

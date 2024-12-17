@@ -1,5 +1,5 @@
 import { Form, useFetcher } from "react-router";
-import { ValidatedForm } from "@rvf/remix";
+import { ValidatedForm } from "../../../../packages/react-router/dist";
 import { withYup } from "@rvf/yup";
 import * as yup from "yup";
 import { SubmitButton } from "~/components/SubmitButton";

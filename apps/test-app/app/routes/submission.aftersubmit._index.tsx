@@ -1,7 +1,10 @@
 import { DataFunctionArgs, json } from "react-router";
 import { withYup } from "@rvf/yup";
 import { useRef } from "react";
-import { ValidatedForm, validationError } from "@rvf/remix";
+import {
+  ValidatedForm,
+  validationError,
+} from "../../../../packages/react-router/dist";
 import * as yup from "yup";
 import { Input } from "~/components/Input";
 import { SubmitButton } from "~/components/SubmitButton";

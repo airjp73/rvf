@@ -8,7 +8,7 @@ import type { DataFunctionArgs } from "react-router";
 import { useActionData } from "react-router";
 import { withYup } from "@rvf/yup";
 import { useEffect, useState } from "react";
-import { ValidatedForm } from "@rvf/remix";
+import { ValidatedForm } from "../../../../packages/react-router/dist";
 import * as yup from "yup";
 import { Input } from "~/components/Input";
 import { SubmitButton } from "~/components/SubmitButton";

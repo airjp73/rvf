@@ -1,7 +1,10 @@
 import { json, DataFunctionArgs } from "react-router";
 import { useLoaderData } from "react-router";
 import { withZod } from "@rvf/zod";
-import { ValidatedForm, ValidatorData } from "@rvf/remix";
+import {
+  ValidatedForm,
+  ValidatorData,
+} from "../../../../packages/react-router/dist";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
 import { Fieldset } from "~/components/Fieldset";

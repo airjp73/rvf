@@ -1,7 +1,7 @@
 import { DataFunctionArgs, json } from "react-router";
 import { useActionData } from "react-router";
 import { withZod } from "@rvf/zod";
-import { ValidatedForm } from "@rvf/remix";
+import { ValidatedForm } from "../../../../packages/react-router/dist";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
 import { Input } from "~/components/Input";

@@ -1,7 +1,7 @@
 import { DataFunctionArgs, json } from "react-router";
 import { useLoaderData } from "react-router";
 import { withYup } from "@rvf/yup";
-import { useForm } from "@rvf/remix";
+import { useForm } from "../../../../packages/react-router/dist";
 import * as yup from "yup";
 import { useEffect, useRef } from "react";
 
