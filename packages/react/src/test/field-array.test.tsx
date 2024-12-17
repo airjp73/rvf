@@ -1432,7 +1432,6 @@ it("should validate correctly on blur", async () => {
         validate: (data) => {
           const errors: FieldErrors = {};
           data.foo?.forEach((val: any, index: number) => {
-            console.log(val);
             if (!val.title) errors[`foo[${index}].title`] = "required";
           });
           if (Object.keys(errors).length > 0)
