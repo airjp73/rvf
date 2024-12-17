@@ -1,7 +1,7 @@
 import { ComponentProps } from "react";
 import { Heading } from "./Heading";
 import { Prose } from "./Prose";
-import { Link } from "@remix-run/react";
+import { Link } from "react-router";
 import { cn } from "~/lib/utils";
 
 export const a = ({ href, ...rest }: ComponentProps<"a">) => (

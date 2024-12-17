@@ -8,7 +8,7 @@ import {
   ReactNode,
   useRef,
 } from "react";
-import { Link, useLocation } from "@remix-run/react";
+import { Link, useLocation } from "react-router";
 import clsx from "clsx";
 import { AnimatePresence, LayoutGroup, motion } from "framer-motion";
 import { cn } from "~/lib/utils";

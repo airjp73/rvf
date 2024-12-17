@@ -1,6 +1,6 @@
 "use client";
 
-import { Link, useLocation } from "@remix-run/react";
+import { Link, useLocation } from "react-router";
 import { ArrowLeftIcon, ArrowRightIcon } from "lucide-react";
 import { flatNavLinks } from "./Navigation";
 

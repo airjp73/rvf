@@ -1,5 +1,5 @@
 import { forwardRef } from "react";
-import { Link, useLocation } from "@remix-run/react";
+import { Link, useLocation } from "react-router";
 import clsx from "clsx";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { ThemeToggle } from "../theme/theme";

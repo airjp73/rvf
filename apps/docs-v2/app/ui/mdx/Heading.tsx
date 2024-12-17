@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import { useInView } from "framer-motion";
-import { Link, useLocation } from "@remix-run/react";
+import { Link, useLocation } from "react-router";
 import { cn } from "~/lib/utils";
 
 function AnchorIcon(props: React.ComponentPropsWithoutRef<"svg">) {

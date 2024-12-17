@@ -1,4 +1,4 @@
-import { Link, Outlet } from "@remix-run/react";
+import { Link, Outlet } from "react-router";
 import { motion } from "framer-motion";
 import { Logo } from "~/ui/branding/Logo";
 import { Footer } from "~/ui/layout/Footer";

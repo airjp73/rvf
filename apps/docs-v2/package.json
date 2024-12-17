@@ -4,11 +4,11 @@
   "sideEffects": false,
   "type": "module",
   "scripts": {
-    "build": "remix vite:build",
-    "dev": "remix vite:dev",
+    "build": "react-router build",
+    "dev": "react-router dev",
     "lint": "eslint --ignore-path .gitignore --cache --cache-location ./node_modules/.cache/eslint .",
-    "start": "remix-serve ./build/server/index.js",
-    "typecheck": "tsc"
+    "start": "react-router-serve ./build/server/index.js",
+    "typecheck": "react-router typegen && tsc"
   },
   "dependencies": {
     "@mdx-js/react": "^3.0.1",
@@ -17,9 +17,8 @@
     "@radix-ui/react-label": "^2.0.2",
     "@radix-ui/react-slot": "^1.0.2",
     "@radix-ui/react-tabs": "^1.0.4",
-    "@remix-run/node": "^2.15.1",
-    "@remix-run/react": "^2.15.1",
-    "@remix-run/serve": "^2.15.1",
+    "@react-router/node": "^7.0.0",
+    "@react-router/serve": "^7.0.0",
     "@rvf/react": "*",
     "@rvf/remix": "*",
     "@rvf/zod": "*",
@@ -31,6 +30,7 @@
     "lucide-react": "^0.394.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-router": "^7.0.0",
     "remark-gfm": "^4.0.0",
     "remix-utils": "^7.6.0",
     "shiki": "^1.6.4",
@@ -42,7 +42,7 @@
   },
   "devDependencies": {
     "@mdx-js/rollup": "^3.0.1",
-    "@remix-run/dev": "^2.9.2",
+    "@react-router/dev": "^7.0.0",
     "@shikijs/rehype": "^1.6.4",
     "@tailwindcss/typography": "^0.5.13",
     "@types/react": "^18.2.20",

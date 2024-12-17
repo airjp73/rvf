@@ -6,7 +6,7 @@ import {
   ScrollRestoration,
   isRouteErrorResponse,
   useRouteError,
-} from "@remix-run/react";
+} from "react-router";
 import "./tailwind.css";
 import { ThemeProvider } from "./ui/theme/themeMachine";
 import { ThemeScript, ThemedHtmlElement } from "./ui/theme/theme";
