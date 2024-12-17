@@ -20,8 +20,12 @@ Let's use this validator as an example:
 ```tsx
 const validator = withZod(
   z.object({
-    firstName: z.string().min(1, { message: "First name is required" }),
-    lastName: z.string().min(1, { message: "Last name is required" }),
+    firstName: z
+      .string()
+      .min(1, { message: "First name is required" }),
+    lastName: z
+      .string()
+      .min(1, { message: "Last name is required" }),
     email: z
       .string()
       .min(1, { message: "Email is required" })
@@ -33,12 +37,19 @@ const validator = withZod(
 All you need to do is call `validator.validate` on the form data returned from `request.formData`.
 
 ```tsx
-export const action = async ({ request }: DataFunctionArgs) => {
-  const result = await validator.validate(await request.formData());
+export const action = async ({
+  request,
+}: DataFunctionArgs) => {
+  const result = await validator.validate(
+    await request.formData(),
+  );
 
   if (result.error) {
-    // validationError comes from `@rvf/remix`
-    return validationError(result.error, result.submittedData);
+    // validationError comes from `@rvf/react-router`
+    return validationError(
+      result.error,
+      result.submittedData,
+    );
   }
 
   const { firstName, lastName, email } = result.data;

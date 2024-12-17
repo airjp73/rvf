@@ -38,7 +38,7 @@ The RVF api now makes use of proxy-based access tracking to ensure that renders 
 `remix-validated-form` has been renamed to only `RVF`, and has new package names.
 
 - @rvf/react
-- @rvf/remix
+- @rvf/react-router
 - @rvf/zod
 - @rvf/yup
 
@@ -61,10 +61,17 @@ In `remix-validated-form`, a common pattern was to use this feature in the paren
 
 ```tsx
 export const MyForm = () => {
-  const [value, setValue] = useControlledField("name", "myFormId");
+  const [value, setValue] = useControlledField(
+    "name",
+    "myFormId",
+  );
 
   return (
-    <ValidatedForm validator={myValidator} method="post" id="myFormId">
+    <ValidatedForm
+      validator={myValidator}
+      method="post"
+      id="myFormId"
+    >
       <MyInput
         name="name"
         value={value}
@@ -93,7 +100,9 @@ const MyForm = () => {
         <MyInput
           name="name"
           value={form.value("name")}
-          onChange={(e) => form.setValue("name", e.target.value)}
+          onChange={(e) =>
+            form.setValue("name", e.target.value)
+          }
         />
       </form>
     </FormProvider>
@@ -109,7 +118,9 @@ const MyForm = () => {
         <MyInput
           name="name"
           value={form.value("name")}
-          onChange={(e) => form.setValue("name", e.target.value)}
+          onChange={(e) =>
+            form.setValue("name", e.target.value)
+          }
         />
       )}
     </ValidatedForm>
@@ -153,7 +164,10 @@ export const useIsValid = (rvf?: FormScope<any>) =>
   <summary>useControlField</summary>
 
 ```typescript
-export const useControlField = <T>(name: string, rvf?: FormScope<any>) => {
+export const useControlField = <T>(
+  name: string,
+  rvf?: FormScope<any>,
+) => {
   const form = useFormScopeOrContext(rvf);
   const value: T = form.value(name);
   const setValue = useCallback(
@@ -170,10 +184,13 @@ export const useControlField = <T>(name: string, rvf?: FormScope<any>) => {
   <summary>useUpdateControlledField</summary>
 
 ```typescript
-export const useUpdateControlledField = (rvf?: FormScope<any>) => {
+export const useUpdateControlledField = (
+  rvf?: FormScope<any>,
+) => {
   const form = useFormScopeOrContext(rvf);
   return useCallback(
-    (name: string, value: any) => form.setValue(name, value),
+    (name: string, value: any) =>
+      form.setValue(name, value),
     [form],
   );
 };

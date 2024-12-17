@@ -150,7 +150,7 @@ import {
   isValidationErrorResponse,
   useForm,
   validationError,
-} from "@rvf/remix";
+} from "@rvf/react-router";
 import { withZod } from "@rvf/zod";
 import { z } from "zod";
 import { MyInput } from "~/fields/MyInput";
@@ -281,13 +281,13 @@ export const ReactExample = () => {
 
 RVF can be used with any flavor of React, but there's also an adapter specifically for [Remix](https://remix.run).
 
-- @rvf/remix
+- @rvf/react-router
 - @rvf/react
 
 For Remix users:
 
 ```bash
-npm install @rvf/remix
+npm install @rvf/react-router
 ```
 
 For plain React or other frameworks like Next.js:

@@ -18,7 +18,11 @@ function useForm<
   FormOutputData,
   SubmitResponseData,
 >(
-  options: FormOpts<FormInputData, FormOutputData, SubmitResponseData>,
+  options: FormOpts<
+    FormInputData,
+    FormOutputData,
+    SubmitResponseData
+  >,
 ): FormApi<FormInputData>;
 ```
 
@@ -28,7 +32,8 @@ function useForm<
 const form = useForm({
   defaultValues: { foo: "bar" },
   validator: myValidator,
-  handleSubmit: (validatedData) => console.log(validatedData),
+  handleSubmit: (validatedData) =>
+    console.log(validatedData),
 });
 ```
 
@@ -132,7 +137,7 @@ Called after the form has been successfully submitted with whatever data was ret
 Can be useful for showing a toast message or redirecting the user to a different page.
 If you return a `Promise` from this callback, the `isSubmitting` state will still be `true` while this callback is running.
 
-If you're using an adapter like `@rvf/remix`, this will be called even if you aren't using `handleSubmit`.
+If you're using an adapter like `@rvf/react-router`, this will be called even if you aren't using `handleSubmit`.
 
 ### `onSubmitFailure`
 
@@ -140,7 +145,7 @@ Called when the `handleSubmit` function throws an error.
 Can be useful for showing a toast message or redirecting the user to a different page.
 If you return a `Promise` from this callback, the `isSubmitting` state will still be `true` while this callback is running.
 
-If you're using an adapter like `@rvf/remix`, this will be called even if you aren't using `handleSubmit`.
+If you're using an adapter like `@rvf/react-router`, this will be called even if you aren't using `handleSubmit`.
 
 ### `onInvalidSubmit`
 

@@ -17,7 +17,7 @@
   "dependencies": {
     "@headlessui/react": "^1.5.0",
     "@react-router/node": "^7.0.0",
-    "@rvf/remix": "*",
+    "@rvf/react-router": "*",
     "@rvf/yup": "*",
     "@rvf/zod": "*",
     "cypress-file-upload": "^5.0.8",
