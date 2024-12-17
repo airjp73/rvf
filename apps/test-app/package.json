@@ -11,7 +11,7 @@
     "dev:remix": "react-router dev",
     "cy:open": "cypress open",
     "cy:run": "cypress run",
-    "start": "react-router-serve ./build/server/index.js",
+    "start": "NODE_ENV=production react-router-serve ./build/server/index.js",
     "typecheck": "react-router typegen && tsc --noEmit"
   },
   "dependencies": {
