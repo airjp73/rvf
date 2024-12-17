@@ -28,7 +28,6 @@
   },
   "devDependencies": {
     "@rvf/set-get": "*",
-    "react": "^19.0.0",
     "react-tracked": "^2.0.0",
     "tsconfig": "*",
     "tsup-config": "*",

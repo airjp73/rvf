@@ -28,7 +28,7 @@ export const BasicExample = () => {
                 React
               </CodeTabsTrigger>
               <CodeTabsTrigger value="with-remix">
-                Remix
+                React Router
               </CodeTabsTrigger>
             </CodeTabsList>
           }

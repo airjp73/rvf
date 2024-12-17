@@ -21,7 +21,7 @@ export const ServerValidation = () => {
     <Tabs defaultValue="example">
       <ExampleArea>
         <CodeHeader
-          title="Server validation with Remix"
+          title="Server validation with React Router"
           tabs={
             <CodeTabsList>
               <CodeTabsTrigger value="example">

@@ -295,7 +295,7 @@ const navigation = (
       </NavigationGroup>
     </NavigationGroup>
     <NavigationGroup title="Adapters">
-      <NavItem href="/remix">Remix</NavItem>
+      <NavItem href="/react-router">React Router</NavItem>
     </NavigationGroup>
   </>
 );

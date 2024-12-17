@@ -1,7 +1,7 @@
-# RVF Remix
+# RVF React Router
 
-The Remix adapter for [RVF](https://github.com/airjp73/remix-validated-form).
-This is the package you should use if you are using Remix.
+The React Router adapter for [RVF](https://github.com/airjp73/rvf).
+This is the package you should use if you are using React Router.
 
 ## Docs
 
