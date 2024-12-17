@@ -17,6 +17,13 @@ import {
 } from "react-router";
 import { ValidatedForm } from "../ValidatedForm";
 
+/**
+ * Some of the synchronous flushing react does here breaks our submit complete logic,
+ * so we need to make our action actually async.
+ */
+const nextTick = (ms: number = 0) =>
+  new Promise((resolve) => setTimeout(resolve, ms));
+
 it("should have the correct type for handleSubmit", async () => {
   const validator = createValidator({
     validate: (data) => Promise.resolve({ data, error: undefined }),
@@ -617,6 +624,7 @@ it("should respect the specified action", async () => {
       async action({ request }) {
         a();
         await request.formData();
+        await nextTick();
         return redirect("/");
       },
     },
@@ -626,7 +634,9 @@ it("should respect the specified action", async () => {
 
   await userEvent.click(screen.getByTestId("submit-action"));
   expect(a).toHaveBeenCalledTimes(1);
-  expect(screen.getByTestId("status")).toHaveTextContent("success");
+  await waitFor(() => {
+    expect(screen.getByTestId("status")).toHaveTextContent("success");
+  });
 });
 
 it("should respect the specified action with the ValidatedForm component", async () => {
@@ -656,6 +666,7 @@ it("should respect the specified action with the ValidatedForm component", async
       async action({ request }) {
         a();
         await request.formData();
+        await nextTick();
         return redirect("/");
       },
     },
@@ -665,7 +676,9 @@ it("should respect the specified action with the ValidatedForm component", async
 
   await userEvent.click(screen.getByTestId("submit-action"));
   expect(a).toHaveBeenCalledTimes(1);
-  expect(screen.getByTestId("status")).toHaveTextContent("success");
+  await waitFor(() => {
+    expect(screen.getByTestId("status")).toHaveTextContent("success");
+  });
 });
 
 it("should correctly strip down fully qualified urls", async () => {
@@ -704,6 +717,7 @@ it("should correctly strip down fully qualified urls", async () => {
       async action({ request }) {
         a();
         await request.formData();
+        await nextTick();
         return redirect("/");
       },
     },
@@ -713,7 +727,9 @@ it("should correctly strip down fully qualified urls", async () => {
 
   await userEvent.click(screen.getByTestId("submit-action"));
   expect(a).toHaveBeenCalledTimes(1);
-  expect(screen.getByTestId("status")).toHaveTextContent("success");
+  await waitFor(() => {
+    expect(screen.getByTestId("status")).toHaveTextContent("success");
+  });
 });
 
 it("should function correctly with nested urls", async () => {
@@ -744,6 +760,7 @@ it("should function correctly with nested urls", async () => {
       async action({ request }) {
         a();
         await request.formData();
+        await nextTick();
         return redirect("/test/action");
       },
     },
@@ -753,7 +770,9 @@ it("should function correctly with nested urls", async () => {
 
   await userEvent.click(screen.getByTestId("submit-action"));
   expect(a).toHaveBeenCalledTimes(1);
-  expect(screen.getByTestId("status")).toHaveTextContent("success");
+  await waitFor(() => {
+    expect(screen.getByTestId("status")).toHaveTextContent("success");
+  });
 });
 
 it("should correctly handle submitting with a fetcher", async () => {
@@ -808,6 +827,7 @@ it("should call onSubmitSuccess when the call is complete", async () => {
 
   const action = async ({ request }: ActionFunctionArgs) => {
     const data = await validator.validate(await request.formData());
+    await nextTick();
     if (data.error) return validationError(data.error);
     return { message: `You said: ${data.data.foo}` };
   };
@@ -855,6 +875,7 @@ it("should have access to the latest action data in onSubmitSuccess", async () =
 
   const action = async ({ request }: ActionFunctionArgs) => {
     const data = await validator.validate(await request.formData());
+    await nextTick();
     if (data.error) return validationError(data.error);
     return { message: `You said: ${data.data.foo}` };
   };
@@ -902,6 +923,7 @@ it("should call onSubmitFailure if the call returns a validation error", async (
   });
 
   const action = async () => {
+    await nextTick();
     return validationError({
       fieldErrors: { foo: "validation error" },
     });
@@ -946,6 +968,7 @@ it("should reset the form after a successful submission when resetAfterSubmit is
 
   const action = async ({ request }: ActionFunctionArgs) => {
     const data = await validator.validate(await request.formData());
+    await nextTick();
     if (data.error) return validationError(data.error);
     return { message: `You said: ${data.data.foo}` };
   };

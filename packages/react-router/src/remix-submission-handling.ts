@@ -50,7 +50,7 @@ export const useRemixSubmit = (
   serverValidationErrors?: FieldErrors,
 ) => {
   const hasActiveSubmission = useHasActiveFormSubmit(fetcher);
-  const resolver = useRef<ReturnType<typeof withResolvers>>();
+  const resolver = useRef<ReturnType<typeof withResolvers>>(null);
   useSubmitComplete(hasActiveSubmission, () => {
     if (serverValidationErrors) {
       resolver.current?.reject();
