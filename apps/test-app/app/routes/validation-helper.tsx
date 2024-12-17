@@ -1,4 +1,3 @@
-import { DataFunctionArgs, json } from "react-router";
 import { useActionData } from "react-router";
 import { withZod } from "@rvf/zod";
 import { useEffect } from "react";
@@ -14,9 +13,9 @@ const validator = withZod(
   }),
 );
 
-export const action = async (args: DataFunctionArgs) => {
+export const action = async () => {
   await new Promise((resolve) => setTimeout(resolve, 1000));
-  return json({ message: "Submitted!" });
+  return { message: "Submitted!" };
 };
 
 export default function FrontendValidation() {

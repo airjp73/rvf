@@ -1,4 +1,3 @@
-import { json, DataFunctionArgs } from "react-router";
 import { withZod } from "@rvf/zod";
 import { ValidatedForm } from "@rvf/react-router";
 import { zfd } from "zod-form-data";
@@ -13,8 +12,7 @@ const validator = withZod(
 
 export type LoaderData = string;
 
-export const loader = (args: DataFunctionArgs) =>
-  json<LoaderData>("Hello, world");
+export const loader = () => "Hello, world";
 
 export default function FrontendValidation() {
   return (

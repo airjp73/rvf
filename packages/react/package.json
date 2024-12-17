@@ -7,7 +7,7 @@
   "types": "./dist/index.d.ts",
   "repository": {
     "type": "git",
-    "url": "https://github.com/airjp73/remix-validated-form"
+    "url": "https://github.com/airjp73/rvf"
   },
   "sideEffects": false,
   "scripts": {

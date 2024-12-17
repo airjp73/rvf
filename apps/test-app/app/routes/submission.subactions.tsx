@@ -1,5 +1,4 @@
-import { DataFunctionArgs, json } from "react-router";
-import { useActionData } from "react-router";
+import { ActionFunctionArgs, useActionData } from "react-router";
 import { withYup } from "@rvf/yup";
 import { ValidatedForm } from "@rvf/react-router";
 import * as yup from "yup";
@@ -8,13 +7,13 @@ import { SubmitButton } from "~/components/SubmitButton";
 const schema = yup.object({});
 const validator = withYup(schema);
 
-export const action = async ({ request }: DataFunctionArgs) => {
+export const action = async ({ request }: ActionFunctionArgs) => {
   await new Promise((resolve) => setTimeout(resolve, 1000));
   const formData = await request.formData();
   const subaction = formData.get("subaction");
-  if (subaction === "action1") return json({ message: "Submitted form 1" });
-  if (subaction === "action2") return json({ message: "Submitted form 2" });
-  return json({ message: "Submitted form 3" });
+  if (subaction === "action1") return { message: "Submitted form 1" };
+  if (subaction === "action2") return { message: "Submitted form 2" };
+  return { message: "Submitted form 3" };
 };
 
 export default function SubactionSubmissions() {

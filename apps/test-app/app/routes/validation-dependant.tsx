@@ -1,5 +1,4 @@
-import { DataFunctionArgs, json } from "react-router";
-import { useActionData } from "react-router";
+import { ActionFunctionArgs, useActionData } from "react-router";
 import { withYup } from "@rvf/yup";
 import { validationError, ValidatedForm } from "@rvf/react-router";
 import * as yup from "yup";
@@ -16,12 +15,12 @@ const validator = withYup(
   }),
 );
 
-export const action = async ({ request }: DataFunctionArgs) => {
+export const action = async ({ request }: ActionFunctionArgs) => {
   const result = await validator.validate(await request.formData());
   if (result.error) return validationError(result.error, result.submittedData);
   const { firstName } = result.data;
 
-  return json({ message: `Submitted for ${firstName}!` });
+  return { message: `Submitted for ${firstName}!` };
 };
 
 export default function FrontendValidation() {

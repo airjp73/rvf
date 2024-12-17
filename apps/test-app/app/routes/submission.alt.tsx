@@ -1,6 +1,6 @@
-import { DataFunctionArgs, redirect } from "react-router";
+import { redirect } from "react-router";
 
-export const action = async (args: DataFunctionArgs) => {
+export const action = async () => {
   await new Promise((resolve) => setTimeout(resolve, 500));
   return redirect("/submission");
 };

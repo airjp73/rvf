@@ -1,20 +1,21 @@
-import { Dialog } from "@headlessui/react";
-import { DataFunctionArgs, json } from "react-router";
-import { useActionData } from "react-router";
+import { Dialog, DialogTitle, DialogBackdrop } from "@headlessui/react";
 import { withYup } from "@rvf/yup";
 import { useState } from "react";
 import { ValidatedForm } from "@rvf/react-router";
 import * as yup from "yup";
 import { SubmitButton } from "~/components/SubmitButton";
+import { Route } from "./+types/submission.action._index";
 
 const schema = yup.object({});
 const validator = withYup(schema);
 
-export const action = async (args: DataFunctionArgs) =>
-  json({ message: "Submitted to in-route action." });
+export const action = async (args: Route.ActionArgs) => ({
+  message: "Submitted to in-route action.",
+});
 
-export default function FrontendValidation() {
-  const data = useActionData<typeof action>();
+export default function FrontendValidation({
+  actionData: data,
+}: Route.ComponentProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -43,9 +44,9 @@ export default function FrontendValidation() {
           bottom: 0,
         }}
       >
-        <Dialog.Overlay />
+        <DialogBackdrop />
 
-        <Dialog.Title>Modal Form</Dialog.Title>
+        <DialogTitle>Modal Form</DialogTitle>
 
         <ValidatedForm
           validator={validator}

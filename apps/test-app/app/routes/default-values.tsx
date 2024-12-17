@@ -1,12 +1,11 @@
-import { json, DataFunctionArgs } from "react-router";
-import { useLoaderData } from "react-router";
 import { withZod } from "@rvf/zod";
-import { ValidatedForm, ValidatorData } from "@rvf/react-router";
+import { ValidatedForm } from "@rvf/react-router";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
 import { Fieldset } from "~/components/Fieldset";
 import { Input } from "~/components/Input";
 import { SubmitButton } from "~/components/SubmitButton";
+import { Route } from "./+types/default-values";
 
 const validator = withZod(
   z.object({
@@ -22,12 +21,8 @@ const validator = withZod(
   }),
 );
 
-type LoaderData = {
-  defaultValues: ValidatorData<typeof validator>;
-};
-
-export const loader = (args: DataFunctionArgs) => {
-  return json<LoaderData>({
+export const loader = () => {
+  return {
     defaultValues: {
       name: { first: "Jane", last: "Doe" },
       email: "jane.doe@example.com",
@@ -36,11 +31,12 @@ export const loader = (args: DataFunctionArgs) => {
       favoriteDessert: "cake",
       likesColors: ["red", "green"],
     },
-  });
+  };
 };
 
-export default function DefaultValues() {
-  const { defaultValues } = useLoaderData<LoaderData>();
+export default function DefaultValues({
+  loaderData: { defaultValues },
+}: Route.ComponentProps) {
   return (
     <ValidatedForm
       validator={validator}

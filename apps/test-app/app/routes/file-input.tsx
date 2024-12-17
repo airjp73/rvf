@@ -1,10 +1,6 @@
-import { unstable_parseMultipartFormData, json } from "react-router";
+import { parseFormData, FileUpload } from "@mjackson/form-data-parser";
 import { useActionData } from "react-router";
-import {
-  ActionFunctionArgs,
-  unstable_composeUploadHandlers,
-  unstable_createMemoryUploadHandler,
-} from "react-router";
+import { ActionFunctionArgs } from "react-router";
 import { withZod } from "@rvf/zod";
 import { validationError, ValidatedForm } from "@rvf/react-router";
 import { z } from "zod";
@@ -36,24 +32,24 @@ const serverValidator = withZod(
   ),
 );
 
-const testUploadHandler = unstable_composeUploadHandlers(async ({ name }) => {
+const testUploadHandler = async ({ name }: FileUpload) => {
   if (name !== "myFile") {
     return;
   }
 
   return "testFile";
-}, unstable_createMemoryUploadHandler());
+};
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   const result = await serverValidator.validate(
-    await unstable_parseMultipartFormData(request, testUploadHandler),
+    await parseFormData(request, testUploadHandler),
   );
   if (result.error) return validationError(result.error);
   const { myFile, description } = result.data;
 
-  return json({
+  return {
     message: `Uploaded ${myFile} with description ${description}`,
-  });
+  };
 };
 
 export default function FrontendValidation() {

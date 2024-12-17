@@ -1,8 +1,8 @@
-import { DataFunctionArgs, json } from "react-router";
 import { withZod } from "@rvf/zod";
 import { ValidatedForm, validationError, useField } from "@rvf/react-router";
 import { z } from "zod";
 import { SubmitButton } from "~/components/SubmitButton";
+import { ActionFunctionArgs } from "react-router";
 
 const validator = withZod(
   z.object({
@@ -10,7 +10,7 @@ const validator = withZod(
   }),
 );
 
-export const action = async ({ request }: DataFunctionArgs) => {
+export const action = async ({ request }: ActionFunctionArgs) => {
   const formData = await request.formData();
 
   // Perform this check without the validator
@@ -23,7 +23,7 @@ export const action = async ({ request }: DataFunctionArgs) => {
       },
     });
 
-  return json({ message: "Submitted!" });
+  return { message: "Submitted!" };
 };
 
 const CustomInput = () => {

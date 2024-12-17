@@ -1,4 +1,3 @@
-import { DataFunctionArgs, json } from "react-router";
 import { useActionData } from "react-router";
 import { withZod } from "@rvf/zod";
 import { useState } from "react";
@@ -12,6 +11,7 @@ import {
 import { z } from "zod";
 import { zfd } from "zod-form-data";
 import { SubmitButton } from "~/components/SubmitButton";
+import { Route } from "./+types/controlled-field";
 
 const validator = withZod(
   z.object({
@@ -20,10 +20,10 @@ const validator = withZod(
   }),
 );
 
-export const action = async ({ request }: DataFunctionArgs) => {
+export const action = async ({ request }: Route.ActionArgs) => {
   const result = await validator.validate(await request.formData());
   if (result.error) return validationError(result.error);
-  return json({ message: `Color chosen is ${result.data.myField}` });
+  return { message: `Color chosen is ${result.data.myField}` };
 };
 
 const Controlled = () => {
@@ -90,8 +90,9 @@ function* range(min: number, max: number) {
   }
 }
 
-export default function ControlledField() {
-  const data = useActionData<typeof action>();
+export default function ControlledField({
+  actionData: data,
+}: Route.ComponentProps) {
   const [count, setCount] = useState(1);
   const rvf = useForm({
     validator,

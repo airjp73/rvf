@@ -16,6 +16,8 @@
   },
   "dependencies": {
     "@headlessui/react": "^2.2.0",
+    "@mjackson/form-data-parser": "^0.5.1",
+    "@mjackson/multipart-parser": "^0.7.2",
     "@react-router/node": "^7.0.0",
     "@rvf/react-router": "*",
     "@rvf/yup": "*",

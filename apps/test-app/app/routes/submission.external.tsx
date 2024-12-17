@@ -1,10 +1,10 @@
-import { DataFunctionArgs, json } from "react-router";
 import { useActionData } from "react-router";
 import { withZod } from "@rvf/zod";
 import { FormProvider, useForm } from "@rvf/react-router";
 import { z } from "zod";
 import { InputWithTouched } from "~/components/InputWithTouched";
 import { SubmitButton } from "~/components/SubmitButton";
+import { Route } from "./+types/submission.external";
 
 const validator = withZod(
   z.object({
@@ -12,14 +12,15 @@ const validator = withZod(
   }),
 );
 
-export const action = async ({ request }: DataFunctionArgs) => {
+export const action = async ({ request }: Route.ActionArgs) => {
   const data = await request.formData();
   await new Promise((resolve) => setTimeout(resolve, 500));
-  return json({ message: `Submitted ${data.get("mySubmit")}` });
+  return { message: `Submitted ${data.get("mySubmit")}` };
 };
 
-export default function FrontendValidation() {
-  const actionData = useActionData<typeof action>();
+export default function FrontendValidation({
+  actionData,
+}: Route.ComponentProps) {
   const rvf = useForm({
     validator,
     method: "post",

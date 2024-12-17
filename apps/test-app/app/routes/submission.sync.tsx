@@ -1,5 +1,4 @@
-import { DataFunctionArgs, json } from "react-router";
-import { useActionData } from "react-router";
+import { ActionFunctionArgs, useActionData } from "react-router";
 import { withZod } from "@rvf/zod";
 import { FormProvider, useForm, validationError } from "@rvf/react-router";
 import { z } from "zod";
@@ -16,10 +15,10 @@ const schema = z.object({
 });
 const validator = withZod(schema);
 
-export const action = async (args: DataFunctionArgs) => {
+export const action = async (args: ActionFunctionArgs) => {
   const result = await validator.validate(await args.request.formData());
   if (result.error) return validationError(result.error);
-  return json({ data: result.data });
+  return { data: result.data };
 };
 
 export default function FrontendValidation() {

@@ -1,6 +1,4 @@
-import { DataFunctionArgs, json } from "react-router";
-
-export const action = async (args: DataFunctionArgs) => {
+export const action = async () => {
   await new Promise((resolve) => setTimeout(resolve, 500));
-  return json({ done: "done" });
+  return { done: "done" };
 };

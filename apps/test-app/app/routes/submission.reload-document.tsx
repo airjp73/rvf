@@ -1,5 +1,4 @@
-import { DataFunctionArgs, json } from "react-router";
-import { useLoaderData } from "react-router";
+import { ActionFunctionArgs, useLoaderData } from "react-router";
 import { withYup } from "@rvf/yup";
 import { useForm } from "@rvf/react-router";
 import * as yup from "yup";
@@ -8,17 +7,17 @@ import { useEffect, useRef } from "react";
 const schema = yup.object({});
 const validator = withYup(schema);
 
-export const loader = async ({ request }: DataFunctionArgs) => {
+export const loader = async ({ request }: ActionFunctionArgs) => {
   const url = new URL(request.url);
   const isSubmitted = url.searchParams.has("hasBeenSubmitted");
   const shouldReload = url.searchParams.has("reload");
 
   if (isSubmitted) {
     await new Promise((resolve) => setTimeout(resolve, 1000));
-    return json({ message: "Submitted!", shouldReload });
+    return { message: "Submitted!", shouldReload };
   }
 
-  return json({ shouldReload, message: undefined as string | undefined });
+  return { shouldReload, message: undefined as string | undefined };
 };
 
 export default function FrontendValidation() {

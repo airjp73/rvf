@@ -1,4 +1,3 @@
-import { DataFunctionArgs, json } from "react-router";
 import { Link } from "react-router";
 import { withZod } from "@rvf/zod";
 import { ValidatedForm } from "@rvf/react-router";
@@ -6,6 +5,7 @@ import { z } from "zod";
 import { zfd } from "zod-form-data";
 import { Input } from "~/components/Input";
 import { SubmitButton } from "~/components/SubmitButton";
+import { Route } from "./+types/form-id-validation._index";
 
 const validator = withZod(
   z.object({
@@ -13,9 +13,9 @@ const validator = withZod(
   }),
 );
 
-export const action = async ({ request }: DataFunctionArgs) => {
+export const action = async ({ request }: Route.ActionArgs) => {
   const result = await validator.validate(await request.formData());
-  return json({ message: `Form has id: ${result.formId}` });
+  return { message: `Form has id: ${result.formId}` };
 };
 
 export default function FormId() {

@@ -1,4 +1,3 @@
-import { DataFunctionArgs, json } from "react-router";
 import { withYup } from "@rvf/yup";
 import { useRef } from "react";
 import { ValidatedForm } from "@rvf/react-router";
@@ -9,8 +8,8 @@ import { SubmitButton } from "~/components/SubmitButton";
 const schema = yup.object({});
 const validator = withYup(schema);
 
-export const action = async (args: DataFunctionArgs) => {
-  return json({ message: "Submitted!" });
+export const action = async () => {
+  return { message: "Submitted!" };
 };
 
 export default function FrontendValidation() {
