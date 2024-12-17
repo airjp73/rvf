@@ -1,4 +1,6 @@
-export const GithubIcon = (props: React.ComponentPropsWithoutRef<"svg">) => (
+export const GithubIcon = (
+  props: React.ComponentPropsWithoutRef<"svg">,
+) => (
   <svg
     role="img"
     viewBox="0 0 24 24"

@@ -1,7 +1,10 @@
 "use client";
 
 import { Link, useLocation } from "react-router";
-import { ArrowLeftIcon, ArrowRightIcon } from "lucide-react";
+import {
+  ArrowLeftIcon,
+  ArrowRightIcon,
+} from "lucide-react";
 import { flatNavLinks } from "./Navigation";
 
 function PageNavigation() {

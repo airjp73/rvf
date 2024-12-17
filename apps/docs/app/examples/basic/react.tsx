@@ -36,7 +36,10 @@ export const ReactExample = () => {
     validator,
     defaultValues: {
       projectName: "",
-      tasks: [] as Array<{ title: string; daysToComplete: number }>,
+      tasks: [] as Array<{
+        title: string;
+        daysToComplete: number;
+      }>,
       file: "" as File | "",
     },
     handleSubmit: async ({ projectName, tasks }) => {
@@ -51,7 +54,10 @@ export const ReactExample = () => {
 
   return (
     <form {...form.getFormProps()}>
-      <MyInput label="Project name" scope={form.scope("projectName")} />
+      <MyInput
+        label="Project name"
+        scope={form.scope("projectName")}
+      />
 
       <div>
         <h3>Tasks</h3>
@@ -63,7 +69,10 @@ export const ReactExample = () => {
         <ul>
           {form.array("tasks").map((key, item, index) => (
             <li key={key}>
-              <MyInput label="Title" scope={item.scope("title")} />
+              <MyInput
+                label="Title"
+                scope={item.scope("title")}
+              />
               <MyInput
                 label="Days to complete"
                 type="number"
@@ -72,7 +81,9 @@ export const ReactExample = () => {
               <Button
                 variant="ghost"
                 type="button"
-                onClick={() => form.array("tasks").remove(index)}
+                onClick={() =>
+                  form.array("tasks").remove(index)
+                }
               >
                 Delete
               </Button>
@@ -89,7 +100,9 @@ export const ReactExample = () => {
           variant="secondary"
           type="button"
           onClick={async () => {
-            const nextTaskIndex = form.array("tasks").length();
+            const nextTaskIndex = form
+              .array("tasks")
+              .length();
             await form.array("tasks").push({
               daysToComplete: 0,
               title: "",
@@ -99,7 +112,10 @@ export const ReactExample = () => {
         >
           Add task
         </Button>
-        <Button type="submit" isLoading={form.formState.isSubmitting}>
+        <Button
+          type="submit"
+          isLoading={form.formState.isSubmitting}
+        >
           Submit
         </Button>
       </div>

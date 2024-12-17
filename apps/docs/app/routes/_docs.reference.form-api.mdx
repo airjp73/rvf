@@ -38,7 +38,9 @@ This allows RVF to set the value of the field when setValue is called, and is us
 to focus the field when it has an error.
 
 ```tsx
-<input {...form.getInputProps("myField", { type: "number" })} />
+<input
+  {...form.getInputProps("myField", { type: "number" })}
+/>
 ```
 
 ### `getControlProps`
@@ -70,9 +72,10 @@ Can be called without a field name to get an array api currently in-scope form d
 These functions can all be used to access the current state of the form during the render phase.
 
 <Note>
-  Even though these are functions, they're still tied to the render phase.
-  Calling one of these functions in an event handler or a `useEffect` may not
-  return the latest state. For those use-cases, you should use the
+  Even though these are functions, they're still tied to the
+  render phase. Calling one of these functions in an event
+  handler or a `useEffect` may not return the latest state.
+  For those use-cases, you should use the
   [transient](#transient-state-accessors) api.
 </Note>
 
@@ -133,8 +136,8 @@ A field "dirty" when it no longer matches the default value.
 If the user changes the value back to the default, the field will no longer be dirty.
 
 <Note>
-  Fields added dynamically in a field array, will always be dirty after the
-  first change.
+  Fields added dynamically in a field array, will always be
+  dirty after the first change.
 </Note>
 
 ### `formOptions`
@@ -202,7 +205,9 @@ Example:
 <button
   type="button"
   // Always logs the latest value of `myField` without causing rerenders
-  onClick={() => console.log(form.transient.value("myField"))}
+  onClick={() =>
+    console.log(form.transient.value("myField"))
+  }
 >
   Log value
 </button>

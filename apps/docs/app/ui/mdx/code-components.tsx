@@ -3,7 +3,9 @@ import * as allComponents from "./mdx";
 
 const { wrapper, ...rest } = allComponents;
 
-export function useMDXComponents(components: MDXComponents) {
+export function useMDXComponents(
+  components: MDXComponents,
+) {
   return {
     ...components,
     ...rest,

@@ -15,7 +15,9 @@ Any state accessed through this render prop will only cause that particular fiel
 ```tsx
 <FieldArray scope={form.scope("myFieldArray")}>
   {(array) =>
-    array.map((key, item, index) => <MyInput key={key} scope={item.scope()} />)
+    array.map((key, item, index) => (
+      <MyInput key={key} scope={item.scope()} />
+    ))
   }
 </FieldArray>
 ```

@@ -21,9 +21,15 @@ export const BasicExample = () => {
           title="Demo form"
           tabs={
             <CodeTabsList>
-              <CodeTabsTrigger value="example">Example</CodeTabsTrigger>
-              <CodeTabsTrigger value="with-react">React</CodeTabsTrigger>
-              <CodeTabsTrigger value="with-remix">Remix</CodeTabsTrigger>
+              <CodeTabsTrigger value="example">
+                Example
+              </CodeTabsTrigger>
+              <CodeTabsTrigger value="with-react">
+                React
+              </CodeTabsTrigger>
+              <CodeTabsTrigger value="with-remix">
+                Remix
+              </CodeTabsTrigger>
             </CodeTabsList>
           }
         />
@@ -34,13 +40,17 @@ export const BasicExample = () => {
         </CodePanel>
         <CodePanel
           value="with-react"
-          copyButton={<CopyButton content={withReactText} />}
+          copyButton={
+            <CopyButton content={withReactText} />
+          }
         >
           <WithReact />
         </CodePanel>
         <CodePanel
           value="with-remix"
-          copyButton={<CopyButton content={withRemixText} />}
+          copyButton={
+            <CopyButton content={withRemixText} />
+          }
         >
           <WithRemix />
         </CodePanel>

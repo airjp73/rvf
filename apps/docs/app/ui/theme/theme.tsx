@@ -37,7 +37,9 @@ export const getInitialThemeInfo = (): {
     return { displayed: theme, state: theme };
   } catch (err) {
     return {
-      displayed: window.matchMedia("(prefers-color-scheme: dark)").matches
+      displayed: window.matchMedia(
+        "(prefers-color-scheme: dark)",
+      ).matches
         ? "dark"
         : "light",
       state: "system",
@@ -58,7 +60,9 @@ const AutoIcon = ({
   displayedTheme: "light" | "dark" | undefined;
 }) => {
   const animate =
-    setting === "auto" && !!displayedTheme ? `auto-${displayedTheme}` : setting;
+    setting === "auto" && !!displayedTheme
+      ? `auto-${displayedTheme}`
+      : setting;
   return (
     <motion.div
       className={cn("relative", className)}
@@ -67,7 +71,9 @@ const AutoIcon = ({
     >
       <motion.div className="absolute inset-0 flex items-center justify-center rotate-45">
         <Moon
-          className={cn("text-cyan-800 dark:text-cyan-400 size-6")}
+          className={cn(
+            "text-cyan-800 dark:text-cyan-400 size-6",
+          )}
           transition={{ damping: 5 }}
           variants={{
             light: {
@@ -103,7 +109,9 @@ const AutoIcon = ({
       </motion.div>
       <motion.div className="absolute inset-0 flex items-center justify-center rotate-45">
         <Sun
-          className={cn("text-amber-700 dark:text-amber-400 size-8")}
+          className={cn(
+            "text-amber-700 dark:text-amber-400 size-8",
+          )}
           transition={{ damping: 5 }}
           variants={{
             light: {
@@ -146,9 +154,16 @@ export type ThemeToggleProps = {
   buttonVariant?: ComponentProps<typeof Button>["variant"];
 };
 
-export const ThemeToggle = ({ className, buttonVariant }: ThemeToggleProps) => {
+export const ThemeToggle = ({
+  className,
+  buttonVariant,
+}: ThemeToggleProps) => {
   const setting = useThemeSelector((state) =>
-    state.matches("dark") ? "dark" : state.matches("light") ? "light" : "auto",
+    state.matches("dark")
+      ? "dark"
+      : state.matches("light")
+        ? "light"
+        : "auto",
   );
   const displayedTheme = useThemeSelector(
     (state) => state.context.displayedTheme,
@@ -171,7 +186,9 @@ export const ThemeToggle = ({ className, buttonVariant }: ThemeToggleProps) => {
               size="icon"
               className={cn(className)}
             >
-              <span className="sr-only">{buttonText()}</span>
+              <span className="sr-only">
+                {buttonText()}
+              </span>
               <AutoIcon
                 aria-hidden
                 setting={setting}
@@ -184,17 +201,23 @@ export const ThemeToggle = ({ className, buttonVariant }: ThemeToggleProps) => {
       </ClientOnly>
       <DropdownMenuContent sideOffset={15}>
         <DropdownMenuItem
-          onClick={() => themeActor.send({ type: "choose light" })}
+          onClick={() =>
+            themeActor.send({ type: "choose light" })
+          }
         >
           Light
         </DropdownMenuItem>
         <DropdownMenuItem
-          onClick={() => themeActor.send({ type: "choose dark" })}
+          onClick={() =>
+            themeActor.send({ type: "choose dark" })
+          }
         >
           Dark
         </DropdownMenuItem>
         <DropdownMenuItem
-          onClick={() => themeActor.send({ type: "choose auto" })}
+          onClick={() =>
+            themeActor.send({ type: "choose auto" })
+          }
         >
           System
         </DropdownMenuItem>
@@ -215,7 +238,10 @@ export const ThemedHtmlElement = (
       {...props}
       data-theme={displayedTheme}
       suppressHydrationWarning
-      className={cn(displayedTheme === "dark" && "dark", props.className)}
+      className={cn(
+        displayedTheme === "dark" && "dark",
+        props.className,
+      )}
     />
   );
 };

@@ -29,14 +29,26 @@ Our input component will have the following features:
 ## Recipe
 
 ```tsx
-import { useField, FormScope, ValueOfInputType } from "@rvf/react";
-import { ComponentPropsWithRef, forwardRef, useId } from "react";
+import {
+  useField,
+  FormScope,
+  ValueOfInputType,
+} from "@rvf/react";
+import {
+  ComponentPropsWithRef,
+  forwardRef,
+  useId,
+} from "react";
 
 // For our props, we'll take everything from the native input element except for `type`.
 // You can make futher changes here to suite your needs.
-type BaseInputProps = Omit<ComponentPropsWithRef<"input">, "type">;
+type BaseInputProps = Omit<
+  ComponentPropsWithRef<"input">,
+  "type"
+>;
 
-interface MyInputProps<Type extends string> extends BaseInputProps {
+interface MyInputProps<Type extends string>
+  extends BaseInputProps {
   label: string;
   type?: Type;
   scope: FormScope<ValueOfInputType<Type>>;
@@ -48,30 +60,31 @@ type InputType = <Type extends string>(
   props: MyInputProps<Type>,
 ) => React.ReactNode;
 
-const MyInputImpl = forwardRef<HTMLInputElement, MyInputProps<string>>(
-  ({ label, scope, type, ...rest }, ref) => {
-    const field = useField(scope);
-    const inputId = useId();
-    const errorId = useId();
+const MyInputImpl = forwardRef<
+  HTMLInputElement,
+  MyInputProps<string>
+>(({ label, scope, type, ...rest }, ref) => {
+  const field = useField(scope);
+  const inputId = useId();
+  const errorId = useId();
 
-    return (
-      <div className="myInputStyles">
-        <label htmlFor={inputId}>{label}</label>
-        <input
-          {...field.getInputProps({
-            type,
-            id: inputId,
-            ref,
-            "aria-describedby": errorId,
-            "aria-invalid": !!field.error(),
-            ...rest,
-          })}
-        />
-        {field.error() && <p id={errorId}>{field.error()}</p>}
-      </div>
-    );
-  },
-);
+  return (
+    <div className="myInputStyles">
+      <label htmlFor={inputId}>{label}</label>
+      <input
+        {...field.getInputProps({
+          type,
+          id: inputId,
+          ref,
+          "aria-describedby": errorId,
+          "aria-invalid": !!field.error(),
+          ...rest,
+        })}
+      />
+      {field.error() && <p id={errorId}>{field.error()}</p>}
+    </div>
+  );
+});
 MyInputImpl.displayName = "MyInput";
 
 export const MyInput = MyInputImpl as InputType;

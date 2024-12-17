@@ -19,8 +19,12 @@ export const SimpleForm = () => {
           title="Simple, native form"
           tabs={
             <CodeTabsList>
-              <CodeTabsTrigger value="example">Example</CodeTabsTrigger>
-              <CodeTabsTrigger value="with-react">Code</CodeTabsTrigger>
+              <CodeTabsTrigger value="example">
+                Example
+              </CodeTabsTrigger>
+              <CodeTabsTrigger value="with-react">
+                Code
+              </CodeTabsTrigger>
             </CodeTabsList>
           }
         />
@@ -31,7 +35,9 @@ export const SimpleForm = () => {
         </CodePanel>
         <CodePanel
           value="with-react"
-          copyButton={<CopyButton content={withReactText} />}
+          copyButton={
+            <CopyButton content={withReactText} />
+          }
         >
           <WithReact />
         </CodePanel>

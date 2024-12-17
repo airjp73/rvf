@@ -13,7 +13,8 @@ export const SignupForm = () => {
   const checkPasswordsMatch = () => {
     if (
       !confirmRef.current?.validity.valid &&
-      confirmRef.current?.value === passwordRef.current?.value
+      confirmRef.current?.value ===
+        passwordRef.current?.value
     )
       confirmRef.current?.setCustomValidity("");
   };
@@ -22,14 +23,20 @@ export const SignupForm = () => {
     <form
       onSubmit={async (e) => {
         e.preventDefault();
-        const data = new FormData(e.target as HTMLFormElement);
+        const data = new FormData(
+          e.target as HTMLFormElement,
+        );
 
         const username = data.get("username");
         const password = data.get("password");
-        const confirmPassword = data.get("confirm-password");
+        const confirmPassword = data.get(
+          "confirm-password",
+        );
 
         if (password !== confirmPassword) {
-          confirmRef.current?.setCustomValidity("Passwords must match");
+          confirmRef.current?.setCustomValidity(
+            "Passwords must match",
+          );
           confirmRef.current?.reportValidity();
           return;
         }

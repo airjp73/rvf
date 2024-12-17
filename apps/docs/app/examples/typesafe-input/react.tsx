@@ -19,11 +19,31 @@ export const InputTypes = () => {
 
   return (
     <form {...form.getFormProps()}>
-      <MyInput label="Text" type="text" scope={form.scope("text")} />
-      <MyInput label="Number" type="number" scope={form.scope("number")} />
-      <MyInput label="Check" type="checkbox" scope={form.scope("checkbox")} />
-      <MyInput label="Radio" type="radio" scope={form.scope("radio")} />
-      <MyInput label="File" type="file" scope={form.scope("file")} />
+      <MyInput
+        label="Text"
+        type="text"
+        scope={form.scope("text")}
+      />
+      <MyInput
+        label="Number"
+        type="number"
+        scope={form.scope("number")}
+      />
+      <MyInput
+        label="Check"
+        type="checkbox"
+        scope={form.scope("checkbox")}
+      />
+      <MyInput
+        label="Radio"
+        type="radio"
+        scope={form.scope("radio")}
+      />
+      <MyInput
+        label="File"
+        type="file"
+        scope={form.scope("file")}
+      />
     </form>
   );
 };

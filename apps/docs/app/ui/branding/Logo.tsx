@@ -1,6 +1,8 @@
 import { useId } from "react";
 
-export const Logo = (props: React.ComponentPropsWithoutRef<"svg">) => {
+export const Logo = (
+  props: React.ComponentPropsWithoutRef<"svg">,
+) => {
   const id = useId();
   return (
     <div className="flex gap-2 items-center">

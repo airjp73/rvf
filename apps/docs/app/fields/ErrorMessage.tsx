@@ -7,7 +7,10 @@ export const ErrorMessage = ({
 }: ComponentProps<"span">) => {
   return (
     <span
-      className={cn("text-red-600 dark:text-red-500 text-sm", className)}
+      className={cn(
+        "text-red-600 dark:text-red-500 text-sm",
+        className,
+      )}
       {...props}
     />
   );

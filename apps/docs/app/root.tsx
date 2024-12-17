@@ -9,16 +9,30 @@ import {
 } from "react-router";
 import "./tailwind.css";
 import { ThemeProvider } from "./ui/theme/themeMachine";
-import { ThemeScript, ThemedHtmlElement } from "./ui/theme/theme";
+import {
+  ThemeScript,
+  ThemedHtmlElement,
+} from "./ui/theme/theme";
 import { Toaster } from "./ui/sonner";
 
-export function Layout({ children }: { children: React.ReactNode }) {
+export function Layout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <ThemeProvider>
-      <ThemedHtmlElement lang="en" className="h-full" suppressHydrationWarning>
+      <ThemedHtmlElement
+        lang="en"
+        className="h-full"
+        suppressHydrationWarning
+      >
         <head>
           <meta charSet="utf-8" />
-          <meta name="viewport" content="width=device-width, initial-scale=1" />
+          <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1"
+          />
           <Meta />
           <Links />
         </head>
@@ -47,8 +61,8 @@ export function ErrorBoundary() {
         <div className="container flex flex-col gap-4 items-center justify-center h-screen">
           <h1 className="text-3xl">404</h1>
           <p>
-            These docs are still in development, so I probably haven't added
-            this page yet.
+            These docs are still in development, so I
+            probably haven't added this page yet.
           </p>
         </div>
       );

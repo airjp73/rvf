@@ -1,20 +1,35 @@
 import { forwardRef } from "react";
 import { Link, useLocation } from "react-router";
 import clsx from "clsx";
-import { motion, useScroll, useTransform } from "framer-motion";
+import {
+  motion,
+  useScroll,
+  useTransform,
+} from "framer-motion";
 import { ThemeToggle } from "../theme/theme";
 import { Logo } from "../branding/Logo";
 import { GithubIcon } from "../icons/GithubIcon";
 import { MobileNavigation } from "./MobileNavigation";
-import { flatNavLinks, TopLevelNavItem } from "./Navigation";
+import {
+  flatNavLinks,
+  TopLevelNavItem,
+} from "./Navigation";
 
 export const Header = forwardRef<
   React.ElementRef<"div">,
   { className?: string }
 >(function Header({ className }, ref) {
   let { scrollY } = useScroll();
-  let bgOpacityLight = useTransform(scrollY, [0, 72], [0.5, 0.7]);
-  let bgOpacityDark = useTransform(scrollY, [0, 72], [0.2, 0.8]);
+  let bgOpacityLight = useTransform(
+    scrollY,
+    [0, 72],
+    [0.5, 0.7],
+  );
+  let bgOpacityDark = useTransform(
+    scrollY,
+    [0, 72],
+    [0.2, 0.8],
+  );
 
   const location = useLocation();
   const currentPage = flatNavLinks.find(
@@ -38,7 +53,11 @@ export const Header = forwardRef<
         } as React.CSSProperties
       }
     >
-      <div className={clsx("absolute inset-x-0 top-full h-px transition")} />
+      <div
+        className={clsx(
+          "absolute inset-x-0 top-full h-px transition",
+        )}
+      />
       <div className="flex items-center gap-5 lg:hidden">
         <MobileNavigation />
         <Link to="/" aria-label="Home">
@@ -50,9 +69,13 @@ export const Header = forwardRef<
       </div>
       <div className="flex items-center gap-5 ml-auto">
         <nav className="hidden md:block">
-          <ul role="list" className="flex items-center gap-8">
+          <ul
+            role="list"
+            className="flex items-center gap-8"
+          >
             <TopLevelNavItem href="https://www.github.com/airjp73/remix-validated-form">
-              <GithubIcon className="size-4 fill-current" /> Github
+              <GithubIcon className="size-4 fill-current" />{" "}
+              Github
             </TopLevelNavItem>
           </ul>
         </nav>

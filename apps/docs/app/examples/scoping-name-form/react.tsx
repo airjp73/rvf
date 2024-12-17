@@ -1,4 +1,8 @@
-import { FormScope, useForm, useFormScope } from "@rvf/react";
+import {
+  FormScope,
+  useForm,
+  useFormScope,
+} from "@rvf/react";
 import { withZod } from "@rvf/zod";
 import { z } from "zod";
 import { Button } from "~/ui/button";
@@ -9,7 +13,10 @@ import { MyInput } from "~/fields/MyInput";
 
 const personSchema = z.object({
   name: z.string().min(1, "Name is required"),
-  email: z.string().min(1, "Email is required").email("Must be a valid email"),
+  email: z
+    .string()
+    .min(1, "Email is required")
+    .email("Must be a valid email"),
 });
 type Person = z.infer<typeof personSchema>;
 
@@ -43,7 +50,8 @@ export const ReactExample = () => {
     },
     handleSubmit: (data) => createProject(data),
     resetAfterSubmit: true,
-    onSubmitSuccess: () => showToastMessage("Project created!"),
+    onSubmitSuccess: () =>
+      showToastMessage("Project created!"),
   });
 
   return (
@@ -77,7 +85,10 @@ export const ReactExample = () => {
         >
           Add task
         </Button>
-        <Button type="submit" isLoading={form.formState.isSubmitting}>
+        <Button
+          type="submit"
+          isLoading={form.formState.isSubmitting}
+        >
           Submit
         </Button>
       </div>

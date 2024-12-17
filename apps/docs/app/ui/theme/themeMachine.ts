@@ -11,17 +11,30 @@ export type Theme = z.infer<typeof storageSchema>["theme"];
 const themeMachine = setup({
   types: {
     events: {} as
-      | { type: "choose dark" | "choose light" | "choose auto" }
-      | { type: "system theme changed"; value: "dark" | "light" },
+      | {
+          type:
+            | "choose dark"
+            | "choose light"
+            | "choose auto";
+        }
+      | {
+          type: "system theme changed";
+          value: "dark" | "light";
+        },
     context: {
-      displayedTheme: undefined as "light" | "dark" | undefined,
+      displayedTheme: undefined as
+        | "light"
+        | "dark"
+        | undefined,
     },
   },
 
   guards: {
     "is server": () => typeof window === "undefined",
-    "is overridden to dark mode": () => localStorage.theme === "dark",
-    "is overridden to light mode": () => localStorage.theme === "light",
+    "is overridden to dark mode": () =>
+      localStorage.theme === "dark",
+    "is overridden to light mode": () =>
+      localStorage.theme === "light",
   },
   actions: {
     "override to dark mode": () => {
@@ -33,33 +46,44 @@ const themeMachine = setup({
     "clear local storage": () => {
       delete localStorage.theme;
     },
-    "show dark theme": assign({ displayedTheme: () => "dark" as const }),
-    "show light theme": assign({ displayedTheme: () => "light" as const }),
+    "show dark theme": assign({
+      displayedTheme: () => "dark" as const,
+    }),
+    "show light theme": assign({
+      displayedTheme: () => "light" as const,
+    }),
     "show system theme": assign({
       displayedTheme: ({ event, context }) => {
-        if (event.type === "system theme changed") return event.value;
+        if (event.type === "system theme changed")
+          return event.value;
         return context.displayedTheme;
       },
     }),
     "set display theme from system": assign({
       displayedTheme: (ctx) =>
-        window.matchMedia("(prefers-color-scheme: dark)").matches
+        window.matchMedia("(prefers-color-scheme: dark)")
+          .matches
           ? "dark"
           : "light",
     }),
   },
   actors: {
-    "listen for system changes": fromCallback(({ sendBack }) => {
-      const query = window.matchMedia("(prefers-color-scheme: dark)");
-      const handler = (e: MediaQueryListEvent) => {
-        sendBack({
-          type: "system theme changed",
-          value: e.matches ? "dark" : "light",
-        });
-      };
-      query.addEventListener("change", handler);
-      return () => query.removeEventListener("change", handler);
-    }),
+    "listen for system changes": fromCallback(
+      ({ sendBack }) => {
+        const query = window.matchMedia(
+          "(prefers-color-scheme: dark)",
+        );
+        const handler = (e: MediaQueryListEvent) => {
+          sendBack({
+            type: "system theme changed",
+            value: e.matches ? "dark" : "light",
+          });
+        };
+        query.addEventListener("change", handler);
+        return () =>
+          query.removeEventListener("change", handler);
+      },
+    ),
   },
 }).createMachine({
   id: "theme",
@@ -72,7 +96,10 @@ const themeMachine = setup({
         src: "listen for system changes",
       },
 
-      entry: ["clear local storage", "set display theme from system"],
+      entry: [
+        "clear local storage",
+        "set display theme from system",
+      ],
 
       on: {
         "choose dark": "dark",

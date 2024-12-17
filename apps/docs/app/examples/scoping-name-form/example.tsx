@@ -20,8 +20,12 @@ export const ScopingNameForm = () => {
           title="Demo form"
           tabs={
             <CodeTabsList>
-              <CodeTabsTrigger value="example">Example</CodeTabsTrigger>
-              <CodeTabsTrigger value="code">Code</CodeTabsTrigger>
+              <CodeTabsTrigger value="example">
+                Example
+              </CodeTabsTrigger>
+              <CodeTabsTrigger value="code">
+                Code
+              </CodeTabsTrigger>
             </CodeTabsList>
           }
         />

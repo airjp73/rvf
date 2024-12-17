@@ -8,11 +8,18 @@ import {
   useRef,
   useState,
 } from "react";
-import { TabsList, TabsTrigger, TabsContent, Tabs } from "@radix-ui/react-tabs";
+import {
+  TabsList,
+  TabsTrigger,
+  TabsContent,
+  Tabs,
+} from "@radix-ui/react-tabs";
 import clsx from "clsx";
 import { cn } from "~/lib/utils";
 
-function ClipboardIcon(props: React.ComponentPropsWithoutRef<"svg">) {
+function ClipboardIcon(
+  props: React.ComponentPropsWithoutRef<"svg">,
+) {
   return (
     <svg viewBox="0 0 20 20" aria-hidden="true" {...props}>
       <path
@@ -28,7 +35,11 @@ function ClipboardIcon(props: React.ComponentPropsWithoutRef<"svg">) {
   );
 }
 
-export function CopyButton({ content }: { content: string | (() => string) }) {
+export function CopyButton({
+  content,
+}: {
+  content: string | (() => string);
+}) {
   let [copyCount, setCopyCount] = useState(0);
   let copied = copyCount > 0;
 
@@ -51,10 +62,15 @@ export function CopyButton({ content }: { content: string | (() => string) }) {
           : "bg-white/5 hover:bg-white/7.5 dark:bg-white/2.5 dark:hover:bg-white/5",
       )}
       onClick={() => {
-        const text = typeof content === "function" ? content() : content;
-        window.navigator.clipboard.writeText(text).then(() => {
-          setCopyCount((count) => count + 1);
-        });
+        const text =
+          typeof content === "function"
+            ? content()
+            : content;
+        window.navigator.clipboard
+          .writeText(text)
+          .then(() => {
+            setCopyCount((count) => count + 1);
+          });
       }}
     >
       <span
@@ -110,7 +126,9 @@ const Copyable = ({
 }) => {
   const copyText = useRef<string | null>(null);
   return (
-    <div className={cn("relative not-prose group", className)}>
+    <div
+      className={cn("relative not-prose group", className)}
+    >
       <div
         ref={(el) => {
           copyText.current = el?.textContent ?? null;
@@ -147,7 +165,10 @@ export const CodeTabsList = ({
   ...rest
 }: ComponentPropsWithoutRef<typeof TabsList>) => (
   <TabsList
-    className={cn("-mb-px flex gap-4 text-xs font-medium", className)}
+    className={cn(
+      "-mb-px flex gap-4 text-xs font-medium",
+      className,
+    )}
     {...rest}
   />
 );
@@ -194,7 +215,8 @@ export const CodeExamples = ({
   title: string;
   tabs: string[];
 }) => {
-  const validChildren = Children.toArray(children).filter(isValidElement);
+  const validChildren =
+    Children.toArray(children).filter(isValidElement);
   return (
     <ExampleArea title={title}>
       <Tabs defaultValue={tabs[0]}>
@@ -225,7 +247,12 @@ export function Code({
   ...props
 }: React.ComponentPropsWithoutRef<"code">) {
   if (typeof children === "string") {
-    return <code {...props} dangerouslySetInnerHTML={{ __html: children }} />;
+    return (
+      <code
+        {...props}
+        dangerouslySetInnerHTML={{ __html: children }}
+      />
+    );
   }
 
   return <code {...props}>{children}</code>;

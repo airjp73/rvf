@@ -19,8 +19,12 @@ export const TypesafeInput = () => {
           title="One component for different input types"
           tabs={
             <CodeTabsList>
-              <CodeTabsTrigger value="preview">Preview</CodeTabsTrigger>
-              <CodeTabsTrigger value="code">Code</CodeTabsTrigger>
+              <CodeTabsTrigger value="preview">
+                Preview
+              </CodeTabsTrigger>
+              <CodeTabsTrigger value="code">
+                Code
+              </CodeTabsTrigger>
             </CodeTabsList>
           }
         />
@@ -31,7 +35,9 @@ export const TypesafeInput = () => {
         </CodePanel>
         <CodePanel
           value="code"
-          copyButton={<CopyButton content={withReactText} />}
+          copyButton={
+            <CopyButton content={withReactText} />
+          }
         >
           <WithReact />
         </CodePanel>

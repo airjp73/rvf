@@ -47,9 +47,14 @@ export const ReactExample = () => {
         <label>
           <input
             type="radio"
-            checked={form.value("selectedUser")?.name === "Jim"}
+            checked={
+              form.value("selectedUser")?.name === "Jim"
+            }
             onClick={() =>
-              form.setValue("selectedUser", { name: "Jim", age: 30 })
+              form.setValue("selectedUser", {
+                name: "Jim",
+                age: 30,
+              })
             }
           />
           Jim
@@ -57,10 +62,15 @@ export const ReactExample = () => {
 
         <label>
           <input
-            checked={form.value("selectedUser")?.name === "Pedro"}
+            checked={
+              form.value("selectedUser")?.name === "Pedro"
+            }
             type="radio"
             onClick={() =>
-              form.setValue("selectedUser", { name: "Pedro", age: 23 })
+              form.setValue("selectedUser", {
+                name: "Pedro",
+                age: 23,
+              })
             }
           />
           Pedro
@@ -69,9 +79,14 @@ export const ReactExample = () => {
         <label>
           <input
             type="radio"
-            checked={form.value("selectedUser")?.name === "Quinta"}
+            checked={
+              form.value("selectedUser")?.name === "Quinta"
+            }
             onClick={() =>
-              form.setValue("selectedUser", { name: "Quinta", age: 28 })
+              form.setValue("selectedUser", {
+                name: "Quinta",
+                age: 28,
+              })
             }
           />
           Quinta
@@ -80,7 +95,9 @@ export const ReactExample = () => {
 
       <div aria-live="polite">
         {form.error("selectedUser") && (
-          <ErrorMessage>{form.error("selectedUser")}</ErrorMessage>
+          <ErrorMessage>
+            {form.error("selectedUser")}
+          </ErrorMessage>
         )}
       </div>
 

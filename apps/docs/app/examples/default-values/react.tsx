@@ -11,7 +11,10 @@ export const DefaultValuesForm = () => {
       z.object({
         firstName: z.string().min(1),
         lastName: z.string().min(1),
-        email: z.string().min(1).email("Must be a valid email"),
+        email: z
+          .string()
+          .min(1)
+          .email("Must be a valid email"),
       }),
     ),
     defaultValues: {
@@ -40,7 +43,10 @@ export const DefaultValuesForm = () => {
         <Input {...form.getInputProps("email")} />
       </Label>
 
-      <Button type="submit" isLoading={form.formState.isSubmitting}>
+      <Button
+        type="submit"
+        isLoading={form.formState.isSubmitting}
+      >
         Submit
       </Button>
     </form>

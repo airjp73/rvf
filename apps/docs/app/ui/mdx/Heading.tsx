@@ -5,7 +5,9 @@ import { useInView } from "framer-motion";
 import { Link, useLocation } from "react-router";
 import { cn } from "~/lib/utils";
 
-function AnchorIcon(props: React.ComponentPropsWithoutRef<"svg">) {
+function AnchorIcon(
+  props: React.ComponentPropsWithoutRef<"svg">,
+) {
   return (
     <svg
       viewBox="0 0 20 20"
@@ -76,7 +78,9 @@ export function Heading<Level extends 2 | 3>({
       <Component
         ref={ref}
         className={cn(
-          tag || label ? "mt-2 scroll-mt-32" : "scroll-mt-24",
+          tag || label
+            ? "mt-2 scroll-mt-32"
+            : "scroll-mt-24",
           location.hash === `#${props.id}` &&
             "text-fuchsia-500 ring-1 ring-offset-4 rounded-md ring-offset-background ring-fuchsia-500",
         )}

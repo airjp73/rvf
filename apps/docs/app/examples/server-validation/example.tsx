@@ -7,7 +7,10 @@ import {
   CopyButton,
   ExampleArea,
 } from "~/ui/mdx/Code";
-import { ServerValidationForm, action as remixAction } from "./remix";
+import {
+  ServerValidationForm,
+  action as remixAction,
+} from "./remix";
 import WithRemix from "./remix?code";
 import withRemixText from "./remix?raw";
 
@@ -21,8 +24,12 @@ export const ServerValidation = () => {
           title="Server validation with Remix"
           tabs={
             <CodeTabsList>
-              <CodeTabsTrigger value="example">Example</CodeTabsTrigger>
-              <CodeTabsTrigger value="with-react">Code</CodeTabsTrigger>
+              <CodeTabsTrigger value="example">
+                Example
+              </CodeTabsTrigger>
+              <CodeTabsTrigger value="with-react">
+                Code
+              </CodeTabsTrigger>
             </CodeTabsList>
           }
         />
@@ -33,7 +40,9 @@ export const ServerValidation = () => {
         </CodePanel>
         <CodePanel
           value="with-react"
-          copyButton={<CopyButton content={withRemixText} />}
+          copyButton={
+            <CopyButton content={withRemixText} />
+          }
         >
           <WithRemix />
         </CodePanel>
