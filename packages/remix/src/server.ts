@@ -1,5 +1,5 @@
-import { type TypedResponse } from "@remix-run/server-runtime";
 import { ValidationErrorResponseData, ValidatorError } from "@rvf/core";
+import { data } from "react-router";
 
 /**
  * Takes the errors from a `Validator` and returns a `Response`.
@@ -23,12 +23,12 @@ export function validationError(
   repopulateFields?: unknown,
   init?: ResponseInit,
 ) {
-  return new Response(
-    JSON.stringify({
+  return data(
+    {
       fieldErrors: error.fieldErrors,
       repopulateFields,
       formId: error.formId,
-    }),
+    } satisfies ValidationErrorResponseData,
     {
       status: 422,
       ...init,
@@ -36,5 +36,5 @@ export function validationError(
         "Content-Type": "application/json; utf-8",
       },
     },
-  ) as TypedResponse<ValidationErrorResponseData>;
+  );
 }

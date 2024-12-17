@@ -1,5 +1,3 @@
-import { json, redirect, useActionData, useFetcher } from "@remix-run/react";
-import { createRemixStub } from "@remix-run/testing";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import {
@@ -10,7 +8,13 @@ import {
 } from "@rvf/core";
 import { useForm } from "../useForm";
 import { validationError } from "../server";
-import { ActionFunctionArgs } from "@remix-run/node";
+import {
+  ActionFunctionArgs,
+  createRoutesStub,
+  redirect,
+  useActionData,
+  useFetcher,
+} from "react-router";
 import { ValidatedForm } from "../ValidatedForm";
 
 it("should have the correct type for handleSubmit", async () => {
@@ -47,7 +51,7 @@ it("should submit data to the action in dom mode", async () => {
     return { message: `You said: ${data.data.foo}` };
   };
 
-  const Stub = createRemixStub([
+  const Stub = createRoutesStub([
     {
       path: "/",
       Component: () => {
@@ -90,7 +94,7 @@ it("should respect the validation errors returned from the action", async () => 
     });
   };
 
-  const Stub = createRemixStub([
+  const Stub = createRoutesStub([
     {
       path: "/",
       Component: () => {
@@ -135,7 +139,7 @@ it("should not show the validation errors if a form id is returned from the acti
     });
   };
 
-  const Stub = createRemixStub([
+  const Stub = createRoutesStub([
     {
       path: "/",
       Component: () => {
@@ -180,7 +184,7 @@ it("should show the validation errors if a form id is returned from the action, 
     });
   };
 
-  const Stub = createRemixStub([
+  const Stub = createRoutesStub([
     {
       path: "/",
       Component: () => {
@@ -226,7 +230,7 @@ it("should not show the validation errors if no form id is returned from the act
     });
   };
 
-  const Stub = createRemixStub([
+  const Stub = createRoutesStub([
     {
       path: "/",
       Component: () => {
@@ -277,7 +281,7 @@ it("should automatically take care of the form id for server validation errors",
     return {};
   };
 
-  const Stub = createRemixStub([
+  const Stub = createRoutesStub([
     {
       path: "/",
       Component: () => {
@@ -330,7 +334,7 @@ it("should show server validation errors even if there's no form id and renderFo
     return {};
   };
 
-  const Stub = createRemixStub([
+  const Stub = createRoutesStub([
     {
       path: "/",
       Component: () => {
@@ -378,7 +382,7 @@ it("should be able to submit state directly", async () => {
     return { message: `You said: ${data.data.foo}` };
   };
 
-  const Stub = createRemixStub([
+  const Stub = createRoutesStub([
     {
       path: "/",
       Component: () => {
@@ -432,7 +436,7 @@ it("should be able to submit state directly as form data", async () => {
     return { message: `You said: ${data.data.foo}` };
   };
 
-  const Stub = createRemixStub([
+  const Stub = createRoutesStub([
     {
       path: "/",
       Component: () => {
@@ -486,7 +490,7 @@ it("should be able to submit dom data as json", async () => {
     return { message: `You said: ${data.data.foo.bar}` };
   };
 
-  const Stub = createRemixStub([
+  const Stub = createRoutesStub([
     {
       path: "/",
       Component: () => {
@@ -532,7 +536,7 @@ it("should respect the formMethod of the submitter", async () => {
   const a = vi.fn();
   const l = vi.fn();
 
-  const Stub = createRemixStub([
+  const Stub = createRoutesStub([
     {
       path: "/",
       Component: () => {
@@ -565,11 +569,11 @@ it("should respect the formMethod of the submitter", async () => {
       async action({ request }) {
         a();
         await request.json();
-        return json({ message: "Action called" });
+        return Response.json({ message: "Action called" });
       },
       async loader() {
         l();
-        return json({ message: "Loader called" });
+        return Response.json({ message: "Loader called" });
       },
     },
   ]);
@@ -591,7 +595,7 @@ it("should respect the specified action", async () => {
   });
   const a = vi.fn();
 
-  const Stub = createRemixStub([
+  const Stub = createRoutesStub([
     {
       path: "/",
       Component: () => {
@@ -631,7 +635,7 @@ it("should respect the specified action with the ValidatedForm component", async
   });
   const a = vi.fn();
 
-  const Stub = createRemixStub([
+  const Stub = createRoutesStub([
     {
       path: "/",
       Component: () => {
@@ -670,7 +674,7 @@ it("should correctly strip down fully qualified urls", async () => {
   });
   const a = vi.fn();
 
-  const Stub = createRemixStub([
+  const Stub = createRoutesStub([
     {
       path: "/",
       Component: () => {
@@ -718,7 +722,7 @@ it("should function correctly with nested urls", async () => {
   });
   const a = vi.fn();
 
-  const Stub = createRemixStub([
+  const Stub = createRoutesStub([
     {
       path: "/test/action",
       Component: () => {
@@ -763,7 +767,7 @@ it("should correctly handle submitting with a fetcher", async () => {
     return { message: `You said: ${data.data.foo}` };
   };
 
-  const Stub = createRemixStub([
+  const Stub = createRoutesStub([
     {
       path: "/",
       Component: () => {
@@ -808,7 +812,7 @@ it("should call onSubmitSuccess when the call is complete", async () => {
     return { message: `You said: ${data.data.foo}` };
   };
 
-  const Stub = createRemixStub([
+  const Stub = createRoutesStub([
     {
       path: "/",
       Component: () => {
@@ -855,7 +859,7 @@ it("should have access to the latest action data in onSubmitSuccess", async () =
     return { message: `You said: ${data.data.foo}` };
   };
 
-  const Stub = createRemixStub([
+  const Stub = createRoutesStub([
     {
       path: "/",
       Component: () => {
@@ -903,7 +907,7 @@ it("should call onSubmitFailure if the call returns a validation error", async (
     });
   };
 
-  const Stub = createRemixStub([
+  const Stub = createRoutesStub([
     {
       path: "/",
       Component: () => {
@@ -946,7 +950,7 @@ it("should reset the form after a successful submission when resetAfterSubmit is
     return { message: `You said: ${data.data.foo}` };
   };
 
-  const Stub = createRemixStub([
+  const Stub = createRoutesStub([
     {
       path: "/",
       Component: () => {
@@ -1000,7 +1004,7 @@ it("should set the rvfFormId prop on submit", async () => {
     return { formId: formData.get(FORM_ID_FIELD_NAME) as string };
   };
 
-  const Stub = createRemixStub([
+  const Stub = createRoutesStub([
     {
       path: "/",
       Component: () => {
@@ -1049,7 +1053,7 @@ it("should behave correctly when onBeforeSubmit is provided", async () => {
     return { message: `You said: ${data.data.foo}` };
   };
 
-  const Stub = createRemixStub([
+  const Stub = createRoutesStub([
     {
       path: "/",
       Component: () => {
@@ -1098,7 +1102,7 @@ it("should cancel submit correctly when onBeforeSubmit cancels the submit", asyn
     return { message: `You said: ${data.data.foo}` };
   };
 
-  const Stub = createRemixStub([
+  const Stub = createRoutesStub([
     {
       path: "/",
       Component: () => {
