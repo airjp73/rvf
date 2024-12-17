@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { useField } from "../../../../packages/react-router/dist";
+import { useField } from "@rvf/react-router";
 
 export type TextareaProps = {
   name: string;

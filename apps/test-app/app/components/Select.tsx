@@ -1,5 +1,5 @@
 import { FC, PropsWithChildren } from "react";
-import { useField } from "../../../../packages/react-router/dist";
+import { useField } from "@rvf/react-router";
 
 export type SelectProps = PropsWithChildren<{
   name: string;

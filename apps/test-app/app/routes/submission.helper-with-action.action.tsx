@@ -1,7 +1,7 @@
 import { DataFunctionArgs, json } from "react-router";
 import { useActionData } from "react-router";
 import { withYup } from "@rvf/yup";
-import { validationError } from "../../../../packages/react-router/dist";
+import { validationError } from "@rvf/react-router";
 import * as yup from "yup";
 
 const schema = yup.object({

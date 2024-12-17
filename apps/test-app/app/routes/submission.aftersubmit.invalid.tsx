@@ -1,10 +1,6 @@
 import { DataFunctionArgs, json } from "react-router";
 import { withZod } from "@rvf/zod";
-import {
-  ValidatedForm,
-  validationError,
-  useField,
-} from "../../../../packages/react-router/dist";
+import { ValidatedForm, validationError, useField } from "@rvf/react-router";
 import { z } from "zod";
 import { SubmitButton } from "~/components/SubmitButton";
 

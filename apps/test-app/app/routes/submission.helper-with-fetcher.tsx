@@ -1,10 +1,6 @@
 import { useFetcher } from "react-router";
 import { withYup } from "@rvf/yup";
-import {
-  FormProvider,
-  ValidatedForm,
-  useForm,
-} from "../../../../packages/react-router/dist";
+import { FormProvider, ValidatedForm, useForm } from "@rvf/react-router";
 import * as yup from "yup";
 import { Input } from "~/components/Input";
 

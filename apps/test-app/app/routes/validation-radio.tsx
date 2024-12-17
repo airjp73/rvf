@@ -1,5 +1,5 @@
 import { withZod } from "@rvf/zod";
-import { ValidatedForm } from "../../../../packages/react-router/dist";
+import { ValidatedForm } from "@rvf/react-router";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
 import { Input } from "~/components/Input";

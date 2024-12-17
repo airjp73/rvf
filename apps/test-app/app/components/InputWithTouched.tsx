@@ -1,5 +1,5 @@
 import React, { forwardRef } from "react";
-import { useField } from "../../../../packages/react-router/dist";
+import { useField } from "@rvf/react-router";
 
 type InputProps = {
   name: string;

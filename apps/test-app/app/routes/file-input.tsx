@@ -6,10 +6,7 @@ import {
   unstable_createMemoryUploadHandler,
 } from "react-router";
 import { withZod } from "@rvf/zod";
-import {
-  validationError,
-  ValidatedForm,
-} from "../../../../packages/react-router/dist";
+import { validationError, ValidatedForm } from "@rvf/react-router";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
 import { Input } from "~/components/Input";

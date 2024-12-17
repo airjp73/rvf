@@ -1,5 +1,5 @@
 import { withYup } from "@rvf/yup";
-import { ValidatedForm } from "../../../../packages/react-router/dist";
+import { ValidatedForm } from "@rvf/react-router";
 import * as yup from "yup";
 import { InputWithTouched } from "~/components/InputWithTouched";
 

@@ -1,11 +1,7 @@
 import { DataFunctionArgs, json } from "react-router";
 import { useActionData } from "react-router";
 import { withYup } from "@rvf/yup";
-import {
-  FormProvider,
-  useForm,
-  validationError,
-} from "../../../../packages/react-router/dist";
+import { FormProvider, useForm, validationError } from "@rvf/react-router";
 import * as yup from "yup";
 import { Input } from "~/components/Input";
 

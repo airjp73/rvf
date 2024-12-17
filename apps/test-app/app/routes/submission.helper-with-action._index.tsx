@@ -4,7 +4,7 @@ import {
   ValidatedForm,
   useForm,
   useFormContext,
-} from "../../../../packages/react-router/dist";
+} from "@rvf/react-router";
 import * as yup from "yup";
 import { Input } from "~/components/Input";
 

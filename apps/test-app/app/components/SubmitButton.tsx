@@ -3,7 +3,7 @@ import {
   useIsSubmitting,
   useIsValid,
   useFormScopeOrContext,
-} from "../../../../packages/react-router/dist";
+} from "@rvf/react-router";
 
 type Props = {
   label?: string;

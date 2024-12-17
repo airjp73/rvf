@@ -1,6 +1,5 @@
 import { withZod } from "@rvf/zod";
-import { useField } from "../../../../packages/react-router/dist";
-import { ValidatedForm } from "../../../../packages/react-router/dist";
+import { useField, ValidatedForm } from "@rvf/react-router";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
 

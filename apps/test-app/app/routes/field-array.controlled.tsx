@@ -5,7 +5,7 @@ import {
   useControlField,
   useField,
   ValidatedForm,
-} from "../../../../packages/react-router/dist";
+} from "@rvf/react-router";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
 

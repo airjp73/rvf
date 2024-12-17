@@ -2,7 +2,7 @@ import {
   isValidationErrorResponse,
   useForm,
   validationError,
-} from "../../../../../packages/react-router/dist";
+} from "@rvf/react-router";
 import { withZod } from "@rvf/zod";
 import { z } from "zod";
 import { MyInput } from "~/fields/MyInput";
@@ -11,8 +11,11 @@ import { createProject } from "./api";
 import { ErrorMessage } from "~/fields/ErrorMessage";
 import { showToastMessage } from "~/lib/utils";
 import { EmptyState } from "~/ui/empty-state";
-import { json, useActionData } from "react-router";
-import { ActionFunctionArgs } from "react-router";
+import {
+  ActionFunctionArgs,
+  data as dataResponse,
+  useActionData,
+} from "react-router";
 
 const validator = withZod(
   z.object({
@@ -48,7 +51,7 @@ export const action = async ({
   const { projectName, tasks } = data.data;
 
   await createProject({ name: projectName, tasks });
-  return json({ projectName });
+  return dataResponse({ projectName });
 };
 
 export const ReactExample = () => {

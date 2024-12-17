@@ -1,5 +1,5 @@
 import React, { forwardRef } from "react";
-import { useField, FormScope } from "../../../../packages/react-router/dist";
+import { useField, FormScope } from "@rvf/react-router";
 
 type InputProps = {
   name: string | FormScope<string | boolean | string[]>;

@@ -3,7 +3,7 @@ import { z } from "zod";
 import { zfd } from "zod-form-data";
 import { Input } from "~/components/Input";
 import { SubmitButton } from "~/components/SubmitButton";
-import { FormProvider, useForm } from "../../../../packages/react-router/dist";
+import { FormProvider, useForm } from "@rvf/react-router";
 
 const validator = withZod(
   zfd.formData({

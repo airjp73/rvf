@@ -6,7 +6,7 @@ import {
   validationError,
   useForm,
   isValidationErrorResponse,
-} from "../../../../../packages/react-router/dist";
+} from "react-router";
 import { useActionData } from "react-router";
 import { MyInput } from "~/fields/MyInput";
 import { Note } from "~/ui/mdx/mdx";
