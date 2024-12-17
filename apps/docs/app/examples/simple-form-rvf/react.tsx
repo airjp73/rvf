@@ -36,7 +36,10 @@ export const SignupForm = () => {
   });
 
   const confirmRef = useRef<HTMLInputElement>(null);
-  useNativeValidity(confirmRef, form.error("confirmPassword"));
+  useNativeValidity(
+    confirmRef,
+    form.error("confirmPassword"),
+  );
 
   return (
     <form {...form.getFormProps()}>
@@ -49,7 +52,12 @@ export const SignupForm = () => {
 
       <Label>
         Password
-        <Input id="password" name="password" required type="password" />
+        <Input
+          id="password"
+          name="password"
+          required
+          type="password"
+        />
       </Label>
 
       <Label>
@@ -62,7 +70,10 @@ export const SignupForm = () => {
         />
       </Label>
 
-      <Button type="submit" isLoading={form.formState.isSubmitting}>
+      <Button
+        type="submit"
+        isLoading={form.formState.isSubmitting}
+      >
         Submit
       </Button>
     </form>
