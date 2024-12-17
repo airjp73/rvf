@@ -5,15 +5,14 @@
   "workspaces": [
     "packages/*",
     "apps/test-app",
-    "apps/docs-v2"
+    "apps/docs"
   ],
   "scripts": {
     "build-docs": "turbo run build --filter=docs --include-dependencies --no-deps --force",
     "typecheck": "turbo run typecheck",
     "sample-app": "bun dev --filter=sample-app",
     "test-app": "bun dev --filter=test-app",
-    "docs": "bun dev --filter=docs-v2",
-    "docs-legacy": "cd apps/docs && bun dev",
+    "docs": "bun dev --filter=docs",
     "dev": "turbo run dev",
     "test": "turbo run test",
     "vitest": "vitest",
