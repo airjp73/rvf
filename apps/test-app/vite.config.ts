@@ -6,5 +6,9 @@ export default defineConfig({
   server: {
     port: 3000,
   },
-  plugins: [reactRouter(), tsconfigPaths()],
+  plugins: [
+    // @ts-expect-error this works, but the types are weird here
+    reactRouter(),
+    tsconfigPaths(),
+  ],
 });

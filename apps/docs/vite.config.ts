@@ -39,7 +39,9 @@ export default defineConfig({
         }
       },
     },
+    // @ts-expect-error this works, but the types are weird here
     reactRouter(),
+    // @ts-expect-error this works, but the types are weird here
     tsconfigPaths(),
   ],
 });
