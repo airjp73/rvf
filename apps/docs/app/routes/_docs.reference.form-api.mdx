@@ -269,9 +269,44 @@ For uncontrolled fields, this will manually set the value of the form control us
 Optionally, you can pass a default value to reset to.
 This will reset cause `form.defaultValue('myField')` to return the new default value,
 and for `form.dirty('myField')` to return use this new default for comparison.
-Calling `resetForm` will undo any default value changes made by `resetField`.
+Calling `resetForm` or calling `resetField` on a parent field, will undo any default value changes made by `resetField`.
 
 Can also be called without a field name, to reset the currently in-scope field.
+
+<Note>
+  <details>
+    <summary>Edge cases with nested fields</summary>
+    
+    Let's say you have a form with default values that look like this:
+    
+    ```tsx
+    const form = useForm({
+      defaultValues: {
+        name: "John",
+        address: {
+          street: "123 Main St",
+          city: "Anytown",
+        },
+      },
+    });
+    ```
+    
+    If you call `form.resetField("address.street", "234 Another St")`,
+    then `form.defaultValue("address.street")` will now return `"234 Another St"`.
+
+    *BUT* calling `form.defaultValue("address")` will return the original street,
+    `{ street: "123 Main St", city: "Anytown" }`. Likewise, calling `form.defaultValue` will return the original default values of the entire form.
+    
+    If you then call `form.resetField("address")`, then `form.defaultValue("address.street")` will once again return `"123 Main St"`.
+    
+    It works this way to facilitate writing your own sub-form or field components without
+    having to worry about the implementation details of those in your forms. In this example,
+    you might have a `StreetInput` with location autocomplete, and that component might want to use
+    `resetField` for some of its logic. Now you can do that, _and_ use `resetForm` in your form
+    without having to think about whether or not `StreetInput` has called `resetField` itself.
+
+  </details>
+</Note>
 
 ### `scope`
 
