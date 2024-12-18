@@ -1,6 +1,6 @@
 {
   "name": "zod-form-data",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "homepage": "https://github.com/airjp73/rvf/tree/main/packages/zod-form-data",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -26,7 +26,7 @@
   },
   "peerDependencies": {
     "zod": ">= 3.11.0",
-    "@rvf/set-get": ">= 6.0.3 < 7.0.0"
+    "@rvf/set-get": ">= 6.0.3 < 8.0.0"
   },
   "devDependencies": {
     "@rvf/set-get": "*",
