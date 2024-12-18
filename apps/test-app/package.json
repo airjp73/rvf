@@ -37,7 +37,7 @@
     "@testing-library/cypress": "^8.0.2",
     "@types/react": "^19.0.1",
     "@types/react-dom": "^19.0.2",
-    "cypress": "^9.1.0",
+    "cypress": "^13.17.0",
     "har-validator": "^5.1.5",
     "start-server-and-test": "^1.14.0",
     "tiny-invariant": "^1.2.0",
@@ -47,6 +47,5 @@
   },
   "engines": {
     "node": ">=20"
-  },
-  "sideEffects": false
+  }
 }

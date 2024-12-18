@@ -1,11 +1,11 @@
 import "@testing-library/cypress/add-commands";
 import "cypress-file-upload";
 
-beforeEach(() => {
-  const parentDocument = (cy as any).state("window").parent.document;
-  const iframe = parentDocument.querySelector(".iframes-container iframe");
-  iframe.removeAttribute("sandbox");
-});
+// beforeEach(() => {
+//   const parentDocument = (cy as any).state("window").parent.document;
+//   const iframe = parentDocument.querySelector(".iframes-container iframe");
+//   iframe.removeAttribute("sandbox");
+// });
 
 Cypress.Commands.add("visitWithoutJs", (url) => {
   const parentDocument = (cy as any).state("window").parent.document;
