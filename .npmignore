@@ -8,4 +8,6 @@
 .gitignore
 .npmignore
 .npmrc
+.turbo
+stats.html
 tsconfig.json
