@@ -10,7 +10,7 @@ cd ../react
 npm version $1
 npm publish
 
-cd ../remix
+cd ../react-router
 npm version $1
 npm publish
 
