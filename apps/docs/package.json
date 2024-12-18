@@ -47,6 +47,7 @@
     "@react-router/dev": "^7.0.0",
     "@shikijs/rehype": "^1.6.4",
     "@tailwindcss/typography": "^0.5.13",
+    "@types/express": "^5.0.0",
     "@types/react": "^19.0.1",
     "@types/react-dom": "^19.0.2",
     "@typescript-eslint/eslint-plugin": "^6.7.4",
