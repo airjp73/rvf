@@ -183,6 +183,7 @@ it("should reset individual fields using custom initial values", async () => {
         <pre data-testid="foo-touched">
           {form.touched("foo") ? "true" : "false"}
         </pre>
+        <pre data-testid="foo-default">{form.defaultValue("foo")}</pre>
 
         <input data-testid="baz.a" {...controlInput(form.field("baz.a"))} />
         <pre data-testid="baz.a-touched">
@@ -192,7 +193,9 @@ it("should reset individual fields using custom initial values", async () => {
         <button
           type="button"
           data-testid="reset"
-          onClick={() => form.resetField("foo", "testing 123")}
+          onClick={() =>
+            form.resetField("foo", { defaultValue: "testing 123" })
+          }
         />
       </form>
     );
@@ -201,6 +204,7 @@ it("should reset individual fields using custom initial values", async () => {
   render(<TestComp />);
   expect(screen.getByTestId("foo-touched")).toHaveTextContent("false");
   expect(screen.getByTestId("baz.a-touched")).toHaveTextContent("false");
+  expect(screen.getByTestId("foo-default")).toHaveTextContent("bar");
 
   await userEvent.type(screen.getByTestId("foo"), "test");
   expect(screen.getByTestId("foo")).toHaveValue("bartest");
@@ -215,6 +219,85 @@ it("should reset individual fields using custom initial values", async () => {
   expect(screen.getByTestId("baz.a")).toHaveValue("quuxtest");
   expect(screen.getByTestId("foo-touched")).toHaveTextContent("false");
   expect(screen.getByTestId("baz.a-touched")).toHaveTextContent("true");
+  expect(screen.getByTestId("foo-default")).toHaveTextContent("testing 123");
+});
+
+it("should reset field array fields, then the whole field array", async () => {
+  const submit = vi.fn();
+  const TestComp = () => {
+    const form = useForm({
+      defaultValues: {
+        foo: ["bar"],
+      },
+      validator: successValidator,
+      handleSubmit: submit,
+    });
+
+    return (
+      <form {...form.getFormProps()} data-testid="form">
+        {form.array("foo").map((key, item, index) => (
+          <div key={key}>
+            <input
+              data-testid={`foo-${index}`}
+              {...item.field().getInputProps()}
+            />
+            <pre data-testid={`foo-${index}-touched`}>
+              {item.touched() ? "true" : "false"}
+            </pre>
+            <pre data-testid={`foo-${index}-default`}>
+              {item.defaultValue()}
+            </pre>
+            <button
+              data-testid={`foo-${index}-reset`}
+              type="button"
+              onClick={() =>
+                form.resetField(`foo[${index}]`, {
+                  defaultValue: "testing 123",
+                })
+              }
+            />
+          </div>
+        ))}
+
+        <button
+          type="button"
+          data-testid="add"
+          onClick={() => form.array("foo").push("new")}
+        />
+
+        <button
+          type="button"
+          data-testid="reset"
+          onClick={() => form.resetForm()}
+        />
+      </form>
+    );
+  };
+
+  render(<TestComp />);
+  expect(screen.getByTestId("foo-0-touched")).toHaveTextContent("false");
+  expect(screen.getByTestId("foo-0-default")).toHaveTextContent("bar");
+
+  await userEvent.type(screen.getByTestId("foo-0"), "test");
+  expect(screen.getByTestId("foo-0")).toHaveValue("bartest");
+
+  await userEvent.click(screen.getByTestId("add"));
+  expect(screen.getByTestId("foo-1")).toHaveValue("new");
+  expect(screen.getByTestId("foo-1-touched")).toHaveTextContent("false");
+  expect(screen.getByTestId("foo-1-default")).toHaveTextContent("new");
+
+  await userEvent.type(screen.getByTestId("foo-1"), "test");
+  expect(screen.getByTestId("foo-1")).toHaveValue("newtest");
+
+  await userEvent.click(screen.getByTestId("foo-1-reset"));
+  expect(screen.getByTestId("foo-1")).toHaveValue("testing 123");
+  expect(screen.getByTestId("foo-1-default")).toHaveTextContent("testing 123");
+
+  await userEvent.click(screen.getByTestId("reset"));
+  expect(screen.getByTestId("foo-0")).toHaveValue("bar");
+  expect(screen.getByTestId("foo-0-touched")).toHaveTextContent("false");
+  expect(screen.getByTestId("foo-0-default")).toHaveTextContent("bar");
+  expect(screen.queryByTestId("foo-1")).not.toBeInTheDocument();
 });
 
 it("should reset the whole form when a reset button is clicked", async () => {

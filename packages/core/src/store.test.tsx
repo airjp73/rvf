@@ -7,6 +7,7 @@ import {
 } from "./store";
 import { ValidationBehavior } from "./types";
 import { createValidator } from "./createValidator";
+import { getFieldDefaultValue } from "./getters";
 
 const testStore = (init?: Partial<FormStoreInit>) =>
   createFormStateStore({
@@ -197,10 +198,20 @@ describe("arrays", () => {
       dirtyFields,
       validationErrors,
       fieldArrayKeys,
+      defaultValueOverrides,
     } = store.getState();
-    expect({ values, touchedFields, dirtyFields, validationErrors }).toEqual({
+    expect({
+      values,
+      touchedFields,
+      dirtyFields,
+      validationErrors,
+      defaultValueOverrides,
+    }).toEqual({
       values: {
         foo: ["bar", "baz", "quux"],
+      },
+      defaultValueOverrides: {
+        "foo[2]": "quux",
       },
       touchedFields: {
         "foo[0]": true,
@@ -242,10 +253,20 @@ describe("arrays", () => {
       dirtyFields,
       validationErrors,
       fieldArrayKeys,
+      defaultValueOverrides,
     } = store.getState();
-    expect({ values, touchedFields, dirtyFields, validationErrors }).toEqual({
+    expect({
+      values,
+      touchedFields,
+      dirtyFields,
+      validationErrors,
+      defaultValueOverrides,
+    }).toEqual({
       values: {
         foo: [{ name: "bar", notes: [{ text: "baz" }, { text: "quux" }] }],
+      },
+      defaultValueOverrides: {
+        "foo[0].notes[1]": { text: "quux" },
       },
       touchedFields: {
         "foo[0].name": true,
@@ -265,6 +286,10 @@ describe("arrays", () => {
     store.setState({
       values: {
         foo: ["bar", "baz"],
+      },
+      defaultValueOverrides: {
+        "foo[0]": "bar",
+        "foo[1]": "baz",
       },
       touchedFields: {
         "foo[0]": true,
@@ -289,10 +314,20 @@ describe("arrays", () => {
       dirtyFields,
       validationErrors,
       fieldArrayKeys,
+      defaultValueOverrides,
     } = store.getState();
-    expect({ values, touchedFields, dirtyFields, validationErrors }).toEqual({
+    expect({
+      values,
+      touchedFields,
+      dirtyFields,
+      validationErrors,
+      defaultValueOverrides,
+    }).toEqual({
       values: {
         foo: ["bar"],
+      },
+      defaultValueOverrides: {
+        "foo[0]": "bar",
       },
       touchedFields: {
         "foo[0]": true,
@@ -316,6 +351,10 @@ describe("arrays", () => {
           { name: "value", notes: [{ text: "thing" }] },
         ],
       },
+      defaultValueOverrides: {
+        "foo[0].notes[0]": { text: "baz" },
+        "foo[0].notes[1]": { text: "bar" },
+      },
       touchedFields: {},
       dirtyFields: {},
       validationErrors: {},
@@ -332,6 +371,7 @@ describe("arrays", () => {
       dirtyFields,
       validationErrors,
       fieldArrayKeys,
+      defaultValueOverrides,
     } = store.getState();
     expect({
       values,
@@ -339,12 +379,16 @@ describe("arrays", () => {
       dirtyFields,
       validationErrors,
       fieldArrayKeys,
+      defaultValueOverrides,
     }).toEqual({
       values: {
         foo: [
           { name: "bar", notes: [{ text: "baz" }] },
           { name: "value", notes: [{ text: "thing" }] },
         ],
+      },
+      defaultValueOverrides: {
+        "foo[0].notes[0]": { text: "baz" },
       },
       dirtyFields: {},
       touchedFields: {},
@@ -385,6 +429,10 @@ describe("arrays", () => {
       values: {
         foo: ["bar", "baz"],
       },
+      defaultValueOverrides: {
+        "foo[0]": "bar",
+        "foo[1]": "baz",
+      },
       touchedFields: {
         "foo[0]": false,
         "foo[1]": true,
@@ -408,10 +456,20 @@ describe("arrays", () => {
       dirtyFields,
       validationErrors,
       fieldArrayKeys,
+      defaultValueOverrides,
     } = store.getState();
-    expect({ values, touchedFields, dirtyFields, validationErrors }).toEqual({
+    expect({
+      values,
+      touchedFields,
+      dirtyFields,
+      validationErrors,
+      defaultValueOverrides,
+    }).toEqual({
       values: {
         foo: ["baz"],
+      },
+      defaultValueOverrides: {
+        "foo[0]": "baz",
       },
       touchedFields: {
         "foo[0]": true,
@@ -435,6 +493,10 @@ describe("arrays", () => {
           { name: "value", notes: [{ text: "thing" }] },
         ],
       },
+      defaultValueOverrides: {
+        "foo[0].notes[0]": { text: "bob" },
+        "foo[0].notes[1].text": "jim",
+      },
       touchedFields: {},
       dirtyFields: {},
       validationErrors: {},
@@ -451,6 +513,7 @@ describe("arrays", () => {
       dirtyFields,
       validationErrors,
       fieldArrayKeys,
+      defaultValueOverrides,
     } = store.getState();
     expect({
       values,
@@ -458,12 +521,16 @@ describe("arrays", () => {
       dirtyFields,
       validationErrors,
       fieldArrayKeys,
+      defaultValueOverrides,
     }).toEqual({
       values: {
         foo: [
           { name: "bar", notes: [{ text: "another" }] },
           { name: "value", notes: [{ text: "thing" }] },
         ],
+      },
+      defaultValueOverrides: {
+        "foo[0].notes[0].text": "jim",
       },
       dirtyFields: {},
       touchedFields: {},
@@ -504,6 +571,10 @@ describe("arrays", () => {
       values: {
         foo: ["bar", "baz"],
       },
+      defaultValueOverrides: {
+        foo: ["bar", "baz"],
+        "foo[0]": "jim",
+      },
       touchedFields: {
         "foo[0]": true,
         "foo[1]": true,
@@ -527,10 +598,22 @@ describe("arrays", () => {
       dirtyFields,
       validationErrors,
       fieldArrayKeys,
+      defaultValueOverrides,
     } = store.getState();
-    expect({ values, touchedFields, dirtyFields, validationErrors }).toEqual({
+    expect({
+      values,
+      touchedFields,
+      dirtyFields,
+      validationErrors,
+      defaultValueOverrides,
+    }).toEqual({
       values: {
         foo: ["quux", "bar", "baz"],
+      },
+      defaultValueOverrides: {
+        "foo[0]": "quux",
+        "foo[1]": "jim",
+        foo: ["bar", "baz"],
       },
       touchedFields: {
         "foo[1]": true,
@@ -557,6 +640,10 @@ describe("arrays", () => {
           { name: "value", notes: [{ text: "thing" }] },
         ],
       },
+      defaultValueOverrides: {
+        "foo[0].notes[0]": { text: "baz" },
+        "foo[0].notes[1]": { text: "another" },
+      },
       touchedFields: {},
       dirtyFields: {},
       validationErrors: {},
@@ -575,6 +662,7 @@ describe("arrays", () => {
       dirtyFields,
       validationErrors,
       fieldArrayKeys,
+      defaultValueOverrides,
     } = store.getState();
     expect({
       values,
@@ -582,6 +670,7 @@ describe("arrays", () => {
       dirtyFields,
       validationErrors,
       fieldArrayKeys,
+      defaultValueOverrides,
     }).toEqual({
       values: {
         foo: [
@@ -589,6 +678,11 @@ describe("arrays", () => {
           { name: "bar", notes: [{ text: "baz" }, { text: "another" }] },
           { name: "value", notes: [{ text: "thing" }] },
         ],
+      },
+      defaultValueOverrides: {
+        "foo[0]": { name: "foo", notes: [{ text: "bar" }] },
+        "foo[1].notes[0]": { text: "baz" },
+        "foo[1].notes[1]": { text: "another" },
       },
       dirtyFields: {},
       touchedFields: {},
@@ -634,6 +728,10 @@ describe("arrays", () => {
       values: {
         foo: ["bar", "baz"],
       },
+      defaultValueOverrides: {
+        "foo[0]": "bar",
+        "foo[1]": "baz",
+      },
       touchedFields: {
         "foo[0]": true,
         "foo[1]": true,
@@ -657,10 +755,22 @@ describe("arrays", () => {
       dirtyFields,
       validationErrors,
       fieldArrayKeys,
+      defaultValueOverrides,
     } = store.getState();
-    expect({ values, touchedFields, dirtyFields, validationErrors }).toEqual({
+    expect({
+      values,
+      touchedFields,
+      dirtyFields,
+      validationErrors,
+      defaultValueOverrides,
+    }).toEqual({
       values: {
         foo: ["bar", "quux", "baz"],
+      },
+      defaultValueOverrides: {
+        "foo[0]": "bar",
+        "foo[1]": "quux",
+        "foo[2]": "baz",
       },
       touchedFields: {
         "foo[0]": true,
@@ -688,6 +798,10 @@ describe("arrays", () => {
           { name: "foo", notes: [] },
         ],
       },
+      defaultValueOverrides: {
+        "foo[0].notes[1]": { text: "another" },
+        "foo[2]": { name: "jim", notes: [] },
+      },
       touchedFields: {},
       dirtyFields: {},
       validationErrors: {},
@@ -707,6 +821,7 @@ describe("arrays", () => {
       dirtyFields,
       validationErrors,
       fieldArrayKeys,
+      defaultValueOverrides,
     } = store.getState();
     expect({
       values,
@@ -714,6 +829,7 @@ describe("arrays", () => {
       dirtyFields,
       validationErrors,
       fieldArrayKeys,
+      defaultValueOverrides,
     }).toEqual({
       values: {
         foo: [
@@ -722,6 +838,11 @@ describe("arrays", () => {
           { name: "value", notes: [{ text: "thing" }] },
           { name: "foo", notes: [] },
         ],
+      },
+      defaultValueOverrides: {
+        "foo[0].notes[1]": { text: "another" },
+        "foo[1]": { name: "hello", notes: [{ text: "goodbye" }] },
+        "foo[3]": { name: "jim", notes: [] },
       },
       touchedFields: {},
       dirtyFields: {},
@@ -773,6 +894,12 @@ describe("arrays", () => {
       values: {
         foo: ["bar", "baz", "another", "value", "quux"],
       },
+      defaultValueOverrides: {
+        "foo[0]": "a",
+        "foo[1]": "b",
+        "foo[2]": "c",
+        "foo[3]": "d",
+      },
       touchedFields: {
         "foo[0]": true,
         "foo[1]": true,
@@ -800,10 +927,23 @@ describe("arrays", () => {
       dirtyFields,
       validationErrors,
       fieldArrayKeys,
+      defaultValueOverrides,
     } = store.getState();
-    expect({ values, touchedFields, dirtyFields, validationErrors }).toEqual({
+    expect({
+      values,
+      touchedFields,
+      dirtyFields,
+      validationErrors,
+      defaultValueOverrides,
+    }).toEqual({
       values: {
         foo: ["bar", "value", "baz", "another", "quux"],
+      },
+      defaultValueOverrides: {
+        "foo[0]": "a",
+        "foo[1]": "d",
+        "foo[2]": "b",
+        "foo[3]": "c",
       },
       touchedFields: {
         "foo[0]": true,
@@ -835,6 +975,12 @@ describe("arrays", () => {
           { name: "foo", notes: [] },
         ],
       },
+      defaultValueOverrides: {
+        "foo[0].notes[0]": { text: "baz" },
+        "foo[0].notes[1]": { text: "another" },
+        "foo[1].notes[0]": { text: "thing" },
+        "foo[2]": { name: "foo", notes: [] },
+      },
       touchedFields: {},
       dirtyFields: {},
       validationErrors: {},
@@ -852,6 +998,7 @@ describe("arrays", () => {
       dirtyFields,
       validationErrors,
       fieldArrayKeys,
+      defaultValueOverrides,
     } = store.getState();
     expect({
       values,
@@ -859,6 +1006,7 @@ describe("arrays", () => {
       dirtyFields,
       validationErrors,
       fieldArrayKeys,
+      defaultValueOverrides,
     }).toEqual({
       values: {
         foo: [
@@ -866,6 +1014,12 @@ describe("arrays", () => {
           { name: "foo", notes: [] },
           { name: "bar", notes: [{ text: "baz" }, { text: "another" }] },
         ],
+      },
+      defaultValueOverrides: {
+        "foo[2].notes[0]": { text: "baz" },
+        "foo[2].notes[1]": { text: "another" },
+        "foo[0].notes[0]": { text: "thing" },
+        "foo[1]": { name: "foo", notes: [] },
       },
       touchedFields: {},
       dirtyFields: {},
@@ -913,6 +1067,11 @@ describe("arrays", () => {
       values: {
         foo: ["bar", "baz", "another", "value", "quux"],
       },
+      defaultValueOverrides: {
+        "foo[0]": "bar",
+        "foo[1]": "baz",
+        "foo[2]": "another",
+      },
       touchedFields: {
         "foo[0]": true,
         "foo[1]": true,
@@ -939,11 +1098,22 @@ describe("arrays", () => {
       touchedFields,
       dirtyFields,
       validationErrors,
+      defaultValueOverrides,
       fieldArrayKeys,
     } = store.getState();
-    expect({ values, touchedFields, dirtyFields, validationErrors }).toEqual({
+    expect({
+      values,
+      touchedFields,
+      dirtyFields,
+      validationErrors,
+      defaultValueOverrides,
+    }).toEqual({
       values: {
         foo: ["bar", "another", "value", "quux"],
+      },
+      defaultValueOverrides: {
+        "foo[0]": "bar",
+        "foo[1]": "another",
       },
       touchedFields: {
         "foo[0]": true,
@@ -972,6 +1142,12 @@ describe("arrays", () => {
           { name: "foo", notes: [] },
         ],
       },
+      defaultValueOverrides: {
+        "foo[0].notes[0]": { text: "baz" },
+        "foo[0].notes[1]": { text: "another" },
+        "foo[1].notes[0]": { text: "thing" },
+        "foo[2]": { name: "foo", notes: [] },
+      },
       touchedFields: {},
       dirtyFields: {},
       validationErrors: {},
@@ -990,6 +1166,7 @@ describe("arrays", () => {
       validationErrors,
       fieldArrayKeys,
       arrayUpdateKeys,
+      defaultValueOverrides,
     } = store.getState();
     expect({
       values,
@@ -997,6 +1174,7 @@ describe("arrays", () => {
       dirtyFields,
       validationErrors,
       fieldArrayKeys,
+      defaultValueOverrides,
       arrayUpdateKeys,
     }).toEqual({
       values: {
@@ -1004,6 +1182,11 @@ describe("arrays", () => {
           { name: "bar", notes: [{ text: "baz" }, { text: "another" }] },
           { name: "foo", notes: [] },
         ],
+      },
+      defaultValueOverrides: {
+        "foo[0].notes[0]": { text: "baz" },
+        "foo[0].notes[1]": { text: "another" },
+        "foo[1]": { name: "foo", notes: [] },
       },
       touchedFields: {},
       dirtyFields: {},
@@ -1062,6 +1245,12 @@ describe("arrays", () => {
       values: {
         foo: ["bar", "baz", "another", "value", "quux"],
       },
+      defaultValueOverrides: {
+        "foo[0]": "a",
+        "foo[1]": "b",
+        "foo[2]": "c",
+        "foo[3]": "d",
+      },
       touchedFields: {
         "foo[0]": true,
         "foo[1]": true,
@@ -1090,6 +1279,7 @@ describe("arrays", () => {
       validationErrors,
       fieldArrayKeys,
       arrayUpdateKeys,
+      defaultValueOverrides,
     } = store.getState();
     expect({
       values,
@@ -1097,9 +1287,16 @@ describe("arrays", () => {
       dirtyFields,
       validationErrors,
       arrayUpdateKeys,
+      defaultValueOverrides,
     }).toEqual({
       values: {
         foo: ["bar", "value", "another", "baz", "quux"],
+      },
+      defaultValueOverrides: {
+        "foo[0]": "a",
+        "foo[1]": "d",
+        "foo[2]": "c",
+        "foo[3]": "b",
       },
       touchedFields: {
         "foo[0]": true,
@@ -1252,6 +1449,12 @@ describe("arrays", () => {
       values: {
         foo: ["bar", "baz", "another", "value", "quux"],
       },
+      defaultValueOverrides: {
+        "foo[0]": "a",
+        "foo[1]": "b",
+        "foo[2]": "c",
+        "foo[3]": "d",
+      },
       touchedFields: {
         "foo[0]": true,
         "foo[1]": true,
@@ -1279,10 +1482,23 @@ describe("arrays", () => {
       dirtyFields,
       validationErrors,
       fieldArrayKeys,
+      defaultValueOverrides,
     } = store.getState();
-    expect({ values, touchedFields, dirtyFields, validationErrors }).toEqual({
+    expect({
+      values,
+      touchedFields,
+      dirtyFields,
+      validationErrors,
+      defaultValueOverrides,
+    }).toEqual({
       values: {
         foo: ["bar", "quux", "another", "value", "quux"],
+      },
+      defaultValueOverrides: {
+        "foo[0]": "a",
+        "foo[1]": "quux",
+        "foo[2]": "c",
+        "foo[3]": "d",
       },
       touchedFields: {
         "foo[0]": true,
@@ -1311,6 +1527,11 @@ describe("arrays", () => {
           { name: "value", notes: [{ text: "thing" }] },
         ],
       },
+      defaultValueOverrides: {
+        "foo[0].notes[0]": { text: "baz" },
+        "foo[0].notes[1]": { text: "another" },
+        "foo[1].notes[0]": { text: "thing" },
+      },
       touchedFields: {},
       dirtyFields: {},
       validationErrors: {},
@@ -1330,6 +1551,7 @@ describe("arrays", () => {
       validationErrors,
       fieldArrayKeys,
       arrayUpdateKeys,
+      defaultValueOverrides,
     } = store.getState();
     expect({
       values,
@@ -1338,12 +1560,17 @@ describe("arrays", () => {
       validationErrors,
       fieldArrayKeys,
       arrayUpdateKeys,
+      defaultValueOverrides,
     }).toEqual({
       values: {
         foo: [
           { name: "foo", notes: [{ text: "bar" }] },
           { name: "value", notes: [{ text: "thing" }] },
         ],
+      },
+      defaultValueOverrides: {
+        "foo[0]": { name: "foo", notes: [{ text: "bar" }] },
+        "foo[1].notes[0]": { text: "thing" },
       },
       dirtyFields: {},
       touchedFields: {},
@@ -1408,6 +1635,9 @@ it("should be able to `resetField` on a whole array", () => {
     defaultValues: {
       foo: [{ name: "baz", notes: [{ text: "jimbo" }] }],
     },
+    defaultValueOverrides: {
+      "foo[0].notes[0]": { text: "baz" },
+    },
     values: {
       foo: [
         { name: "foo", notes: [{ text: "bar" }] },
@@ -1422,9 +1652,57 @@ it("should be able to `resetField` on a whole array", () => {
 
   store.getState().resetField("foo");
 
-  expect(store.getState().values).toEqual({
-    foo: [{ name: "baz", notes: [{ text: "jimbo" }] }],
+  const { values, defaultValueOverrides } = store.getState();
+  expect({ values, defaultValueOverrides }).toEqual({
+    values: {
+      foo: [{ name: "baz", notes: [{ text: "jimbo" }] }],
+    },
+    defaultValueOverrides: {},
   });
+});
+
+it("should override resetField overrides with reset or parent resetFields", () => {
+  const store = testStore({
+    defaultValues: {
+      foo: { bar: "bar" },
+    },
+  });
+  expect(getFieldDefaultValue(store.getState(), "foo.bar")).toBe("bar");
+  expect(getFieldDefaultValue(store.getState(), "foo")).toEqual({ bar: "bar" });
+
+  store.getState().resetField("foo.bar", { defaultValue: "baz" });
+  expect(getFieldDefaultValue(store.getState(), "foo.bar")).toBe("baz");
+  expect(getFieldDefaultValue(store.getState(), "foo")).toEqual({ bar: "bar" });
+
+  store.getState().resetField("foo");
+  expect(getFieldDefaultValue(store.getState(), "foo.bar")).toBe("bar");
+  expect(getFieldDefaultValue(store.getState(), "foo")).toEqual({ bar: "bar" });
+
+  store.getState().resetField("foo.bar", { defaultValue: "baz" });
+  expect(getFieldDefaultValue(store.getState(), "foo.bar")).toBe("baz");
+  expect(getFieldDefaultValue(store.getState(), "foo")).toEqual({ bar: "bar" });
+
+  store.getState().reset();
+  expect(getFieldDefaultValue(store.getState(), "foo.bar")).toBe("bar");
+  expect(getFieldDefaultValue(store.getState(), "foo")).toEqual({ bar: "bar" });
+});
+
+it("should return the default value from a parent override", () => {
+  const store = testStore({
+    defaultValues: {
+      foo: { bar: "bar" },
+    },
+  });
+  expect(getFieldDefaultValue(store.getState(), "foo.bar")).toBe("bar");
+  expect(getFieldDefaultValue(store.getState(), "foo")).toEqual({ bar: "bar" });
+
+  store.getState().resetField("foo", { defaultValue: { bar: "baz" } });
+  expect(getFieldDefaultValue(store.getState(), "foo.bar")).toBe("baz");
+  expect(getFieldDefaultValue(store.getState(), "foo")).toEqual({ bar: "baz" });
+
+  store.getState().reset();
+  expect(getFieldDefaultValue(store.getState(), "foo.bar")).toBe("bar");
+  expect(getFieldDefaultValue(store.getState(), "foo")).toEqual({ bar: "bar" });
 });
 
 describe("resolver queue", () => {

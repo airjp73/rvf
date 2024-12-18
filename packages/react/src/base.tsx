@@ -78,6 +78,14 @@ export type FormState = {
   fieldErrors: Record<string, string>;
 };
 
+export type ResetFieldOpts<FieldValue> = {
+  /**
+   * This will update the `defaultValue` of the field to the new value.
+   * If you call `resetForm`, this will overwrite any changes made by `resetField`.
+   */
+  defaultValue?: FieldValue;
+};
+
 export interface FormApi<FormInputData> {
   /**
    * Gets whether the field has been touched.
@@ -279,10 +287,26 @@ export interface FormApi<FormInputData> {
    * This works for both controlled and uncontrolled fields.
    * For uncontrolled fields, this will manually set the value of the form control using the `ref` returned by `field`.
    */
-  resetField: (
-    fieldName: ValidStringPaths<FormInputData>,
-    nextValue?: unknown,
-  ) => void;
+  resetField<FieldName extends ValidStringPaths<FormInputData>>(
+    fieldName: FieldName,
+    opts?: ResetFieldOpts<
+      ValueAtPath<FormInputData, StringToPathTuple<FieldName>>
+    >,
+  ): void;
+
+  /**
+   * Resets the currently in-scope field with the specified name to its initial value.
+   * This also resets any touched, dirty, or validation errors for the field.
+   * This works for both controlled and uncontrolled fields.
+   * For uncontrolled fields, this will manually set the value of the form control using the `ref` returned by `field`.
+   *
+   * Optionally, you can pass a default value to reset to.
+   * This will reset cause `form.defaultValue('myField')` to return the new default value,
+   * and for `form.dirty('myField')` to return use this new default for comparison.
+   *
+   * Calling `resetForm` will undo any default value changes made by `resetField`.
+   */
+  resetField(opts?: ResetFieldOpts<FormInputData>): void;
 
   /**
    * Creates an `FormScope` scoped to the specified field.
@@ -468,6 +492,15 @@ export const makeBaseFormApi = <FormInputData,>({
   const optionalField = <T,>(args: [string, T] | [T]): [string, T] =>
     args.length === 1 ? [prefix, args[0]] : [f(args[0]), args[1]];
 
+  type WithOptionalNameAndOptions<T> = [string, T] | [T] | [string];
+  const optionalNameAndOptions = <T,>(
+    args: [string, T] | [T] | [string] | [],
+  ): [string, T | undefined] => {
+    const [a, b] = args;
+    if (typeof a === "string") return [f(a), b];
+    return [prefix, a];
+  };
+
   const arrayImpl = makeImplFactory(prefix, (arrayFieldName) =>
     makeFieldArrayImpl({
       trackedState,
@@ -595,8 +628,13 @@ export const makeBaseFormApi = <FormInputData,>({
       if (formElement) formElement.reset();
       form.__store__.store.getState().reset(...(args as any));
     },
-    resetField: (fieldName, nextValue) =>
-      form.__store__.store.getState().resetField(f(fieldName), nextValue),
+
+    resetField: (...args: unknown[]) => {
+      const [name, opts] = optionalNameAndOptions(
+        args as WithOptionalNameAndOptions<ResetFieldOpts<unknown>>,
+      );
+      return form.__store__.store.getState().resetField(name, opts);
+    },
 
     scope: (fieldName?: string) =>
       fieldName == null ? form : (scopeFormScope(form, fieldName) as any),

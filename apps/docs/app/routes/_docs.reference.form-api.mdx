@@ -266,6 +266,13 @@ This also resets any touched, dirty, or validation errors for the field.
 This works for both controlled and uncontrolled fields.
 For uncontrolled fields, this will manually set the value of the form control using the `ref` returned by `field`.
 
+Optionally, you can pass a default value to reset to.
+This will reset cause `form.defaultValue('myField')` to return the new default value,
+and for `form.dirty('myField')` to return use this new default for comparison.
+Calling `resetForm` will undo any default value changes made by `resetField`.
+
+Can also be called without a field name, to reset the currently in-scope field.
+
 ### `scope`
 
 Scopes the `FormApi` to a specific part of the form.

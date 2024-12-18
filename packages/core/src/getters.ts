@@ -1,5 +1,5 @@
-import { getPath } from "@rvf/set-get";
-import { FormStoreValue } from "./store";
+import { getPath, pathArrayToString, stringToPathArray } from "@rvf/set-get";
+import { type FormStoreValue } from "./store";
 
 export const getFieldValue = (
   state: FormStoreValue,
@@ -9,7 +9,22 @@ export const getFieldValue = (
 export const getFieldDefaultValue = (
   state: FormStoreValue,
   fieldName: string,
-): unknown => getPath(state.defaultValues, fieldName);
+): unknown => {
+  const path = stringToPathArray(fieldName);
+  const postfix = [] as (string | number)[];
+
+  while (path.length > 0) {
+    let current = pathArrayToString(path);
+    if (current in state.defaultValueOverrides) {
+      const parent = state.defaultValueOverrides[current];
+      if (postfix.length) return getPath(parent, postfix);
+      return parent;
+    }
+    postfix.push(path.pop()!);
+  }
+
+  return getPath(state.defaultValues, fieldName);
+};
 
 export const getFieldTouched = (state: FormStoreValue, fieldName: string) =>
   state.touchedFields[fieldName] ?? false;

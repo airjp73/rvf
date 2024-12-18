@@ -90,7 +90,7 @@ it("should keep newly added field array fields dirty", async () => {
         <button
           type="button"
           data-testid="add"
-          onClick={() => form.array("foo").push("new")}
+          onClick={() => form.array("foo").push("")}
         />
         <button type="submit" data-testid="submit" />
       </form>
@@ -115,5 +115,5 @@ it("should keep newly added field array fields dirty", async () => {
   await userEvent.clear(screen.getByTestId("0"));
   await userEvent.clear(screen.getByTestId("1"));
   expect(screen.getByTestId("0-dirty")).toHaveTextContent("false");
-  expect(screen.getByTestId("1-dirty")).toHaveTextContent("true"); // since this was added, it's essentially dirty
+  expect(screen.getByTestId("1-dirty")).toHaveTextContent("false");
 });
