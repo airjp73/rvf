@@ -44,12 +44,12 @@ import {
   ValidInputPropsValues,
 } from "./inputs/getInputProps";
 
-type MinimalFormScope<FieldPaths extends string> = {
-  resetField: (fieldName: FieldPaths, nextValue?: any) => void;
+type MinimalFormApi<FieldPaths extends string> = {
+  dirty: (fieldName?: FieldPaths) => boolean;
 };
 
 export type FormFields<Form> =
-  Form extends MinimalFormScope<infer FieldPaths> ? FieldPaths : never;
+  Form extends MinimalFormApi<infer FieldPaths> ? FieldPaths : never;
 
 interface FormProps {
   onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
