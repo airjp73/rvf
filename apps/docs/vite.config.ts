@@ -1,5 +1,7 @@
 import { reactRouter } from "@react-router/dev/vite";
 import { defineConfig } from "vite";
+import tailwindcss from "tailwindcss";
+import autoprefixer from "autoprefixer";
 import tsconfigPaths from "vite-tsconfig-paths";
 import mdx from "@mdx-js/rollup";
 import { compile } from "@mdx-js/mdx";
@@ -8,7 +10,22 @@ import * as path from "path";
 import { rehypePlugins } from "./app/mdx/rehype.mjs";
 import { remarkPlugins } from "./app/mdx/remark.mjs";
 
-export default defineConfig({
+export default defineConfig(({ isSsrBuild, command }) => ({
+  build: {
+    rollupOptions: isSsrBuild
+      ? {
+          input: "./server/app.ts",
+        }
+      : undefined,
+  },
+  css: {
+    postcss: {
+      plugins: [tailwindcss, autoprefixer],
+    },
+  },
+  ssr: {
+    noExternal: command === "build" ? true : undefined,
+  },
   plugins: [
     {
       enforce: "pre",
@@ -39,9 +56,7 @@ export default defineConfig({
         }
       },
     },
-    // @ts-expect-error this works, but the types are weird here
-    reactRouter(),
-    // @ts-expect-error this works, but the types are weird here
-    tsconfigPaths(),
+    reactRouter() as any,
+    tsconfigPaths() as any,
   ],
-});
+}));
