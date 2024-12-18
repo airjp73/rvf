@@ -7,6 +7,7 @@ export default defineConfig({
   chromeWebSecurity: false,
 
   e2e: {
+    chromeWebSecurity: false,
     baseUrl: `http://localhost:${port}`,
     viewportWidth: 1030,
     viewportHeight: 800,

@@ -22,7 +22,6 @@
     "@rvf/react-router": "*",
     "@rvf/yup": "*",
     "@rvf/zod": "*",
-    "cypress-file-upload": "^5.0.8",
     "nanoid": "^3.3.4",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

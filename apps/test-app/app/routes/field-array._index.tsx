@@ -72,6 +72,7 @@ export default function FrontendValidation() {
                     label="Notes"
                   />
                   <button
+                    type="button"
                     onClick={() => {
                       array.remove(index);
                     }}

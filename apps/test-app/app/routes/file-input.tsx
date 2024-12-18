@@ -32,9 +32,9 @@ const serverValidator = withZod(
   ),
 );
 
-const testUploadHandler = async ({ name }: FileUpload) => {
-  if (name !== "myFile") {
-    return;
+const testUploadHandler = async (upload: FileUpload) => {
+  if (upload.fieldName !== "myFile") {
+    return upload.text();
   }
 
   return "testFile";
