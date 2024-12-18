@@ -7,7 +7,7 @@ Easy form validation and state management for React.
 ### Progressively enhanced
 
 RVF leans into native form APIs, so it's easy to add to your existing forms.
-It even works without JavaScript on the client if you're using a server-rendered framework like [Remix](https://remix.run).
+It even works without JavaScript on the client if you're using a server-rendered framework like [Remix / React Router](https://remix.run).
 
 ### Powerful
 
@@ -143,14 +143,14 @@ export const ReactExample = () => {
 </details>
 
 <details>
-<summary>Remix</summary>
+<summary>React Router</summary>
 
 ```tsx
 import {
   isValidationErrorResponse,
   useForm,
   validationError,
-} from "@rvf/remix";
+} from "@rvf/react-router";
 import { withZod } from "@rvf/zod";
 import { z } from "zod";
 import { MyInput } from "~/fields/MyInput";
@@ -279,15 +279,15 @@ export const ReactExample = () => {
 
 ### Install
 
-RVF can be used with any flavor of React, but there's also an adapter specifically for [Remix](https://remix.run).
+RVF can be used with any flavor of React, but there's also an adapter specifically for [React Router](https://remix.run).
 
-- @rvf/remix
+- @rvf/react-router
 - @rvf/react
 
-For Remix users:
+For React Router users:
 
 ```bash
-npm install @rvf/remix
+npm install @rvf/react-router
 ```
 
 For plain React or other frameworks like Next.js:

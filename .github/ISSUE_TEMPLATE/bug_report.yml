@@ -20,7 +20,7 @@ body:
       label: Which packages are impacted?
       options:
         - label: "`@rvf/react`"
-        - label: "`@rvf/remix`"
+        - label: "`@rvf/react-router`"
         - label: "`@rvf/zod`"
         - label: "`@rvf/yup`"
         - label: "`zod-form-data`"
@@ -29,7 +29,7 @@ body:
       label: What version of these packages are you using?
       placeholder: |
         - `@rvf/react`: ^0.0.0
-        - `@rvf/remix`: ^0.0.0
+        - `@rvf/react-router`: ^0.0.0
         - `@rvf/zod`: ^0.0.0
         - `@rvf/yup`: ^0.0.0
         - `zod-form-data`: ^0.0.0

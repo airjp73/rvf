@@ -5,15 +5,14 @@
   "workspaces": [
     "packages/*",
     "apps/test-app",
-    "apps/docs-v2"
+    "apps/docs"
   ],
   "scripts": {
     "build-docs": "turbo run build --filter=docs --include-dependencies --no-deps --force",
     "typecheck": "turbo run typecheck",
     "sample-app": "bun dev --filter=sample-app",
     "test-app": "bun dev --filter=test-app",
-    "docs": "bun dev --filter=docs-v2",
-    "docs-legacy": "cd apps/docs && bun dev",
+    "docs": "bun dev --filter=docs",
     "dev": "turbo run dev",
     "test": "turbo run test",
     "vitest": "vitest",
@@ -26,10 +25,9 @@
     "prepare": "husky install"
   },
   "dependencies": {
-    "@remix-run/vercel": "^1.16.1",
     "@rvf/core": "*",
     "@sindresorhus/slugify": "^2.2.1",
-    "@testing-library/jest-dom": "^6.4.2",
+    "@testing-library/jest-dom": "^6.6.3",
     "acorn": "^8.11.3",
     "eslint-plugin-no-only-tests": "^3.1.0",
     "eslint-plugin-react-hooks": "^4.6.2",
@@ -40,7 +38,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.1.1",
-    "@testing-library/react": "^15.0.5",
+    "@testing-library/react": "^16.1.0",
     "@testing-library/user-event": "^14.5.2",
     "eslint": "8.57.0",
     "eslint-plugin-react": "^7.34.1",

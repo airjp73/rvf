@@ -1,12 +1,8 @@
-import { unstable_parseMultipartFormData, json } from "@remix-run/node";
-import { useActionData } from "@remix-run/react";
-import {
-  ActionFunctionArgs,
-  unstable_composeUploadHandlers,
-  unstable_createMemoryUploadHandler,
-} from "@remix-run/server-runtime";
+import { parseFormData, FileUpload } from "@mjackson/form-data-parser";
+import { useActionData } from "react-router";
+import { ActionFunctionArgs } from "react-router";
 import { withZod } from "@rvf/zod";
-import { validationError, ValidatedForm } from "@rvf/remix";
+import { validationError, ValidatedForm } from "@rvf/react-router";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
 import { Input } from "~/components/Input";
@@ -36,24 +32,24 @@ const serverValidator = withZod(
   ),
 );
 
-const testUploadHandler = unstable_composeUploadHandlers(async ({ name }) => {
-  if (name !== "myFile") {
-    return;
+const testUploadHandler = async (upload: FileUpload) => {
+  if (upload.fieldName !== "myFile") {
+    return upload.text();
   }
 
   return "testFile";
-}, unstable_createMemoryUploadHandler());
+};
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   const result = await serverValidator.validate(
-    await unstable_parseMultipartFormData(request, testUploadHandler),
+    await parseFormData(request, testUploadHandler),
   );
   if (result.error) return validationError(result.error);
   const { myFile, description } = result.data;
 
-  return json({
+  return {
     message: `Uploaded ${myFile} with description ${description}`,
-  });
+  };
 };
 
 export default function FrontendValidation() {

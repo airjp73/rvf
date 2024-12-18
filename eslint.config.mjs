@@ -14,6 +14,7 @@ export default [
       "**/build/",
       "**/dist/",
       "**/api/",
+      "**/.react-router/",
       //   "test-app/remix-validated-form",
       //   "sample-app/build",
       //   "sample-app/remix-validated-form",

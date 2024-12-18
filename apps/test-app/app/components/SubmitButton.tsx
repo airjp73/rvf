@@ -3,7 +3,7 @@ import {
   useIsSubmitting,
   useIsValid,
   useFormScopeOrContext,
-} from "@rvf/remix";
+} from "@rvf/react-router";
 
 type Props = {
   label?: string;

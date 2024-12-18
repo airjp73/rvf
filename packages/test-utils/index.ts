@@ -42,16 +42,16 @@ export class TestFormData implements FormData {
   ): void {
     this._params.forEach(callbackfn as any, thisArg);
   }
-  entries(): IterableIterator<[string, FormDataEntryValue]> {
+  entries(): FormDataIterator<[string, FormDataEntryValue]> {
     return this._params.entries();
   }
-  keys(): IterableIterator<string> {
+  keys(): FormDataIterator<string> {
     return this._params.keys();
   }
-  values(): IterableIterator<FormDataEntryValue> {
+  values(): FormDataIterator<FormDataEntryValue> {
     return this._params.values();
   }
-  *[Symbol.iterator](): IterableIterator<[string, FormDataEntryValue]> {
+  *[Symbol.iterator](): FormDataIterator<[string, FormDataEntryValue]> {
     yield* this._params;
   }
 }

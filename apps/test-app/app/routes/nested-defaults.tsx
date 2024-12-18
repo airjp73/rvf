@@ -1,6 +1,5 @@
 import { withZod } from "@rvf/zod";
-import { useField } from "@rvf/remix";
-import { ValidatedForm } from "@rvf/remix";
+import { useField, ValidatedForm } from "@rvf/react-router";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
 

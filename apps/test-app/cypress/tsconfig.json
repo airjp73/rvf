@@ -4,12 +4,7 @@
     "moduleResolution": "node",
     "module": "esnext",
     "noEmit": true,
-    "types": [
-      "cypress",
-      "@testing-library/cypress",
-      "node",
-      "cypress-file-upload"
-    ],
+    "types": ["cypress", "@testing-library/cypress", "node"],
     "baseUrl": "..",
     "paths": { "~/*": ["app/*"] }
   },

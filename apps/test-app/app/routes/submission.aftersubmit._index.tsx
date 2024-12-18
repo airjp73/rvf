@@ -1,10 +1,10 @@
-import { DataFunctionArgs, json } from "@remix-run/node";
 import { withYup } from "@rvf/yup";
 import { useRef } from "react";
-import { ValidatedForm, validationError } from "@rvf/remix";
+import { ValidatedForm, validationError } from "@rvf/react-router";
 import * as yup from "yup";
 import { Input } from "~/components/Input";
 import { SubmitButton } from "~/components/SubmitButton";
+import { ActionFunctionArgs } from "react-router";
 
 const schema = yup.object({
   testinput: yup.string(),
@@ -12,7 +12,7 @@ const schema = yup.object({
 });
 const validator = withYup(schema);
 
-export const action = async ({ request }: DataFunctionArgs) => {
+export const action = async ({ request }: ActionFunctionArgs) => {
   const formData = await request.formData();
 
   // Perform this check without the validator
@@ -26,7 +26,7 @@ export const action = async ({ request }: DataFunctionArgs) => {
       formId: "aftersubmit-form",
     });
 
-  return json({ message: "Submitted!" });
+  return { message: "Submitted!" };
 };
 
 export default function FrontendValidation() {

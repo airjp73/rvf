@@ -1,16 +1,15 @@
-import { DataFunctionArgs, json } from "@remix-run/node";
-import { useFetcher } from "@remix-run/react";
+import { ActionFunctionArgs, useFetcher } from "react-router";
 import { withYup } from "@rvf/yup";
-import { ValidatedForm } from "@rvf/remix";
+import { ValidatedForm } from "@rvf/react-router";
 import * as yup from "yup";
 import { SubmitButton } from "~/components/SubmitButton";
 
 const schema = yup.object({});
 const validator = withYup(schema);
 
-export const action = async (args: DataFunctionArgs) => {
+export const action = async (args: ActionFunctionArgs) => {
   await new Promise((resolve) => setTimeout(resolve, 1000));
-  return json({ message: "Submitted!" });
+  return { message: "Submitted!" };
 };
 
 export default function FrontendValidation() {

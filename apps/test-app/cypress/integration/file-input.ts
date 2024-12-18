@@ -4,9 +4,11 @@ describe("File input", () => {
     cy.visit("/file-input").waitForJs();
 
     cy.findByLabelText("Description").type("This is a description");
-    cy.get("input[type=file]").attachFile({
-      fileContent: new Blob(["This is a file"]),
+    cy.get("input[type=file]").selectFile({
+      contents: new Blob(["This is a file"]),
       fileName: "test.txt",
+      mimeType: "text/plain",
+      lastModified: Date.now(),
     });
 
     cy.findByText("Submit").click();

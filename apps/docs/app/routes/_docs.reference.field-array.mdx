@@ -1,0 +1,23 @@
+export const meta = () => [
+  {
+    title: "FieldArray (RVF)",
+  },
+];
+
+# `FieldArray`
+
+`FieldArray` is a thin wrapper around `useFieldArray`. This can be useful if you don't want to create whole components just to call `useFieldArray`,
+but you still want to optimize the rendering behavior of the field array.
+
+The props of `FieldArray` are the same as `useFieldArray`, but it takes a function as its children.
+Any state accessed through this render prop will only cause that particular field array to re-render.
+
+```tsx
+<FieldArray scope={form.scope("myFieldArray")}>
+  {(array) =>
+    array.map((key, item, index) => (
+      <MyInput key={key} scope={item.scope()} />
+    ))
+  }
+</FieldArray>
+```

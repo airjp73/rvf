@@ -1,7 +1,11 @@
-import { DataFunctionArgs, json } from "@remix-run/node";
-import { useActionData, useLoaderData } from "@remix-run/react";
+import {
+  ActionFunctionArgs,
+  LoaderFunctionArgs,
+  useActionData,
+  useLoaderData,
+} from "react-router";
 import { withZod } from "@rvf/zod";
-import { validationError, ValidatedForm } from "@rvf/remix";
+import { validationError, ValidatedForm } from "@rvf/react-router";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
 import { Input } from "~/components/Input";
@@ -39,17 +43,17 @@ const paramSchema = zfd.formData({
   count: zfd.numeric(z.number().optional()),
 });
 
-export const action = async ({ request }: DataFunctionArgs) => {
+export const action = async ({ request }: ActionFunctionArgs) => {
   const result = await validator.validate(await request.formData());
   if (result.error) return validationError(result.error);
   const { firstName, lastName } = result.data;
 
-  return json({ message: `Submitted for ${firstName} ${lastName}!` });
+  return { message: `Submitted for ${firstName} ${lastName}!` };
 };
 
-export const loader = async ({ request }: DataFunctionArgs) => {
+export const loader = async ({ request }: LoaderFunctionArgs) => {
   const params = paramSchema.parse(new URL(request.url).searchParams);
-  return json(params);
+  return params;
 };
 
 export default function FrontendValidation() {

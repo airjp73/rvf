@@ -1,9 +1,7 @@
 import { withZod } from "@rvf/zod";
-import { nanoid } from "nanoid";
 import { useState } from "react";
-import { ValidatedForm, useFieldArray, useForm } from "@rvf/remix";
+import { useFieldArray, useForm } from "@rvf/react-router";
 import { z } from "zod";
-import { InputWithTouched } from "~/components/InputWithTouched";
 
 const validator = withZod(
   z.object({

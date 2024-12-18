@@ -1,4 +1,4 @@
-import type { LinksFunction } from "@remix-run/node";
+import type { LinksFunction } from "react-router";
 import {
   Link,
   Links,
@@ -9,7 +9,7 @@ import {
   isRouteErrorResponse,
   useLocation,
   useRouteError,
-} from "@remix-run/react";
+} from "react-router";
 import * as React from "react";
 import darkStylesUrl from "~/styles/dark.css?url";
 import deleteMeRemixStyles from "~/styles/demos/remix.css?url";

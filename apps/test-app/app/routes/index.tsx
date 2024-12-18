@@ -1,5 +1,6 @@
-import { MetaFunction, LoaderFunctionArgs, json } from "@remix-run/node";
-import { useLoaderData, Link } from "@remix-run/react";
+import { MetaFunction } from "react-router";
+import { useLoaderData, Link } from "react-router";
+import { Route } from "./+types/index";
 
 type IndexData = {
   resources: Array<{ name: string; url: string }>;
@@ -10,7 +11,7 @@ type IndexData = {
 // you can connect to a database or run any server side code you want right next
 // to the component that renders it.
 // https://remix.run/docs/en/v1/route/loader
-export let loader = (args: LoaderFunctionArgs) => {
+export let loader = (args: Route.LoaderArgs) => {
   let data: IndexData = {
     resources: [
       {
@@ -42,12 +43,10 @@ export let loader = (args: LoaderFunctionArgs) => {
     ],
   };
 
-  // https://remix.run/docs/en/v1/utils/json
-  return json(data);
+  return data;
 };
 
-// https://remix.run/docs/en/v1/route/meta
-export let meta: MetaFunction = () => {
+export let meta: Route.MetaFunction = () => {
   return [
     { title: "Remix Starter" },
     {
@@ -57,7 +56,6 @@ export let meta: MetaFunction = () => {
   ];
 };
 
-// https://remix.run/docs/en/v1/guides/routing#index-routes
 export default function Index() {
   let data = useLoaderData<typeof loader>();
 

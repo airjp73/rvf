@@ -3,15 +3,13 @@
  * to actually write a test for this with cypress.
  * It's left here form manual testing.
  */
-import { json } from "@remix-run/node";
-import type { DataFunctionArgs } from "@remix-run/node";
-import { useActionData } from "@remix-run/react";
 import { withYup } from "@rvf/yup";
 import { useEffect, useState } from "react";
-import { ValidatedForm } from "@rvf/remix";
+import { ValidatedForm } from "@rvf/react-router";
 import * as yup from "yup";
 import { Input } from "~/components/Input";
 import { SubmitButton } from "~/components/SubmitButton";
+import { Route } from "./+types/replace";
 
 const noReplaceValidator = withYup(
   yup.object({
@@ -22,11 +20,11 @@ const noReplaceValidator = withYup(
   }),
 );
 
-export const action = async ({ request }: DataFunctionArgs) =>
-  json({ message: "Submitted!" });
+export const action = async ({ request }: Route.ActionArgs) => ({
+  message: "Submitted!",
+});
 
-export default function MyForm() {
-  const data = useActionData<typeof action>();
+export default function MyForm({ actionData: data }: Route.ComponentProps) {
   const [historyLength, setHistoryLength] = useState<number>(0);
 
   // We want this to run on every render to get the current history length

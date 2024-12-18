@@ -1,0 +1,201 @@
+export const meta = () => [
+  {
+    title: "useForm (RVF)",
+  },
+];
+
+# `useForm`
+
+`useForm` is the main hook that you'll use to interact with RVF.
+It accepts a `FormOpts` object you use to configure the form (see below),
+and returns a `FormApi` object that you can use to interact with the form (see [FormApi](/reference/form-api)).
+
+### Type
+
+```tsx
+function useForm<
+  FormInputData extends FieldValues,
+  FormOutputData,
+  SubmitResponseData,
+>(
+  options: FormOpts<
+    FormInputData,
+    FormOutputData,
+    SubmitResponseData
+  >,
+): FormApi<FormInputData>;
+```
+
+### Usage
+
+```tsx
+const form = useForm({
+  defaultValues: { foo: "bar" },
+  validator: myValidator,
+  handleSubmit: (validatedData) =>
+    console.log(validatedData),
+});
+```
+
+## `FormOpts`
+
+### `defaultValues`
+
+Sets the default values of the form.
+
+For Typescript users, `defaultValues` is one of the most important props you'll use.
+The type of the object you pass here, will determine the type of the data you get
+when interacting with the form. For example, `form.value('myField')` will be typed based on
+the type of `defaultValues.myField`.
+
+It's recommended that you provide a default value for every field in the form.
+
+### `validator`
+
+A validator object created by a validation adapter such a `withZod` or `withYup`.
+See [these docs](https://rvf-js.io/validation-library-support) for more details
+and information on how to create a validator for other validation libraries.
+
+### `submitSource`
+
+Configures what RVF uses as the source of truth for form validation submission.
+By default, this is set to `"dom"`, which means RVF will pull data directly out of the HTML form element.
+If you set this to `"state"`, RVF will use the data stored in the form state as the source of truth.
+You can read more about state mode [here](/state-mode).
+
+### `handleSubmit`
+
+A function that is called when the form is submitted, if the data is valid.
+Depending on the `submitSource` you chose, this function will be called with different arguments.
+
+#### "dom"
+
+```ts
+(data: FormInputData, formData: FormData, options: SubmitterOptions) => void | Promise<void>
+```
+
+- `data` is the fully validated form data.
+- `formData` is the raw `FormData` extracted from the HTML form element.
+- `options` is an object that contains a few props pulled off of the submitter of the form (usually the sumbit button).
+
+#### "state"
+
+```ts
+(data: FormInputData, options: SubmitterOptions) => void | Promise<void>
+```
+
+- `data` is the fully validated form data.
+- `options` is an object that contains a few props pulled off of the submitter of the form (usually the sumbit button).
+
+### `onBeforeSubmit`
+
+Called before when the form is submitted before any validations are run.
+Can be used to run custom, async validations and/or cancel the form submission.
+Is called with an object containing these properties:
+
+#### `unvalidatedData`
+
+The data inside the form before validations are run.
+
+#### `getValidatedData`
+
+Runs the validations and returns the validated data.
+If the form is not valid, it will throw an error.
+
+#### `getFormData`
+
+Get's the raw `FormData` object.
+This is only available when `submitSource` is set to `dom`.
+
+#### `cancelSubmit`
+
+Cancels the form submission and sets the submit status to `error`.
+
+This is intended for advanced use-cases.
+By using this, you're taking control of the submission lifecycle.
+`onSubmitFailure` will _not_ be called as a result of this.
+
+#### `performSubmit`
+
+This is intended for advanced use-cases.
+By using this, you're taking control of the submission lifecycle.
+
+Manually invokes the `handleSubmit` function,
+allowing you to customize the data that is submitted.
+This will not trigger any validations, so make sure to use `getValidatedData`
+if you want to run validations before submitting.
+
+#### `submitterOptions`
+
+The options passed to the form submission by the submitter.
+This usually comes from props passed to your submit button,
+but can also be passed to when calling `submit` manually.
+
+### `onSubmitSuccess`
+
+Called after the form has been successfully submitted with whatever data was returned from the `handleSubmit` function.
+Can be useful for showing a toast message or redirecting the user to a different page.
+If you return a `Promise` from this callback, the `isSubmitting` state will still be `true` while this callback is running.
+
+If you're using an adapter like `@rvf/react-router`, this will be called even if you aren't using `handleSubmit`.
+
+### `onSubmitFailure`
+
+Called when the `handleSubmit` function throws an error.
+Can be useful for showing a toast message or redirecting the user to a different page.
+If you return a `Promise` from this callback, the `isSubmitting` state will still be `true` while this callback is running.
+
+If you're using an adapter like `@rvf/react-router`, this will be called even if you aren't using `handleSubmit`.
+
+### `onInvalidSubmit`
+
+Called when the user attempts to submit the form with invalid data.
+This is called after the first invalid field is focused.
+Can be useful if you want to take deeper control over how you handle invalid forms.
+
+### `resetAfterSubmit`
+
+A shortcut setting that resets the form to the default values after the form has been successfully submitted.
+This is equivalent to calling `resetForm` in the `onSubmitSuccess` callback.
+
+### `validationBehaviorConfig`
+
+Allows you to customize the validation behavior of the form.
+Takes three options:
+
+- `initial` - When the form first mounts, when should the validation be triggered?
+- `whenTouched` - Once a given field has been touched, when should the validation be triggered?
+- `whenSubmitted` - Once the form has been submitted unnsuccessfully, when should the validation be triggered?
+
+### `action`
+
+The action prop of the form element.
+This will be automatically set on the form element if you use `getFormProps`.
+
+### `id`
+
+The id of the form element.
+This will be automatically set on the form element if you use `getFormProps`.
+
+### `disableFocusOnError`
+
+Disables the default behavior of focusing the first invalid field when a submit fails due to validation errors.
+
+### `reloadDocument`
+
+When set to true, a valid form will be submitted natively with a full page reload.
+_Note_: This is only supported in the `dom` submit source.
+
+### `otherFormProps`
+
+Optionally, you can pass other props to the form element here.
+This is primarily useful for writing custom hooks around `useForm`.
+For most use-cases, you can simply pass the props directly to the form element.
+
+### `serverValidationErrors`
+
+Can be used to set the default errors of the entire form.
+This is most useful went integrating with server-side validation.
+
+**CAREFUL**: this will cause an update every time the identity of `serverValidationErrors` changes.
+So make sure the identity of `serverValidationErrors` is stable.

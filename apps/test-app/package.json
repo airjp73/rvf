@@ -5,47 +5,46 @@
   "version": "0.0.1",
   "type": "module",
   "scripts": {
-    "build": "remix vite:build",
+    "build": "react-router build",
     "dev": "start-server-and-test dev:remix http-get://localhost:3000 cy:open",
     "test": "start-server-and-test start http-get://localhost:3000 cy:run",
-    "dev:remix": "remix vite:dev",
+    "dev:remix": "react-router dev",
     "cy:open": "cypress open",
     "cy:run": "cypress run",
-    "start": "remix-serve ./build/server/index.js",
-    "typecheck": "tsc --noEmit"
+    "start": "NODE_ENV=production react-router-serve ./build/server/index.js",
+    "typecheck": "react-router typegen && tsc --noEmit"
   },
   "dependencies": {
-    "@headlessui/react": "^1.5.0",
-    "@remix-run/node": "^2.9.2",
-    "@remix-run/react": "^2.9.2",
-    "@remix-run/server-runtime": "^2.9.2",
-    "@rvf/remix": "*",
+    "@headlessui/react": "^2.2.0",
+    "@mjackson/form-data-parser": "^0.5.1",
+    "@mjackson/multipart-parser": "^0.7.2",
+    "@react-router/node": "^7.0.0",
+    "@rvf/react-router": "*",
     "@rvf/yup": "*",
     "@rvf/zod": "*",
-    "cypress-file-upload": "^5.0.8",
     "nanoid": "^3.3.4",
-    "react": "^18.1.0",
-    "react-dom": "^18.1.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-router": "^7.0.0",
     "yup": "^1.0.0",
     "zod": "^3.23.8",
     "zod-form-data": "*"
   },
   "devDependencies": {
-    "@remix-run/dev": "^2.9.2",
-    "@remix-run/serve": "^2.9.2",
+    "@react-router/dev": "^7.0.0",
+    "@react-router/serve": "^7.0.0",
     "@testing-library/cypress": "^8.0.2",
-    "@types/react": "^18.0.9",
-    "@types/react-dom": "^18.0.3",
-    "cypress": "^9.1.0",
+    "@types/react": "^19.0.1",
+    "@types/react-dom": "^19.0.2",
+    "cypress": "^13.17.0",
     "har-validator": "^5.1.5",
     "start-server-and-test": "^1.14.0",
     "tiny-invariant": "^1.2.0",
     "typescript": "^5.4.5",
-    "vite": "^5.2.12",
-    "vite-tsconfig-paths": "^4.3.2"
+    "vite": "^6.0.3",
+    "vite-tsconfig-paths": "^5.1.4"
   },
   "engines": {
     "node": ">=20"
-  },
-  "sideEffects": false
+  }
 }

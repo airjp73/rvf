@@ -1,5 +1,5 @@
 import { FC, PropsWithChildren } from "react";
-import { FormScope, useField } from "@rvf/remix";
+import { FormScope, useField } from "@rvf/react-router";
 
 type FieldsetProps = PropsWithChildren<{
   label: string;

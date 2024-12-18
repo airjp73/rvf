@@ -1,7 +1,6 @@
-import { DataFunctionArgs, json } from "@remix-run/node";
-import { useFetcher } from "@remix-run/react";
+import { ActionFunctionArgs, useFetcher } from "react-router";
 import { withYup } from "@rvf/yup";
-import { validationError, useForm, FormProvider } from "@rvf/remix";
+import { validationError, useForm, FormProvider } from "@rvf/react-router";
 import * as yup from "yup";
 import { Input } from "~/components/Input";
 import { SubmitButton } from "~/components/SubmitButton";
@@ -14,12 +13,12 @@ const schema = yup.object({
 
 const validator = withYup(schema);
 
-export const action = async ({ request }: DataFunctionArgs) => {
+export const action = async ({ request }: ActionFunctionArgs) => {
   const result = await validator.validate(await request.formData());
   if (result.error) return validationError(result.error);
   const { firstName, lastName } = result.data;
 
-  return json({ message: `Submitted for ${firstName} ${lastName}!` });
+  return { message: `Submitted for ${firstName} ${lastName}!` };
 };
 
 export default function FrontendValidation() {

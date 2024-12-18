@@ -3,17 +3,6 @@ export default (
   on: Cypress.PluginEvents,
   config: Cypress.PluginConfigOptions,
 ) => {
-  const port = process.env.PORT ?? "3000";
-  const configOverrides: Partial<Cypress.PluginConfigOptions> = {
-    baseUrl: `http://localhost:${port}`,
-    viewportWidth: 1030,
-    viewportHeight: 800,
-    integrationFolder: "cypress/integration",
-    video: !process.env.CI,
-    screenshotOnRunFailure: !process.env.CI,
-  };
-  Object.assign(config, configOverrides);
-
   on("before:browser:launch", (browser, options) => {
     if (browser.name === "chrome") {
       options.args.push(

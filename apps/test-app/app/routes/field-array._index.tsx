@@ -1,6 +1,6 @@
 import { withZod } from "@rvf/zod";
 import { nanoid } from "nanoid";
-import { FieldArray, ValidatedForm } from "@rvf/remix";
+import { FieldArray, ValidatedForm } from "@rvf/react-router";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
 import { InputWithTouched } from "~/components/InputWithTouched";
@@ -72,6 +72,7 @@ export default function FrontendValidation() {
                     label="Notes"
                   />
                   <button
+                    type="button"
                     onClick={() => {
                       array.remove(index);
                     }}

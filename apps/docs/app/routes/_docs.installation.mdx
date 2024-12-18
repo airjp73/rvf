@@ -1,0 +1,63 @@
+export const meta = () => [
+  {
+    title: "Installation (RVF)",
+  },
+];
+
+# Installation
+
+## Base package
+
+<Row>
+  <Col>
+    RVF can be used with any flavor of React, but there's also an adapter specifically for [Remix / React Router](https://remix.run).
+
+    - `@rvf/react`
+    - `@rvf/react-router`
+
+  </Col>
+
+  <Col>
+    <CodeExamples title="Install base package" tabs={["Vanilla React", "React Router"]}>
+      ```bash
+      npm install @rvf/react
+      ```
+
+      ```bash
+      npm install @rvf/react-router
+      ```
+    </CodeExamples>
+
+  </Col>
+
+</Row>
+
+## Validation library adapter
+
+<Row>
+  <Col>
+    RVF is validation library agnostic, but there are official adapters available for `zod`, `yup`, and `valibot`.
+
+    - `@rvf/zod`
+    - `@rvf/yup`
+    - `@rvf/valibot`
+
+  </Col>
+
+  <Col>
+    <CodeExamples title="Install validation adapter" tabs={["Zod", "Yup", "Valibot"]}>
+      ```bash
+      npm install @rvf/zod
+      ```
+
+      ```bash
+      npm install @rvf/yup
+      ```
+
+       ```bash
+      npm install @rvf/valibot
+      ```
+    </CodeExamples>
+
+  </Col>
+</Row>

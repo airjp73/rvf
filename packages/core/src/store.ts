@@ -164,6 +164,7 @@ class CancelSubmitError extends Error {}
 type StoreState = {
   values: FieldValues;
   defaultValues: FieldValues;
+  defaultValueOverrides: Record<string, unknown>;
   touchedFields: Record<string, boolean>;
   dirtyFields: Record<string, boolean>;
   validationErrors: Record<string, string>;
@@ -183,6 +184,8 @@ export type SubmitterOptions = {
   formNoValidate?: boolean;
   formAction?: string;
 };
+
+export type ResetFieldOpts = { defaultValue?: unknown };
 
 type StoreEvents = {
   onFieldChange: (
@@ -255,7 +258,7 @@ type StoreActions = {
   syncServerValidationErrors: (errors: FieldErrors) => void;
 
   reset: (nextValues?: FieldValues) => void;
-  resetField: (fieldName: string, nextValue?: unknown) => void;
+  resetField: (fieldName: string, opts?: ResetFieldOpts) => void;
 
   getFieldArrayKeys: (fieldName: string) => Array<string>;
   arrayPush: (
@@ -447,6 +450,7 @@ export const createFormStateStore = ({
       /////// State
       values: defaultValues,
       defaultValues,
+      defaultValueOverrides: {},
       touchedFields: {},
       dirtyFields: {},
       validationErrors: serverValidationErrors,
@@ -957,6 +961,7 @@ export const createFormStateStore = ({
         set((state) => {
           state.values = nextValues;
           state.defaultValues = nextValues;
+          state.defaultValueOverrides = {};
           state.touchedFields = {};
           state.dirtyFields = {};
           state.validationErrors = {};
@@ -975,22 +980,28 @@ export const createFormStateStore = ({
         });
       },
 
-      resetField: (
-        fieldName,
-        nextValue = getPath(get().defaultValues, fieldName),
-      ) => {
+      resetField: (fieldName, opts = {}) => {
+        const currentDefaultValue = getFieldDefaultValue(get(), fieldName);
+
+        const nextValue = opts.defaultValue ?? currentDefaultValue;
+
         set((state) => {
           setPath(state.values, fieldName, nextValue);
+
           deleteFieldsWithPrefix(
             [
               state.touchedFields,
               state.validationErrors,
               state.dirtyFields,
               state.fieldArrayKeys,
+              state.defaultValueOverrides,
             ],
             fieldName,
           );
           state.arrayUpdateKeys[fieldName] = genKey();
+
+          if ("defaultValue" in opts)
+            state.defaultValueOverrides[fieldName] = opts.defaultValue;
         });
 
         if (
@@ -1038,10 +1049,13 @@ export const createFormStateStore = ({
           const val = getPath(state.values, fieldName);
 
           if (!Array.isArray(val)) throw new Error("Can't push to a non-array");
+          const previousLength = val.length;
           val.push(value);
 
           state.fieldArrayKeys[fieldName]?.push(genKey());
           state.arrayUpdateKeys[fieldName] = genKey();
+          state.defaultValueOverrides[`${fieldName}[${previousLength}]`] =
+            value;
           // no change to touched, dirty, or validationErrors
         });
 
@@ -1067,6 +1081,7 @@ export const createFormStateStore = ({
               state.validationErrors,
               state.dirtyFields,
               state.fieldArrayKeys,
+              state.defaultValueOverrides,
             ],
             `${fieldName}[${numItems - 1}]`,
           );
@@ -1093,6 +1108,7 @@ export const createFormStateStore = ({
               state.validationErrors,
               state.dirtyFields,
               state.fieldArrayKeys,
+              state.defaultValueOverrides,
             ],
             `${fieldName}[0]`,
           );
@@ -1102,6 +1118,7 @@ export const createFormStateStore = ({
               state.validationErrors,
               state.dirtyFields,
               state.fieldArrayKeys,
+              state.defaultValueOverrides,
             ],
             fieldName,
             (index) => index - 1,
@@ -1129,10 +1146,12 @@ export const createFormStateStore = ({
               state.validationErrors,
               state.dirtyFields,
               state.fieldArrayKeys,
+              state.defaultValueOverrides,
             ],
             fieldName,
             (index) => index + 1,
           );
+          state.defaultValueOverrides[`${fieldName}[0]`] = value;
         });
         void get().maybeValidateArrayOperation(
           fieldName,
@@ -1162,10 +1181,12 @@ export const createFormStateStore = ({
               state.validationErrors,
               state.dirtyFields,
               state.fieldArrayKeys,
+              state.defaultValueOverrides,
             ],
             fieldName,
             (index) => (index >= insertAtIndex ? index + 1 : index),
           );
+          state.defaultValueOverrides[`${fieldName}[${insertAtIndex}]`] = value;
         });
         void get().maybeValidateArrayOperation(
           fieldName,
@@ -1190,6 +1211,7 @@ export const createFormStateStore = ({
               state.validationErrors,
               state.dirtyFields,
               state.fieldArrayKeys,
+              state.defaultValueOverrides,
             ],
             fieldName,
             (index) => {
@@ -1224,6 +1246,7 @@ export const createFormStateStore = ({
               state.validationErrors,
               state.dirtyFields,
               state.fieldArrayKeys,
+              state.defaultValueOverrides,
             ],
             `${fieldName}[${removeIndex}]`,
           );
@@ -1233,6 +1256,7 @@ export const createFormStateStore = ({
               state.validationErrors,
               state.dirtyFields,
               state.fieldArrayKeys,
+              state.defaultValueOverrides,
             ],
             fieldName,
             (index) => (index > removeIndex ? index - 1 : index),
@@ -1269,6 +1293,7 @@ export const createFormStateStore = ({
               state.validationErrors,
               state.dirtyFields,
               state.fieldArrayKeys,
+              state.defaultValueOverrides,
             ],
             fieldName,
             (index) => {
@@ -1302,9 +1327,11 @@ export const createFormStateStore = ({
               state.validationErrors,
               state.dirtyFields,
               state.fieldArrayKeys,
+              state.defaultValueOverrides,
             ],
             `${fieldName}[${index}]`,
           );
+          state.defaultValueOverrides[`${fieldName}[${index}]`] = value;
         });
         void get().maybeValidateArrayOperation(
           fieldName,

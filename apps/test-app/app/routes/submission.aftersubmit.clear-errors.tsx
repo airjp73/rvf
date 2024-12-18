@@ -1,10 +1,9 @@
-import { DataFunctionArgs, json } from "@remix-run/node";
-import { useActionData } from "@remix-run/react";
 import { withZod } from "@rvf/zod";
-import { ValidatedForm } from "@rvf/remix";
+import { ValidatedForm } from "@rvf/react-router";
 import { z } from "zod";
 import { Input } from "~/components/Input";
 import { SubmitButton } from "~/components/SubmitButton";
+import { Route } from "./+types/submission.aftersubmit.clear-errors";
 
 const validator = withZod(
   z
@@ -23,11 +22,11 @@ const validator = withZod(
     }),
 );
 
-export const action = (args: DataFunctionArgs) => json({ message: "Success" });
+export const action = (args: Route.ActionArgs) => ({ message: "Success" });
 
-export default function FrontendValidation() {
-  const data = useActionData<typeof action>();
-
+export default function FrontendValidation({
+  actionData: data,
+}: Route.ComponentProps) {
   return (
     <ValidatedForm validator={validator} method="patch">
       {data?.message && <p>{data.message}</p>}

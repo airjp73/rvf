@@ -1,20 +1,19 @@
-import { DataFunctionArgs, json } from "@remix-run/node";
-import { useActionData } from "@remix-run/react";
 import { withYup } from "@rvf/yup";
 import {
   FormScope,
   FormProvider,
   useForm,
   useFormScopeOrContext,
-} from "@rvf/remix";
+} from "@rvf/react-router";
 import * as yup from "yup";
 import { Input } from "~/components/Input";
 import { SubmitButton } from "~/components/SubmitButton";
+import { Route } from "./+types/context-hooks";
 
-export const action = async ({ request }: DataFunctionArgs) => {
+export const action = async ({ request }: Route.ActionArgs) => {
   const data = await request.formData();
   await new Promise((resolve) => setTimeout(resolve, 500));
-  return json({ message: `Submitted ${data.get("mySubmit")}` });
+  return { message: `Submitted ${data.get("mySubmit")}` };
 };
 
 const DisplayContext = ({
@@ -62,9 +61,9 @@ const DisplayContext = ({
   );
 };
 
-export default function FrontendValidation() {
-  const actionData = useActionData<typeof action>();
-
+export default function FrontendValidation({
+  actionData,
+}: Route.ComponentProps) {
   // Verify we don't get an infinite loop
   const form = useForm({
     id: "test-form",

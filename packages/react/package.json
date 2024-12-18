@@ -1,13 +1,13 @@
 {
   "name": "@rvf/react",
-  "version": "6.3.0",
+  "version": "6.3.2",
   "description": "Easy, predictable form state management for React",
   "main": "./dist/index.cjs.js",
   "module": "./dist/index.esm.js",
   "types": "./dist/index.d.ts",
   "repository": {
     "type": "git",
-    "url": "https://github.com/airjp73/remix-validated-form"
+    "url": "https://github.com/airjp73/rvf"
   },
   "sideEffects": false,
   "scripts": {
@@ -23,12 +23,13 @@
   },
   "license": "MIT",
   "peerDependencies": {
-    "react": "^17.0.2 || ^18.0.0",
-    "react-dom": "^17.0.2 || ^18.0.0",
+    "react": "^18.0.0 || ^19.0.0",
+    "react-dom": "^18.0.0 || ^19.0.0",
     "@rvf/core": ">= 6.1.2 < 7.0.0",
     "@rvf/set-get": ">= 6.0.3 < 7.0.0"
   },
   "devDependencies": {
+    "react-dom": "^19.0.0",
     "tsconfig": "*",
     "tsup-config": "*",
     "typescript": "^5.4.5",

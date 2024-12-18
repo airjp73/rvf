@@ -1,6 +1,5 @@
-import { json, DataFunctionArgs } from "@remix-run/node";
 import { withZod } from "@rvf/zod";
-import { ValidatedForm } from "@rvf/remix";
+import { ValidatedForm } from "@rvf/react-router";
 import { zfd } from "zod-form-data";
 import { Input } from "~/components/Input";
 import { SubmitButton } from "~/components/SubmitButton";
@@ -13,8 +12,7 @@ const validator = withZod(
 
 export type LoaderData = string;
 
-export const loader = (args: DataFunctionArgs) =>
-  json<LoaderData>("Hello, world");
+export const loader = () => "Hello, world";
 
 export default function FrontendValidation() {
   return (

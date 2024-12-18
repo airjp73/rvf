@@ -7,7 +7,9 @@ import {
 import { RefObject, useEffect } from "react";
 
 export const useNativeValidity = (
-  ref: RefObject<HTMLElement & { setCustomValidity: (error: string) => void }>,
+  ref: RefObject<
+    (HTMLElement & { setCustomValidity: (error: string) => void }) | null
+  >,
   error?: string | null,
 ) => {
   useEffect(() => {

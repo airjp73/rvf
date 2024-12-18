@@ -1,0 +1,73 @@
+export const meta = () => [
+  {
+    title: "Supporting users without JS",
+  },
+];
+
+# Supporting users without JS
+
+If you're using a server-side framework like Remix / React Router, you can use RVF even if JS is disabled in the user's browser.
+However, the way you go about doing this may vary depending on how important this is to you.
+
+## If supporting users without JS is important for you
+
+You should fall back to [native browser validation](https://developer.mozilla.org/en-US/docs/Learn/Forms/Form_validation)
+when JS is disabled. This is more work to maintain, but it's a better experience for users.
+
+In order to do this properly, you can pass `noValidate` to your form when JS is available.
+A helpful tool for doing that is [useHydrated from remix-utils](https://github.com/sergiodxa/remix-utils#usehydrated).
+If you aren't using remix, you can copy the recipe [here](/recipes/use-hydrated).
+
+This will allow RVF to take over validation when it can,
+but will fall back to native browser validation when it can't.
+
+If the native HTML api can't handle all of your validation requirements, you'll also want to read the next section.
+
+## If users without JS are an edge-case
+
+<Note>
+  This section applies to the plain React adapter. If you're
+  using the `useForm` hook from the React Router adapter, read
+  about [server-side validation for the remix
+  adapter](/remix#server-side-validation).
+</Note>
+
+<Row>
+  <Col>
+    If users not having JS enabled is more of an edge case, or you need to handle more complex errors than the native HTML api can handle,
+    you'll need to be rendering the form on your server.
+    If your form submission contains errors, you can pass those errors to your form using the `serverValidationErrors` option.
+
+    When your page loads the errors from the server will be displayed to the user where they normally would be.
+
+  </Col>
+  <Col>
+    ```tsx
+    const form = useForm({
+      // ...other options
+      serverValidationErrors: {
+        firstName: "First name is required",
+        lastName: "Last name is required",
+      },
+    });
+    ```
+  </Col>
+</Row>
+
+### Persisting the form values
+
+<Row>
+  <Col>
+    You likely don'e want the user to lose their progress in your form if your server validation fails.
+    You can handle this by changing what you pass to `defaultValues` when you have server validation errors.
+  </Col>
+  <Col>
+    ```tsx
+    const form = useForm({
+      // ...other options
+      serverValidationErrors: myServerErrors,
+      defaultValues: userSubmittedValues ?? regularDefaultValues,
+    });
+    ```
+  </Col>
+</Row>
