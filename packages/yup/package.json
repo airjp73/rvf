@@ -16,7 +16,7 @@
     "typecheck": "tsc --noEmit"
   },
   "peerDependencies": {
-    "@rvf/core": ">= 0.0.1 <= 7.0.0",
+    "@rvf/core": ">= 0.0.1 <= 8.0.0",
     "yup": "^1.0.0"
   },
   "devDependencies": {
