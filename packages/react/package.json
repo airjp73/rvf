@@ -1,6 +1,6 @@
 {
   "name": "@rvf/react",
-  "version": "6.3.2",
+  "version": "7.0.0-beta.0",
   "description": "Easy, predictable form state management for React",
   "main": "./dist/index.cjs.js",
   "module": "./dist/index.esm.js",
