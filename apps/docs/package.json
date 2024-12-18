@@ -4,7 +4,7 @@
   "sideEffects": false,
   "type": "module",
   "scripts": {
-    "build": "NODE_ENV=production react-router build",
+    "build": "NODE_ENV=production react-router build && node vercel/prepare.js",
     "dev": "react-router dev",
     "lint": "eslint --ignore-path .gitignore --cache --cache-location ./node_modules/.cache/eslint .",
     "start": "NODE_ENV=production react-router-serve ./build/server/index.js",
