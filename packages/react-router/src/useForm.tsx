@@ -54,6 +54,7 @@ export type RemixFormOpts<
     | "navigate"
     | "preventScrollReset"
     | "relative"
+    | "viewTransition"
   > &
   FormSubmitOpts<FormOutputData, void> & {
     fetcher?: FetcherWithComponents<unknown>;
@@ -134,6 +135,7 @@ export function useForm<FormInputData extends FieldValues, FormOutputData>(
       replace: rvfOpts.replace,
       preventScrollReset: rvfOpts.preventScrollReset,
       relative: rvfOpts.relative,
+      viewTransition: rvfOpts.viewTransition,
       action: getFormAction(),
 
       // Technically not type safe, but it isn't really possible to make it so.

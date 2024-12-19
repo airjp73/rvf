@@ -51,6 +51,7 @@ export const ValidatedForm = <
   navigate,
   otherFormProps,
   reloadDocument,
+  viewTransition,
   ...rest
 }: ValidatedFormProps<FormInputData, FormOutputData, FormResponseData>) => {
   const rvf = useForm<FormInputData, FormOutputData>({
@@ -77,6 +78,7 @@ export const ValidatedForm = <
     otherFormProps,
     reloadDocument,
     defaultValues,
+    viewTransition,
     fetcher,
   } satisfies AllProps<RemixFormOpts<FormInputData, FormOutputData>>);
 
