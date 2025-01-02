@@ -48,4 +48,49 @@ describe.skip("Standard schema types", () => {
     });
     expectTypeOf(form.value("foo")).toEqualTypeOf<string | number>();
   });
+
+  test("should error if default values are missing a field", () => {
+    const form = useForm({
+      schema: z.object({
+        foo: z.string(),
+        bar: z.string(),
+      }),
+      // @ts-expect-error
+      defaultValues: {
+        foo: "hi",
+      },
+    });
+    expectTypeOf(form.value("foo")).toEqualTypeOf<string>();
+    expectTypeOf(form.value("bar")).toEqualTypeOf<string>();
+  });
+
+  test("should error if default values are missing a field", () => {
+    const form = useForm({
+      schema: z.object({
+        foo: z.string(),
+        bar: z.string(),
+      }),
+      defaultValues: {
+        foo: "hi",
+        bar: undefined as string | undefined,
+      },
+    });
+    expectTypeOf(form.value("foo")).toEqualTypeOf<string>();
+    expectTypeOf(form.value("bar")).toEqualTypeOf<string | undefined>();
+  });
+
+  test("should error if default values are missing a field and the types are expanded", () => {
+    const form = useForm({
+      schema: z.object({
+        foo: z.string(),
+        bar: z.string(),
+      }),
+      defaultValues: {
+        // @ts-expect-error
+        foo: 123 as number | string,
+      },
+    });
+    expectTypeOf(form.value("foo")).toEqualTypeOf<string>();
+    expectTypeOf(form.value("bar")).toEqualTypeOf<string>();
+  });
 });
