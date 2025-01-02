@@ -1,4 +1,4 @@
-import { useEffect, useState, useId, ComponentProps, useMemo } from "react";
+import { useEffect, useState, useId, ComponentProps } from "react";
 import {
   FieldValues,
   ValidationBehaviorConfig,
@@ -9,9 +9,11 @@ import {
   StateSubmitHandler,
   DomSubmitHandler,
   BeforeSubmitApi,
+  withStandardSchema,
 } from "@rvf/core";
 import { FormApi, useFormInternal } from "./base";
 import { FieldErrors } from "@rvf/core";
+import { StandardSchemaV1 } from "@standard-schema/spec";
 
 const noOp = () => {};
 
@@ -25,30 +27,65 @@ type FormSubmitOpts<FormOutputData, ResponseData> =
       handleSubmit?: DomSubmitHandler<FormOutputData, ResponseData>;
     };
 
+type ValidatorAndDefaultValues<
+  FormInputData extends FieldValues,
+  FormOutputData,
+> =
+  | {
+      /**
+       * A validator object created by a validation adapter such a `withZod` or `withYup`.
+       * See [these docs](https://rvf-js.io/validation-library-support) for more details
+       * and information on how to create a validator for other validation libraries.
+       */
+      validator: Validator<FormOutputData>;
+      /**
+       * Sets the default values of the form.
+       *
+       * For Typescript users, `defaultValues` is one of the most important props you'll use.
+       * The type of the object you pass here, will determine the type of the data you get
+       * when interacting with the form. For example, `form.value('myField')` will be typed based on
+       * the type of `defaultValues.myField`.
+       *
+       * It's recommended that you provide a default value for every field in the form.
+       */
+      defaultValues?: FormInputData;
+    }
+  | {
+      /**
+       * A [Standard Schema](https://github.com/standard-schema/standard-schema) compliant schema.
+       */
+      schema: StandardSchemaV1<FormInputData, FormOutputData>;
+      /**
+       * Sets the default values of the form.
+       *
+       * For Typescript users, `defaultValues` sets the default values of the form.
+       * By default, this is limitted to the input type of the validator,
+       * but you can widen the type here by using `as Type`.
+       *
+       * It's recommended that you provide a default value for every field in the form.
+       *
+       * @example
+       * ```ts
+       * useForm({
+       *   validator: z.object({
+       *     foo: z.string(),
+       *     bar: z.string(),
+       *   }),
+       *   defaultValues: {
+       *     foo: 123 as string | number,
+       *     bar: "hi",
+       *   },,
+       * })
+       * ```
+       */
+      defaultValues: FormInputData;
+    };
+
 export type FormOpts<
   FormInputData extends FieldValues = FieldValues,
   FormOutputData = never,
   SubmitResponseData = unknown,
-> = {
-  /**
-   * Sets the default values of the form.
-   *
-   * For Typescript users, `defaultValues` is one of the most important props you'll use.
-   * The type of the object you pass here, will determine the type of the data you get
-   * when interacting with the form. For example, `form.value('myField')` will be typed based on
-   * the type of `defaultValues.myField`.
-   *
-   * It's recommended that you provide a default value for every field in the form.
-   */
-  defaultValues?: FormInputData;
-
-  /**
-   * A validator object created by a validation adapter such a `withZod` or `withYup`.
-   * See [these docs](https://rvf-js.io/validation-library-support) for more details
-   * and information on how to create a validator for other validation libraries.
-   */
-  validator: Validator<FormOutputData>;
-
+> = ValidatorAndDefaultValues<FormInputData, FormOutputData> & {
   /**
    * Called before when the form is submitted before any validations are run.
    * Can be used to run custom, async validations and/or cancel the form submission.
@@ -158,7 +195,6 @@ export function useForm<
 ): FormApi<FormInputData> {
   // everything from below
   const {
-    validator,
     handleSubmit: onSubmit,
     onSubmitSuccess,
     onSubmitFailure,
@@ -174,6 +210,11 @@ export function useForm<
     validationBehaviorConfig,
     id,
   } = options;
+
+  const validator =
+    "schema" in options
+      ? withStandardSchema(options.schema)
+      : options.validator;
 
   const defaultFormId = useId();
   const [form] = useState<FormScope<unknown>>(() => {
