@@ -28,6 +28,7 @@
   },
   "devDependencies": {
     "@rvf/set-get": "*",
+    "@standard-schema/spec": "^1.0.0-beta.4",
     "react-tracked": "^2.0.0",
     "tsconfig": "*",
     "tsup-config": "*",

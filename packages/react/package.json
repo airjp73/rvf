@@ -35,5 +35,8 @@
     "typescript": "^5.4.5",
     "@rvf/set-get": "*",
     "@rvf/core": "*"
+  },
+  "dependencies": {
+    "@standard-schema/spec": "^1.0.0-beta.4"
   }
 }
