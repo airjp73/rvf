@@ -1172,7 +1172,8 @@ export const createFormStateStore = ({
             throw new Error("Can't insert to a non-array");
 
           insert(val, insertAtIndex, value);
-          insert(state.fieldArrayKeys[fieldName], insertAtIndex, genKey());
+          if (state.fieldArrayKeys[fieldName])
+            insert(state.fieldArrayKeys[fieldName], insertAtIndex, genKey());
           state.arrayUpdateKeys[fieldName] = genKey();
 
           moveFieldArrayKeys(
@@ -1202,7 +1203,8 @@ export const createFormStateStore = ({
             throw new Error("Can't move from a non-array");
 
           move(val, fromIndex, toIndex);
-          move(state.fieldArrayKeys[fieldName], fromIndex, toIndex);
+          if (state.fieldArrayKeys[fieldName])
+            move(state.fieldArrayKeys[fieldName], fromIndex, toIndex);
           state.arrayUpdateKeys[fieldName] = genKey();
 
           moveFieldArrayKeys(
@@ -1237,7 +1239,8 @@ export const createFormStateStore = ({
             throw new Error("Can't remove from a non-array");
 
           remove(val, removeIndex);
-          remove(state.fieldArrayKeys[fieldName], removeIndex);
+          if (state.fieldArrayKeys[fieldName])
+            remove(state.fieldArrayKeys[fieldName], removeIndex);
           state.arrayUpdateKeys[fieldName] = genKey();
 
           deleteFieldsWithPrefix(
@@ -1317,7 +1320,8 @@ export const createFormStateStore = ({
             throw new Error("Can't replace from a non-array");
 
           replace(val, index, value);
-          replace(state.fieldArrayKeys[fieldName], index, genKey());
+          if (state.fieldArrayKeys[fieldName])
+            replace(state.fieldArrayKeys[fieldName], index, genKey());
           state.arrayUpdateKeys[fieldName] = genKey();
 
           // Treat a replacement as a reset / new field at the same index.

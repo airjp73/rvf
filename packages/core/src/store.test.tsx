@@ -226,6 +226,84 @@ describe("arrays", () => {
     expect(fieldArrayKeys.foo).toHaveLength(3);
   });
 
+  it("should push into arrays with no field array", () => {
+    const store = testStore();
+    store.setState({
+      values: {
+        foo: ["bar", "baz"],
+      },
+      touchedFields: {
+        "foo[0]": true,
+      },
+      dirtyFields: {
+        "foo[0]": true,
+      },
+      validationErrors: {
+        "foo[1]": "not equal",
+      },
+    });
+    store.getState().arrayPush("foo", "quux");
+    const {
+      values,
+      touchedFields,
+      dirtyFields,
+      validationErrors,
+      fieldArrayKeys,
+      defaultValueOverrides,
+    } = store.getState();
+    expect({
+      values,
+      touchedFields,
+      dirtyFields,
+      validationErrors,
+      defaultValueOverrides,
+    }).toEqual({
+      values: {
+        foo: ["bar", "baz", "quux"],
+      },
+      defaultValueOverrides: {
+        "foo[2]": "quux",
+      },
+      touchedFields: {
+        "foo[0]": true,
+      },
+      dirtyFields: {
+        "foo[0]": true,
+      },
+      validationErrors: {
+        "foo[1]": "not equal",
+      },
+    });
+  });
+
+  it("should be able to be called in quick succession", () => {
+    const store = testStore();
+    store.setState({
+      values: {
+        foo: ["bar"],
+        bar: [],
+      },
+      fieldArrayKeys: {
+        foo: ["bar"],
+        bar: [],
+      },
+    });
+    const { arrayRemove, arrayInsert } = store.getState();
+    arrayRemove("foo", 0);
+    arrayInsert("bar", 0, "bar");
+    const { values, fieldArrayKeys } = store.getState();
+    expect({ values, fieldArrayKeys }).toEqual({
+      values: {
+        foo: [],
+        bar: ["bar"],
+      },
+      fieldArrayKeys: {
+        foo: [],
+        bar: [expect.any(String)],
+      },
+    });
+  });
+
   it("should push into nested arrays", () => {
     const store = testStore();
     store.setState({
@@ -340,6 +418,63 @@ describe("arrays", () => {
       },
     });
     expect(fieldArrayKeys.foo).toHaveLength(1);
+  });
+
+  it("should pop from arrays with no field array keys", () => {
+    const store = testStore();
+    store.setState({
+      values: {
+        foo: ["bar", "baz"],
+      },
+      defaultValueOverrides: {
+        "foo[0]": "bar",
+        "foo[1]": "baz",
+      },
+      touchedFields: {
+        "foo[0]": true,
+        "foo[1]": true,
+      },
+      dirtyFields: {
+        "foo[0]": true,
+        "foo[1]": true,
+      },
+      validationErrors: {
+        "foo[0]": "not equal",
+        "foo[1]": "not equal",
+      },
+    });
+    store.getState().arrayPop("foo");
+    const {
+      values,
+      touchedFields,
+      dirtyFields,
+      validationErrors,
+      fieldArrayKeys,
+      defaultValueOverrides,
+    } = store.getState();
+    expect({
+      values,
+      touchedFields,
+      dirtyFields,
+      validationErrors,
+      defaultValueOverrides,
+    }).toEqual({
+      values: {
+        foo: ["bar"],
+      },
+      defaultValueOverrides: {
+        "foo[0]": "bar",
+      },
+      touchedFields: {
+        "foo[0]": true,
+      },
+      dirtyFields: {
+        "foo[0]": true,
+      },
+      validationErrors: {
+        "foo[0]": "not equal",
+      },
+    });
   });
 
   it("should pop from nested arrays", () => {
@@ -1132,6 +1267,72 @@ describe("arrays", () => {
     expect(fieldArrayKeys.foo).toHaveLength(4);
   });
 
+  it("should remove items from arrays with no field array keys", () => {
+    const store = testStore();
+    store.setState({
+      values: {
+        foo: ["bar", "baz", "another", "value", "quux"],
+      },
+      defaultValueOverrides: {
+        "foo[0]": "bar",
+        "foo[1]": "baz",
+        "foo[2]": "another",
+      },
+      touchedFields: {
+        "foo[0]": true,
+        "foo[1]": true,
+        "foo[2]": true,
+        "foo[3]": false,
+      },
+      dirtyFields: {
+        "foo[0]": false,
+        "foo[1]": true,
+        "foo[2]": true,
+      },
+      validationErrors: {
+        "foo[0]": "not equal",
+        "foo[1]": "not equal",
+        "foo[4]": "equal",
+      },
+    });
+    store.getState().arrayRemove("foo", 1);
+    const {
+      values,
+      touchedFields,
+      dirtyFields,
+      validationErrors,
+      defaultValueOverrides,
+    } = store.getState();
+    expect({
+      values,
+      touchedFields,
+      dirtyFields,
+      validationErrors,
+      defaultValueOverrides,
+    }).toEqual({
+      values: {
+        foo: ["bar", "another", "value", "quux"],
+      },
+      defaultValueOverrides: {
+        "foo[0]": "bar",
+        "foo[1]": "another",
+      },
+      touchedFields: {
+        "foo[0]": true,
+        "foo[1]": true,
+        "foo[2]": false,
+      },
+      dirtyFields: {
+        "foo[0]": false,
+        "foo[1]": true,
+      },
+      validationErrors: {
+        "foo[0]": "not equal",
+        "foo[3]": "equal",
+      },
+    });
+  });
+
   it("should remove with nested arrays", () => {
     const store = testStore();
     store.setState({
@@ -1319,6 +1520,84 @@ describe("arrays", () => {
       },
     });
     expect(fieldArrayKeys.foo).toHaveLength(5);
+  });
+
+  it("should swap items in arrays no field array keys", () => {
+    const store = testStore();
+    store.setState({
+      values: {
+        foo: ["bar", "baz", "another", "value", "quux"],
+      },
+      defaultValueOverrides: {
+        "foo[0]": "a",
+        "foo[1]": "b",
+        "foo[2]": "c",
+        "foo[3]": "d",
+      },
+      touchedFields: {
+        "foo[0]": true,
+        "foo[1]": true,
+        "foo[2]": true,
+        "foo[3]": false,
+      },
+      dirtyFields: {
+        "foo[0]": false,
+        "foo[1]": true,
+        "foo[2]": true,
+      },
+      validationErrors: {
+        "foo[0]": "not equal",
+        "foo[1]": "not equal",
+        "foo[4]": "equal",
+      },
+    });
+    store.getState().arraySwap("foo", 1, 3);
+    const {
+      values,
+      touchedFields,
+      dirtyFields,
+      validationErrors,
+      fieldArrayKeys,
+      arrayUpdateKeys,
+      defaultValueOverrides,
+    } = store.getState();
+    expect({
+      values,
+      touchedFields,
+      dirtyFields,
+      validationErrors,
+      arrayUpdateKeys,
+      defaultValueOverrides,
+    }).toEqual({
+      values: {
+        foo: ["bar", "value", "another", "baz", "quux"],
+      },
+      defaultValueOverrides: {
+        "foo[0]": "a",
+        "foo[1]": "d",
+        "foo[2]": "c",
+        "foo[3]": "b",
+      },
+      touchedFields: {
+        "foo[0]": true,
+        "foo[1]": false,
+        "foo[2]": true,
+        "foo[3]": true,
+      },
+      dirtyFields: {
+        "foo[0]": false,
+        "foo[2]": true,
+        "foo[3]": true,
+      },
+      validationErrors: {
+        "foo[0]": "not equal",
+        "foo[3]": "not equal",
+        "foo[4]": "equal",
+      },
+      arrayUpdateKeys: {
+        foo: expect.any(String),
+      },
+    });
   });
 
   it("should not do anything if swapping two non-existant items", () => {
