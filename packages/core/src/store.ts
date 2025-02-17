@@ -894,6 +894,7 @@ export const createFormStateStore = ({
         set((state) => {
           if (fieldName) setPath(state.values, fieldName, value);
           else state.values = value as any;
+          deleteFieldsWithPrefix([state.fieldArrayKeys], fieldName);
         });
 
         if (
