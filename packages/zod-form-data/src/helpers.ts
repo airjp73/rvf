@@ -125,11 +125,11 @@ type FormDataType = {
   ): ZodEffects<
     ZodObject<T>,
     z.output<ZodObject<T>>,
-    FormData | FormDataLikeInput
+    FormData | FormDataLikeInput | z.input<ZodObject<T>>
   >;
   <T extends z.ZodTypeAny>(
     schema: T,
-  ): ZodEffects<T, z.output<T>, FormData | FormDataLikeInput>;
+  ): ZodEffects<T, z.output<T>, FormData | FormDataLikeInput | z.input<T>>;
 };
 
 const safeParseJson = (jsonString: string) => {
