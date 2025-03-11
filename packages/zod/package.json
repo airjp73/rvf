@@ -15,9 +15,11 @@
     "prepublishOnly": "npm run build",
     "typecheck": "tsc --noEmit"
   },
-  "peerDependencies": {
+  "dependencies": {
     "@rvf/core": ">= 0.0.0 < 8.0.0",
-    "@rvf/set-get": ">= 6.0.3 < 8.0.0",
+    "@rvf/set-get": ">= 6.0.3 < 8.0.0"
+  },
+  "peerDependencies": {
     "zod": ">= 3.11.0"
   },
   "devDependencies": {

@@ -24,6 +24,9 @@
     "prepublishOnly": "npm run build",
     "typecheck": "tsc --noEmit"
   },
+  "dependencies": {
+    "@rvf/set-get": "^7.0.0"
+  },
   "peerDependencies": {
     "zod": ">= 3.11.0"
   },

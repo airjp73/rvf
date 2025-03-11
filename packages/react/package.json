@@ -24,9 +24,7 @@
   "license": "MIT",
   "peerDependencies": {
     "react": "^18.0.0 || ^19.0.0",
-    "react-dom": "^18.0.0 || ^19.0.0",
-    "@rvf/core": ">= 6.1.2 < 8.0.0",
-    "@rvf/set-get": ">= 6.0.3 < 8.0.0"
+    "react-dom": "^18.0.0 || ^19.0.0"
   },
   "devDependencies": {
     "react-dom": "^19.0.0",
@@ -35,5 +33,9 @@
     "typescript": "^5.4.5",
     "@rvf/set-get": "*",
     "@rvf/core": "*"
+  },
+  "dependencies": {
+    "@rvf/core": ">= 6.1.2 < 8.0.0",
+    "@rvf/set-get": ">= 6.0.3 < 8.0.0"
   }
 }

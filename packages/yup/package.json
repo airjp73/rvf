@@ -15,15 +15,16 @@
     "prepublishOnly": "npm run build",
     "typecheck": "tsc --noEmit"
   },
+  "dependencies": {
+    "@rvf/core": ">= 0.0.1 <= 8.0.0"
+  },
   "peerDependencies": {
-    "@rvf/core": ">= 0.0.1 <= 8.0.0",
     "yup": "^1.0.0"
   },
   "devDependencies": {
     "@rvf/core": "*",
     "tsconfig": "*",
     "tsup-config": "*",
-    "typescript": "^5.4.5",
-    "yup": "^1.0.0"
+    "typescript": "^5.4.5"
   }
 }
