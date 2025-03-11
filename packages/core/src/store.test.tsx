@@ -7,7 +7,7 @@ import {
 } from "./store";
 import { ValidationBehavior } from "./types";
 import { createValidator } from "./createValidator";
-import { getFieldDefaultValue } from "./getters";
+import { getFieldDefaultValue, getFieldValue } from "./getters";
 
 const testStore = (init?: Partial<FormStoreInit>) =>
   createFormStateStore({
@@ -1964,6 +1964,28 @@ it("should override resetField overrides with reset or parent resetFields", () =
   store.getState().reset();
   expect(getFieldDefaultValue(store.getState(), "foo.bar")).toBe("bar");
   expect(getFieldDefaultValue(store.getState(), "foo")).toEqual({ bar: "bar" });
+});
+
+it("should be able to override the default value with an explicit null or undefined", () => {
+  const store = testStore({
+    defaultValues: { foo: { bar: "bar" } },
+  });
+  expect(getFieldDefaultValue(store.getState(), "foo.bar")).toBe("bar");
+  expect(getFieldDefaultValue(store.getState(), "foo")).toEqual({ bar: "bar" });
+  expect(getFieldValue(store.getState(), "foo.bar")).toBe("bar");
+  expect(getFieldValue(store.getState(), "foo")).toEqual({ bar: "bar" });
+
+  store.getState().resetField("foo", { defaultValue: null });
+  expect(getFieldDefaultValue(store.getState(), "foo.bar")).toBe(undefined);
+  expect(getFieldDefaultValue(store.getState(), "foo")).toBe(null);
+  expect(getFieldValue(store.getState(), "foo.bar")).toBe(undefined);
+  expect(getFieldValue(store.getState(), "foo")).toEqual(null);
+
+  store.getState().resetField("foo", { defaultValue: undefined });
+  expect(getFieldDefaultValue(store.getState(), "foo.bar")).toBe(undefined);
+  expect(getFieldDefaultValue(store.getState(), "foo")).toBe(undefined);
+  expect(getFieldValue(store.getState(), "foo.bar")).toBe(undefined);
+  expect(getFieldValue(store.getState(), "foo")).toEqual(undefined);
 });
 
 it("should return the default value from a parent override", () => {
