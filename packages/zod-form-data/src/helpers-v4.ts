@@ -53,13 +53,6 @@ export interface $ZodFormData<Shape extends core.$ZodShape = core.$ZodShape>
   _zod: $ZodFormDataInternals<Shape>;
 }
 
-/**
- * This helper takes the place of the `z.object` at the root of your schema.
- * It wraps your schema in a `z.preprocess` that extracts all the data out of a `FormData`
- * and transforms it into a regular object.
- * If the `FormData` contains multiple entries with the same field name,
- * it will automatically turn that field into an array.
- */
 export const $ZodFormData: core.$constructor<$ZodFormData> =
   core.$constructor<$ZodFormData>("$ZodFormData", (inst, def) => {
     // @ts-expect-error FIXME: Why does this give an error?
@@ -142,3 +135,64 @@ export const ZodFormDataOptional: core.$constructor<ZodFormDataOptional> =
       return defaultParse(payload, ctx);
     };
   });
+
+///////////////////////////////////////////////////
+//////////////////// Checkbox /////////////////////
+///////////////////////////////////////////////////
+
+export interface ZodFormDataCheckboxDef<TrueValue extends string = "on">
+  extends core.$ZodBooleanDef {
+  zfdTrueValue: TrueValue;
+}
+export interface ZodFormDataCheckboxInternals<TrueValue extends string = "on">
+  extends core.$ZodBooleanInternals {
+  def: ZodFormDataCheckboxDef<TrueValue>;
+}
+export interface ZodFormDataCheckbox<TrueValue extends string = "on">
+  extends core.$ZodType {
+  _zod: ZodFormDataCheckboxInternals<TrueValue>;
+}
+
+export const ZodFormDataCheckbox: core.$constructor<ZodFormDataCheckbox> =
+  core.$constructor("ZodFormDataCheckbox", (inst, def) => {
+    // @ts-expect-error
+    core.$ZodBoolean.init(inst, def);
+
+    inst._zod.def.zfdTrueValue ??= "on";
+
+    const defaultParse = inst._zod.parse;
+
+    inst._zod.parse = (payload, ctx) => {
+      const trueValue = inst._zod.def.zfdTrueValue;
+
+      if (payload.value === undefined) {
+        payload.value = false;
+      } else if (payload.value === trueValue) {
+        payload.value = true;
+      } else if (typeof payload.value === "string") {
+        payload.issues.push({
+          code: "invalid_value",
+          input: payload.value,
+          inst,
+          values: [trueValue],
+        });
+        return payload;
+      }
+
+      return defaultParse(payload, ctx);
+    };
+  });
+
+export interface ZodFormDataCheckboxParams<TrueValue extends string = "on">
+  extends core.$ZodBooleanParams {
+  trueValue: TrueValue;
+}
+export const checkbox = <TrueValue extends string = "on">(
+  params?: ZodFormDataCheckboxParams<TrueValue>,
+): ZodFormDataCheckbox<TrueValue> => {
+  return new ZodFormDataCheckbox({
+    type: "boolean",
+    zfdTrueValue: (params?.trueValue as any) ?? "on",
+    ...core.util.normalizeParams(params),
+  }) as any;
+};

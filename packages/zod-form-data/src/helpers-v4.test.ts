@@ -64,3 +64,55 @@ describe("v4 helpers", () => {
     });
   });
 });
+
+describe("checkbox", () => {
+  it("default on", () => {
+    const schema = zfd.checkbox();
+    expect(safeParse(schema, "on")).toEqual({
+      success: true,
+      data: true,
+    });
+    expect(safeParse(schema, "wrong")).toEqual({
+      success: false,
+      error: {
+        issues: [
+          {
+            code: "invalid_value",
+            message: "Invalid input",
+            path: [],
+            values: ["on"],
+          },
+        ],
+      },
+    });
+    expect(safeParse(schema, undefined)).toEqual({
+      success: true,
+      data: false,
+    });
+  });
+
+  it("configurable true value", () => {
+    const schema = zfd.checkbox({ trueValue: "changed" });
+    expect(safeParse(schema, "changed")).toEqual({
+      success: true,
+      data: true,
+    });
+    expect(safeParse(schema, "on")).toEqual({
+      success: false,
+      error: {
+        issues: [
+          {
+            code: "invalid_value",
+            message: "Invalid input",
+            path: [],
+            values: ["changed"],
+          },
+        ],
+      },
+    });
+    expect(safeParse(schema, undefined)).toEqual({
+      success: true,
+      data: false,
+    });
+  });
+});
