@@ -1,6 +1,10 @@
 import { setPath } from "@rvf/set-get";
 import * as core from "@zod/core";
 
+///////////////////////////////////////////////////
+//////////////////// FormData /////////////////////
+///////////////////////////////////////////////////
+
 type FormDataLikeInput = {
   [Symbol.iterator](): IterableIterator<[string, FormDataEntryValue]>;
   entries(): IterableIterator<[string, FormDataEntryValue]>;
@@ -89,3 +93,52 @@ export const formData = <Shape extends core.$ZodShape>(
   };
   return new $ZodFormData(def) as any;
 };
+
+///////////////////////////////////////////////////
+////////////////////// Text ///////////////////////
+///////////////////////////////////////////////////
+
+export interface ZodFormDataTextInput extends core.$ZodString {}
+
+export const ZodFormDataTextInput: core.$constructor<ZodFormDataTextInput> =
+  core.$constructor("ZodFormDataTextInput", (inst, def) => {
+    // @ts-expect-error
+    core.$ZodString.init(inst, def);
+
+    const defaultParse = inst._zod.parse;
+    inst._zod.parse = (payload, ctx) => {
+      if (payload.value === "") {
+        payload.value === undefined;
+      }
+      return defaultParse(payload, ctx);
+    };
+  });
+
+export const text = (params?: core.$ZodStringParams): ZodFormDataTextInput => {
+  return new ZodFormDataTextInput({
+    type: "string",
+    ...core.util.normalizeParams(params),
+  });
+};
+
+///////////////////////////////////////////////////
+//////////////////// Optional /////////////////////
+///////////////////////////////////////////////////
+
+export interface ZodFormDataOptional<T extends core.$ZodType = core.$ZodType>
+  extends core.$ZodOptional<T> {}
+
+export const ZodFormDataOptional: core.$constructor<ZodFormDataOptional> =
+  core.$constructor("ZodFormDataOptional", (inst, def) => {
+    // @ts-expect-error
+    core.$ZodOptional.init(inst, def);
+
+    const defaultParse = inst._zod.parse;
+    inst._zod.parse = (payload, ctx) => {
+      if (payload.value === undefined || payload.value === "") {
+        payload.value = undefined;
+        return payload;
+      }
+      return defaultParse(payload, ctx);
+    };
+  });
