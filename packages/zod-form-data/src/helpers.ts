@@ -159,6 +159,7 @@ const processFormData = preprocessIfValid(
   z
     .any()
     .refine((val) => Symbol.iterator in val)
+    // FIXME: Zod keeps executing the code below, even when the previous refine fails
     .transform((val) => [...val])
     .refine(
       (val): val is z.infer<typeof entries> => entries.safeParse(val).success,
