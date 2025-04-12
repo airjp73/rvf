@@ -28,13 +28,16 @@
     "@rvf/set-get": "^7.0.0"
   },
   "peerDependencies": {
-    "zod": ">= 4.0.0-beta.20250411T005215"
+    "zod": "^4.0.0-beta.20250412T085909",
+    "@zod/core": "^0.4.6"
   },
   "devDependencies": {
     "@rvf/set-get": "*",
+    "@zod/core": "^0.4.6",
+    "@zod/mini": "^4.0.0-beta.0",
     "tsconfig": "*",
     "tsup-config": "*",
     "typescript": "^5.4.5",
-    "zod": "^4.0.0-beta.20250411T005215"
+    "zod": "^4.0.0-beta.20250412T085909"
   }
 }
