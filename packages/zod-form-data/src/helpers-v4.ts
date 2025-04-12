@@ -59,9 +59,20 @@ export interface $ZodFormData<Shape extends core.$ZodShape = core.$ZodShape>
 export const $ZodFormData: core.$constructor<$ZodFormData> =
   core.$constructor<$ZodFormData>("$ZodFormData", (inst, def) => {
     // @ts-expect-error FIXME: Why does this give an error?
-    core.$ZodType.init(inst, def);
-    // @ts-expect-error FIXME: Why does this give an error?
     core.$ZodObjectLike.init(inst, def);
+
+    // IDEA: given how flexible this is, maybe we can simplify
+    // the process of getting native html validation props out of this.
+
+    // We could probably base this impl off of how zod does its wrappers like $ZodNullable.
+    // https://github.com/colinhacks/zod/blob/2ade678ffc5fbe609d92537f3910f91f15d77725/packages/core/src/schemas.ts#L3040
+    //
+    // Since all of these are essentially preprocessors, maybe we can generalize it too?
+    const oldParse = inst._zod.parse;
+    inst._zod.parse = (payload, ctx) => {
+      const preprocessed = preprocessFormData(payload.value);
+      return oldParse({ ...payload, value: preprocessed }, ctx);
+    };
   });
 
 export const formData = <Shape extends core.$ZodShape>(
