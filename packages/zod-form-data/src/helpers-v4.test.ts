@@ -41,4 +41,26 @@ describe("v4 helpers", () => {
       data: { foo: "bar" },
     });
   });
+
+  it("should allow optional fields", () => {
+    const schema = zfd.formData(
+      {
+        foo: core._string(core.$ZodString),
+        bar: core._string(core.$ZodString),
+        baz: core._optional(
+          core.$ZodOptional,
+          core._string(core.$ZodString) as any,
+        ),
+      },
+      {
+        optional: ["bar"],
+      },
+    );
+    const formData = new TestFormData();
+    formData.append("foo", "bar");
+    expect(safeParse(schema, formData)).toEqual({
+      success: true,
+      data: { foo: "bar" },
+    });
+  });
 });
