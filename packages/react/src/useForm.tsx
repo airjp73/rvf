@@ -80,6 +80,11 @@ export type internal_ValidatorAndDefaultValueOpts<
        * A validator object created by a validation adapter such a `withZod` or `withYup`.
        * See [these docs](https://rvf-js.io/validation-library-support) for more details
        * and information on how to create a validator for other validation libraries.
+       *
+       * This option is soft-deprecated. For libraries that support Standard Schema,
+       * we recommend passing the schema directly to the `schema` option.
+       * For `yup`, the `withYup` adapter will eventually return a Standard Schema intead of a custom validator.
+       * If you have a custom adapter, we recommend using this approach as well, if the library doesn't support Standard Schema.
        */
       validator: Validator<FormOutputData>;
       schema?: never;
