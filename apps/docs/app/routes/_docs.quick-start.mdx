@@ -97,8 +97,8 @@ You only need a couple things to get started with RVF.
 <Row>
   <Col>
     Now you can access your form's validation errors using `form.error("fieldName")`.
-    It's common to simply display these errors in the UI, but RVF also provides a
-    `useNativeValidity` hook you can use to display errors using [`setCustomValidity`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLInputElement/setCustomValidity).
+    It's common to simply display these errors in the UI, but RVF also provides two hooks for using the native validation APIs instead.
+    `useNativeValidity` and `useNativeValidityForForm` both display errors using [`setCustomValidity`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLInputElement/setCustomValidity).
   </Col>
   <Col>
     ```diff

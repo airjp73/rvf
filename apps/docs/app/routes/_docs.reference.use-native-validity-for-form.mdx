@@ -1,0 +1,31 @@
+export const meta = () => [
+  {
+    title: "useNativeValidityForForm (RVF)",
+  },
+];
+
+# `useNativeValidityForForm`
+
+Automatically sets the validity of all form controls in the form using the
+native HTML `setCustomValidity` method.
+
+If you need more granular control over which fields use this method,
+you can pass a form scope for a deeper part of the form (e.g. `useNativeValidityForForm(form.scope("subform"))`).
+Or you can use `useNativeValidity` instead for inputs.
+
+## Usage
+
+```tsx
+const MyForm = () => {
+  const form = useForm({
+    // ...etc
+  });
+  useNativeValidityForForm(form.scope());
+
+  return (
+    <form {...form.getFormProps()}>
+      {/* ...etc */}
+    </form>
+  );
+};
+```
