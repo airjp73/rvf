@@ -34,7 +34,7 @@
   "devDependencies": {
     "@rvf/set-get": "*",
     "@zod/core": "^0.4.6",
-    "@zod/mini": "^4.0.0-beta.0",
+    "@zod/mini": "^4.0.0-beta.20250412T085909",
     "tsconfig": "*",
     "tsup-config": "*",
     "typescript": "^5.4.5",
