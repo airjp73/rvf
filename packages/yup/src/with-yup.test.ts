@@ -10,12 +10,12 @@ const corePackageJsonPath = path.join(packageDir, "../core/package.json");
 describe("peer dependecy version", () => {
   it("should have a peer dependency version that matches the lastet version of RVF", async () => {
     const packageJson = JSON.parse(await fs.readFile(packageJsonPath, "utf-8"));
-    const peerDependencyVersion = packageJson.peerDependencies["@rvf/core"];
+    const dependencyVersion = packageJson.dependencies["@rvf/core"];
     const rvfPackageJson = JSON.parse(
       await fs.readFile(corePackageJsonPath, "utf-8"),
     );
     const rvfVersion = rvfPackageJson.version;
 
-    expect(semver.satisfies(rvfVersion, peerDependencyVersion)).toBe(true);
+    expect(semver.satisfies(rvfVersion, dependencyVersion)).toBe(true);
   });
 });

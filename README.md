@@ -299,7 +299,7 @@ npm install @rvf/react
 #### Validation library adapter
 
 There are official adapters available for `zod` and `yup`.
-If you're using a different library, see the [Validation library support](http://rvf-js.io/validation-library-support) seciton of the docs..
+If you're using a different library, see the [Validation library support](http://rvf-js.io/validation-library-support) section of the docs..
 
 - @rvf/zod
 - @rvf/yup

@@ -1,6 +1,6 @@
 {
   "name": "@rvf/valibot",
-  "version": "7.0.1",
+  "version": "7.0.2",
   "main": "./dist/index.cjs.js",
   "module": "./dist/index.esm.js",
   "types": "./dist/index.d.ts",
@@ -15,9 +15,11 @@
     "prepublishOnly": "npm run build",
     "typecheck": "tsc --noEmit"
   },
-  "peerDependencies": {
+  "dependencies": {
     "@rvf/core": ">= 0.0.0 < 8.0.0",
-    "@rvf/set-get": ">= 6.0.3 < 8.0.0",
+    "@rvf/set-get": ">= 6.0.3 < 8.0.0"
+  },
+  "peerDependencies": {
     "valibot": ">= 0.39.0"
   },
   "devDependencies": {

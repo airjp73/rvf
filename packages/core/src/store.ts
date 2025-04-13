@@ -984,7 +984,10 @@ export const createFormStateStore = ({
       resetField: (fieldName, opts = {}) => {
         const currentDefaultValue = getFieldDefaultValue(get(), fieldName);
 
-        const nextValue = opts.defaultValue ?? currentDefaultValue;
+        const shouldOverrideDefaultValue = "defaultValue" in opts;
+        const nextValue = shouldOverrideDefaultValue
+          ? opts.defaultValue
+          : currentDefaultValue;
 
         set((state) => {
           setPath(state.values, fieldName, nextValue);
@@ -1001,7 +1004,7 @@ export const createFormStateStore = ({
           );
           state.arrayUpdateKeys[fieldName] = genKey();
 
-          if ("defaultValue" in opts)
+          if (shouldOverrideDefaultValue)
             state.defaultValueOverrides[fieldName] = opts.defaultValue;
         });
 
