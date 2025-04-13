@@ -36,26 +36,36 @@ export const meta = () => [
 
 <Row>
   <Col>
-    RVF is validation library agnostic, but there are official adapters available for `zod`, `yup`, and `valibot`.
+    RVF is supports [Standard Schema](https://standardschema.dev/) out of the box,
+    so you can use any compatible validation library with no adapter.
+    Some of these include:
 
-    - `@rvf/zod`
-    - `@rvf/yup`
-    - `@rvf/valibot`
+    - Zod
+    - Valibot
+    - ArkType
+    - Effect Schema
+    - [And more](https://standardschema.dev/)
+
+    There's also an official adapter for `yup`. Install `@rvf/yup` if you want to use `yup`.
 
   </Col>
 
   <Col>
-    <CodeExamples title="Install validation adapter" tabs={["Zod", "Yup", "Valibot"]}>
-      ```bash
-      npm install @rvf/zod
+    <CodeExamples title="Install validation adapter" tabs={["Zod", "Valibot", "ArkType", "Yup"]}>
+      ```plaintext
+      Supported by default!
+      ```
+
+      ```plaintext
+      Supported by default!
+      ```
+
+      ```plaintext
+      Supported by default!
       ```
 
       ```bash
       npm install @rvf/yup
-      ```
-
-       ```bash
-      npm install @rvf/valibot
       ```
     </CodeExamples>
 

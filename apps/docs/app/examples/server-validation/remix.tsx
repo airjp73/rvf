@@ -5,6 +5,7 @@ import {
   validationError,
   useForm,
   isValidationErrorResponse,
+  parseFormData,
 } from "@rvf/react-router";
 import {
   useActionData,
@@ -13,27 +14,23 @@ import {
 import { MyInput } from "~/fields/MyInput";
 import { Note } from "~/ui/mdx/mdx";
 
-const validator = withZod(
-  z.object({
-    firstName: z
-      .string()
-      .min(1, { message: "First name is required" }),
-    lastName: z
-      .string()
-      .min(1, { message: "Last name is required" }),
-    email: z
-      .string()
-      .min(1, { message: "Email is required" })
-      .email("Must be a valid email"),
-  }),
-);
+const schema = z.object({
+  firstName: z
+    .string()
+    .min(1, { message: "First name is required" }),
+  lastName: z
+    .string()
+    .min(1, { message: "Last name is required" }),
+  email: z
+    .string()
+    .min(1, { message: "Email is required" })
+    .email("Must be a valid email"),
+});
 
 export const action = async ({
   request,
 }: ActionFunctionArgs) => {
-  const result = await validator.validate(
-    await request.formData(),
-  );
+  const result = await parseFormData(request, schema);
   if (result.error)
     return validationError(
       result.error,
@@ -48,7 +45,7 @@ export const ServerValidationForm = () => {
   const data = useActionData<typeof action>();
   const form = useForm({
     method: "post",
-    validator,
+    schema,
     defaultValues: {
       firstName: "",
       lastName: "",

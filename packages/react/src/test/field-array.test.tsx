@@ -6,12 +6,13 @@ import { RenderCounter, useRenderCounter } from "./util/RenderCounter";
 import { describe, expect, it, vi } from "vitest";
 import { successValidator } from "./util/successValidator";
 import { controlInput } from "./util/controlInput";
-import { FieldArray, useFieldArray } from "../array";
+import { FieldArray, FieldArrayApi, useFieldArray } from "../array";
 import { FormProvider } from "../context";
 import { FieldErrors, FormScope, createValidator } from "@rvf/core";
 import { ComponentProps, useState } from "react";
 import { useFormScope } from "../useFormScope";
 import { useField } from "../field";
+import { FormApi } from "../base";
 
 it("should only accept array values", () => {
   const Comp = () => {
@@ -1587,4 +1588,58 @@ it("should update a map operation when changing an array with setValue", async (
   expect(screen.getByText("jim")).toBeInTheDocument();
   expect(screen.queryByText("bar")).not.toBeInTheDocument();
   expect(screen.getByText("baz")).toBeInTheDocument();
+});
+
+it("should not blow up if an array is undefined", async () => {
+  const Comp = () => {
+    const form = useForm({
+      validator: successValidator,
+      defaultValues: {
+        items: undefined as undefined | string[],
+      },
+    });
+
+    expectTypeOf(form.array("items")).toMatchTypeOf<FieldArrayApi<string[]>>();
+    return (
+      <div>
+        {form.array("items").map((key, item) => {
+          expectTypeOf(item).toMatchTypeOf<FormApi<string>>();
+          return (
+            <div key={key} data-testid="item">
+              {item.value()}
+            </div>
+          );
+        })}
+        <button
+          data-testid="push"
+          onClick={() => form.array("items").push("hi there")}
+        />
+      </div>
+    );
+  };
+  render(<Comp />);
+
+  expect(screen.queryAllByTestId("item")).toHaveLength(0);
+  await userEvent.click(screen.getByTestId("push"));
+  expect(screen.getAllByTestId("item")).toHaveLength(1);
+});
+
+it("should blow up if an array is null", async () => {
+  const useHook = () => {
+    const form = useForm({
+      validator: successValidator,
+      defaultValues: {
+        items: null as null | string[],
+      },
+    });
+
+    expectTypeOf(form.array("items")).toMatchTypeOf<never>();
+    return () => {
+      // @ts-expect-error
+      form.array("items").push("hi there");
+    };
+  };
+  const { result } = renderHook(() => useHook());
+
+  expect(() => result.current()).toThrow();
 });

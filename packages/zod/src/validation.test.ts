@@ -1,7 +1,11 @@
 import { anyString, TestFormData } from "@remix-validated-form/test-utils";
 import { withYup } from "@rvf/yup";
 import { withValibot } from "@rvf/valibot";
-import { Validator, objectFromPathEntries } from "@rvf/core";
+import {
+  Validator,
+  objectFromPathEntries,
+  withStandardSchema,
+} from "@rvf/core";
 import { describe, it, expect } from "vitest";
 import * as yup from "yup";
 import { z } from "zod";
@@ -29,6 +33,27 @@ type ValidationTestCase = {
   validator: Validator<Person>;
 };
 
+const zodSchema = z.object({
+  firstName: z.string().min(1),
+  lastName: z.string().min(1),
+  age: z.optional(z.number()),
+  address: z.preprocess(
+    (value) => (value == null ? {} : value),
+    z.object({
+      streetAddress: z.string().min(1),
+      city: z.string().min(1),
+      country: z.string().min(1),
+    }),
+  ),
+  pets: z
+    .object({
+      animal: z.string().min(1),
+      name: z.string().min(1),
+    })
+    .array()
+    .optional(),
+});
+
 const validationTestCases: ValidationTestCase[] = [
   {
     name: "yup",
@@ -55,28 +80,7 @@ const validationTestCases: ValidationTestCase[] = [
   },
   {
     name: "zod",
-    validator: withZod(
-      z.object({
-        firstName: z.string().min(1),
-        lastName: z.string().min(1),
-        age: z.optional(z.number()),
-        address: z.preprocess(
-          (value) => (value == null ? {} : value),
-          z.object({
-            streetAddress: z.string().min(1),
-            city: z.string().min(1),
-            country: z.string().min(1),
-          }),
-        ),
-        pets: z
-          .object({
-            animal: z.string().min(1),
-            name: z.string().min(1),
-          })
-          .array()
-          .optional(),
-      }),
-    ),
+    validator: withZod(zodSchema),
   },
   {
     name: "valibot",
@@ -104,6 +108,10 @@ const validationTestCases: ValidationTestCase[] = [
         ),
       }),
     ),
+  },
+  {
+    name: "standard-schema",
+    validator: withStandardSchema(zodSchema),
   },
 ];
 

@@ -30,15 +30,44 @@ export const meta = () => [
 
 <Row>
   <Col>
-    For most forms, it's recommended to always set default values.
-    The types of the `form` object returned by `useForm` (`form.value()`, `form.setValue()`, etc) are based entirely around the type you define for the default values.
-    In some cases, this may mean you need to specify the type of a value for values that can be more than one type.
+    For modern forms using a Standard Schema validator, it's required to set default values.
+    The type of `defaultValues` is inferred from your schema.
+
+    The types of the `form` object returned by `useForm` (`form.value()`, `form.setValue()`, etc)
+    are based around the inferred input type.
+
+    <Note>
+      If you're using a legacy `validator`, the type of `defaultValues` is _not_ inferred from your validator, ando only from `defaultValues`.
+    </Note>
   </Col>
   <Col>
     ```tsx
     const form = useForm({
-      // ...validator and other options
+      schema: z.object({
+        name: z.string(),
+      }),
+      // Type inferred from schema above!
       defaultValues: {
+        selectedOption: "",
+      },
+    });
+    ```
+  </Col>
+</Row>
+
+<Row>
+  <Col>
+    In some cases, a value that can occur while filling out the form, won't be present in the schema.
+    In this case you can widen the type by casting a field inside `defaultValues`.
+  </Col>
+  <Col>
+    ```tsx
+    const form = useForm({
+      schema: z.object({
+        selectedOption: z.string(),
+      }),
+      defaultValues: {
+        // Widens the type of `selectedOption` to `string | null`
         selectedOption: null as string | null,
       },
     });
