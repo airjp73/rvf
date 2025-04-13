@@ -2,6 +2,12 @@ import { AllProps, FieldValues } from "@rvf/core";
 import { RemixFormOpts, useForm } from "./useForm";
 import { FormProvider, FormApi } from "@rvf/react";
 
+type SmudgeUnion = {
+  validator?: any;
+  schema?: any;
+  defaultValues?: any;
+};
+
 export type ValidatedFormProps<
   FormInputData extends FieldValues,
   FormOutputData,
@@ -22,43 +28,54 @@ export const ValidatedForm = <
   FormInputData extends FieldValues,
   FormOutputData,
   FormResponseData,
->({
-  validator,
-  formRef,
-  defaultValues,
-  handleSubmit,
-  submitSource,
-  validationBehaviorConfig,
-  children,
-  onSubmit,
-  onReset,
-  action,
-  method,
-  replace,
-  id,
-  preventScrollReset,
-  relative,
-  encType,
-  state,
-  fetcher,
-  onBeforeSubmit,
-  onSubmitSuccess,
-  onSubmitFailure,
-  onInvalidSubmit,
-  disableFocusOnError,
-  resetAfterSubmit,
-  fetcherKey,
-  navigate,
-  otherFormProps,
-  reloadDocument,
-  viewTransition,
-  ...rest
-}: ValidatedFormProps<FormInputData, FormOutputData, FormResponseData>) => {
-  const rvf = useForm<FormInputData, FormOutputData>({
+>(
+  props: ValidatedFormProps<FormInputData, FormOutputData, FormResponseData>,
+) => {
+  const {
+    validator,
+    schema,
+    formRef,
+    defaultValues,
+    handleSubmit,
+    submitSource,
+    validationBehaviorConfig,
+    children,
+    onSubmit,
+    onReset,
+    action,
+    method,
+    replace,
+    id,
+    preventScrollReset,
+    relative,
+    encType,
+    state,
+    fetcher,
+    onBeforeSubmit,
+    onSubmitSuccess,
+    onSubmitFailure,
+    onInvalidSubmit,
+    disableFocusOnError,
+    resetAfterSubmit,
+    fetcherKey,
+    navigate,
+    otherFormProps,
+    reloadDocument,
+    viewTransition,
+    ...rest
+  } = props as ValidatedFormProps<
+    FormInputData,
+    FormOutputData,
+    FormResponseData
+  > &
+    SmudgeUnion;
+
+  const opts = {
     action,
     id,
     disableFocusOnError,
     validator,
+    schema,
     handleSubmit: handleSubmit as never,
     submitSource,
     onBeforeSubmit,
@@ -80,7 +97,10 @@ export const ValidatedForm = <
     defaultValues,
     viewTransition,
     fetcher,
-  } satisfies AllProps<RemixFormOpts<FormInputData, FormOutputData>>);
+  } satisfies AllProps<
+    RemixFormOpts<FormInputData, FormOutputData> & SmudgeUnion
+  >;
+  const rvf = useForm<FormInputData, FormOutputData>(opts);
 
   return (
     <FormProvider scope={rvf.scope()}>

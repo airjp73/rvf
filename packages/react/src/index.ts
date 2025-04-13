@@ -31,7 +31,12 @@ export {
   preprocessFormData,
 } from "@rvf/core";
 export { type FormApi, type FormFields } from "./base";
-export { useForm, FormOpts } from "./useForm";
+export {
+  useForm,
+  FormOpts,
+  BaseFormOpts,
+  ValidatorAndDefaultValueOpts,
+} from "./useForm";
 export { ValidatedForm, type ValidatedFormProps } from "./ValidatedForm";
 export {
   GetInputProps,

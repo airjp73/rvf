@@ -27,7 +27,7 @@ type FormSubmitOpts<FormOutputData, ResponseData> =
       handleSubmit?: DomSubmitHandler<FormOutputData, ResponseData>;
     };
 
-type ValidatorAndDefaultValues<
+export type ValidatorAndDefaultValueOpts<
   FormInputData extends FieldValues,
   FormOutputData,
 > =
@@ -38,6 +38,7 @@ type ValidatorAndDefaultValues<
        * and information on how to create a validator for other validation libraries.
        */
       validator: Validator<FormOutputData>;
+      schema?: never;
       /**
        * Sets the default values of the form.
        *
@@ -55,6 +56,7 @@ type ValidatorAndDefaultValues<
        * A [Standard Schema](https://github.com/standard-schema/standard-schema) compliant schema.
        */
       schema: StandardSchemaV1<FormInputData, FormOutputData>;
+      validator?: never;
       /**
        * Sets the default values of the form.
        *
@@ -81,11 +83,11 @@ type ValidatorAndDefaultValues<
       defaultValues: FormInputData;
     };
 
-export type FormOpts<
+export type BaseFormOpts<
   FormInputData extends FieldValues = FieldValues,
   FormOutputData = never,
   SubmitResponseData = unknown,
-> = ValidatorAndDefaultValues<FormInputData, FormOutputData> & {
+> = {
   /**
    * Called before when the form is submitted before any validations are run.
    * Can be used to run custom, async validations and/or cancel the form submission.
@@ -170,7 +172,15 @@ export type FormOpts<
    * So make sure the identity of `serverValidationErrors` is stable.
    */
   serverValidationErrors?: FieldErrors;
-} & FormSubmitOpts<FormOutputData, SubmitResponseData>;
+};
+
+export type FormOpts<
+  FormInputData extends FieldValues = FieldValues,
+  FormOutputData = never,
+  SubmitResponseData = unknown,
+> = ValidatorAndDefaultValueOpts<FormInputData, FormOutputData> &
+  BaseFormOpts<FormInputData, FormOutputData, SubmitResponseData> &
+  FormSubmitOpts<FormOutputData, SubmitResponseData>;
 
 const maybeThen = <T,>(
   maybePromise: T | Promise<T>,
@@ -212,7 +222,7 @@ export function useForm<
   } = options;
 
   const validator =
-    "schema" in options
+    "schema" in options && !!options.schema
       ? withStandardSchema(options.schema)
       : options.validator;
 
