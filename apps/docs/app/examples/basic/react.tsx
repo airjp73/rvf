@@ -1,5 +1,4 @@
 import { useForm } from "@rvf/react";
-import { withZod } from "@rvf/zod";
 import { z } from "zod";
 import { MyInput } from "~/fields/MyInput";
 import { Button } from "~/ui/button";
@@ -8,39 +7,32 @@ import { ErrorMessage } from "~/fields/ErrorMessage";
 import { showToastMessage } from "~/lib/utils";
 import { EmptyState } from "~/ui/empty-state";
 
-const validator = withZod(
-  z.object({
-    projectName: z
-      .string()
-      .min(1, "Projects need a name.")
-      .max(50, "Must be 50 characters or less."),
-    tasks: z
-      .array(
-        z.object({
-          title: z
-            .string()
-            .min(1, "Tasks need a title.")
-            .max(50, "Must be 50 characters or less."),
-          daysToComplete: z.coerce.number({
-            required_error: "This is required",
-          }),
+const schema = z.object({
+  projectName: z
+    .string()
+    .min(1, "Projects need a name.")
+    .max(50, "Must be 50 characters or less."),
+  tasks: z
+    .array(
+      z.object({
+        title: z
+          .string()
+          .min(1, "Tasks need a title.")
+          .max(50, "Must be 50 characters or less."),
+        daysToComplete: z.coerce.number({
+          required_error: "This is required",
         }),
-      )
-      .min(1, "Needs at least one task.")
-      .default([]),
-  }),
-);
-
+      }),
+    )
+    .min(1, "Needs at least one task.")
+    .default([]),
+});
 export const ReactExample = () => {
   const form = useForm({
-    validator,
+    schema,
     defaultValues: {
       projectName: "",
-      tasks: [] as Array<{
-        title: string;
-        daysToComplete: number;
-      }>,
-      file: "" as File | "",
+      tasks: [],
     },
     handleSubmit: async ({ projectName, tasks }) => {
       await createProject({ name: projectName, tasks });
