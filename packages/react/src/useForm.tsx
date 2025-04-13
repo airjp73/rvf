@@ -27,7 +27,7 @@ type FormSubmitOpts<FormOutputData, ResponseData> =
       handleSubmit?: DomSubmitHandler<FormOutputData, ResponseData>;
     };
 
-export type ValidatorAndDefaultValueOpts<
+export type internal_ValidatorAndDefaultValueOpts<
   FormInputData extends FieldValues,
   FormOutputData,
 > =
@@ -83,7 +83,7 @@ export type ValidatorAndDefaultValueOpts<
       defaultValues: FormInputData;
     };
 
-export type BaseFormOpts<
+export type internal_BaseFormOpts<
   FormInputData extends FieldValues = FieldValues,
   FormOutputData = never,
   SubmitResponseData = unknown,
@@ -178,8 +178,8 @@ export type FormOpts<
   FormInputData extends FieldValues = FieldValues,
   FormOutputData = never,
   SubmitResponseData = unknown,
-> = ValidatorAndDefaultValueOpts<FormInputData, FormOutputData> &
-  BaseFormOpts<FormInputData, FormOutputData, SubmitResponseData> &
+> = internal_ValidatorAndDefaultValueOpts<FormInputData, FormOutputData> &
+  internal_BaseFormOpts<FormInputData, FormOutputData, SubmitResponseData> &
   FormSubmitOpts<FormOutputData, SubmitResponseData>;
 
 const maybeThen = <T,>(
