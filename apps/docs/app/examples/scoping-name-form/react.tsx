@@ -35,7 +35,7 @@ const PersonForm = ({ scope }: PersonFormProps) => {
 
 const schema = z.object({
   projectLead: personSchema,
-  assignees: z.array(personSchema),
+  assignees: z.array(personSchema).default([]),
 });
 
 export const ReactExample = () => {

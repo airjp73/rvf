@@ -34,7 +34,8 @@ const schema = z.object({
         }),
       }),
     )
-    .min(1, "Needs at least one task."),
+    .min(1, "Needs at least one task.")
+    .default([]),
 });
 
 export const action = async ({
