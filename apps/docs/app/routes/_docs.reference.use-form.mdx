@@ -31,7 +31,7 @@ function useForm<
 ```tsx
 const form = useForm({
   defaultValues: { foo: "bar" },
-  validator: myValidator,
+  schema: mySchema,
   handleSubmit: (validatedData) =>
     console.log(validatedData),
 });
@@ -39,22 +39,33 @@ const form = useForm({
 
 ## `FormOpts`
 
+### `schema`
+
+A [Standard Schema](https://standardschema.dev/) compliant schema.
+The input type of this schema will be used to help make `defaultValues` typesafe,
+as well as determine the types when using the `FormApi` returned from this hook.
+
 ### `defaultValues`
 
 Sets the default values of the form.
 
-For Typescript users, `defaultValues` is one of the most important props you'll use.
-The type of the object you pass here, will determine the type of the data you get
+For Typescript users, `defaultValues` can be used to modify the types of the form.
+The type of the object you pass here, will help determine the type of the data you get
 when interacting with the form. For example, `form.value('myField')` will be typed based on
 the type of `defaultValues.myField`.
 
-It's recommended that you provide a default value for every field in the form.
+There's also extra type safety for `defaultValues` if you pass in a Standard Schema schema.
 
-### `validator`
+### `validator` (legacy)
 
-A validator object created by a validation adapter such a `withZod` or `withYup`.
+A validator object created by a validation adapter such as `withYup`.
 See [these docs](https://rvf-js.io/validation-library-support) for more details
 and information on how to create a validator for other validation libraries.
+
+This option is soft-deprecated. For libraries that support Standard Schema,
+we recommend passing the schema directly to the `schema` option.
+For `yup`, the `withYup` adapter will eventually return a Standard Schema intead of a custom validator.
+If you have a custom adapter, we recommend using this approach as well, if the library doesn't support Standard Schema.
 
 ### `submitSource`
 

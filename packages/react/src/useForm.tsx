@@ -33,24 +33,12 @@ type WithDefaultValues<FormInputData, T> = T extends { schema: any }
       /**
        * Sets the default values of the form.
        *
-       * For Typescript users, `defaultValues` can be used to modify the types of the form.
-       * By default, the type of `defaultValues` is the same as the input type of the `schema` you passed in.
-       * But you can widen this type by casting a value to a wider type.
+       * For Typescript users, `defaultValues` is one of the most important props you'll use.
+       * The type of the object you pass here, will determine the type of the data you get
+       * when interacting with the form. For example, `form.value('myField')` will be typed based on
+       * the type of `defaultValues.myField`.
        *
-       * @example
-       * ```ts
-       * useForm({
-       *   schema: z.object({
-       *     foo: z.string(),
-       *     bar: z.string(),
-       *   }),
-       *   defaultValues: {
-       *     // Cast `foo` to a wider type
-       *     foo: 123 as string | number,
-       *     bar: "hi",
-       *   },,
-       * })
-       * ```
+       * It's recommended that you provide a default value for every field in the form.
        */
       defaultValues: FormInputData;
     }
@@ -91,7 +79,9 @@ export type internal_ValidatorAndDefaultValueOpts<
     }
   | {
       /**
-       * A [Standard Schema](https://github.com/standard-schema/standard-schema) compliant schema.
+       * A [Standard Schema](https://standardschema.dev/) compliant schema.
+       * The input type of this schema will be used to help make `defaultValues` typesafe,
+       * as well as determine the types when using the `FormApi` returned from this hook.
        */
       schema: StandardSchemaV1<FormInputData, FormOutputData>;
       validator?: never;
