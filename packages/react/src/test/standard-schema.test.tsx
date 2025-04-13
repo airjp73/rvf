@@ -64,7 +64,7 @@ describe.skip("Standard schema types", () => {
     expectTypeOf(form.value("bar")).toEqualTypeOf<string>();
   });
 
-  test("should error if default values are missing a field", () => {
+  test("should be able to expand a type to include undefined", () => {
     const form = useForm({
       schema: z.object({
         foo: z.string(),
@@ -73,6 +73,21 @@ describe.skip("Standard schema types", () => {
       defaultValues: {
         foo: "hi",
         bar: undefined as string | undefined,
+      },
+    });
+    expectTypeOf(form.value("foo")).toEqualTypeOf<string>();
+    expectTypeOf(form.value("bar")).toEqualTypeOf<string | undefined>();
+  });
+
+  test("should be able to expand the default values type with a partial type", () => {
+    const form = useForm({
+      schema: z.object({
+        foo: z.string(),
+        bar: z.string(),
+      }),
+      defaultValues: {
+        foo: "hi",
+        ...({} as { bar?: string }),
       },
     });
     expectTypeOf(form.value("foo")).toEqualTypeOf<string>();
