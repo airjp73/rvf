@@ -8,59 +8,31 @@ export const meta = () => [
 
 You only need a couple things to get started with RVF.
 
-## Validators
+## Your first form
 
 <Row>
   <Col>
-    All validation in RVF is done at the form level using a `validator`.
-    RVF has first-party validation adaptors for `zod` and `yup`, but you can also create your own.
-  </Col>
-  <Col>
-    <CodeExamples title="Creating a validator" tabs={["Zod", "Yup"]}>
-      ```typescript
-      import { withZod } from "@rvf/zod";
-      import { z } from "zod";
+    Let's set up a really simple form with a name and email field.
 
-      const validator = withZod(
-        z.object({
-          name: z.string().min(1),
-          email: z.string().email().min(1),
-        }),
-      )
-      ```
-
-      ```typescript
-      import { withYup } from "@rvf/yup";
-      import * as yup from "yup";
-
-      const validator = withYup(
-        yup.object({
-          name: z.string().required(),
-          email: z.string().email().required(),
-        }),
-      )
-      ```
-    </CodeExamples>
-
-  </Col>
-</Row>
-
-## Connecting it to your form
-
-<Row>
-  <Col>
     By default, RVF let's the browser do most of the heavy lifting,
     so it must be used with a native html `form` element (though there is an [escape hatch](/state-mode)).
+
   </Col>
   <Col>
-    ```tsx
+    <CodeExamples title="Simple form" tabs={["Any Standard Schema compatible library", "Yup"]}>
+      ```tsx
       import { useForm } from "@rvf/react";
-
-      const validator = // The validator we created above
 
       const MyForm = () => {
         const form = useForm({
-          validator,
+          schema: z.object({
+            name: z.string().min(1),
+            email: z.string().email().min(1),
+          }),
+          defaultValues: {
+            name: "",
+            email: "",
+          },
         });
 
         return (
@@ -78,9 +50,45 @@ You only need a couple things to get started with RVF.
             <button type="submit">Submit</button>
           </form>
         );
-      }
-    ```
+      };
+      ```
 
+      ```tsx
+      import { withYup } from "@rvf/yup";
+      import { useForm } from "@rvf/react";
+
+      const MyForm = () => {
+        const form = useForm({
+          validator: withYup(
+            yup.object({
+              name: z.string().required(),
+              email: z.string().email().required(),
+            })
+          ),
+          defaultValues: {
+            name: "",
+            email: "",
+          },
+        });
+
+        return (
+          <form {...form.getFormProps()}>
+            <label>
+              Name
+              <input name="name" />
+            </label>
+
+            <label>
+              Email
+              <input name="email" />
+            </label>
+
+            <button type="submit">Submit</button>
+          </form>
+        );
+      };
+      ```
+    </CodeExamples>
   </Col>
 </Row>
 
