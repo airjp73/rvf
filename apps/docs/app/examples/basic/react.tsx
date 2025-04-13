@@ -24,9 +24,9 @@ const schema = z.object({
         }),
       }),
     )
-    .min(1, "Needs at least one task.")
-    .default([]),
+    .min(1, "Needs at least one task."),
 });
+
 export const ReactExample = () => {
   const form = useForm({
     schema,

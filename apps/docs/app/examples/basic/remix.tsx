@@ -1,9 +1,9 @@
 import {
   isValidationErrorResponse,
+  parseFormData,
   useForm,
   validationError,
 } from "@rvf/react-router";
-import { withZod } from "@rvf/zod";
 import { z } from "zod";
 import { MyInput } from "~/fields/MyInput";
 import { Button } from "~/ui/button";
@@ -17,35 +17,30 @@ import {
   useActionData,
 } from "react-router";
 
-const validator = withZod(
-  z.object({
-    projectName: z
-      .string()
-      .min(1, "Projects need a name.")
-      .max(50, "Must be 50 characters or less."),
-    tasks: z
-      .array(
-        z.object({
-          title: z
-            .string()
-            .min(1, "Tasks need a title.")
-            .max(50, "Must be 50 characters or less."),
-          daysToComplete: z.coerce.number({
-            required_error: "This is required",
-          }),
+const schema = z.object({
+  projectName: z
+    .string()
+    .min(1, "Projects need a name.")
+    .max(50, "Must be 50 characters or less."),
+  tasks: z
+    .array(
+      z.object({
+        title: z
+          .string()
+          .min(1, "Tasks need a title.")
+          .max(50, "Must be 50 characters or less."),
+        daysToComplete: z.coerce.number({
+          required_error: "This is required",
         }),
-      )
-      .min(1, "Needs at least one task.")
-      .default([]),
-  }),
-);
+      }),
+    )
+    .min(1, "Needs at least one task."),
+});
 
 export const action = async ({
   request,
 }: ActionFunctionArgs) => {
-  const data = await validator.validate(
-    await request.formData(),
-  );
+  const data = await parseFormData(request, schema);
   if (data.error) return validationError(data.error);
 
   const { projectName, tasks } = data.data;
@@ -57,13 +52,10 @@ export const action = async ({
 export const ReactExample = () => {
   const data = useActionData<typeof action>();
   const form = useForm({
-    validator,
+    schema,
     defaultValues: {
       projectName: "",
-      tasks: [] as Array<{
-        title: string;
-        daysToComplete: number;
-      }>,
+      tasks: [],
     },
     onSubmitSuccess: () => {
       // We know this isn't an error in the success callback, but Typescript doesn't
