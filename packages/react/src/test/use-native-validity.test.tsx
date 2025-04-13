@@ -136,6 +136,51 @@ describe("useNativeValidityForForm", () => {
     expect(screen.getByTestId("bar")).toBeValid();
   });
 
+  it("should not setCustomValidity on invalid inputs outside the provided scope", async () => {
+    const Comp = () => {
+      const form = useForm({
+        validator: createValidator({
+          validate: (data) => {
+            const errors: FieldErrors = {};
+            if (data.foo === "") errors.foo = "required";
+            if (data.bar === "") errors.bar = "required";
+
+            if (Object.keys(errors).length > 0)
+              return Promise.resolve({ data: undefined, error: errors });
+            return Promise.resolve({ data, error: undefined });
+          },
+        }),
+        validationBehaviorConfig: {
+          initial: "onChange",
+          whenTouched: "onChange",
+          whenSubmitted: "onChange",
+        },
+      });
+      useNativeValidityForForm(form.scope("foo"));
+
+      return (
+        <form {...form.getFormProps()}>
+          <input name="foo" data-testid="foo" />
+          <input name="bar" data-testid="bar" />
+          <button data-testid="submit" />
+        </form>
+      );
+    };
+
+    render(<Comp />);
+    await userEvent.click(screen.getByTestId("submit"));
+    expect(screen.getByTestId("foo")).toBeInvalid();
+    expect(screen.getByTestId("bar")).toBeValid();
+
+    await userEvent.type(screen.getByTestId("foo"), "test");
+    expect(screen.getByTestId("foo")).toBeValid();
+    expect(screen.getByTestId("bar")).toBeValid();
+
+    await userEvent.type(screen.getByTestId("bar"), "test");
+    expect(screen.getByTestId("foo")).toBeValid();
+    expect(screen.getByTestId("bar")).toBeValid();
+  });
+
   it("should set the validity to all elements of a given name", async () => {
     const Comp = () => {
       const form = useForm({

@@ -72,7 +72,7 @@ export {
 export { useFormScope } from "./useFormScope";
 export {
   useNativeValidity,
-  useNativeValidityForForm as unstable_useNativeValidityForForm,
+  useNativeValidityForForm,
 } from "./useNativeValidity";
 export { Isolate } from "./isolation";
 export * from "./compatability/misc";
