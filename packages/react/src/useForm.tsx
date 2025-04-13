@@ -27,10 +27,54 @@ type FormSubmitOpts<FormOutputData, ResponseData> =
       handleSubmit?: DomSubmitHandler<FormOutputData, ResponseData>;
     };
 
+// Kinda hacky, but we do this to improve the type errors you get when you pass in `schema` & `handleSubmit`.
+type WithDefaultValues<FormInputData, T> = T extends { schema: any }
+  ? T & {
+      /**
+       * Sets the default values of the form.
+       *
+       * For Typescript users, `defaultValues` can be used to modify the types of the form.
+       * By default, the type of `defaultValues` is the same as the input type of the `schema` you passed in.
+       * But you can widen this type by casting a value to a wider type.
+       *
+       * @example
+       * ```ts
+       * useForm({
+       *   schema: z.object({
+       *     foo: z.string(),
+       *     bar: z.string(),
+       *   }),
+       *   defaultValues: {
+       *     // Cast `foo` to a wider type
+       *     foo: 123 as string | number,
+       *     bar: "hi",
+       *   },,
+       * })
+       * ```
+       */
+      defaultValues: FormInputData;
+    }
+  : T extends { validator: any }
+    ? T & {
+        /**
+         * Sets the default values of the form.
+         *
+         * For Typescript users, `defaultValues` is one of the most important props you'll use.
+         * The type of the object you pass here, will determine the type of the data you get
+         * when interacting with the form. For example, `form.value('myField')` will be typed based on
+         * the type of `defaultValues.myField`.
+         *
+         * It's recommended that you provide a default value for every field in the form.
+         */
+        defaultValues?: FormInputData;
+      }
+    : never;
+
 export type internal_ValidatorAndDefaultValueOpts<
   FormInputData extends FieldValues,
   FormOutputData,
-> =
+> = WithDefaultValues<
+  FormInputData,
   | {
       /**
        * A validator object created by a validation adapter such a `withZod` or `withYup`.
@@ -39,17 +83,6 @@ export type internal_ValidatorAndDefaultValueOpts<
        */
       validator: Validator<FormOutputData>;
       schema?: never;
-      /**
-       * Sets the default values of the form.
-       *
-       * For Typescript users, `defaultValues` is one of the most important props you'll use.
-       * The type of the object you pass here, will determine the type of the data you get
-       * when interacting with the form. For example, `form.value('myField')` will be typed based on
-       * the type of `defaultValues.myField`.
-       *
-       * It's recommended that you provide a default value for every field in the form.
-       */
-      defaultValues?: FormInputData;
     }
   | {
       /**
@@ -57,31 +90,8 @@ export type internal_ValidatorAndDefaultValueOpts<
        */
       schema: StandardSchemaV1<FormInputData, FormOutputData>;
       validator?: never;
-      /**
-       * Sets the default values of the form.
-       *
-       * For Typescript users, `defaultValues` sets the default values of the form.
-       * By default, this is limitted to the input type of the validator,
-       * but you can widen the type here by using `as Type`.
-       *
-       * It's recommended that you provide a default value for every field in the form.
-       *
-       * @example
-       * ```ts
-       * useForm({
-       *   validator: z.object({
-       *     foo: z.string(),
-       *     bar: z.string(),
-       *   }),
-       *   defaultValues: {
-       *     foo: 123 as string | number,
-       *     bar: "hi",
-       *   },,
-       * })
-       * ```
-       */
-      defaultValues: FormInputData;
-    };
+    }
+>;
 
 export type internal_BaseFormOpts<
   FormInputData extends FieldValues = FieldValues,

@@ -9,6 +9,7 @@ describe.skip("Standard schema types", () => {
       schema: z.object({
         foo: z.string(),
       }),
+      handleSubmit: ({ foo }) => Promise.resolve(foo),
     });
   });
 
