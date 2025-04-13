@@ -35,6 +35,7 @@ export {
   isValidationErrorResponse,
   useFormScope,
   useNativeValidity,
+  useNativeValidityForForm,
   type SingleFileInputValue,
   type MultiFileInputValue,
   type NumberInputValue,
