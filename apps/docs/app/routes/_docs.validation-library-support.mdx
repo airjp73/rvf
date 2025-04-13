@@ -6,16 +6,35 @@ export const meta = () => [
 
 # Validation Library Support
 
-There are official adapters available for `zod`, `yup`, and `valibot`,
-but you can easily support whatever library you want by creating your own adapter.
+RVF is supports [Standard Schema](https://standardschema.dev/) out of the box,
+so you can use any compatible validation library with no adapter.
+Some of these include:
 
-And if you create an adapter for a library, feel free to make a PR to add official support 😊
+- Zod
+- Valibot
+- ArkType
+- Effect Schema
+- [And more](https://standardschema.dev/)
+
+There's also an official adapter for `yup`. Install `@rvf/yup` if you want to use `yup`.
 
 ## Creating an adapter
 
+If you use a validation library that doesn't implement Standard Schema,
+and doesn't have an official adapter, you can make one yourself.
+
+<Note>
+  The approach outlined here uses the legacy `createValidator` api.
+  If you're able to, we recommend creating an adapter to turn the schema into a Standard Schema.
+  You might also be able to raise a feature request to add Standard Schema support to that library.
+
+  However, this option will remain open until we have documentation on how to do that.
+</Note>
+
+
 In order to make an adapter for your validation library of choice,
 you can create a function that accepts a schema from the validation library and turns it into a validator using `createValidator`.
-For more on this you can check the implementations for `withZod`, `withYup`, and `withValibot`.
+For more on this you can check the implementations for `withYup`.
 
 The out-of-the-box support for `yup` in this library works like this:
 
