@@ -1,6 +1,6 @@
 {
   "name": "@rvf/react",
-  "version": "7.1.0",
+  "version": "7.1.1",
   "description": "Easy, predictable form state management for React",
   "main": "./dist/index.cjs.js",
   "module": "./dist/index.esm.js",
@@ -35,7 +35,7 @@
     "@rvf/core": "*"
   },
   "dependencies": {
-    "@rvf/core": ">= 6.1.2 < 8.0.0",
-    "@rvf/set-get": ">= 6.0.3 < 8.0.0"
+    "@rvf/core": ">= 7.1.0 < 8.0.0",
+    "@rvf/set-get": ">= 7.0.1 < 8.0.0"
   }
 }
