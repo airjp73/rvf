@@ -162,6 +162,7 @@ const processFormData = preprocessIfValid(
     .transform((val) => [...val])
     .refine(
       (val): val is z.infer<typeof entries> => entries.safeParse(val).success,
+      { abort: true },
     )
     .transform((data): Record<string, unknown | unknown[]> => {
       const map: Map<string, unknown[]> = new Map();
