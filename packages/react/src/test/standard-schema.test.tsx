@@ -9,7 +9,9 @@ describe.skip("Standard schema types", () => {
       schema: z.object({
         foo: z.string(),
       }),
-      handleSubmit: ({ foo }) => Promise.resolve(foo),
+      handleSubmit: (data) => {
+        expectTypeOf(data).toEqualTypeOf<{ foo: string }>();
+      },
     });
   });
 
@@ -20,6 +22,9 @@ describe.skip("Standard schema types", () => {
       }),
       defaultValues: {
         foo: "",
+      },
+      handleSubmit: (data) => {
+        expectTypeOf(data).toEqualTypeOf<{ foo: string }>();
       },
     });
     expectTypeOf(form.value("foo")).toEqualTypeOf<string>();
@@ -34,6 +39,9 @@ describe.skip("Standard schema types", () => {
         // @ts-expect-error
         foo: 1,
       },
+      handleSubmit: (data) => {
+        expectTypeOf(data).toEqualTypeOf<{ foo: string }>();
+      },
     });
     expectTypeOf(form.value("foo")).toEqualTypeOf<string>();
   });
@@ -45,6 +53,9 @@ describe.skip("Standard schema types", () => {
       }),
       defaultValues: {
         foo: 1 as number | string,
+      },
+      handleSubmit: (data) => {
+        expectTypeOf(data).toEqualTypeOf<{ foo: string }>();
       },
     });
     expectTypeOf(form.value("foo")).toEqualTypeOf<string | number>();
@@ -59,6 +70,9 @@ describe.skip("Standard schema types", () => {
       // @ts-expect-error
       defaultValues: {
         foo: "hi",
+      },
+      handleSubmit: (data) => {
+        expectTypeOf(data).toEqualTypeOf<{ foo: string; bar: string }>();
       },
     });
     expectTypeOf(form.value("foo")).toEqualTypeOf<string>();
@@ -75,6 +89,9 @@ describe.skip("Standard schema types", () => {
         foo: "hi",
         bar: undefined as string | undefined,
       },
+      handleSubmit: (data) => {
+        expectTypeOf(data).toEqualTypeOf<{ foo: string; bar: string }>();
+      },
     });
     expectTypeOf(form.value("foo")).toEqualTypeOf<string>();
     expectTypeOf(form.value("bar")).toEqualTypeOf<string | undefined>();
@@ -90,6 +107,9 @@ describe.skip("Standard schema types", () => {
         foo: "hi",
         ...({} as { bar?: string }),
       },
+      handleSubmit: (data) => {
+        expectTypeOf(data).toEqualTypeOf<{ foo: string; bar: string }>();
+      },
     });
     expectTypeOf(form.value("foo")).toEqualTypeOf<string>();
     expectTypeOf(form.value("bar")).toEqualTypeOf<string | undefined>();
@@ -104,6 +124,9 @@ describe.skip("Standard schema types", () => {
       defaultValues: {
         // @ts-expect-error
         foo: 123 as number | string,
+      },
+      handleSubmit: (data) => {
+        expectTypeOf(data).toEqualTypeOf<{ foo: string; bar: string }>();
       },
     });
     expectTypeOf(form.value("foo")).toEqualTypeOf<string>();
