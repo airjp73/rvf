@@ -269,7 +269,6 @@ describe("zod helpers", () => {
     });
 
     it("should correctly error when invalid", () => {
-      // FIXME: `z.object({}).parse([])` always return success
       const s = zfd.json(z.object({}));
       expectError(s, JSON.stringify([]));
     });
