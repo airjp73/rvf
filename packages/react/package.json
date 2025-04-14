@@ -27,12 +27,12 @@
     "react-dom": "^18.0.0 || ^19.0.0"
   },
   "devDependencies": {
+    "@rvf/core": "*",
+    "@rvf/set-get": "*",
     "react-dom": "^19.0.0",
     "tsconfig": "*",
     "tsup-config": "*",
-    "typescript": "^5.4.5",
-    "@rvf/set-get": "*",
-    "@rvf/core": "*"
+    "typescript": "^5.8.3"
   },
   "dependencies": {
     "@rvf/core": ">= 7.1.0 < 8.0.0",

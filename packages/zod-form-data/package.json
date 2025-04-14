@@ -34,7 +34,7 @@
     "@rvf/set-get": "*",
     "tsconfig": "*",
     "tsup-config": "*",
-    "typescript": "^5.4.5",
+    "typescript": "^5.8.3",
     "zod": "^3.23.8"
   }
 }
