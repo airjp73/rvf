@@ -1,5 +1,6 @@
 import { setPath } from "@rvf/set-get";
 import * as core from "@zod/core";
+import z from "zod";
 
 ///////////////////////////////////////////////////
 //////////////////// FormData /////////////////////
@@ -174,7 +175,7 @@ export const ZodFormDataCheckbox: core.$constructor<ZodFormDataCheckbox> =
           code: "invalid_value",
           input: payload.value,
           inst,
-          values: [trueValue],
+          values: [trueValue, undefined],
         });
         return payload;
       }
