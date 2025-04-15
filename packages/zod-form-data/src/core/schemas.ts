@@ -90,7 +90,8 @@ export const $ZfdTextInput: core.$constructor<$ZfdTextInput> =
     const defaultParse = inst._zod.parse;
     inst._zod.parse = (payload, ctx) => {
       if (payload.value === "") {
-        payload.value === undefined;
+        // Should we create a custom issue here since zod removed required errors?
+        payload.value = undefined;
       }
       return defaultParse(payload, ctx);
     };

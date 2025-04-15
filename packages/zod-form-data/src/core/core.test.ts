@@ -114,10 +114,13 @@ describe("checkbox", () => {
 });
 
 describe("text", () => {
-  it("should parse empty string", () => {
+  it("should fail on empty string by default", () => {
     const schema = zfd._text(schemas.$ZfdTextInput);
-    expect(safeParse(schema, "")).toEqual({
+    expect(safeParse(schema, "")).toMatchObject({
       success: false,
+      error: {
+        issues: [{ code: "invalid_type" }],
+      },
     });
   });
 });
