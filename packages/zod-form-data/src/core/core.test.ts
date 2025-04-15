@@ -1,15 +1,8 @@
 import { TestFormData } from "@remix-validated-form/test-utils";
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import * as z from "@zod/mini";
 import * as core from "@zod/core";
-import * as zfd from "./core";
-
-// const expectError = (schema: core.$ZodType<any>, val: any, error?: core.$ZodError) => {
-//   expect(schema.safeParse(val)).toMatchObject({
-//     error: error ? error : expect.any(z.ZodError),
-//     success: false,
-//   });
-// };
+import * as zfd from "./api";
+import * as schemas from "./schemas";
 
 const safeParse = core.safeParse;
 
@@ -23,7 +16,7 @@ const expectValid = (schema: core.$ZodType, val: any) => {
 describe("v4 helpers", () => {
   it("should parse regular objects", () => {
     expectValid(
-      zfd.formData({
+      zfd._formData(schemas.$ZfdFormData, {
         foo: core._string(core.$ZodString),
       }),
       { foo: "bar" },
@@ -31,7 +24,7 @@ describe("v4 helpers", () => {
   });
 
   it("should parse FormData", () => {
-    const schema = zfd.formData({
+    const schema = zfd._formData(schemas.$ZfdFormData, {
       foo: core._string(core.$ZodString),
     });
     const formData = new TestFormData();
@@ -43,7 +36,8 @@ describe("v4 helpers", () => {
   });
 
   it("should allow optional fields", () => {
-    const schema = zfd.formData(
+    const schema = zfd._formData(
+      schemas.$ZfdFormData,
       {
         foo: core._string(core.$ZodString),
         bar: core._string(core.$ZodString),
@@ -67,7 +61,7 @@ describe("v4 helpers", () => {
 
 describe("checkbox", () => {
   it("default on", () => {
-    const schema = zfd.checkbox();
+    const schema = zfd._checkbox(schemas.$ZfdCheckbox);
     expect(safeParse(schema, "on")).toEqual({
       success: true,
       data: true,
@@ -92,7 +86,9 @@ describe("checkbox", () => {
   });
 
   it("configurable true value", () => {
-    const schema = zfd.checkbox({ trueValue: "changed" });
+    const schema = zfd._checkbox(schemas.$ZfdCheckbox, {
+      trueValue: "changed" as any,
+    });
     expect(safeParse(schema, "changed")).toEqual({
       success: true,
       data: true,
@@ -113,6 +109,15 @@ describe("checkbox", () => {
     expect(safeParse(schema, undefined)).toEqual({
       success: true,
       data: false,
+    });
+  });
+});
+
+describe("text", () => {
+  it("should parse empty string", () => {
+    const schema = zfd._text(schemas.$ZfdTextInput);
+    expect(safeParse(schema, "")).toEqual({
+      success: false,
     });
   });
 });

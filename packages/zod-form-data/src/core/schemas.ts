@@ -39,7 +39,7 @@ const preprocessFormData = (formData: any): Record<string, unknown> => {
   );
 };
 
-export interface $ZodFormDataInternals<
+export interface $ZfdFormDataInternals<
   Shape extends core.$ZodShape,
   Extra extends Record<string, unknown> = Record<string, unknown>,
 > extends core.$ZodObjectLikeInternals<
@@ -49,13 +49,13 @@ export interface $ZodFormDataInternals<
   input: FormDataLikeInput;
 }
 
-export interface $ZodFormData<Shape extends core.$ZodShape = core.$ZodShape>
+export interface $ZfdFormData<Shape extends core.$ZodShape = core.$ZodShape>
   extends core.$ZodType {
-  _zod: $ZodFormDataInternals<Shape>;
+  _zod: $ZfdFormDataInternals<Shape>;
 }
 
-export const $ZodFormData: core.$constructor<$ZodFormData> =
-  core.$constructor<$ZodFormData>("$ZodFormData", (inst, def) => {
+export const $ZfdFormData: core.$constructor<$ZfdFormData> =
+  core.$constructor<$ZfdFormData>("$ZodFormData", (inst, def) => {
     // @ts-expect-error FIXME: Why does this give an error?
     core.$ZodObjectLike.init(inst, def);
 
@@ -73,28 +73,16 @@ export const $ZodFormData: core.$constructor<$ZodFormData> =
     };
   });
 
-export const formData = <Shape extends core.$ZodShape>(
-  shape: Shape,
-  params?: core.$ZodObjectLikeParams,
-): $ZodFormData<Shape> => {
-  const def: core.$ZodObjectLikeDef = {
-    type: "object",
-    shape,
-    get optional() {
-      return core.util.optionalObjectKeys(shape);
-    },
-    ...core.util.normalizeParams(params),
-  };
-  return new $ZodFormData(def) as any;
-};
-
 ///////////////////////////////////////////////////
 ////////////////////// Text ///////////////////////
 ///////////////////////////////////////////////////
 
-export interface ZodFormDataTextInput extends core.$ZodString {}
+export type $ZfdTextInputParams = core.$ZodStringParams;
+export type $ZfdTextInputInternals<Input> = core.$ZodStringInternals<Input>;
 
-export const ZodFormDataTextInput: core.$constructor<ZodFormDataTextInput> =
+export interface $ZfdTextInput extends core.$ZodString {}
+
+export const $ZfdTextInput: core.$constructor<$ZfdTextInput> =
   core.$constructor("ZodFormDataTextInput", (inst, def) => {
     // @ts-expect-error
     core.$ZodString.init(inst, def);
@@ -108,22 +96,16 @@ export const ZodFormDataTextInput: core.$constructor<ZodFormDataTextInput> =
     };
   });
 
-export const text = (params?: core.$ZodStringParams): ZodFormDataTextInput => {
-  return new ZodFormDataTextInput({
-    type: "string",
-    ...core.util.normalizeParams(params),
-  });
-};
-
 ///////////////////////////////////////////////////
 //////////////////// Optional /////////////////////
 ///////////////////////////////////////////////////
 
-export interface ZodFormDataOptional<T extends core.$ZodType = core.$ZodType>
+export interface $ZfdOptional<T extends core.$ZodType = core.$ZodType>
   extends core.$ZodOptional<T> {}
 
-export const ZodFormDataOptional: core.$constructor<ZodFormDataOptional> =
-  core.$constructor("ZodFormDataOptional", (inst, def) => {
+export const $ZfdOptional: core.$constructor<$ZfdOptional> = core.$constructor(
+  "ZodFormDataOptional",
+  (inst, def) => {
     // @ts-expect-error
     core.$ZodOptional.init(inst, def);
 
@@ -135,27 +117,29 @@ export const ZodFormDataOptional: core.$constructor<ZodFormDataOptional> =
       }
       return defaultParse(payload, ctx);
     };
-  });
+  },
+);
 
 ///////////////////////////////////////////////////
 //////////////////// Checkbox /////////////////////
 ///////////////////////////////////////////////////
 
-export interface ZodFormDataCheckboxDef<TrueValue extends string = "on">
+export interface $ZfdCheckboxDef<TrueValue extends string = "on">
   extends core.$ZodBooleanDef {
   zfdTrueValue: TrueValue;
 }
-export interface ZodFormDataCheckboxInternals<TrueValue extends string = "on">
+export interface $ZfdCheckboxInternals<TrueValue extends string = "on">
   extends core.$ZodBooleanInternals {
-  def: ZodFormDataCheckboxDef<TrueValue>;
+  def: $ZfdCheckboxDef<TrueValue>;
 }
-export interface ZodFormDataCheckbox<TrueValue extends string = "on">
+export interface $ZfdCheckbox<TrueValue extends string = "on">
   extends core.$ZodType {
-  _zod: ZodFormDataCheckboxInternals<TrueValue>;
+  _zod: $ZfdCheckboxInternals<TrueValue>;
 }
 
-export const ZodFormDataCheckbox: core.$constructor<ZodFormDataCheckbox> =
-  core.$constructor("ZodFormDataCheckbox", (inst, def) => {
+export const $ZfdCheckbox: core.$constructor<$ZfdCheckbox> = core.$constructor(
+  "ZodFormDataCheckbox",
+  (inst, def) => {
     // @ts-expect-error
     core.$ZodBoolean.init(inst, def);
 
@@ -182,18 +166,5 @@ export const ZodFormDataCheckbox: core.$constructor<ZodFormDataCheckbox> =
 
       return defaultParse(payload, ctx);
     };
-  });
-
-export interface ZodFormDataCheckboxParams<TrueValue extends string = "on">
-  extends core.$ZodBooleanParams {
-  trueValue: TrueValue;
-}
-export const checkbox = <TrueValue extends string = "on">(
-  params?: ZodFormDataCheckboxParams<TrueValue>,
-): ZodFormDataCheckbox<TrueValue> => {
-  return new ZodFormDataCheckbox({
-    type: "boolean",
-    zfdTrueValue: (params?.trueValue as any) ?? "on",
-    ...core.util.normalizeParams(params),
-  }) as any;
-};
+  },
+);
