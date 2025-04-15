@@ -2,7 +2,7 @@ import { TestFormData } from "@remix-validated-form/test-utils";
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import * as z from "@zod/mini";
 import * as core from "@zod/core";
-import * as zfd from "./helpers-v4";
+import * as zfd from "./core";
 
 // const expectError = (schema: core.$ZodType<any>, val: any, error?: core.$ZodError) => {
 //   expect(schema.safeParse(val)).toMatchObject({
