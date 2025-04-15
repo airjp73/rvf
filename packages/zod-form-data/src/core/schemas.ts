@@ -56,7 +56,7 @@ export interface $ZfdFormData<Shape extends core.$ZodShape = core.$ZodShape>
 
 export const $ZfdFormData: core.$constructor<$ZfdFormData> =
   core.$constructor<$ZfdFormData>("$ZodFormData", (inst, def) => {
-    // @ts-expect-error FIXME: Why does this give an error?
+    // @ts-expect-error assertions requiring explicit annotation
     core.$ZodObjectLike.init(inst, def);
 
     // IDEA: given how flexible this is, maybe we can simplify
