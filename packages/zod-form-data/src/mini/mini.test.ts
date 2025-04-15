@@ -30,20 +30,19 @@ describe("text", () => {
     });
   });
 
-  it("should combo with builtin checks", () => {
+  it("should combo with builtin utils", () => {
     const schema = z.pipe(
-      zfd.text(),
-      z.check(z.minLength(3, "Too short")),
+      zfd.text().check(z.minLength(3, "Too short")),
       z.transform((t) => t.length),
     );
-    expect(schema.safeParse("test", { reportInput: true })).toEqual({
+    expect(schema.safeParse("test", { reportInput: true })).toMatchObject({
       success: true,
       data: 4,
     });
-    expect(schema.safeParse("hi", { reportInput: true })).toEqual({
+    expect(schema.safeParse("hi", { reportInput: true })).toMatchObject({
       success: false,
       error: {
-        issues: [{ code: "too_small", input: "hi" }],
+        issues: [{ code: "too_small", input: "hi", minimum: 3 }],
       },
     });
   });
