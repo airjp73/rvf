@@ -1,8 +1,9 @@
 import { setPath } from "@rvf/set-get";
+import * as z from "zod";
 import {
-  z,
+  ZodPipe,
+  ZodTransform,
   ZodArray,
-  ZodEffects,
   ZodNumber,
   ZodObject,
   ZodString,
@@ -11,10 +12,10 @@ import {
 } from "zod";
 
 type InputType<DefaultType extends ZodTypeAny> = {
-  (): ZodEffects<DefaultType>;
+  (): ZodPipe<ZodTransform, DefaultType>;
   <ProvidedType extends ZodTypeAny>(
     schema: ProvidedType,
-  ): ZodEffects<ProvidedType>;
+  ): ZodPipe<ZodTransform, ProvidedType>;
 };
 
 const stripEmpty = z.literal("").transform(() => undefined);
@@ -110,7 +111,7 @@ export const repeatable: InputType<ZodArray<any>> = (
  */
 export const repeatableOfType = <T extends ZodTypeAny>(
   schema: T,
-): ZodEffects<ZodArray<T>> => repeatable(z.array(schema));
+): ZodPipe<ZodTransform, ZodArray<T>> => repeatable(z.array(schema));
 
 const entries = z.array(z.tuple([z.string(), z.any()]));
 
@@ -120,16 +121,18 @@ type FormDataLikeInput = {
 };
 
 type FormDataType = {
-  <T extends z.ZodRawShape>(
+  <T extends z.core.$ZodShape>(
     shape: T,
-  ): ZodEffects<
-    ZodObject<T>,
-    z.output<ZodObject<T>>,
-    FormData | FormDataLikeInput | z.input<ZodObject<T>>
+  ): ZodPipe<
+    ZodTransform<
+      ZodObject<T>,
+      FormData | FormDataLikeInput | z.input<ZodObject<T>>
+    >,
+    ZodObject<T>
   >;
-  <T extends z.ZodTypeAny>(
-    schema: T,
-  ): ZodEffects<T, z.output<T>, FormData | FormDataLikeInput | z.input<T>>;
+  <T extends ZodTypeAny>(
+    shape: T,
+  ): ZodPipe<ZodTransform<T, FormData | FormDataLikeInput | z.input<T>>, T>;
 };
 
 const safeParseJson = (jsonString: string) => {
@@ -140,7 +143,9 @@ const safeParseJson = (jsonString: string) => {
   }
 };
 
-export const json = <T extends ZodTypeAny>(schema: T): ZodEffects<T> =>
+export const json = <T extends ZodTypeAny>(
+  schema: T,
+): ZodPipe<ZodTransform, T> =>
   z.preprocess(
     preprocessIfValid(
       z.union([stripEmpty, z.string().transform((val) => safeParseJson(val))]),
@@ -153,10 +158,11 @@ const processFormData = preprocessIfValid(
   // won't necessarily have `FormData` or `URLSearchParams`
   z
     .any()
-    .refine((val) => Symbol.iterator in val)
+    .refine((val) => Symbol.iterator in val, { abort: true })
     .transform((val) => [...val])
     .refine(
       (val): val is z.infer<typeof entries> => entries.safeParse(val).success,
+      { abort: true },
     )
     .transform((data): Record<string, unknown | unknown[]> => {
       const map: Map<string, unknown[]> = new Map();
