@@ -19,13 +19,12 @@ export const useNativeValidity = (
 };
 
 /**
- * UNSTABLE: This is an unstable API and may change in the future.
- *
  * Automatically sets the validity of all form controls in the form using the
  * native HTML `setCustomValidity` method.
  *
  * If you need more granular control over which fields use this method,
- * you can use `useNativeValidity` instead for each input.
+ * you can pass a form scope for a deeper part of the form (e.g. `useNativeValidityForForm(form.scope("subform"))`).
+ * Or you can use `useNativeValidity` instead for inputs.
  */
 export const useNativeValidityForForm = (scope: FormScope<any>) => {
   useEffect(() => {
@@ -64,17 +63,22 @@ export const useNativeValidityForForm = (scope: FormScope<any>) => {
         return unregisteredFormControls;
       };
 
-      Object.keys(currentErrors).forEach((field) => {
-        getElements(field).forEach((element) => {
-          element.setCustomValidity(currentErrors[field]);
-          if (element === document.activeElement) {
-            element.reportValidity();
-          }
-          element.addEventListener("focus", () => element.reportValidity(), {
-            signal,
+      Object.keys(currentErrors)
+        .filter(
+          (field) =>
+            !scope.__field_prefix__ || field.startsWith(scope.__field_prefix__),
+        )
+        .forEach((field) => {
+          getElements(field).forEach((element) => {
+            element.setCustomValidity(currentErrors[field]);
+            if (element === document.activeElement) {
+              element.reportValidity();
+            }
+            element.addEventListener("focus", () => element.reportValidity(), {
+              signal,
+            });
           });
         });
-      });
 
       Object.keys(prevErrors)
         .filter((key) => !currentErrors[key])

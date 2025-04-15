@@ -39,13 +39,13 @@ You should use the same type when calling `form.setValue(fieldName, value)`.
 
 ### Validating
 
-Unless you're using [state mode](/state-mode), the data received by your validator
+Unless you're using [state mode](/state-mode), the data received by your schema
 will _always_ be a `string` (except for `file` inputs) **OR** a `string[]`.
 
 - If only one input is in the form for a given field, the value will be a `string`.
 - If multiple inputs in the form have the same name, the value will be a `string[]`.
 
-If you _are_ using state mode, then the value passed to your validator will be the same value
+If you _are_ using state mode, then the value passed to your schema will be the same value
 that you would get out of `form.value("myField")`.
 
 ---
@@ -90,12 +90,12 @@ that you would get out of `form.value("myField")`.
 ### Validating
 
 Like most input types, the value inside the native `form` element is always a string.
-Unless you're using [state mode](/state-mode), your validator should be able to handle that.
+Unless you're using [state mode](/state-mode), your schema should be able to handle that.
 
 - If you're using `zod`, you can use `z.coerce.number` to handle this.
 - If you're using `yup`, then `yup.number()` already handles this.
 
-If you're using state mode, then the value passed to your validator will be the same value
+If you're using state mode, then the value passed to your schema will be the same value
 that you would get out of `form.value("myField")`.
 
 ---
@@ -163,7 +163,7 @@ If you don't set a default value, then it will return a `boolean`.
     - If there is no value prop, then the checkbox will be in the FormData as `"on"`.
     - An unchecked checkbox will not be in the FormData at all.
 
-    Even if you used a `boolean` as the default value, you're validator should expect to
+    Even if you used a `boolean` as the default value, you're schema should expect to
     receive `"on" | undefined`.
 
   </Col>
@@ -190,10 +190,10 @@ If you don't set a default value, then it will return a `boolean`.
     Checkbox group add an extra layer of complication here, because the FormData doesn't tell us how many checkboxes there are, just which ones are checked.
     RVF handles that like this:
 
-    - If only one checkbox is checked, the value your validator receives is a `string`.
+    - If only one checkbox is checked, the value your schema receives is a `string`.
     - If multiple checkboxes are checked, then the value is a `string[]`.
 
-    This means that your validator should expect to receive `undefined | string | string[]`.
+    This means that your schema should expect to receive `undefined | string | string[]`.
     If you're using `zod`, you can handle this case easily using
     [`repeatable` from `zod-form-data`](https://www.remix-validated-form.io/zod-form-data/api-reference#repeatable).
 
@@ -321,7 +321,7 @@ If you're using `zod`, you can handle this case easily using
   <Col>
     File inputs actually pretty inflexible. Try running this code to see what happens.
     If you do that, you might see an error like this:
-    
+
     > This input element accepts a filename, which may only be programmatically set to the empty string.
   </Col>
   <Col>

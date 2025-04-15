@@ -38,6 +38,9 @@ function parseIssues<Schema extends GenericSchema>(
   return parsedIssues;
 }
 
+/**
+ * @deprecated As of RVF 7.1.0, you can pass a `valibot` schema directly to `useForm`or `ValidatedForm` via the `schema` option.`
+ */
 export function withValibot<Schema extends MaybeAsyncSchema>(
   schema: Schema,
   config?: Config<InferIssue<Schema>>,

@@ -158,11 +158,11 @@ const processFormData = preprocessIfValid(
   // won't necessarily have `FormData` or `URLSearchParams`
   z
     .any()
-    .refine((val) => Symbol.iterator in val)
-    // FIXME: Zod keeps executing the code below, even when the previous refine fails
+    .refine((val) => Symbol.iterator in val, { abort: true })
     .transform((val) => [...val])
     .refine(
       (val): val is z.infer<typeof entries> => entries.safeParse(val).success,
+      { abort: true },
     )
     .transform((data): Record<string, unknown | unknown[]> => {
       const map: Map<string, unknown[]> = new Map();

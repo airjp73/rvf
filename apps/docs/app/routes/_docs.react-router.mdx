@@ -20,34 +20,30 @@ Since Remix v3 has merged with React Router v7, we now only have a React Router 
 ## Server-side validation
 
 One of the core features of this library is that you can re-use your validation on the server.
-Let's use this validator as an example:
+Let's use this schema as an example:
 
 ```tsx
-const validator = withZod(
-  z.object({
-    firstName: z
-      .string()
-      .min(1, { message: "First name is required" }),
-    lastName: z
-      .string()
-      .min(1, { message: "Last name is required" }),
-    email: z
-      .string()
-      .min(1, { message: "Email is required" })
-      .email("Must be a valid email"),
-  }),
-);
+const schema = z.object({
+  firstName: z
+    .string()
+    .min(1, { message: "First name is required" }),
+  lastName: z
+    .string()
+    .min(1, { message: "Last name is required" }),
+  email: z
+    .string()
+    .min(1, { message: "Email is required" })
+    .email("Must be a valid email"),
+});
 ```
 
-All you need to do is call `validator.validate` on the form data returned from `request.formData`.
+All you need to do is call `parseFormData` with the request and the schema.
 
 ```tsx
 export const action = async ({
   request,
 }: DataFunctionArgs) => {
-  const result = await validator.validate(
-    await request.formData(),
-  );
+  const result = await parseFormData(request, schema);
 
   if (result.error) {
     // validationError comes from `@rvf/react-router`
@@ -80,7 +76,7 @@ it will automatically repopulate the form with the data submitted by the user.
       validator,
       id: "form-1",
     })
-    
+
     return (
       <form {...form.getFormProps()}>
         {/* You don't need this part if you're using

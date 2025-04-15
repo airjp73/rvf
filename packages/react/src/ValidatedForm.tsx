@@ -18,39 +18,51 @@ export type ValidatedFormProps<
       | ((form: FormApi<FormInputData>) => React.ReactNode);
   };
 
+type SmudgeUnion = {
+  validator?: any;
+  schema?: any;
+  defaultValues?: any;
+};
+
 export const ValidatedForm = <
   FormInputData extends FieldValues,
   FormOutputData,
->({
-  validator,
-  formRef,
-  defaultValues,
-  serverValidationErrors,
-  action,
-  id,
-  disableFocusOnError,
-  handleSubmit,
-  submitSource,
-  validationBehaviorConfig,
-  children,
-  onBeforeSubmit,
-  onSubmit,
-  onReset,
-  onSubmitSuccess,
-  onSubmitFailure,
-  onInvalidSubmit,
-  resetAfterSubmit,
-  otherFormProps,
-  reloadDocument,
-  ...rest
-}: ValidatedFormProps<FormInputData, FormOutputData>) => {
-  const rvf = useForm({
+>(
+  props: ValidatedFormProps<FormInputData, FormOutputData>,
+) => {
+  const {
+    formRef,
+    defaultValues,
+    serverValidationErrors,
+    action,
+    id,
+    disableFocusOnError,
+    handleSubmit,
+    submitSource,
+    validationBehaviorConfig,
+    children,
+    onBeforeSubmit,
+    onSubmit,
+    onReset,
+    onSubmitSuccess,
+    onSubmitFailure,
+    onInvalidSubmit,
+    resetAfterSubmit,
+    otherFormProps,
+    reloadDocument,
+    validator,
+    schema,
+    ...rest
+  } = props as ValidatedFormProps<FormInputData, FormOutputData> & SmudgeUnion;
+
+  const opts = {
     defaultValues: defaultValues,
     serverValidationErrors,
     action,
     id,
     disableFocusOnError,
     validator,
+    schema,
     onBeforeSubmit,
     handleSubmit: handleSubmit as never,
     submitSource,
@@ -61,7 +73,11 @@ export const ValidatedForm = <
     resetAfterSubmit,
     otherFormProps,
     reloadDocument,
-  } satisfies AllProps<FormOpts<FormInputData, FormOutputData, void>>);
+  } satisfies AllProps<
+    FormOpts<FormInputData, FormOutputData, void> & SmudgeUnion
+  >;
+
+  const rvf = useForm(opts);
 
   return (
     <FormProvider scope={rvf.scope()}>

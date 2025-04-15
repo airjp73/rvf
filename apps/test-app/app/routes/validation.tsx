@@ -1,53 +1,56 @@
 import { ActionFunctionArgs, useActionData } from "react-router";
 import { withZod } from "@rvf/zod";
-import { validationError, useForm, FormProvider } from "@rvf/react-router";
+import {
+  validationError,
+  useForm,
+  FormProvider,
+  parseFormData,
+} from "@rvf/react-router";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
 import { Input } from "~/components/Input";
 import { SubmitButton } from "~/components/SubmitButton";
 import { Textarea } from "~/components/Textarea";
 
-const validator = withZod(
-  zfd.formData({
-    firstName: zfd.text(
-      z.string({
-        required_error: "First Name is a required field",
+const schema = z.object({
+  firstName: zfd.text(
+    z.string({
+      required_error: "First Name is a required field",
+    }),
+  ),
+  lastName: zfd.text(
+    z.string({
+      required_error: "Last Name is a required field",
+    }),
+  ),
+  email: zfd.text(
+    z
+      .string({
+        required_error: "Email is a required field",
+      })
+      .email({
+        message: "Email must be a valid email",
       }),
-    ),
-    lastName: zfd.text(
-      z.string({
-        required_error: "Last Name is a required field",
-      }),
-    ),
-    email: zfd.text(
-      z
-        .string({
-          required_error: "Email is a required field",
-        })
-        .email({
-          message: "Email must be a valid email",
+  ),
+  contacts: z.array(
+    z.object({
+      name: zfd.text(
+        z.string({
+          required_error: "Name of a contact is a required field",
         }),
-    ),
-    contacts: z.array(
-      z.object({
-        name: zfd.text(
-          z.string({
-            required_error: "Name of a contact is a required field",
-          }),
-        ),
-      }),
-    ),
-    likesPizza: zfd.checkbox(),
-    comment: zfd.text(
-      z.string({
-        required_error: "Comment is a required field",
-      }),
-    ),
-  }),
-);
+      ),
+    }),
+  ),
+  likesPizza: zfd.checkbox(),
+  comment: zfd.text(
+    z.string({
+      required_error: "Comment is a required field",
+    }),
+  ),
+});
 
 export const action = async ({ request }: ActionFunctionArgs) => {
-  const result = await validator.validate(await request.formData());
+  const result = await parseFormData(request, schema);
   if (result.error) return validationError(result.error, result.submittedData);
   const { firstName, lastName } = result.data;
 
@@ -58,8 +61,15 @@ export default function FrontendValidation() {
   const actionData = useActionData<typeof action>();
   const form = useForm({
     id: "test-form",
-    defaultValues: { firstName: "" },
-    validator,
+    defaultValues: {
+      firstName: "",
+      lastName: "",
+      email: "",
+      contacts: [],
+      likesPizza: undefined,
+      comment: "",
+    },
+    schema,
     method: "post",
   });
   return (
