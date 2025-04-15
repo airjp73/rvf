@@ -53,6 +53,8 @@ export interface $ZfdFormData<Shape extends core.$ZodShape = core.$ZodShape>
   _zod: $ZfdFormDataInternals<Shape>;
 }
 
+export type $ZfdFormDataParams = core.$ZodObjectLikeParams;
+
 export const $ZfdFormData: core.$constructor<$ZfdFormData> =
   core.$constructor<$ZfdFormData>("$ZodFormData", (inst, def) => {
     // @ts-expect-error assertions requiring explicit annotation

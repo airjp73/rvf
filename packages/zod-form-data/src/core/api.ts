@@ -4,7 +4,7 @@ import * as schemas from "./schemas";
 export const _formData = <Shape extends core.$ZodShape>(
   Class: core.util.SchemaClass<schemas.$ZfdFormData<Shape>>,
   shape: Shape,
-  params?: core.$ZodObjectLikeParams,
+  params?: string | schemas.$ZfdFormDataParams,
 ): schemas.$ZfdFormData<Shape> => {
   const def: core.$ZodObjectLikeDef = {
     type: "object",

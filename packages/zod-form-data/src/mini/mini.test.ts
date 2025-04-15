@@ -1,5 +1,49 @@
 import * as z from "@zod/mini";
 import * as zfd from "./mini";
+import { TestFormData } from "@remix-validated-form/test-utils";
+
+describe("form data", () => {
+  it("should parse regular objects", () => {
+    const schema = zfd.formData({ foo: z.string() });
+    expect(schema.safeParse({ foo: "bar" })).toEqual({
+      success: true,
+      data: {
+        foo: "bar",
+      },
+    });
+  });
+
+  it("should parse FormData", () => {
+    const schema = zfd.formData({
+      foo: z.string(),
+    });
+    const formData = new TestFormData();
+    formData.append("foo", "bar");
+    expect(schema.safeParse(formData)).toEqual({
+      success: true,
+      data: { foo: "bar" },
+    });
+  });
+
+  it("should allow optional fields", () => {
+    const schema = zfd.formData(
+      {
+        foo: z.string(),
+        bar: z.string(),
+        baz: z.optional(z.string()),
+      },
+      {
+        optional: ["bar"],
+      },
+    );
+    const formData = new TestFormData();
+    formData.append("foo", "bar");
+    expect(schema.safeParse(formData)).toEqual({
+      success: true,
+      data: { foo: "bar" },
+    });
+  });
+});
 
 describe("text", () => {
   it("should fail on empty string", () => {
