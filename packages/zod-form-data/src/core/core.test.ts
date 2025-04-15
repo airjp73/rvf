@@ -13,7 +13,7 @@ const expectValid = (schema: core.$ZodType, val: any) => {
   });
 };
 
-describe("v4 helpers", () => {
+describe("form data", () => {
   it("should parse regular objects", () => {
     expectValid(
       zfd._formData(schemas.$ZfdFormData, {
