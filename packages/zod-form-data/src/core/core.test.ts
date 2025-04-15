@@ -114,13 +114,31 @@ describe("checkbox", () => {
 });
 
 describe("text", () => {
-  it("should fail on empty string by default", () => {
+  it("should fail on empty string", () => {
     const schema = zfd._text(schemas.$ZfdTextInput);
-    expect(safeParse(schema, "")).toMatchObject({
+    expect(safeParse(schema, "", { reportInput: true })).toMatchObject({
       success: false,
       error: {
-        issues: [{ code: "invalid_type" }],
+        issues: [{ code: "invalid_type", input: undefined }],
       },
+    });
+  });
+
+  it("should fail on undefined", () => {
+    const schema = zfd._text(schemas.$ZfdTextInput);
+    expect(safeParse(schema, undefined, { reportInput: true })).toMatchObject({
+      success: false,
+      error: {
+        issues: [{ code: "invalid_type", input: undefined }],
+      },
+    });
+  });
+
+  it("should succeed otherwise", () => {
+    const schema = zfd._text(schemas.$ZfdTextInput);
+    expect(safeParse(schema, "test", { reportInput: true })).toEqual({
+      success: true,
+      data: "test",
     });
   });
 });
