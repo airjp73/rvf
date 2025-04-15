@@ -1,6 +1,6 @@
 {
   "name": "@rvf/zod",
-  "version": "7.0.2",
+  "version": "7.0.3",
   "main": "./dist/index.cjs.js",
   "module": "./dist/index.esm.js",
   "types": "./dist/index.d.ts",
@@ -30,7 +30,7 @@
     "@rvf/set-get": "*",
     "tsconfig": "*",
     "tsup-config": "*",
-    "typescript": "^5.4.5",
+    "typescript": "^5.8.3",
     "zod": "^3.23.8"
   }
 }

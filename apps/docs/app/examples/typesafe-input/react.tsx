@@ -1,18 +1,23 @@
 import { useForm } from "@rvf/react";
 import { showToastMessage } from "~/lib/utils";
-import { validator } from "./unimportant-details";
 import { MyInput } from "~/fields/MyInput";
-import { useRef } from "react";
+import { z } from "zod";
 
 export const InputTypes = () => {
   const form = useForm({
-    validator,
+    schema: z.object({
+      text: z.string(),
+      number: z.number(),
+      checkbox: z.boolean(),
+      radio: z.string(),
+      file: z.instanceof(File),
+    }),
     defaultValues: {
       text: "Hello",
       number: 123,
       checkbox: true,
       radio: "value1",
-      file: null,
+      file: null as File | null,
     },
     handleSubmit: () => showToastMessage("Submitted!"),
   });

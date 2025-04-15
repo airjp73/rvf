@@ -3,7 +3,6 @@ import {
   useForm,
   useFormScope,
 } from "@rvf/react";
-import { withZod } from "@rvf/zod";
 import { z } from "zod";
 import { Button } from "~/ui/button";
 import { createProject } from "./api";
@@ -20,13 +19,6 @@ const personSchema = z.object({
 });
 type Person = z.infer<typeof personSchema>;
 
-const validator = withZod(
-  z.object({
-    projectLead: personSchema,
-    assignees: z.array(personSchema),
-  }),
-);
-
 type PersonFormProps = {
   scope: FormScope<Person>;
 };
@@ -41,12 +33,17 @@ const PersonForm = ({ scope }: PersonFormProps) => {
   );
 };
 
+const schema = z.object({
+  projectLead: personSchema,
+  assignees: z.array(personSchema).default([]),
+});
+
 export const ReactExample = () => {
   const form = useForm({
-    validator,
+    schema,
     defaultValues: {
-      projectLead: { name: "", email: "" } satisfies Person,
-      assignees: [] as Array<Person>,
+      projectLead: { name: "", email: "" },
+      assignees: [],
     },
     handleSubmit: (data) => createProject(data),
     resetAfterSubmit: true,
@@ -59,7 +56,7 @@ export const ReactExample = () => {
       <h3>Project Lead</h3>
       <PersonForm scope={form.scope("projectLead")} />
 
-      <h3>Tasks</h3>
+      <h3>Team members</h3>
 
       <ul>
         {form.array("assignees").map((key, item, index) => (

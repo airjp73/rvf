@@ -3,6 +3,8 @@ import {
   FieldValues,
   FormOpts,
   FormApi,
+  ValidatorAndDefaultValueOpts,
+  BaseFormOpts,
 } from "@rvf/react";
 import { useRemixSubmit } from "./remix-submission-handling";
 import {
@@ -37,12 +39,13 @@ export type RemixFormOpts<
   FormInputData extends FieldValues,
   FormOutputData,
 > = Omit<
-  FormOpts<FormInputData, FormOutputData, void>,
+  BaseFormOpts<FormInputData, FormOutputData, void>,
   | keyof SubmitOptions
   | "serverValidationErrors"
   | "handleSubmit"
   | "submitSource"
 > &
+  ValidatorAndDefaultValueOpts<FormInputData, FormOutputData> &
   Pick<
     SubmitOptions,
     | "method"

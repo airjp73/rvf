@@ -86,6 +86,8 @@ export type ResetFieldOpts<FieldValue> = {
   defaultValue?: FieldValue;
 };
 
+type NonUndefined<T> = Exclude<T, undefined>;
+
 export interface FormApi<FormInputData> {
   /**
    * Gets whether the field has been touched.
@@ -385,8 +387,12 @@ export interface FormApi<FormInputData> {
    */
   array<Field extends ValidStringPathsToArrays<FormInputData>>(
     fieldName: Field,
-  ): ValueAtPath<FormInputData, StringToPathTuple<Field>> extends Array<any>
-    ? FieldArrayApi<ValueAtPath<FormInputData, StringToPathTuple<Field>>>
+  ): NonUndefined<
+    ValueAtPath<FormInputData, StringToPathTuple<Field>>
+  > extends Array<any>
+    ? FieldArrayApi<
+        NonUndefined<ValueAtPath<FormInputData, StringToPathTuple<Field>>>
+      >
     : never;
 
   /**

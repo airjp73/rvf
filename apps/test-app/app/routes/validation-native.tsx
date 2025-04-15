@@ -6,7 +6,7 @@ import { zfd } from "zod-form-data";
 import { Input } from "~/components/Input";
 import { SubmitButton } from "~/components/SubmitButton";
 import { Textarea } from "~/components/Textarea";
-import { unstable_useNativeValidityForForm } from "@rvf/react";
+import { useNativeValidityForForm } from "@rvf/react";
 
 const validator = withZod(
   zfd.formData({
@@ -63,7 +63,7 @@ export default function FrontendValidation() {
     validator,
     method: "post",
   });
-  unstable_useNativeValidityForForm(form.scope());
+  useNativeValidityForForm(form.scope());
 
   return (
     <FormProvider scope={form.scope()}>

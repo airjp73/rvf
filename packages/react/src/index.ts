@@ -27,9 +27,16 @@ export {
   type FieldValue,
   getOriginalObject,
   type BeforeSubmitApi,
+  parseFormData,
+  preprocessFormData,
 } from "@rvf/core";
 export { type FormApi, type FormFields } from "./base";
-export { useForm, FormOpts } from "./useForm";
+export {
+  useForm,
+  FormOpts,
+  internal_BaseFormOpts as BaseFormOpts,
+  internal_ValidatorAndDefaultValueOpts as ValidatorAndDefaultValueOpts,
+} from "./useForm";
 export { ValidatedForm, type ValidatedFormProps } from "./ValidatedForm";
 export {
   GetInputProps,
@@ -65,7 +72,7 @@ export {
 export { useFormScope } from "./useFormScope";
 export {
   useNativeValidity,
-  useNativeValidityForForm as unstable_useNativeValidityForForm,
+  useNativeValidityForForm,
 } from "./useNativeValidity";
 export { Isolate } from "./isolation";
 export * from "./compatability/misc";

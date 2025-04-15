@@ -20,6 +20,8 @@ function pathToString(array: (string | number)[]): string {
 
 /**
  * Create a validator using a `zod` schema.
+ *
+ * @deprecated As of RVF 7.1.0, you can pass a `zod` schema directly to `useForm`or `ValidatedForm` via the `schema option.`
  */
 export function withZod<T, U extends z.ZodTypeDef>(
   zodSchema: z.Schema<T, U, unknown>,

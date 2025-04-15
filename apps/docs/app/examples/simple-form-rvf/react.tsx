@@ -5,29 +5,30 @@ import { Input } from "~/ui/input";
 import { Label } from "~/ui/label";
 import { signUp } from "../simple-form/api";
 import { showToastMessage } from "~/lib/utils";
-import { withZod } from "@rvf/zod";
 import { z } from "zod";
 
-const validator = withZod(
-  z
-    .object({
-      username: z.string(),
-      password: z.string(),
-      confirmPassword: z.string(),
-    })
-    .superRefine((value, ctx) => {
-      if (value.password !== value.confirmPassword)
-        ctx.addIssue({
-          code: "custom",
-          path: ["confirmPassword"],
-          message: "Passwords must match",
-        });
-    }),
-);
-
+const schema = z
+  .object({
+    username: z.string(),
+    password: z.string(),
+    confirmPassword: z.string(),
+  })
+  .superRefine((value, ctx) => {
+    if (value.password !== value.confirmPassword)
+      ctx.addIssue({
+        code: "custom",
+        path: ["confirmPassword"],
+        message: "Passwords must match",
+      });
+  });
 export const SignupForm = () => {
   const form = useForm({
-    validator,
+    schema,
+    defaultValues: {
+      username: "",
+      password: "",
+      confirmPassword: "",
+    },
     resetAfterSubmit: true,
     handleSubmit: async ({ username, password }) => {
       await signUp({ username, password });

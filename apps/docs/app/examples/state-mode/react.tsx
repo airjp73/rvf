@@ -1,24 +1,21 @@
 import { useForm } from "@rvf/react";
-import { withZod } from "@rvf/zod";
 import { z } from "zod";
 import { Button } from "~/ui/button";
 import { showToastMessage } from "~/lib/utils";
 import { ErrorMessage } from "~/fields/ErrorMessage";
 
-const validator = withZod(
-  z.object({
-    selectedUser: z.object(
-      {
-        name: z.string(),
-        // We don't have to validate this as a string and transform it
-        age: z.number(),
-      },
-      {
-        required_error: "Please choose a user",
-      },
-    ),
-  }),
-);
+const schema = z.object({
+  selectedUser: z.object(
+    {
+      name: z.string(),
+      // We don't have to validate this as a string and transform it
+      age: z.number(),
+    },
+    {
+      required_error: "Please choose a user",
+    },
+  ),
+});
 
 type User = {
   name: string;
@@ -28,7 +25,7 @@ type User = {
 export const ReactExample = () => {
   const form = useForm({
     submitSource: "state",
-    validator,
+    schema,
     defaultValues: {
       selectedUser: undefined as undefined | User,
     },
