@@ -72,7 +72,7 @@ describe("withZod", () => {
 
     const errorMap: z.ZodErrorMap = () => ({ message: "Custom error" });
 
-    expect(await withZod(schema, { errorMap }).validate(obj)).toEqual({
+    expect(await withZod(schema, { error: errorMap }).validate(obj)).toEqual({
       data: undefined,
       error: {
         fieldErrors: {
