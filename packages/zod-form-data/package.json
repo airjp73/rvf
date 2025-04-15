@@ -30,13 +30,13 @@
     "@zod/mini": "4.0.0-beta.20250414T061543"
   },
   "peerDependencies": {
-    "zod": ">= 4.0.0-beta.20250412T085909"
+    "zod": ">= 4.0.0-beta.20250414T061543"
   },
   "devDependencies": {
     "@rvf/set-get": "*",
     "tsconfig": "*",
     "tsup-config": "*",
     "typescript": "^5.8.3",
-    "zod": "^4.0.0-beta.20250412T085909"
+    "zod": "^4.0.0-beta.20250414T061543"
   }
 }
