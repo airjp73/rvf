@@ -97,6 +97,27 @@ describe.skip("Standard schema types", () => {
     expectTypeOf(form.value("bar")).toEqualTypeOf<string | undefined>();
   });
 
+  test("should be able to expand the default values that include an optional field or nullable field", () => {
+    const form = useForm({
+      schema: z.object({
+        foo: z.union([z.string(), z.number()]),
+        bar: z.string(),
+      }),
+      defaultValues: {
+        foo: "hi",
+        bar: 123 as string | number,
+      },
+      handleSubmit: (data) => {
+        expectTypeOf(data).toEqualTypeOf<{
+          foo: string | number;
+          bar: string | number;
+        }>();
+      },
+    });
+    expectTypeOf(form.value("foo")).toEqualTypeOf<string | number>();
+    expectTypeOf(form.value("bar")).toEqualTypeOf<string | number>();
+  });
+
   test("should be able to expand the default values type with a partial type", () => {
     const form = useForm({
       schema: z.object({
