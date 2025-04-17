@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { useForm } from "../useForm";
+import { FormApi } from "../base";
 
 // Skipped because these are only types tests
 describe.skip("Standard schema types", () => {
@@ -98,7 +99,7 @@ describe.skip("Standard schema types", () => {
   });
 
   test("should be able to expand the default values that include an optional field or nullable field", () => {
-    const form = useForm({
+    const f1 = useForm({
       schema: z.object({
         foo: z.union([z.string(), z.number()]),
         bar: z.string(),
@@ -107,15 +108,25 @@ describe.skip("Standard schema types", () => {
         foo: "hi",
         bar: 123 as string | number,
       },
-      handleSubmit: (data) => {
-        expectTypeOf(data).toEqualTypeOf<{
-          foo: string | number;
-          bar: string | number;
-        }>();
+    });
+    expectTypeOf(f1).toEqualTypeOf<
+      FormApi<{
+        foo: string | number;
+        bar: string | number;
+      }>
+    >();
+
+    useForm({
+      schema: z.object({
+        foo: z.string(),
+        bar: z.string(),
+      }),
+      defaultValues: {
+        foo: "hi",
+        bar: "",
+        baz: "",
       },
     });
-    expectTypeOf(form.value("foo")).toEqualTypeOf<string | number>();
-    expectTypeOf(form.value("bar")).toEqualTypeOf<string | number>();
   });
 
   test("should be able to expand the default values type with a partial type", () => {
