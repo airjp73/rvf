@@ -292,7 +292,7 @@ describe.skip("Standard schema types", () => {
           foo: ["one", "two", "three"],
         },
       });
-      expectTypeOf(form).toEqualTypeOf<FormApi<{ foo: string[] }>>();
+      expectTypeOf(form).toEqualTypeOf<FormApi<{ foo: readonly string[] }>>();
       form.array("foo").push("");
     });
 

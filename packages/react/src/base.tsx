@@ -87,6 +87,7 @@ export type ResetFieldOpts<FieldValue> = {
 };
 
 type NonUndefined<T> = Exclude<T, undefined>;
+type MutableArray<T> = T extends readonly (infer Item)[] ? Item[] : T;
 
 export interface FormApi<FormInputData> {
   /**
@@ -387,11 +388,13 @@ export interface FormApi<FormInputData> {
    */
   array<Field extends ValidStringPathsToArrays<FormInputData>>(
     fieldName: Field,
-  ): NonUndefined<
-    ValueAtPath<FormInputData, StringToPathTuple<Field>>
+  ): MutableArray<
+    NonUndefined<ValueAtPath<FormInputData, StringToPathTuple<Field>>>
   > extends Array<any>
     ? FieldArrayApi<
-        NonUndefined<ValueAtPath<FormInputData, StringToPathTuple<Field>>>
+        MutableArray<
+          NonUndefined<ValueAtPath<FormInputData, StringToPathTuple<Field>>>
+        >
       >
     : never;
 

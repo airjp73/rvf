@@ -55,13 +55,6 @@ type HandlePrimitives<T, U> = NonDistributiveExtends<T, U> extends true ? U : T;
 
 type Tuple = AnyReadStatus<[any, ...any[]]>;
 type AnyArray<T = any> = AnyReadStatus<Array<T>>;
-type ShallowMutable<T> = T extends readonly [infer Head, ...infer Tail]
-  ? [Head, ...Tail]
-  : T extends readonly (infer I)[]
-    ? I
-    : {
-        -readonly [K in keyof T]: T[K];
-      };
 
 // prettier-ignore
 type HandleDifferences<T, U> =
@@ -81,10 +74,10 @@ type HandleDifferences<T, U> =
 
 type NonContradictingSupertype<T, U> =
   IsUnknown<T> extends true
-    ? ShallowMutable<U>
+    ? U
     : T extends U
       ? U extends T
-        ? ShallowMutable<U>
+        ? U
         : HandleDifferences<T, U>
       : HandleDifferences<T, U>;
 
@@ -301,7 +294,7 @@ export function useForm<
     DefaultValues,
     FormInputData
   >,
-): FormApi<Prettify<FormInputData>> {
+): FormApi<FormInputData> {
   // everything from below
   const {
     handleSubmit: onSubmit,
