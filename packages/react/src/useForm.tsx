@@ -34,26 +34,41 @@ export type IsUnknown<T> = unknown extends T // `T` can be `unknown` or `any`
 
 type Primitive = string | number | boolean | symbol | bigint | null | undefined;
 
-type HandleObjects<T, U> = T extends never
-  ? never
-  : {
-      [K in keyof T | keyof U]: K extends keyof T
-        ? K extends keyof U
-          ? NonContradictingSupertype<T[K], U[K]>
-          : T[K]
-        : never;
-    };
+type HandleObjects<T, U> = {
+  [K in keyof T | keyof U]: K extends keyof T
+    ? K extends keyof U
+      ? NonContradictingSupertype<T[K], U[K]>
+      : T[K]
+    : never;
+};
 
-// I might be able to get rid of this now?
-type Extends<One, Two> = One extends Two ? true : false;
+type HandleTuples<T, U> = T extends [infer THead, ...infer TTail]
+  ? U extends [infer UHead, ...infer UTail]
+    ? [NonContradictingSupertype<THead, UHead>, ...HandleTuples<TTail, UTail>]
+    : [THead, ...TTail]
+  : T;
 
-type HandlePrimitives<T, U> = Extends<T, U> extends true ? U : T;
+type NonDistributiveExtends<One, Two> = One extends Two ? true : false;
 
-type HandleDifferences<T, U> = [T, U] extends [Primitive, Primitive]
-  ? HandlePrimitives<T, U>
+type HandlePrimitives<T, U> = NonDistributiveExtends<T, U> extends true ? U : T;
+
+type Tuple = [any, ...any[]];
+
+// prettier-ignore
+type HandleDifferences<T, U> =
+  [T, U] extends [Primitive, Primitive]
+    ? HandlePrimitives<T, U>
   : [T, U] extends [Primitive, any] | [any, Primitive]
     ? T
-    : HandleObjects<T, U>;
+  : [T, U] extends [Tuple, Tuple]
+    ? HandleTuples<T, U>
+  : [T, U] extends [Tuple, any] | [any, Tuple]
+    ? T
+  : [T, U] extends [Array<infer TItem>, Array<infer UItem>]
+    ? Array<NonContradictingSupertype<TItem, UItem>>
+  : [T, U] extends [Array<any>, any] | [any, Array<any>]
+    ? T
+  : Prettify<HandleObjects<T, U>>;
 
 type NonContradictingSupertype<T, U> =
   IsUnknown<T> extends true
@@ -277,7 +292,7 @@ export function useForm<
     DefaultValues,
     FormInputData
   >,
-): FormApi<FormInputData> {
+): FormApi<Prettify<FormInputData>> {
   // everything from below
   const {
     handleSubmit: onSubmit,
