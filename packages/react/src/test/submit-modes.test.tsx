@@ -3,7 +3,7 @@ import { useForm } from "../useForm";
 import { successValidator } from "./util/successValidator";
 import userEvent from "@testing-library/user-event";
 import { useState } from "react";
-import { preprocessFormData } from "@rvf/core";
+import { preprocessFormData, Validator } from "@rvf/core";
 import { Mock } from "vitest";
 
 it("should use the form itself as the source of truth for `dom` mode", async () => {
@@ -82,8 +82,8 @@ it("should include data from the form submitter on submit", async () => {
       defaultValues: {
         foo: 123,
       },
-      validator: successValidator,
-      handleSubmit: submit,
+      validator: successValidator as Validator<{ foo: number }>,
+      handleSubmit: async (data) => void submit(data),
     });
 
     return (
@@ -165,13 +165,16 @@ it("should respect changes to the submit source", async () => {
     const [submitSource, setSubmitSource] = useState(
       "state" as "state" | "dom",
     );
+    // having a union here doesn't work in the types
+    // and for some reason we need to cast it ahead of time
+    const casted = submitSource as "state";
     const form = useForm({
+      submitSource: casted,
       defaultValues: {
         foo: 123,
       },
-      validator: successValidator,
-      handleSubmit: submit,
-      submitSource,
+      validator: successValidator as Validator<{ foo: number }>,
+      handleSubmit: async (data) => void submit(data),
     });
 
     return (
