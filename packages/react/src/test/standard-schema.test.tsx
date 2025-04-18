@@ -169,7 +169,7 @@ describe.skip("Standard schema types", () => {
         foo: "hi there",
       },
     });
-    expectTypeOf(form).toEqualTypeOf<FormApi<{ foo: string }>>();
+    expectTypeOf(form).toEqualTypeOf<FormApi<{ foo: "hi there" }>>();
   });
 
   test("should work with classes", () => {
@@ -208,13 +208,79 @@ describe.skip("Standard schema types", () => {
       const form = useForm({
         schema: z.object({
           foo: z.array(z.string()),
+          bar: z.array(z.object({ baz: z.string() })),
         }),
         defaultValues: {
           foo: ["hi there"],
+          bar: [],
         },
       });
-      expectTypeOf(form).toEqualTypeOf<FormApi<{ foo: string[] }>>();
-      form.array("foo");
+      expectTypeOf(form).toEqualTypeOf<
+        FormApi<{ foo: string[]; bar: { baz: string }[] }>
+      >();
+      form.array("foo").push("");
+    });
+
+    test("should work deeply nested", () => {
+      const form = useForm({
+        schema: z.object({
+          foo: z.object({
+            bar: z.object({
+              baz: z.object({
+                qux: z.object({
+                  blah: z.string(),
+                }),
+              }),
+            }),
+          }),
+        }),
+        defaultValues: {
+          foo: { bar: { baz: { qux: { blah: "" as string | number } } } },
+        },
+      });
+    });
+
+    const tuple = <T extends any[]>(...value: T): [...T] => [...value];
+
+    test("should work with tuples", () => {
+      const form = useForm({
+        schema: z.object({
+          foo: z.tuple([z.string(), z.number()]),
+          bar: z.tuple([
+            z.object({ foo: z.string() }),
+            z.object({ bar: z.string() }),
+          ]),
+        }),
+        defaultValues: {
+          foo: ["hi there", 123 as string | number],
+          bar: [{ foo: "foo" as string | number }, { bar: "bar" }],
+        },
+      });
+      expectTypeOf(form).toEqualTypeOf<
+        FormApi<{
+          foo: [string, string | number];
+          bar: [{ foo: string | number }, { bar: string }];
+        }>
+      >();
+      form.array("foo").push("");
+    });
+
+    test("should reject default value tuples of a different length", () => {
+      const form = useForm({
+        schema: z.object({
+          foo: z.tuple([z.string(), z.string()]),
+        }),
+        defaultValues: {
+          // @ts-expect-error
+          foo: ["one", "two", "three"],
+        },
+      });
+      expectTypeOf(form).toEqualTypeOf<
+        FormApi<{
+          foo: [string, string];
+        }>
+      >();
+      form.array("foo").push("");
     });
 
     test("should work with objects", () => {

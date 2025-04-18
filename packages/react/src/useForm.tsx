@@ -42,8 +42,9 @@ type HandleObjects<T, U> = {
     : never;
 };
 
+type AnyReadStatus<T> = T | Readonly<T>;
 type HandleTuples<T, U> = T extends [infer THead, ...infer TTail]
-  ? U extends [infer UHead, ...infer UTail]
+  ? U extends AnyReadStatus<[infer UHead, ...infer UTail]>
     ? [NonContradictingSupertype<THead, UHead>, ...HandleTuples<TTail, UTail>]
     : [THead, ...TTail]
   : T;
@@ -60,7 +61,7 @@ type HandleDifferences<T, U> =
     ? HandlePrimitives<T, U>
   : [T, U] extends [Primitive, any] | [any, Primitive]
     ? T
-  : [T, U] extends [Tuple, Tuple]
+  : [T, U] extends [Tuple, Tuple] | [Tuple, readonly [any, ...any[]]]
     ? HandleTuples<T, U>
   : [T, U] extends [Tuple, any] | [any, Tuple]
     ? T
@@ -235,7 +236,7 @@ export type internal_ValidatorAndDefaultValueOpts<
        */
       defaultValues: NonContradictingSupertype<
         NoInfer<SchemaInput>,
-        DefaultValues
+        Readonly<DefaultValues>
       >;
     });
 
@@ -279,7 +280,7 @@ export function useForm<
   SchemaInput extends FieldValues = any,
   SchemaOutput = unknown,
   SubmitResponseData = unknown,
-  DefaultValues extends FieldValues = SchemaInput,
+  const DefaultValues extends FieldValues = SchemaInput,
   FormInputData extends FieldValues = NonContradictingSupertype<
     NoInfer<SchemaInput>,
     DefaultValues
