@@ -221,14 +221,16 @@ export type internal_ValidatorAndDefaultValueOpts<
        */
       defaultValues?: FormInputData;
     }
-  | {
+  | ({
       /**
        * A [Standard Schema](https://standardschema.dev/) compliant schema.
        * The input type of this schema will be used to help make `defaultValues` typesafe,
        * as well as determine the types when using the `FormApi` returned from this hook.
        */
       schema: StandardSchemaV1<SchemaInput, SchemaOutput>;
-
+      // Adding this intersection lets us still get the correct output inferred
+      // even if `defaultValues` isn't provided yet
+    } & {
       /**
        * Sets the default values of the form.
        *
@@ -243,7 +245,7 @@ export type internal_ValidatorAndDefaultValueOpts<
         NoInfer<SchemaInput>,
         DefaultValues
       >;
-    };
+    });
 
 export type FormOpts<
   SchemaInput extends FieldValues = any,
