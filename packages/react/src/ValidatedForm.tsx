@@ -77,7 +77,7 @@ export const ValidatedForm = <
     FormOpts<FormInputData, FormOutputData, void> & SmudgeUnion
   >;
 
-  const rvf = useForm(opts);
+  const rvf = useForm(opts as never);
 
   return (
     <FormProvider scope={rvf.scope()}>

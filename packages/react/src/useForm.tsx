@@ -246,11 +246,14 @@ export type internal_ValidatorAndDefaultValueOpts<
     };
 
 export type FormOpts<
-  SchemaInput extends FieldValues,
-  SchemaOutput,
-  SubmitResponseData,
-  DefaultValues extends FieldValues,
-  FormInputData extends FieldValues,
+  SchemaInput extends FieldValues = any,
+  SchemaOutput = unknown,
+  SubmitResponseData = unknown,
+  DefaultValues extends FieldValues = SchemaInput,
+  FormInputData extends FieldValues = NonContradictingSupertype<
+    NoInfer<SchemaInput>,
+    DefaultValues
+  >,
 > = internal_ValidatorAndDefaultValueOpts<
   SchemaInput,
   SchemaOutput,
@@ -279,10 +282,10 @@ const maybeThen = <T,>(
  * Create and use a `FormScope`.
  */
 export function useForm<
-  SchemaInput extends FieldValues,
-  SchemaOutput,
-  SubmitResponseData,
-  DefaultValues extends FieldValues,
+  SchemaInput extends FieldValues = any,
+  SchemaOutput = unknown,
+  SubmitResponseData = unknown,
+  DefaultValues extends FieldValues = SchemaInput,
   FormInputData extends FieldValues = NonContradictingSupertype<
     NoInfer<SchemaInput>,
     DefaultValues

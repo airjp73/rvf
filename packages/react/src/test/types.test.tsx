@@ -1,7 +1,7 @@
 import { describe, expectTypeOf, it } from "vitest";
 import { useForm } from "../useForm";
 import { successValidator } from "./util/successValidator";
-import { FormFields } from "../base";
+import { FormApi, FormFields } from "../base";
 import { FormScope, Validator } from "@rvf/core";
 import { useField } from "../field";
 import { ChangeEvent, FocusEvent, useRef } from "react";
@@ -63,6 +63,15 @@ describe("types", () => {
       >();
     };
     expect(true).toBe(true);
+  });
+
+  it("should allow any path when no default values are provided (validator)", () => {
+    const form = useForm({
+      validator: successValidator as Validator<{ foo: string }>,
+    });
+    expectTypeOf(form).toEqualTypeOf<FormApi<any>>();
+    form.value("asdf");
+    form.array("awef");
   });
 
   it("should infer form scope correctly", () => {
