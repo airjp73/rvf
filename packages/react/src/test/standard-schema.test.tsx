@@ -11,7 +11,6 @@ describe.skip("Standard schema types", () => {
         foo: z.string(),
       }),
       handleSubmit: (data) => {
-        // Not the end of the world if we lose this one?
         expectTypeOf(data).toEqualTypeOf<{ foo: string }>();
       },
     });
@@ -147,5 +146,18 @@ describe.skip("Standard schema types", () => {
     });
     expectTypeOf(form.value("foo")).toEqualTypeOf<string | number>();
     expectTypeOf(form.value("bar")).toEqualTypeOf<string>();
+  });
+
+  test("should error if default values are an object and the schema is a primitive", () => {
+    const form = useForm({
+      schema: z.object({
+        foo: z.string(),
+      }),
+      defaultValues: {
+        // @ts-expect-error
+        foo: { bar: "" },
+      },
+    });
+    expectTypeOf(form).toEqualTypeOf<FormApi<{ foo: string }>>();
   });
 });
