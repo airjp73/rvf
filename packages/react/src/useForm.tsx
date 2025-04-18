@@ -177,30 +177,6 @@ export type internal_BaseFormOpts<
   serverValidationErrors?: FieldErrors;
 };
 
-// interface ST<FormOutputData, FormInputData extends FieldValues> {
-//   /**
-//    * A [Standard Schema](https://standardschema.dev/) compliant schema.
-//    * The input type of this schema will be used to help make `defaultValues` typesafe,
-//    * as well as determine the types when using the `FormApi` returned from this hook.
-//    */
-//   schema: StandardSchemaV1<unknown, FormOutputData>;
-
-//   /**
-//    * Sets the default values of the form.
-//    *
-//    * For Typescript users, `defaultValues` is one of the most important props you'll use.
-//    * The type of the object you pass here, will determine the type of the data you get
-//    * when interacting with the form. For example, `form.value('myField')` will be typed based on
-//    * the type of `defaultValues.myField`.
-//    *
-//    * It's recommended that you provide a default value for every field in the form.
-//    */
-//   defaultValues: NonContradictingSupertype<
-//     NoInfer<StandardSchemaV1.InferInput<this["schema"]>>,
-//     FormInputData
-//   >;
-// }
-
 export type internal_ValidatorAndDefaultValueOpts<
   SchemaInput extends FieldValues,
   SchemaOutput,
