@@ -32,21 +32,27 @@ export type IsUnknown<T> = unknown extends T // `T` can be `unknown` or `any`
     : false
   : false;
 
-type Primitive = string | number | boolean | symbol | bigint | null | undefined;
+type Primitive =
+  | string
+  | number
+  | boolean
+  | symbol
+  | bigint
+  | File
+  | Blob
+  | Date
+  | null
+  | undefined;
 
 type HandleObjects<T, U> = T extends never
   ? never
-  : Prettify<
-      {
-        [K in Exclude<keyof T, keyof U>]: T[K];
-      } & {
-        [K in Exclude<keyof U, keyof T>]?: never;
-      } & {
-        [K in keyof T & keyof U]: Prettify<
-          NonContradictingSupertype<T[K], U[K]>
-        >;
-      }
-    >;
+  : {
+      [K in keyof T | keyof U]: K extends keyof T
+        ? K extends keyof U
+          ? NonContradictingSupertype<T[K], U[K]>
+          : T[K]
+        : never;
+    };
 
 // I might be able to get rid of this now?
 type Extends<One, Two> = One extends Two ? true : false;

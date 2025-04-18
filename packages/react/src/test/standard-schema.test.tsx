@@ -204,6 +204,19 @@ describe.skip("Standard schema types", () => {
       >();
     });
 
+    test("should work with arrays", () => {
+      const form = useForm({
+        schema: z.object({
+          foo: z.array(z.string()),
+        }),
+        defaultValues: {
+          foo: ["hi there"],
+        },
+      });
+      expectTypeOf(form).toEqualTypeOf<FormApi<{ foo: string[] }>>();
+      form.array("foo");
+    });
+
     test("should work with objects", () => {
       const form = useForm({
         schema: z.object({
