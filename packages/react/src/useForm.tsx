@@ -53,7 +53,15 @@ type NonDistributiveExtends<One, Two> = One extends Two ? true : false;
 
 type HandlePrimitives<T, U> = NonDistributiveExtends<T, U> extends true ? U : T;
 
-type Tuple = [any, ...any[]];
+type Tuple = AnyReadStatus<[any, ...any[]]>;
+type AnyArray<T = any> = AnyReadStatus<Array<T>>;
+type ShallowMutable<T> = T extends readonly [infer Head, ...infer Tail]
+  ? [Head, ...Tail]
+  : T extends readonly (infer I)[]
+    ? I
+    : {
+        -readonly [K in keyof T]: T[K];
+      };
 
 // prettier-ignore
 type HandleDifferences<T, U> =
@@ -61,22 +69,22 @@ type HandleDifferences<T, U> =
     ? HandlePrimitives<T, U>
   : [T, U] extends [Primitive, any] | [any, Primitive]
     ? T
-  : [T, U] extends [Tuple, Tuple] | [Tuple, readonly [any, ...any[]]]
+  : [T, U] extends [Tuple, Tuple]
     ? HandleTuples<T, U>
   : [T, U] extends [Tuple, any] | [any, Tuple]
     ? T
-  : [T, U] extends [Array<infer TItem>, Array<infer UItem>]
+  : [T, U] extends [AnyArray<infer TItem>, AnyArray<infer UItem>]
     ? Array<NonContradictingSupertype<TItem, UItem>>
-  : [T, U] extends [Array<any>, any] | [any, Array<any>]
+  : [T, U] extends [AnyArray, any] | [any, AnyArray]
     ? T
   : Prettify<HandleObjects<T, U>>;
 
 type NonContradictingSupertype<T, U> =
   IsUnknown<T> extends true
-    ? U
+    ? ShallowMutable<U>
     : T extends U
       ? U extends T
-        ? U
+        ? ShallowMutable<U>
         : HandleDifferences<T, U>
       : HandleDifferences<T, U>;
 
