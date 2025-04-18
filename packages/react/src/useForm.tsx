@@ -23,6 +23,15 @@ type Prettify<T> = {
   // eslint-disable-next-line @typescript-eslint/ban-types
 } & {};
 
+// https://github.com/sindresorhus/type-fest/blob/44c1766504a2a5024f063ac83bc67d28ec52cba9/source/is-null.d.ts
+export type IsNull<T> = [T] extends [null] ? true : false;
+// https://github.com/sindresorhus/type-fest/blob/44c1766504a2a5024f063ac83bc67d28ec52cba9/source/is-unknown.d.ts
+export type IsUnknown<T> = unknown extends T // `T` can be `unknown` or `any`
+  ? IsNull<T> extends false // `any` can be `null`, but `unknown` can't be
+    ? true
+    : false
+  : false;
+
 type Primitive = string | number | boolean | symbol | bigint | null | undefined;
 
 type HandleObjects<T, U> = T extends never
@@ -41,11 +50,14 @@ type HandleObjects<T, U> = T extends never
 
 type Extends<One, Two> = One extends Two ? true : false;
 type HandlePrimitives<T, U> = Extends<T, U> extends true ? U : T;
-type NonContradictingSupertype<T, U> = [T, U] extends [Primitive, Primitive]
-  ? HandlePrimitives<T, U>
-  : [T, U] extends [Primitive, any] | [any, Primitive]
-    ? T
-    : HandleObjects<T, U>;
+type NonContradictingSupertype<T, U> =
+  IsUnknown<T> extends true
+    ? U
+    : [T, U] extends [Primitive, Primitive]
+      ? HandlePrimitives<T, U>
+      : [T, U] extends [Primitive, any] | [any, Primitive]
+        ? T
+        : HandleObjects<T, U>;
 
 const noOp = () => {};
 

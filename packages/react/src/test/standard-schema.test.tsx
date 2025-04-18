@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { useForm } from "../useForm";
 import { FormApi } from "../base";
+import { StandardSchemaV1 } from "@standard-schema/spec";
 
 // Skipped because these are only types tests
 describe.skip("Standard schema types", () => {
@@ -156,6 +157,16 @@ describe.skip("Standard schema types", () => {
       defaultValues: {
         // @ts-expect-error
         foo: { bar: "" },
+      },
+    });
+    expectTypeOf(form).toEqualTypeOf<FormApi<{ foo: string }>>();
+  });
+
+  test("should use only the default value if the schema input is unknown", () => {
+    const form = useForm({
+      schema: {} as any as StandardSchemaV1<{ foo: unknown }>,
+      defaultValues: {
+        foo: "hi there",
       },
     });
     expectTypeOf(form).toEqualTypeOf<FormApi<{ foo: string }>>();
