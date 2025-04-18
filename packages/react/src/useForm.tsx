@@ -61,11 +61,9 @@ type Extends<One, Two> = One extends Two ? true : false;
 type HandlePrimitives<T, U> = Extends<T, U> extends true ? U : T;
 type NonContradictingSupertype<T, U> = [T, U] extends [Primitive, Primitive]
   ? HandlePrimitives<T, U>
-  : T extends Primitive
+  : [T, U] extends [Primitive, any] | [any, Primitive]
     ? T
-    : U extends Primitive
-      ? T
-      : HandleObjects<T, U>;
+    : HandleObjects<T, U>;
 
 const noOp = () => {};
 
