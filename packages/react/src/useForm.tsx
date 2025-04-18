@@ -19,29 +19,11 @@ import { InternalResolveOptions } from "vite";
 ///////////////////////////////// Type work
 type Prettify<T> = {
   [K in keyof T]: T[K];
+  // necessary for this type
+  // eslint-disable-next-line @typescript-eslint/ban-types
 } & {};
 
 type Primitive = string | number | boolean | symbol | bigint | null | undefined;
-type SmallestSupertype<T, U> = T extends Primitive
-  ? T | U
-  : U extends Primitive
-    ? T | U
-    : Prettify<
-        {
-          [K in keyof T]: SmallestSupertype<
-            T[K],
-            K extends keyof U ? U[K] : undefined
-          >;
-        } & {
-          [K in Exclude<keyof U, keyof T>]: SmallestSupertype<U[K], undefined>;
-        }
-      >;
-
-type A = SmallestSupertype<string | boolean, boolean | number>;
-type B = SmallestSupertype<
-  { foo: string | number; bar: string },
-  { foo: number; bar: number | boolean; baz?: symbol }
->;
 
 type HandleObjects<T, U> = T extends never
   ? never
