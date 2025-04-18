@@ -89,7 +89,7 @@ export const ValidatedForm = <
         })}
         {...rest}
       >
-        {typeof children === "function" ? children(rvf) : children}
+        {typeof children === "function" ? children(rvf as never) : children}
       </form>
     </FormProvider>
   );
