@@ -171,4 +171,77 @@ describe.skip("Standard schema types", () => {
     });
     expectTypeOf(form).toEqualTypeOf<FormApi<{ foo: string }>>();
   });
+
+  test("should work with classes", () => {
+    const form = useForm({
+      schema: z.object({
+        text: z.string(),
+        number: z.number(),
+        checkbox: z.boolean(),
+        radio: z.string(),
+        file: z.instanceof(File),
+      }),
+      defaultValues: {
+        text: "Hello",
+        number: 123,
+        checkbox: true,
+        radio: "value1",
+        file: null as File | null,
+      },
+    });
+
+    test("should work with unions", () => {
+      const form = useForm({
+        schema: z.object({
+          foo: z.string().or(z.number()),
+        }),
+        defaultValues: {
+          foo: "hi there" as string | number | null,
+        },
+      });
+      expectTypeOf(form).toEqualTypeOf<
+        FormApi<{ foo: string | number | null }>
+      >();
+    });
+
+    test("should work with objects", () => {
+      const form = useForm({
+        schema: z.object({
+          foo: z.object({
+            label: z.string(),
+            value: z.string(),
+          }),
+        }),
+        defaultValues: {
+          foo: null as { label: string; value: string } | null,
+        },
+      });
+      expectTypeOf(form).toEqualTypeOf<
+        FormApi<{ foo: { label: string; value: string } | null }>
+      >();
+    });
+
+    class Custom<T> {
+      _value: T;
+      constructor(value: T) {
+        this._value = value;
+      }
+    }
+
+    test("should work with custom, generic classes", () => {
+      const form = useForm({
+        schema: z.object({
+          foo: z.instanceof(Custom<string>),
+        }),
+        defaultValues: {
+          foo: null as Custom<string | null> | null,
+        },
+      });
+
+      // It isn't able to preserve the class name in the output type but it works
+      expectTypeOf(form).toEqualTypeOf<
+        FormApi<{ foo: Custom<string | null> | null }>
+      >();
+    });
+  });
 });

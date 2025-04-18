@@ -48,16 +48,25 @@ type HandleObjects<T, U> = T extends never
       }
     >;
 
+// I might be able to get rid of this now?
 type Extends<One, Two> = One extends Two ? true : false;
+
 type HandlePrimitives<T, U> = Extends<T, U> extends true ? U : T;
+
+type HandleDifferences<T, U> = [T, U] extends [Primitive, Primitive]
+  ? HandlePrimitives<T, U>
+  : [T, U] extends [Primitive, any] | [any, Primitive]
+    ? T
+    : HandleObjects<T, U>;
+
 type NonContradictingSupertype<T, U> =
   IsUnknown<T> extends true
     ? U
-    : [T, U] extends [Primitive, Primitive]
-      ? HandlePrimitives<T, U>
-      : [T, U] extends [Primitive, any] | [any, Primitive]
-        ? T
-        : HandleObjects<T, U>;
+    : T extends U
+      ? U extends T
+        ? U
+        : HandleDifferences<T, U>
+      : HandleDifferences<T, U>;
 
 const noOp = () => {};
 
