@@ -32,17 +32,7 @@ export type IsUnknown<T> = unknown extends T // `T` can be `unknown` or `any`
     : false
   : false;
 
-type Primitive =
-  | string
-  | number
-  | boolean
-  | symbol
-  | bigint
-  | File
-  | Blob
-  | Date
-  | null
-  | undefined;
+type Primitive = string | number | boolean | symbol | bigint | null | undefined;
 
 type HandleObjects<T, U> = T extends never
   ? never
