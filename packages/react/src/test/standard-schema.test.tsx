@@ -2,6 +2,7 @@ import { z } from "zod";
 import { useForm } from "../useForm";
 import { FormApi } from "../base";
 import { StandardSchemaV1 } from "@standard-schema/spec";
+import { successValidator } from "./util/successValidator";
 
 // Skipped because these are only types tests
 describe.skip("Standard schema types", () => {
@@ -15,6 +16,20 @@ describe.skip("Standard schema types", () => {
         expectTypeOf(data).toEqualTypeOf<{ foo: string }>();
       },
     });
+    form.setValue("foo", "test");
+  });
+
+  test("validators should continue to work", () => {
+    const form = useForm({
+      defaultValues: {
+        foo: {
+          bar: "bar",
+          baz: "baz",
+        },
+      },
+      validator: successValidator,
+    });
+    form.setValue("foo.bar", "test");
   });
 
   test("should allow a schema when that matches the default values", () => {
@@ -30,6 +45,7 @@ describe.skip("Standard schema types", () => {
       },
     });
     expectTypeOf(form.value("foo")).toEqualTypeOf<string>();
+    form.setValue("foo", "test");
   });
 
   test("should not allow a schema when that doesn't match the default values", () => {
@@ -46,6 +62,7 @@ describe.skip("Standard schema types", () => {
       },
     });
     expectTypeOf(form.value("foo")).toEqualTypeOf<string>();
+    form.setValue("foo", "test");
   });
 
   test("should allow a schema where the input type is assignable to the default values", () => {
@@ -61,6 +78,7 @@ describe.skip("Standard schema types", () => {
       },
     });
     expectTypeOf(form.value("foo")).toEqualTypeOf<string | number>();
+    form.setValue("foo", "test");
   });
 
   test("should error if default values are missing a field", () => {
@@ -79,6 +97,7 @@ describe.skip("Standard schema types", () => {
     });
     expectTypeOf(form.value("foo")).toEqualTypeOf<string>();
     expectTypeOf(form.value("bar")).toEqualTypeOf<string>();
+    form.setValue("foo", "test");
   });
 
   test("should be able to expand a type to include undefined", () => {
@@ -97,6 +116,7 @@ describe.skip("Standard schema types", () => {
     });
     expectTypeOf(form.value("foo")).toEqualTypeOf<string>();
     expectTypeOf(form.value("bar")).toEqualTypeOf<string | undefined>();
+    form.setValue("foo", "test");
   });
 
   test("should be able to expand the default values that include an optional field or nullable field", () => {
@@ -116,6 +136,7 @@ describe.skip("Standard schema types", () => {
         bar: string | number;
       }>
     >();
+    f1.setValue("foo", "test");
 
     useForm({
       schema: z.object({
@@ -147,6 +168,7 @@ describe.skip("Standard schema types", () => {
     });
     expectTypeOf(form.value("foo")).toEqualTypeOf<string | number>();
     expectTypeOf(form.value("bar")).toEqualTypeOf<string>();
+    form.setValue("foo", "test");
   });
 
   test("should error if default values are an object and the schema is a primitive", () => {
@@ -160,6 +182,7 @@ describe.skip("Standard schema types", () => {
       },
     });
     expectTypeOf(form).toEqualTypeOf<FormApi<{ foo: string }>>();
+    form.setValue("foo", "test");
   });
 
   test("should use only the default value if the schema input is unknown", () => {
@@ -170,6 +193,7 @@ describe.skip("Standard schema types", () => {
       },
     });
     expectTypeOf(form).toEqualTypeOf<FormApi<{ foo: "hi there" }>>();
+    form.setValue("foo", "hi there");
   });
 
   test("should work with classes", () => {
@@ -189,151 +213,151 @@ describe.skip("Standard schema types", () => {
         file: null as File | null,
       },
     });
+  });
 
-    test("should work with unions", () => {
-      const form = useForm({
-        schema: z.object({
-          foo: z.string().or(z.number()),
-        }),
-        defaultValues: {
-          foo: "hi there" as string | number | null,
-        },
-      });
-      expectTypeOf(form).toEqualTypeOf<
-        FormApi<{ foo: string | number | null }>
-      >();
+  test("should work with unions", () => {
+    const form = useForm({
+      schema: z.object({
+        foo: z.string().or(z.number()),
+      }),
+      defaultValues: {
+        foo: "hi there" as string | number | null,
+      },
     });
+    expectTypeOf(form).toEqualTypeOf<
+      FormApi<{ foo: string | number | null }>
+    >();
+  });
 
-    test("should work with arrays", () => {
-      const form = useForm({
-        schema: z.object({
-          foo: z.array(z.string()),
-          bar: z.array(z.object({ baz: z.string() })),
-        }),
-        defaultValues: {
-          foo: ["hi there"],
-          bar: [],
-        },
-      });
-      expectTypeOf(form).toEqualTypeOf<
-        FormApi<{ foo: string[]; bar: { baz: string }[] }>
-      >();
-      form.array("foo").push("");
+  test("should work with arrays", () => {
+    const form = useForm({
+      schema: z.object({
+        foo: z.array(z.string()),
+        bar: z.array(z.object({ baz: z.string() })),
+      }),
+      defaultValues: {
+        foo: ["hi there"],
+        bar: [],
+      },
     });
+    expectTypeOf(form).toEqualTypeOf<
+      FormApi<{ foo: string[]; bar: { baz: string }[] }>
+    >();
+    form.array("foo").push("");
+  });
 
-    test("should work deeply nested", () => {
-      const form = useForm({
-        schema: z.object({
-          foo: z.object({
-            bar: z.object({
-              baz: z.object({
-                qux: z.object({
-                  blah: z.string(),
-                }),
+  test("should work deeply nested", () => {
+    const form = useForm({
+      schema: z.object({
+        foo: z.object({
+          bar: z.object({
+            baz: z.object({
+              qux: z.object({
+                blah: z.string(),
               }),
             }),
           }),
         }),
-        defaultValues: {
-          foo: { bar: { baz: { qux: { blah: "" as string | number } } } },
-        },
-      });
+      }),
+      defaultValues: {
+        foo: { bar: { baz: { qux: { blah: "" as string | number } } } },
+      },
     });
+  });
 
-    const tuple = <T extends any[]>(...value: T): [...T] => [...value];
+  const tuple = <T extends any[]>(...value: T): [...T] => [...value];
 
-    test("should work with tuples", () => {
-      const form = useForm({
-        schema: z.object({
-          foo: z.tuple([z.string(), z.number()]),
-          bar: z.tuple([
-            z.object({ foo: z.string() }),
-            z.object({ bar: z.string() }),
-          ]),
+  test("should work with tuples", () => {
+    const form = useForm({
+      schema: z.object({
+        foo: z.tuple([z.string(), z.number()]),
+        bar: z.tuple([
+          z.object({ foo: z.string() }),
+          z.object({ bar: z.string() }),
+        ]),
+      }),
+      defaultValues: {
+        foo: ["hi there", 123 as string | number],
+        bar: [{ foo: "foo" as string | number }, { bar: "bar" }],
+      },
+    });
+    expectTypeOf(form).toEqualTypeOf<
+      FormApi<{
+        foo: [string, string | number];
+        bar: [{ foo: string | number }, { bar: string }];
+      }>
+    >();
+    form.array("foo").push("");
+  });
+
+  test("should reject default value tuples of a different length", () => {
+    const form = useForm({
+      schema: z.object({
+        foo: z.tuple([z.string(), z.string()]),
+      }),
+      defaultValues: {
+        // @ts-expect-error
+        foo: ["one", "two", "three"],
+      },
+    });
+    expectTypeOf(form).toEqualTypeOf<
+      FormApi<{
+        foo: [string, string];
+      }>
+    >();
+    form.array("foo").push("");
+  });
+
+  test("should work with readonly arrays", () => {
+    const form = useForm({
+      schema: z.object({
+        foo: z.array(z.string()).readonly(),
+      }),
+      defaultValues: {
+        foo: ["one", "two", "three"],
+      },
+    });
+    expectTypeOf(form).toEqualTypeOf<FormApi<{ foo: readonly string[] }>>();
+    form.array("foo").push("");
+  });
+
+  test("should work with objects", () => {
+    const form = useForm({
+      schema: z.object({
+        foo: z.object({
+          label: z.string(),
+          value: z.string(),
         }),
-        defaultValues: {
-          foo: ["hi there", 123 as string | number],
-          bar: [{ foo: "foo" as string | number }, { bar: "bar" }],
-        },
-      });
-      expectTypeOf(form).toEqualTypeOf<
-        FormApi<{
-          foo: [string, string | number];
-          bar: [{ foo: string | number }, { bar: string }];
-        }>
-      >();
-      form.array("foo").push("");
+      }),
+      defaultValues: {
+        foo: null as { label: string; value: string } | null,
+      },
     });
+    expectTypeOf(form).toEqualTypeOf<
+      FormApi<{ foo: { label: string; value: string } | null }>
+    >();
+  });
 
-    test("should reject default value tuples of a different length", () => {
-      const form = useForm({
-        schema: z.object({
-          foo: z.tuple([z.string(), z.string()]),
-        }),
-        defaultValues: {
-          // @ts-expect-error
-          foo: ["one", "two", "three"],
-        },
-      });
-      expectTypeOf(form).toEqualTypeOf<
-        FormApi<{
-          foo: [string, string];
-        }>
-      >();
-      form.array("foo").push("");
-    });
-
-    test("should work with readonly arrays", () => {
-      const form = useForm({
-        schema: z.object({
-          foo: z.array(z.string()).readonly(),
-        }),
-        defaultValues: {
-          foo: ["one", "two", "three"],
-        },
-      });
-      expectTypeOf(form).toEqualTypeOf<FormApi<{ foo: readonly string[] }>>();
-      form.array("foo").push("");
-    });
-
-    test("should work with objects", () => {
-      const form = useForm({
-        schema: z.object({
-          foo: z.object({
-            label: z.string(),
-            value: z.string(),
-          }),
-        }),
-        defaultValues: {
-          foo: null as { label: string; value: string } | null,
-        },
-      });
-      expectTypeOf(form).toEqualTypeOf<
-        FormApi<{ foo: { label: string; value: string } | null }>
-      >();
-    });
-
-    class Custom<T> {
-      _value: T;
-      constructor(value: T) {
-        this._value = value;
-      }
+  class Custom<T> {
+    _value: T;
+    constructor(value: T) {
+      this._value = value;
     }
+  }
 
-    test("should work with custom, generic classes", () => {
-      const form = useForm({
-        schema: z.object({
-          foo: z.instanceof(Custom<string>),
-        }),
-        defaultValues: {
-          foo: null as Custom<string | null> | null,
-        },
-      });
-
-      // It isn't able to preserve the class name in the output type but it works
-      expectTypeOf(form).toEqualTypeOf<
-        FormApi<{ foo: Custom<string | null> | null }>
-      >();
+  test("should work with custom, generic classes", () => {
+    const form = useForm({
+      schema: z.object({
+        foo: z.instanceof(Custom<string>),
+      }),
+      defaultValues: {
+        foo: null as Custom<string | null> | null,
+      },
     });
+
+    // It isn't able to preserve the class name in the output type but it works
+    expectTypeOf(form).toEqualTypeOf<
+      FormApi<{ foo: Custom<string | null> | null }>
+    >();
   });
 });
