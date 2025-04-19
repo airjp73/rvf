@@ -19,6 +19,21 @@ describe.skip("Standard schema types", () => {
     form.setValue("foo", "test");
   });
 
+  test("should not allow schema and validator at the same time", () => {
+    // @ts-expect-error
+    const form = useForm({
+      schema: z.object({
+        foo: z.string(),
+      }),
+      validator: successValidator,
+      defaultValues: { foo: "" },
+      handleSubmit: (data) => {
+        expectTypeOf(data).toEqualTypeOf<{ foo: string }>();
+      },
+    });
+    form.setValue("foo", "test");
+  });
+
   test("validators should continue to work", () => {
     const form = useForm({
       defaultValues: {
