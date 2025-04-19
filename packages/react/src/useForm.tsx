@@ -202,7 +202,6 @@ export type internal_ValidatorAndDefaultValueOpts<
        * If you have a custom adapter, we recommend using this approach as well, if the library doesn't support Standard Schema.
        */
       validator: Validator<SchemaOutput>;
-      schema?: never;
 
       /**
        * Sets the default values of the form.
@@ -223,7 +222,6 @@ export type internal_ValidatorAndDefaultValueOpts<
        * as well as determine the types when using the `FormApi` returned from this hook.
        */
       schema: StandardSchemaV1<SchemaInput, SchemaOutput>;
-      validator?: never;
       // Adding this intersection lets us still get the correct output inferred
       // even if `defaultValues` isn't provided yet
     } & {
