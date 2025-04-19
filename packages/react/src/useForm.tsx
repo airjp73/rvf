@@ -190,7 +190,7 @@ export type internal_ValidatorAndDefaultValueOpts<
   DefaultValues extends FieldValues,
   FormInputData extends FieldValues,
 > =
-  | {
+  | ({
       /**
        * A validator object created by a validation adapter such a `withZod` or `withYup`.
        * See [these docs](https://rvf-js.io/validation-library-support) for more details
@@ -214,7 +214,7 @@ export type internal_ValidatorAndDefaultValueOpts<
        * It's recommended that you provide a default value for every field in the form.
        */
       defaultValues?: FormInputData;
-    }
+    } & { schema?: never })
   | ({
       /**
        * A [Standard Schema](https://standardschema.dev/) compliant schema.
