@@ -169,6 +169,7 @@
         "@rvf/react": ">= 7.1.0 < 8.0.0",
       },
       "devDependencies": {
+        "@rvf/react": "*",
         "tsconfig": "*",
         "tsup-config": "*",
         "typescript": "^5.8.3",

@@ -90,3 +90,72 @@ export type AllProps<T> = {
     ? T[P]
     : T[P] | undefined;
 };
+
+///////////////////////////////////////////////////
+/////////////// Schema & Default Values ///////////
+///////////////////////////////////////////////////
+
+type Prettify<T> = {
+  [K in keyof T]: T[K];
+  // necessary for this type
+  // eslint-disable-next-line @typescript-eslint/ban-types
+} & {};
+
+// https://github.com/sindresorhus/type-fest/blob/44c1766504a2a5024f063ac83bc67d28ec52cba9/source/is-null.d.ts
+type IsNull<T> = [T] extends [null] ? true : false;
+// https://github.com/sindresorhus/type-fest/blob/44c1766504a2a5024f063ac83bc67d28ec52cba9/source/is-unknown.d.ts
+type IsUnknown<T> = unknown extends T // `T` can be `unknown` or `any`
+  ? IsNull<T> extends false // `any` can be `null`, but `unknown` can't be
+    ? true
+    : false
+  : false;
+
+type HandleObjects<T, U> = {
+  [K in keyof T | keyof U]: K extends keyof T
+    ? K extends keyof U
+      ? NonContradictingSupertype<T[K], U[K]>
+      : T[K]
+    : never;
+};
+
+type AnyReadStatus<T> = T | Readonly<T>;
+type HandleTuples<T, U> = T extends [infer THead, ...infer TTail]
+  ? U extends AnyReadStatus<[infer UHead, ...infer UTail]>
+    ? [NonContradictingSupertype<THead, UHead>, ...HandleTuples<TTail, UTail>]
+    : [THead, ...TTail]
+  : T;
+
+type Primitive = string | number | boolean | symbol | bigint | null | undefined;
+
+type NonDistributiveExtends<One, Two> = One extends Two ? true : false;
+type HandlePrimitives<T, U> = NonDistributiveExtends<T, U> extends true ? U : T;
+type Tuple = AnyReadStatus<[any, ...any[]]>;
+type AnyArray<T = any> = AnyReadStatus<Array<T>>;
+
+// prettier-ignore
+type HandleDifferences<T, U> =
+  [T, U] extends [Primitive, Primitive]
+    ? HandlePrimitives<T, U>
+  : [T, U] extends [Primitive, any] | [any, Primitive]
+    ? T
+  : [T, U] extends [Tuple, Tuple]
+    ? HandleTuples<T, U>
+  : [T, U] extends [Tuple, any] | [any, Tuple]
+    ? T
+  : [T, U] extends [AnyArray<infer TItem>, AnyArray<infer UItem>]
+    ? Array<NonContradictingSupertype<TItem, UItem>>
+  : [T, U] extends [AnyArray, any] | [any, AnyArray]
+    ? T
+  : Prettify<HandleObjects<T, U>>;
+
+/**
+ * Finds the least common supertype with some restrictions.
+ */
+export type NonContradictingSupertype<T, U> =
+  IsUnknown<T> extends true
+    ? U
+    : T extends U
+      ? U extends T
+        ? U
+        : HandleDifferences<T, U>
+      : HandleDifferences<T, U>;

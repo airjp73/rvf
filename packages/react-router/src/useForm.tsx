@@ -1,10 +1,9 @@
 import {
   useForm as useFormReact,
   FieldValues,
-  FormOpts,
   FormApi,
-  ValidatorAndDefaultValueOpts,
-  BaseFormOpts,
+  internal_ValidatorAndDefaultValueOpts,
+  internal_BaseFormOpts,
 } from "@rvf/react";
 import { useRemixSubmit } from "./remix-submission-handling";
 import {
@@ -20,6 +19,7 @@ import {
   StateSubmitHandler,
   DomSubmitHandler,
   preprocessFormData,
+  NonContradictingSupertype,
 } from "@rvf/core";
 import { useServerValidationErrors } from "./auto-server-hooks";
 
@@ -36,16 +36,26 @@ type FormSubmitOpts<FormOutputData, ResponseData> =
     };
 
 export type RemixFormOpts<
-  FormInputData extends FieldValues,
-  FormOutputData,
+  SchemaInput extends FieldValues = any,
+  SchemaOutput = unknown,
+  DefaultValues extends FieldValues = SchemaInput,
+  FormInputData extends FieldValues = NonContradictingSupertype<
+    NoInfer<SchemaInput>,
+    DefaultValues
+  >,
 > = Omit<
-  BaseFormOpts<FormInputData, FormOutputData, void>,
+  internal_BaseFormOpts<FormInputData, SchemaOutput, void>,
   | keyof SubmitOptions
   | "serverValidationErrors"
   | "handleSubmit"
   | "submitSource"
 > &
-  ValidatorAndDefaultValueOpts<FormInputData, FormOutputData> &
+  internal_ValidatorAndDefaultValueOpts<
+    SchemaInput,
+    SchemaOutput,
+    DefaultValues,
+    FormInputData
+  > &
   Pick<
     SubmitOptions,
     | "method"
@@ -59,15 +69,28 @@ export type RemixFormOpts<
     | "relative"
     | "viewTransition"
   > &
-  FormSubmitOpts<FormOutputData, void> & {
+  FormSubmitOpts<SchemaOutput, void> & {
     fetcher?: FetcherWithComponents<unknown>;
   };
 
 /**
  * Create and use an `FormScope`.
  */
-export function useForm<FormInputData extends FieldValues, FormOutputData>(
-  rvfOpts: RemixFormOpts<FormInputData, FormOutputData>,
+export function useForm<
+  SchemaInput extends FieldValues = any,
+  SchemaOutput = unknown,
+  const DefaultValues extends FieldValues = SchemaInput,
+  FormInputData extends FieldValues = NonContradictingSupertype<
+    NoInfer<SchemaInput>,
+    DefaultValues
+  >,
+>(
+  rvfOpts: RemixFormOpts<
+    SchemaInput,
+    SchemaOutput,
+    DefaultValues,
+    FormInputData
+  >,
 ): FormApi<FormInputData> {
   let rvf: FormApi<FormInputData>;
 
@@ -83,7 +106,7 @@ export function useForm<FormInputData extends FieldValues, FormOutputData>(
   );
 
   const handleSubmission = (
-    data: FormOutputData,
+    data: SchemaOutput,
     formDataOrOptions?: FormData | SubmitterOptions,
     maybeOptions?: SubmitterOptions,
   ) => {
@@ -99,7 +122,7 @@ export function useForm<FormInputData extends FieldValues, FormOutputData>(
           };
 
     const handleSubmit = rvfOpts?.handleSubmit as
-      | ((data: FormOutputData, formData: FormData) => Promise<void>)
+      | ((data: SchemaOutput, formData: FormData) => Promise<void>)
       | undefined;
 
     // when the user provides a handleSubmit, we should use that instead
@@ -150,7 +173,13 @@ export function useForm<FormInputData extends FieldValues, FormOutputData>(
     });
   };
 
-  rvf = useFormReact<FormInputData, FormOutputData, void>({
+  rvf = useFormReact<
+    FormInputData,
+    SchemaOutput,
+    void,
+    DefaultValues,
+    FormInputData
+  >({
     ...rvfOpts,
     ...serverStuff,
     otherFormProps: {
@@ -161,6 +190,6 @@ export function useForm<FormInputData extends FieldValues, FormOutputData>(
     submitSource,
     handleSubmit:
       (rvfOpts.handleSubmit as never) ?? (handleSubmission as never),
-  });
+  } as never);
   return rvf;
 }
