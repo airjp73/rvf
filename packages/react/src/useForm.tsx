@@ -14,7 +14,6 @@ import {
 import { FormApi, useFormInternal } from "./base";
 import { FieldErrors } from "@rvf/core";
 import { StandardSchemaV1 } from "@standard-schema/spec";
-import { InternalResolveOptions } from "vite";
 
 ///////////////////////////////// Type work
 type Prettify<T> = {
