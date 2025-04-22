@@ -37,6 +37,8 @@
   "dependencies": {
     "@rvf/core": ">= 7.1.0 < 8.0.0",
     "@rvf/set-get": ">= 7.0.1 < 8.0.0",
-    "@standard-schema/spec": "^1.0.0"
+    "@standard-schema/spec": "^1.0.0",
+    "hotscript": "^1.0.13",
+    "type-fest": "^4.40.0"
   }
 }

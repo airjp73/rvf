@@ -2,6 +2,7 @@ import { z } from "zod";
 import { useForm } from "../useForm";
 import { StandardSchemaV1 } from "@standard-schema/spec";
 import { Validator } from "@rvf/core";
+import { FormApi } from "@rvf/react";
 
 // Skipped because these are only types tests
 describe.skip("Standard schema types", () => {
@@ -346,6 +347,21 @@ describe.skip("Standard schema types", () => {
     expectTypeOf(form).toEqualTypeOf<
       FormApi<{ foo: { label: string; value: string } | null }>
     >();
+  });
+
+  test("should be able to add additional objects as a union", () => {
+    type Some = { type: "some"; value: string };
+    type None = { type: "none" };
+    type Option = Some | None;
+    const form = useForm({
+      schema: {} as any as StandardSchemaV1<{
+        option: Some;
+      }>,
+      defaultValues: {
+        option: { type: "none" } as Option,
+      },
+    });
+    expectTypeOf(form).toEqualTypeOf<FormApi<{ option: Option }>>();
   });
 
   class Custom<T> {

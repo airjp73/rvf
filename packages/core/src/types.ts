@@ -115,7 +115,9 @@ type HandleObjects<T, U> = {
     ? K extends keyof U
       ? NonContradictingSupertype<T[K], U[K]>
       : T[K]
-    : never;
+    : K extends keyof U
+      ? U[K]
+      : never;
 };
 
 type AnyReadStatus<T> = T | Readonly<T>;

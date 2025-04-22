@@ -149,7 +149,7 @@ describe.skip("Standard schema types", () => {
     >();
     f1.setValue("foo", "test");
 
-    useForm({
+    const f2 = useForm({
       schema: z.object({
         foo: z.string(),
         bar: z.string(),
@@ -203,7 +203,7 @@ describe.skip("Standard schema types", () => {
         foo: "hi there",
       },
     });
-    expectTypeOf(form).toEqualTypeOf<FormApi<{ foo: "hi there" }>>();
+    expectTypeOf(form).toEqualTypeOf<FormApi<{ foo: string }>>();
     form.setValue("foo", "hi there");
   });
 
@@ -224,6 +224,7 @@ describe.skip("Standard schema types", () => {
         file: null as File | null,
       },
     });
+    expectTypeOf(form.value("file")).toEqualTypeOf<File | null>();
   });
 
   test("should work with unions", () => {
@@ -275,8 +276,6 @@ describe.skip("Standard schema types", () => {
       },
     });
   });
-
-  const tuple = <T extends any[]>(...value: T): [...T] => [...value];
 
   test("should work with tuples", () => {
     const form = useForm({
@@ -348,6 +347,66 @@ describe.skip("Standard schema types", () => {
       FormApi<{ foo: { label: string; value: string } | null }>
     >();
   });
+
+  test("should be able to add additional objects as a union", () => {
+    type Some = { type: "some"; value: string };
+    type None = { type: "none" };
+    type Option = Some | None;
+    const form = useForm({
+      schema: {} as any as StandardSchemaV1<{
+        option: Some;
+      }>,
+      defaultValues: {
+        option: { type: "none" } as Option,
+      },
+    });
+    expectTypeOf(form).toEqualTypeOf<FormApi<{ option: Option }>>();
+  });
+
+  test("should require the default value type to overlap", () => {
+    const form = useForm({
+      schema: {} as any as StandardSchemaV1<{
+        bar: string | number;
+        baz: string | number;
+      }>,
+      defaultValues: {
+        bar: "bar" as string | number | boolean,
+        // @ts-expect-error
+        baz: "baz" as string | boolean,
+      },
+    });
+
+    expectTypeOf(form).toEqualTypeOf<
+      FormApi<{
+        bar: string | number | boolean;
+        baz: string | number;
+      }>
+    >();
+  });
+
+  // test("should be able to force override a type", () => {
+  //   const form = useForm({
+  //     schema: {} as any as StandardSchemaV1<{
+  //       foo: string | number;
+  //       bar: string | number;
+  //       baz: string | number;
+  //     }>,
+  //     defaultValues: {
+  //       // @ts-expect-error
+  //       foo: "foo" as string | boolean,
+  //       bar: "bar" as string | boolean,
+  //       // @ts-expect-error
+  //       baz: "baz" as string | boolean,
+  //     },
+  //   });
+  //   expectTypeOf(form).toEqualTypeOf<
+  //     FormApi<{
+  //       foo: string | number;
+  //       bar: string | boolean;
+  //       baz: string | number;
+  //     }>
+  //   >();
+  // });
 
   class Custom<T> {
     _value: T;
