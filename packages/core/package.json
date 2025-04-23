@@ -27,6 +27,7 @@
   },
   "devDependencies": {
     "@standard-schema/spec": "^1.0.0",
+    "hotscript": "^1.0.13",
     "tsconfig": "*",
     "tsup-config": "*",
     "typescript": "^5.8.3"
