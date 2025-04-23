@@ -3,6 +3,7 @@ import { useForm } from "../useForm";
 import { StandardSchemaV1 } from "@standard-schema/spec";
 import { Validator } from "@rvf/core";
 import { FormApi } from "@rvf/react";
+import { ValidatedForm } from "../ValidatedForm";
 
 // Skipped because these are only types tests
 describe.skip("Standard schema types", () => {
@@ -361,6 +362,27 @@ describe.skip("Standard schema types", () => {
       },
     });
     expectTypeOf(form).toEqualTypeOf<FormApi<{ option: Option }>>();
+  });
+
+  test("should work with ValidatedForm", () => {
+    type Some = { type: "some"; value: string };
+    type None = { type: "none" };
+    type Option = Some | None;
+    <ValidatedForm
+      schema={
+        {} as any as StandardSchemaV1<{
+          option: Some;
+        }>
+      }
+      defaultValues={{
+        option: { type: "none" } as Option,
+      }}
+    >
+      {(form) => {
+        expectTypeOf(form).toEqualTypeOf<FormApi<{ option: Option }>>();
+        return null;
+      }}
+    </ValidatedForm>;
   });
 
   test("should require the default value type to overlap", () => {

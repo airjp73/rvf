@@ -1,4 +1,4 @@
-import { AllProps, FieldValues } from "@rvf/core";
+import { AllProps, FieldValues, NonContradictingSupertype } from "@rvf/core";
 import { RemixFormOpts, useForm } from "./useForm";
 import { FormProvider, FormApi } from "@rvf/react";
 
@@ -9,10 +9,14 @@ type SmudgeUnion = {
 };
 
 export type ValidatedFormProps<
-  FormInputData extends FieldValues,
-  FormOutputData,
-  FormResponseData,
-> = RemixFormOpts<FormInputData, FormOutputData> &
+  SchemaInput extends FieldValues,
+  SchemaOutput,
+  DefaultValues extends FieldValues = SchemaInput,
+  FormInputData extends FieldValues = NonContradictingSupertype<
+    SchemaInput,
+    DefaultValues
+  >,
+> = RemixFormOpts<SchemaInput, SchemaOutput, DefaultValues, FormInputData> &
   Omit<React.ComponentProps<"form">, "children"> & {
     /**
      * A ref to the form element.
@@ -25,11 +29,20 @@ export type ValidatedFormProps<
   };
 
 export const ValidatedForm = <
-  FormInputData extends FieldValues,
-  FormOutputData,
-  FormResponseData,
+  SchemaInput extends FieldValues,
+  SchemaOutput,
+  const DefaultValues extends FieldValues = SchemaInput,
+  FormInputData extends FieldValues = NonContradictingSupertype<
+    SchemaInput,
+    DefaultValues
+  >,
 >(
-  props: ValidatedFormProps<FormInputData, FormOutputData, FormResponseData>,
+  props: ValidatedFormProps<
+    SchemaInput,
+    SchemaOutput,
+    DefaultValues,
+    FormInputData
+  >,
 ) => {
   const {
     validator,
@@ -63,12 +76,7 @@ export const ValidatedForm = <
     reloadDocument,
     viewTransition,
     ...rest
-  } = props as ValidatedFormProps<
-    FormInputData,
-    FormOutputData,
-    FormResponseData
-  > &
-    SmudgeUnion;
+  } = props as ValidatedFormProps<any, any, any, any> & SmudgeUnion;
 
   const opts = {
     action,
@@ -98,9 +106,12 @@ export const ValidatedForm = <
     viewTransition,
     fetcher,
   } satisfies AllProps<
-    RemixFormOpts<FormInputData, FormOutputData> & SmudgeUnion
+    RemixFormOpts<SchemaInput, SchemaOutput, DefaultValues, FormInputData> &
+      SmudgeUnion
   >;
-  const rvf = useForm<FormInputData, FormOutputData>(opts);
+  const rvf = useForm<SchemaInput, SchemaOutput, DefaultValues, FormInputData>(
+    opts,
+  );
 
   return (
     <FormProvider scope={rvf.scope()}>
