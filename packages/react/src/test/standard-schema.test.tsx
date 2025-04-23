@@ -402,14 +402,16 @@ describe.skip("Standard schema types", () => {
       },
     });
     expectTypeOf(form).toEqualTypeOf<
-      | {
-          type: "foo";
-          foo: string;
-        }
-      | {
-          type: "bar";
-          bar: string;
-        }
+      FormApi<
+        | {
+            type: "foo";
+            foo: string;
+          }
+        | {
+            type: "bar";
+            bar: string;
+          }
+      >
     >();
 
     const form2 = useForm({
@@ -430,14 +432,16 @@ describe.skip("Standard schema types", () => {
       },
     });
     expectTypeOf(form2).toEqualTypeOf<
-      | {
-          type: "foo";
-          foo: string;
-        }
-      | {
-          type: "bar";
-          bar: string;
-        }
+      FormApi<
+        | {
+            type: "foo";
+            foo: string;
+          }
+        | {
+            type: "bar";
+            bar: string;
+          }
+      >
     >();
   });
 
@@ -454,13 +458,23 @@ describe.skip("Standard schema types", () => {
         foo: z.instanceof(Custom<string>),
       }),
       defaultValues: {
-        foo: null as Custom<string | null> | null,
+        foo: new Custom("hi") as Custom<string | null>,
       },
     });
 
     // It isn't able to preserve the class name in the output type but it works
-    expectTypeOf(form).toEqualTypeOf<
-      FormApi<{ foo: Custom<string | null> | null }>
+    expectTypeOf(form).toEqualTypeOf<FormApi<{ foo: Custom<string | null> }>>();
+
+    const form2 = useForm({
+      schema: z.object({
+        foo: z.instanceof(Custom<string>),
+      }),
+      defaultValues: {
+        foo: null as Custom<string> | null,
+      },
+    });
+    expectTypeOf(form2).toEqualTypeOf<
+      FormApi<{ foo: Custom<string> | null }>
     >();
   });
 });
