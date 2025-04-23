@@ -40,7 +40,7 @@ export type RemixFormOpts<
   SchemaOutput = unknown,
   DefaultValues extends FieldValues = SchemaInput,
   FormInputData extends FieldValues = NonContradictingSupertype<
-    NoInfer<SchemaInput>,
+    SchemaInput,
     DefaultValues
   >,
 > = Omit<
@@ -81,7 +81,7 @@ export function useForm<
   SchemaOutput = unknown,
   const DefaultValues extends FieldValues = SchemaInput,
   FormInputData extends FieldValues = NonContradictingSupertype<
-    NoInfer<SchemaInput>,
+    SchemaInput,
     DefaultValues
   >,
 >(
