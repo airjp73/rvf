@@ -691,16 +691,9 @@ type Work<
   ? h.Call<h.Tuples.ToUnion, TExact> | Prettify<HandleDifferences<TDiff, UDiff>>
   : never;
 
-// h.Pipe<
-//   C,
-//   [
-//     PipeProp<"T", >,
-//     PipeProp<"U", [h.Unions.ToTuple]>,
-//     // [Set<"T", Prop<"U">>]
-//   ]
-// >;
-
-type t1 = NonContradictingSupertype<string, "hi">;
+// NoInfer breaks distributiveness, but this appears to fix it.
+// https://github.com/microsoft/TypeScript/issues/61076
+type DistributiveNoInfer<T> = NoInfer<[T]>[0];
 
 // /**
 //  * Finds the least common supertype with some restrictions.
@@ -986,7 +979,7 @@ export type internal_ValidatorAndDefaultValueOpts<
        * It's recommended that you provide a default value for every field in the form.
        */
       defaultValues: NonContradictingSupertype<
-        NoInfer<SchemaInput>,
+        DistributiveNoInfer<SchemaInput>,
         Readonly<DefaultValues>
       >;
     });
@@ -997,7 +990,7 @@ export type FormOpts<
   SubmitResponseData = unknown,
   DefaultValues extends FieldValues = SchemaInput,
   FormInputData extends FieldValues = NonContradictingSupertype<
-    NoInfer<SchemaInput>,
+    DistributiveNoInfer<SchemaInput>,
     DefaultValues
   >,
 > = internal_ValidatorAndDefaultValueOpts<
@@ -1033,7 +1026,7 @@ export function useForm<
   SubmitResponseData = unknown,
   const DefaultValues extends FieldValues = SchemaInput,
   FormInputData extends FieldValues = NonContradictingSupertype<
-    NoInfer<SchemaInput>,
+    DistributiveNoInfer<SchemaInput>,
     DefaultValues
   >,
 >(
