@@ -26,7 +26,7 @@ describe.skip("Standard schema types", () => {
         foo: z.string(),
       }),
       // @ts-expect-error
-      validator: successValidator,
+      validator: {} as any as Validator<any>,
       defaultValues: { foo: "" },
     });
   });
@@ -39,7 +39,7 @@ describe.skip("Standard schema types", () => {
           baz: "baz",
         },
       },
-      validator: successValidator,
+      validator: {} as any as Validator<any>,
     });
     form.setValue("foo.bar", "test");
   });
