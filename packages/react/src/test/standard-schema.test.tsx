@@ -203,7 +203,7 @@ describe.skip("Standard schema types", () => {
         foo: "hi there",
       },
     });
-    expectTypeOf(form).toEqualTypeOf<FormApi<{ foo: string }>>();
+    expectTypeOf(form).toEqualTypeOf<FormApi<{ foo: "hi there" }>>();
     form.setValue("foo", "hi there");
   });
 
@@ -327,7 +327,7 @@ describe.skip("Standard schema types", () => {
         foo: ["one", "two", "three"],
       },
     });
-    expectTypeOf(form).toEqualTypeOf<FormApi<{ foo: readonly string[] }>>();
+    expectTypeOf(form).toEqualTypeOf<FormApi<{ foo: string[] }>>();
     form.array("foo").push("");
   });
 
@@ -384,29 +384,62 @@ describe.skip("Standard schema types", () => {
     >();
   });
 
-  // test("should be able to force override a type", () => {
-  //   const form = useForm({
-  //     schema: {} as any as StandardSchemaV1<{
-  //       foo: string | number;
-  //       bar: string | number;
-  //       baz: string | number;
-  //     }>,
-  //     defaultValues: {
-  //       // @ts-expect-error
-  //       foo: "foo" as string | boolean,
-  //       bar: "bar" as string | boolean,
-  //       // @ts-expect-error
-  //       baz: "baz" as string | boolean,
-  //     },
-  //   });
-  //   expectTypeOf(form).toEqualTypeOf<
-  //     FormApi<{
-  //       foo: string | number;
-  //       bar: string | boolean;
-  //       baz: string | number;
-  //     }>
-  //   >();
-  // });
+  test("should not attempt to resolve a discrimintated union", () => {
+    const form = useForm({
+      schema: {} as any as StandardSchemaV1<
+        | {
+            type: "foo";
+            foo: string;
+          }
+        | {
+            type: "bar";
+            bar: string;
+          }
+      >,
+      defaultValues: {
+        type: "foo",
+        foo: "foo",
+      },
+    });
+    expectTypeOf(form).toEqualTypeOf<
+      | {
+          type: "foo";
+          foo: string;
+        }
+      | {
+          type: "bar";
+          bar: string;
+        }
+    >();
+
+    const form2 = useForm({
+      schema: {} as any as StandardSchemaV1<
+        | {
+            type: "foo";
+            foo: string;
+          }
+        | {
+            type: "bar";
+            bar: string;
+          }
+      >,
+      defaultValues: {
+        type: "foo",
+        // @ts-expect-error
+        foo: "foo" as string | number,
+      },
+    });
+    expectTypeOf(form2).toEqualTypeOf<
+      | {
+          type: "foo";
+          foo: string;
+        }
+      | {
+          type: "bar";
+          bar: string;
+        }
+    >();
+  });
 
   class Custom<T> {
     _value: T;

@@ -33,29 +33,32 @@ type IsUnknown<T> = unknown extends T // `T` can be `unknown` or `any`
   : false;
 // https://github.com/sindresorhus/type-fest/blob/86a3a6929f87948f708126083bfb760582e48989/source/is-never.d.ts#L42
 type IsNever<T> = [T] extends [never] ? true : false;
+interface IsNeverFn extends h.Fn {
+  return: IsNever<this["arg0"]>;
+}
 
-type ObjInfo<T> = T extends object
-  ? {
-      keys: keyof T;
-      value: T;
-    }
-  : never;
+// type ObjInfo<T> = T extends object
+//   ? {
+//       keys: keyof T;
+//       value: T;
+//     }
+//   : never;
 
-type HandleObjects<
-  T,
-  U,
-  TInfo = ObjInfo<T>,
-  UInfo = ObjInfo<U>,
-> = TInfo extends { keys: keyof U; value: T }
-  ? UInfo extends { keys: keyof T; value: U }
-    ? {
-        [K in UInfo["keys"]]: NonContradictingSupertype<
-          TInfo["value"][K],
-          K extends keyof UInfo["value"] ? UInfo["value"][K] : never
-        >;
-      }
-    : T
-  : T;
+// type HandleObjects<
+//   T,
+//   U,
+//   TInfo = ObjInfo<T>,
+//   UInfo = ObjInfo<U>,
+// > = TInfo extends { keys: keyof U; value: T }
+//   ? UInfo extends { keys: keyof T; value: U }
+//     ? {
+//         [K in UInfo["keys"]]: NonContradictingSupertype<
+//           TInfo["value"][K],
+//           K extends keyof UInfo["value"] ? UInfo["value"][K] : never
+//         >;
+//       }
+//     : T
+//   : T;
 
 // keyof T extends keyof U
 //   ? keyof U extends keyof T
@@ -73,16 +76,16 @@ type HandleObjects<
 //       : never;
 // };
 
-type AnyReadStatus<T> = T | Readonly<T>;
-type HandleTuples<T, U> = T extends [infer THead, ...infer TTail]
-  ? U extends AnyReadStatus<[infer UHead, ...infer UTail]>
-    ? [NonContradictingSupertype<THead, UHead>, ...HandleTuples<TTail, UTail>]
-    : [THead, ...TTail]
-  : T;
+// type AnyReadStatus<T> = T | Readonly<T>;
+// type HandleTuples<T, U> = T extends [infer THead, ...infer TTail]
+//   ? U extends AnyReadStatus<[infer UHead, ...infer UTail]>
+//     ? [NonContradictingSupertype<THead, UHead>, ...HandleTuples<TTail, UTail>]
+//     : [THead, ...TTail]
+//   : T;
 
-type Primitive = string | number | boolean | symbol | bigint | null | undefined;
+// type Primitive = string | number | boolean | symbol | bigint | null | undefined;
 
-type NonDistributiveExtends<One, Two> = One extends Two ? true : false;
+// type NonDistributiveExtends<One, Two> = One extends Two ? true : false;
 // type HandlePrimitives<T, U> = [T, U] extends [infer FullT, infer FullU]
 //   ? T extends Primitive
 //     ? U extends Primitive
@@ -102,8 +105,8 @@ type NonDistributiveExtends<One, Two> = One extends Two ? true : false;
 //     : never
 //   : never;
 
-type Tuple = AnyReadStatus<[any, ...any[]]>;
-type AnyArray<T = any> = AnyReadStatus<Array<T>>;
+// type Tuple = AnyReadStatus<[any, ...any[]]>;
+// type AnyArray<T = any> = AnyReadStatus<Array<T>>;
 
 // type asdf = HandlePrimitives<string | number, string | number | boolean>;
 
@@ -127,143 +130,142 @@ type Brand<T, B> = T & { __brand: B };
 // ) extends true ? true : false
 //
 
-type IsTuple<T> = T extends [any, ...any[]] ? true : false;
-type IsObject<T> = T extends object ? true : false;
-type IsArray<T> = T extends Array<any> ? true : false;
+// type IsTuple<T> = T extends [any, ...any[]] ? true : false;
+// type IsObject<T> = T extends object ? true : false;
+// type IsArray<T> = T extends Array<any> ? true : false;
 
-type MaybeDont<A, B> = [A, B] extends [B, A] ? A : B;
-// prettier-ignore
-type HandleDifferences<T, U, All = T | U | (T & U)> =
-  // ? [T] extends [U] ? U
-  // ? T extends Primitive
-  //   ? U extends Primitive
-  //     ? [T] extends [U] ? U
-  //     : T
-  //   : T
-  // ? [T & Primitive] extends [U & Primitive]
-  //   ? U extends Primitive ? U
-  //   : T extends Primitive ? T
-  //   : never
-  // U extends Primitive ? U extends T ? U : never
-  // : T extends Primitive ? T
-  // ? T extends Primitive ? U extends Primitive
-  //   ? [U] extends [FullT] ? U | T : T
-  // : IsNever<FullU> extends true ? never
+// type MaybeDont<A, B> = [A, B] extends [B, A] ? A : B;
+// // prettier-ignore
+// type HandleDifferences<T, U, All = T | U | (T & U)> =
+//   // ? [T] extends [U] ? U
+//   // ? T extends Primitive
+//   //   ? U extends Primitive
+//   //     ? [T] extends [U] ? U
+//   //     : T
+//   //   : T
+//   // ? [T & Primitive] extends [U & Primitive]
+//   //   ? U extends Primitive ? U
+//   //   : T extends Primitive ? T
+//   //   : never
+//   // U extends Primitive ? U extends T ? U : never
+//   // : T extends Primitive ? T
+//   // ? T extends Primitive ? U extends Primitive
+//   //   ? [U] extends [FullT] ? U | T : T
+//   // : IsNever<FullU> extends true ? never
 
+//   // All extends any
+//   // ? [All, All] extends [T, U] ? T extends All ? U extends All ? T : never : never
+//   All extends Tuple ? T extends Tuple ? U extends Tuple
+//     ? HandleTuples<T, U> : T : never
 
-  // All extends any
-  // ? [All, All] extends [T, U] ? T extends All ? U extends All ? T : never : never
-  All extends Tuple ? T extends Tuple ? U extends Tuple
-    ? HandleTuples<T, U> : T : never
+//   : All extends AnyArray ? T extends AnyArray<infer TItem> ? U extends AnyArray<infer UItem>
+//     ? IsNever<UItem> extends true // empty arrays can get inferred as never[]
+//       ? Array<TItem>
+//       : Array<NonContradictingSupertype<TItem, UItem>>
+//     : T : never
+//   // : [T, U] extends [AnyArray<infer TItem>, AnyArray<infer UItem>]
+//   //   ? IsNever<UItem> extends true // empty arrays can get inferred as never[]
+//   //     ? Array<TItem>
+//   //     : Array<NonContradictingSupertype<TItem, UItem>>
+//   // : [T, U] extends [AnyArray, any] | [any, AnyArray]
+//   //   ? T
+//   : All extends object ? T extends object ? U extends object
+//     ? Prettify<HandleObj2<T, U>>
+//     : T : never
+//   : [T] extends [U] ? U : T
+// // : never;
 
-  : All extends AnyArray ? T extends AnyArray<infer TItem> ? U extends AnyArray<infer UItem>
-    ? IsNever<UItem> extends true // empty arrays can get inferred as never[]
-      ? Array<TItem>
-      : Array<NonContradictingSupertype<TItem, UItem>>
-    : T : never
-  // : [T, U] extends [AnyArray<infer TItem>, AnyArray<infer UItem>]
-  //   ? IsNever<UItem> extends true // empty arrays can get inferred as never[]
-  //     ? Array<TItem>
-  //     : Array<NonContradictingSupertype<TItem, UItem>>
-  // : [T, U] extends [AnyArray, any] | [any, AnyArray]
-  //   ? T
-  : All extends object ? T extends object ? U extends object
-    ? Prettify<HandleObj2<T, U>>
-    : T : never
-  : [T] extends [U] ? U : T
-// : never;
-
-type HandleObj2<T, U> = {
-  [K in keyof T | keyof U]: K extends keyof T
-    ? K extends keyof U
-      ? NonContradictingSupertype<T[K], U[K]>
-      : T[K]
-    : never;
-};
-// : Prettify<HandleObjects<T, U>>;
-
-type R = HandleDifferences<
-  string | number | { foo: string } | { bar: number },
-  string | number | boolean | { foo: string | number } | { bar: string }
->;
-
-type R2 = HandleDifferences<{ foo: string }, { foo: number }>;
-type R4 = HandleDifferences<
-  { field: { foo: string } },
-  { field: { foo: string } | null }
->;
-
-type R3 = HandleDifferences<
-  { foo: string; bar: string },
-  { foo: number | string }
->;
-
-// type OverrideType<T, U> = U extends {
-//   [RVF_BRAND]: "normal";
-//   __type: infer Inner;
-// }
-//   ? NonDistributiveExtends<T, U> extends true
-//     ? Inner
-//     : T
-//   : U extends { [RVF_BRAND]: "force"; __type: infer Inner }
-//     ? Inner
+// type HandleObj2<T, U> = {
+//   [K in keyof T | keyof U]: K extends keyof T
+//     ? K extends keyof U
+//       ? NonContradictingSupertype<T[K], U[K]>
+//       : T[K]
 //     : never;
+// };
+// // : Prettify<HandleObjects<T, U>>;
 
-// prettier-ignore
-type LeastCommonSupertype<T, U> =
-  T extends Primitive ? T
-  : U extends Primitive ? U
-  // : [T, U] extends [Tuple, Tuple]
-  //   ? HandleTuples<T, U> : T
+// type R = HandleDifferences<
+//   string | number | { foo: string } | { bar: number },
+//   string | number | boolean | { foo: string | number } | { bar: string }
+// >;
 
-  // : T extends AnyArray<infer TItem> ? U extends AnyArray<infer UItem>
-  //   ? IsNever<UItem> extends true // empty arrays can get inferred as never[]
-  //     ? Array<TItem>
-  //     : Array<NonContradictingSupertype<TItem, UItem>>
-  //   : T
-  // // : [T, U] extends [AnyArray<infer TItem>, AnyArray<infer UItem>]
-  // //   ? IsNever<UItem> extends true // empty arrays can get inferred as never[]
-  // //     ? Array<TItem>
-  // //     : Array<NonContradictingSupertype<TItem, UItem>>
-  // // : [T, U] extends [AnyArray, any] | [any, AnyArray]
-  // //   ? T
-  : Prettify<{
-    [K in keyof T | keyof U]:
-      K extends keyof T
-        ? K extends keyof U
-          ? LeastCommonSupertype<T[K], U[K]>
-          : T[K]
-        : K extends keyof U
-          ? U[K]
-          : never
-  }>
+// type R2 = HandleDifferences<{ foo: string }, { foo: number }>;
+// type R4 = HandleDifferences<
+//   { field: { foo: string } },
+//   { field: { foo: string } | null }
+// >;
 
-// prettier-ignore
-type ShallowExtends<T, U, FullT = T, FullU = U> =
-  // T extends Primitive
-  //   ? U extends Primitive
-  //     ? [TPrimitives] extends [UPrimitives] ? true
-  //     : [UPrimitives] extends [TPrimitives] ? true
-  //     : false
-  //   : never
-  T extends [infer THead, ...infer TTail]
-    ? U extends [infer UHead, ...infer UTail]
-      // should only do length
-      ? ShallowExtends<THead, UHead> | ShallowExtends<TTail, UTail>
-      : false
-  : T extends AnyArray<infer TItem>
-    ? U extends AnyArray<infer UItem>
-      ? ShallowExtends<TItem, UItem>
-      : false
-  : T extends object
-    ? U extends object
-      ? [keyof T] extends [keyof U] ? true
-      : [keyof U] extends [keyof T] ? true
-      : false
-    : false
-  : [T] extends [FullU] ? true
-  : [U] extends [FullT] ? true
-  : false
+// type R3 = HandleDifferences<
+//   { foo: string; bar: string },
+//   { foo: number | string }
+// >;
+
+// // type OverrideType<T, U> = U extends {
+// //   [RVF_BRAND]: "normal";
+// //   __type: infer Inner;
+// // }
+// //   ? NonDistributiveExtends<T, U> extends true
+// //     ? Inner
+// //     : T
+// //   : U extends { [RVF_BRAND]: "force"; __type: infer Inner }
+// //     ? Inner
+// //     : never;
+
+// // prettier-ignore
+// type LeastCommonSupertype<T, U> =
+//   T extends Primitive ? T
+//   : U extends Primitive ? U
+//   // : [T, U] extends [Tuple, Tuple]
+//   //   ? HandleTuples<T, U> : T
+
+//   // : T extends AnyArray<infer TItem> ? U extends AnyArray<infer UItem>
+//   //   ? IsNever<UItem> extends true // empty arrays can get inferred as never[]
+//   //     ? Array<TItem>
+//   //     : Array<NonContradictingSupertype<TItem, UItem>>
+//   //   : T
+//   // // : [T, U] extends [AnyArray<infer TItem>, AnyArray<infer UItem>]
+//   // //   ? IsNever<UItem> extends true // empty arrays can get inferred as never[]
+//   // //     ? Array<TItem>
+//   // //     : Array<NonContradictingSupertype<TItem, UItem>>
+//   // // : [T, U] extends [AnyArray, any] | [any, AnyArray]
+//   // //   ? T
+//   : Prettify<{
+//     [K in keyof T | keyof U]:
+//       K extends keyof T
+//         ? K extends keyof U
+//           ? LeastCommonSupertype<T[K], U[K]>
+//           : T[K]
+//         : K extends keyof U
+//           ? U[K]
+//           : never
+//   }>
+
+// // prettier-ignore
+// type ShallowExtends<T, U, FullT = T, FullU = U> =
+//   // T extends Primitive
+//   //   ? U extends Primitive
+//   //     ? [TPrimitives] extends [UPrimitives] ? true
+//   //     : [UPrimitives] extends [TPrimitives] ? true
+//   //     : false
+//   //   : never
+//   T extends [infer THead, ...infer TTail]
+//     ? U extends [infer UHead, ...infer UTail]
+//       // should only do length
+//       ? ShallowExtends<THead, UHead> | ShallowExtends<TTail, UTail>
+//       : false
+//   : T extends AnyArray<infer TItem>
+//     ? U extends AnyArray<infer UItem>
+//       ? ShallowExtends<TItem, UItem>
+//       : false
+//   : T extends object
+//     ? U extends object
+//       ? [keyof T] extends [keyof U] ? true
+//       : [keyof U] extends [keyof T] ? true
+//       : false
+//     : false
+//   : [T] extends [FullU] ? true
+//   : [U] extends [FullT] ? true
+//   : false
 
 interface Context {
   T: unknown;
@@ -344,13 +346,15 @@ interface IfElse<Condition extends h.Fn, Then extends h.Fn, Else extends h.Fn>
     ? h.Call<Else, this["args"]>
     : this["cond"] extends [any, ...any[]]
       ? h.Call<Then, this["cond"]>
-      : h.Apply<Else, this["args"]>;
+      : this["cond"] extends true
+        ? h.Apply<Then, this["args"]>
+        : h.Apply<Else, this["args"]>;
 }
 
 interface IfElseChain<Cases, Else extends h.Fn = h.Identity> extends h.Fn {
   return: Cases extends [infer Head, ...infer Tail]
     ? Head extends [infer Condition extends h.Fn, infer Then extends h.Fn]
-      ? h.Apply<IfElse<Condition, Then, IfElseChain<Tail>>, this["args"]>
+      ? h.Apply<IfElse<Condition, Then, IfElseChain<Tail, Else>>, this["args"]>
       : never
     : h.Apply<Else, this["args"]>;
 }
@@ -424,27 +428,285 @@ interface PipeProp<P extends PropertyKey, fns extends h.Fn[]> extends h.Fn {
   return: h.Pipe<this["arg0"], [Set<P, h.ComposeLeft<[Prop<P>, ...fns]>>]>;
 }
 
-// type Work<C extends Context> = h.Pipe<C, [Tuplize, AssignResult<MapT>]>;
-type Work<C extends Context> = h.Pipe<
-  C,
+interface Continue<steps extends h.Fn[]> extends h.Fn {
+  return: this["arg0"] extends [...infer Head, infer Tail]
+    ? h.Pipe<Tail, steps> extends [...infer Parts]
+      ? [...Head, ...Parts]
+      : [...Head, h.Pipe<Tail, steps>]
+    : never;
+}
+
+interface EqualsAny<U> extends h.Fn {
+  return: h.Pipe<
+    U,
+    [h.Unions.ToTuple, h.Tuples.Some<h.Booleans.Equals<this["arg0"]>>]
+  >;
+}
+
+// type BooleanNotFn<fn extends h.Fn> = h.ComposeLeft<[fn, h.Booleans.Not]>;
+
+interface BooleanOrFn<left extends h.Fn, right extends h.Fn> extends h.Fn {
+  return: h.Apply<
+    h.Booleans.Or,
+    [h.Apply<left, this["args"]>, h.Apply<right, this["args"]>]
+  >;
+}
+
+interface WrapInTuple extends h.Fn {
+  return: [this["arg0"]];
+}
+
+// interface Handle<MatchParam, HandleFn extends h.Fn> extends h.Fn {
+//   return: this["arg0"] extends [...infer Handled, infer Current]
+//     ? [
+//         ...Handled,
+
+//         ...(h.Call<h.Tuples.Partition<ExtendsFn>> extends [
+//           infer Matching extends [...any[]],
+//           infer Rest extends [...any[]],
+//         ]
+//           ? [...h.Call<h.Tuples.Map<HandleFn, Matching>>, ...Rest]
+//           : []),
+//       ]
+//     : never;
+// }
+
+type Tuple<T = any> = [...T[]];
+
+interface Categorized {
+  primitive?: Tuple<Primitive>;
+  tuple?: Tuple<Tuple>;
+  array?: Tuple<Array<any>>;
+  object?: Tuple<object>;
+  other?: Tuple<unknown>;
+}
+
+interface GetTypeCategory extends h.Fn {
+  return: h.Call<
+    h.Match<
+      this["arg0"],
+      [
+        h.Match.With<Primitive, h.Constant<"primitive">>,
+        h.Match.With<[...any[]], h.Constant<"tuple">>,
+        h.Match.With<Array<any>, h.Constant<"array">>,
+        h.Match.With<object, h.Constant<"object">>,
+        h.Match.With<any, h.Constant<"other">>,
+      ]
+    >
+  >;
+}
+
+type CategorizeUnion<T> = h.Pipe<
+  T,
+  [h.Unions.ToTuple, h.Tuples.GroupBy<GetTypeCategory>]
+>;
+
+type GetCat<T, K extends keyof Categorized> = T extends Categorized
+  ? T[K] extends Tuple
+    ? T[K]
+    : []
+  : never;
+
+type Unionify<T extends Tuple, U extends Tuple> = [
+  h.Call<h.Tuples.ToUnion<T>>,
+  h.Call<h.Tuples.ToUnion<U>>,
+];
+
+type HandlePrimitives<
+  T extends Tuple<Primitive>,
+  U extends Tuple<Primitive>,
+> = h.Call<h.Tuples.ToUnion<T extends [] ? U : T>>;
+
+interface IsMatch extends h.Fn {
+  return: h.Booleans.Or<
+    h.Call<h.Booleans.Equals<this["arg0"], this["arg1"]>>,
+    h.Booleans.And<
+      h.Call<h.Booleans.Extends<this["arg0"], Primitive>>,
+      h.Call<h.Booleans.Extends<this["arg0"], this["arg1"]>>
+    >
+  >;
+}
+
+interface HasMatchIn<T extends Tuple> extends h.Fn {
+  return: h.Pipe<
+    T,
+    [
+      h.Tuples.Find<h.Booleans.Equals<this["arg0"]>, T>,
+      IsNeverFn,
+      h.Booleans.Not,
+    ]
+  >;
+}
+
+type Only<T extends Tuple> = T extends [infer OnlyT] ? OnlyT : never;
+
+interface HasExactlyOneItem extends h.Fn {
+  return: this["arg0"] extends [any] ? true : false;
+}
+
+interface IsEmptyTuple extends h.Fn {
+  return: this["arg0"] extends [] ? true : false;
+}
+
+type ResolveComplexUnion<
+  T extends Tuple,
+  U extends Tuple,
+  Handle extends h.Fn,
+> = h.Pipe<
+  T,
   [
-    PipeProp<"T", [h.Unions.ToTuple]>,
-    PipeProp<"U", [h.Unions.ToTuple]>,
-    // [Set<"T", Prop<"U">>]
+    IfElseChain<
+      [
+        [IsEmptyTuple, h.Constant<h.Call<h.Tuples.ToUnion<U>>>],
+        [HasExactlyOneItem, h.PartialApply<Handle, [Only<T>, Only<U>]>],
+      ],
+      h.Tuples.ToUnion
+    >,
   ]
 >;
 
-type t1 = Work<{
-  T: string;
-  U: string | number;
-  result: never;
-}>;
+// [T, U] extends [infer OnlyT, infer OnlyU] ? ShouldHandle<OnlyT, OnlyU>
+// : Unionify<T, U> extends [infer TUnion, infer UUnion]
+//   ? IsEqual<TUnion, UUnion> extends true
+//     ? ShouldResolveTo<TUnion>
+//     : TUnion
+//   : never;
 
-/**
- * Finds the least common supertype with some restrictions.
- */
+// interface HandleObjectsImpl extends h.Fn {
+//   return: [this["arg0"], this["arg1"]] extends [infer T, infer U]
+//     ? Prettify<{
+//         [K in keyof T | keyof U]: K extends keyof T
+//           ? K extends keyof U
+//             ? NonContradictingSupertype<T[K], U[K]>
+//             : T[K]
+//           : never;
+//       }>
+//     : never;
+// }
+
+// type HandleObjects<
+//   T extends Tuple<object>,
+//   U extends Tuple<object>,
+// > = ResolveComplexUnion<T, U, HandleObjectsImpl>;
+
+interface BrandFn<ToBrand> extends h.Fn {
+  return: Brand<this["arg0"], ToBrand>;
+}
+
+type ToUnion<T extends Tuple> = h.Call<h.Tuples.ToUnion<T>>;
+
+type ReconcileObjects<T extends object, U extends object> = {
+  [K in keyof T | keyof U]: K extends keyof T
+    ? K extends keyof U
+      ? NonContradictingSupertype<T[K], U[K]>
+      : T[K]
+    : never;
+};
+
+interface NestedSupertypeFn extends h.Fn {
+  return: this["arg0"] extends [infer one, infer two]
+    ? NonContradictingSupertype<one, two>
+    : never;
+}
+
+type ReconcileTuple<T extends Tuple, U extends Tuple> =
+  h.Call<
+    h.Booleans.Equals<h.Call<h.Tuples.Length<T>>, h.Call<h.Tuples.Length<U>>>
+  > extends true
+    ? h.Pipe<h.Call<h.Tuples.Zip<T, U>>, [h.Tuples.Map<NestedSupertypeFn>]>
+    : T;
+
+// prettier-ignore
+type Reconcile<T, U> =
+  T extends Primitive ? U extends Primitive
+    ? T extends U ? U : T
+    : T
+  : T extends AnyReadStatus<[infer THead, ...infer TTail]>
+    ? U extends AnyReadStatus<[infer UHead, ...infer UTail]>
+      ? ReconcileTuple<[THead, ...TTail], [UHead, ...UTail]>
+    : T
+  : T extends AnyReadStatus<Array<infer TItem>>
+    ? U extends AnyReadStatus<Array<infer UItem>>
+      ? Array<NonContradictingSupertype<TItem, UItem>>
+    : U extends AnyReadStatus<[infer UHead, ...infer UTail]>
+      ? Array<NonContradictingSupertype<TItem, ToUnion<[UHead, ...UTail]>>>
+    : T
+  : T extends object
+    ? U extends object ? ReconcileObjects<T, U>
+    : T
+  : T
+
+// [T, U] extends [Primitive, Primitive]
+//   ? T extends U ? U : T
+// : [T, U] extends [infer TT extends Tuple, infer UT extends Tuple]
+//   ? ReconcileTuple<TT, UT>
+// : [T, U] extends [Array<infer TItem>, infer UT extends Tuple]
+//   ? Array<NonContradictingSupertype<TItem, ToUnion<UT>>>
+// : [T, U] extends [Array<infer TItem>, Array<infer UItem>]
+//   ? Array<NonContradictingSupertype<TItem, UItem>>
+// : [T, U] extends [infer TO extends object, infer UO extends object]
+//   ? ReconcileObjects<TO, UO>
+// : T;
+
+// type Work<C extends Context> = h.Pipe<C, [Tuplize, AssignResult<MapT>]>;
+type HandleDifferences<T extends Tuple, U extends Tuple> =
+  // h.Match<
+  //   [T, U],
+  //   [
+  //     h.Match.With<[[], any], h.Constant<ToUnion<U>>>,
+  //     h.Match.With<
+  //   ]
+  // >;
+
+  // Everything from T was already an exact match inside U, so just return U
+  T extends []
+    ? ToUnion<U>
+    : // T has multiple union members that aren't exact matches, so we can't reconcile.
+      [T, U] extends [[infer TOnly], [infer UOnly]]
+      ? Reconcile<TOnly, UOnly>
+      : ToUnion<T>;
+// | HandlePrimitives<GetCat<TCat, "primitive">, GetCat<UCat, "primitive">>
+// | HandleObjects<GetCat<TCat, "object">, GetCat<UCat, "object">>;
+
+interface EqualsFn extends h.Fn {
+  return: [this["arg0"], this["arg1"]] extends [this["arg1"], this["arg0"]]
+    ? true
+    : false;
+}
+
+type eq = h.Call<h.Booleans.Equals<{ type: "foo" }, { type: "foo" }>>;
+
+type Work<
+  T,
+  U,
+  TTuple extends Tuple = h.Call<h.Unions.ToTuple, T>,
+  UTuple extends Tuple = h.Call<h.Unions.ToTuple, U>,
+> = [
+  h.Pipe<TTuple, [h.Tuples.Partition<HasMatchIn<UTuple>>]>,
+  h.Pipe<UTuple, [h.Tuples.Partition<HasMatchIn<TTuple>>]>,
+] extends [
+  [infer TExact, infer TDiff extends Tuple],
+  [any, infer UDiff extends Tuple],
+]
+  ? h.Call<h.Tuples.ToUnion, TExact> | Prettify<HandleDifferences<TDiff, UDiff>>
+  : never;
+
+// h.Pipe<
+//   C,
+//   [
+//     PipeProp<"T", >,
+//     PipeProp<"U", [h.Unions.ToTuple]>,
+//     // [Set<"T", Prop<"U">>]
+//   ]
+// >;
+
+type t1 = NonContradictingSupertype<string, "hi">;
+
+// /**
+//  * Finds the least common supertype with some restrictions.
+//  */
 export type NonContradictingSupertype<T, U> =
-  IsUnknown<T> extends true ? U : Work<{ T: T; U: U; result: never }>;
+  IsUnknown<T> extends true ? U : Prettify<Work<T, U>>;
 // : // : T extends U
 //   //   ? U extends T
 //   //     ? U
@@ -471,6 +733,101 @@ export type NonContradictingSupertype<T, U> =
 //   __type: T;
 // };
 //
+
+////
+// type Prettify<T> = {
+//   [K in keyof T]: T[K];
+//   // necessary for this type
+//   // eslint-disable-next-line @typescript-eslint/ban-types
+// } & {};
+
+// // https://github.com/sindresorhus/type-fest/blob/44c1766504a2a5024f063ac83bc67d28ec52cba9/source/is-null.d.ts
+// type IsNull<T> = [T] extends [null] ? true : false;
+// // https://github.com/sindresorhus/type-fest/blob/44c1766504a2a5024f063ac83bc67d28ec52cba9/source/is-unknown.d.ts
+// type IsUnknown<T> = unknown extends T // `T` can be `unknown` or `any`
+//   ? IsNull<T> extends false // `any` can be `null`, but `unknown` can't be
+//     ? true
+//     : false
+//   : false;
+
+// type HandleObjects<T, U> = {
+//   [K in keyof T | keyof U]: K extends keyof T
+//     ? K extends keyof U
+//       ? NonContradictingSupertype<T[K], U[K]>
+//       : T[K]
+//     : never;
+// };
+
+type AnyReadStatus<T> = T | Readonly<T>;
+// type HandleTuples<T, U> = T extends [infer THead, ...infer TTail]
+//   ? U extends AnyReadStatus<[infer UHead, ...infer UTail]>
+//     ? [NonContradictingSupertype<THead, UHead>, ...HandleTuples<TTail, UTail>]
+//     : [THead, ...TTail]
+//   : T;
+
+type Primitive = string | number | boolean | symbol | bigint | null | undefined;
+
+// type HandlePrimitives<T, U> = [T] extends [U] ? U : T;
+// type Tuple = AnyReadStatus<[any, ...any[]]>;
+// type AnyArray<T = any> = AnyReadStatus<Array<T>>;
+
+// // there's definitely a case where this doesn't work, right?
+// // prettier-ignore
+// // type HandleDifferences<T, U> =
+// //   [T, U] extends [Primitive, Primitive]
+// //     ? HandlePrimitives<T, U>
+// //   : [T, U] extends [Primitive, any] | [any, Primitive]
+// //     ? T
+// //   : [T, U] extends [Tuple, Tuple]
+// //     ? HandleTuples<T, U>
+// //   : [T, U] extends [Tuple, any] | [any, Tuple]
+// //     ? T
+// //   : [T, U] extends [AnyArray<infer TItem>, AnyArray<infer UItem>]
+// //     ? Array<NonContradictingSupertype<TItem, UItem>>
+// //   : [T, U] extends [AnyArray, any] | [any, AnyArray]
+// //     ? T
+// //   : [T, U] extends [object, object]
+// //     ? Prettify<HandleObjects<T, U>>
+// //   : T;
+
+// // prettier-ignore
+// type HandleDifferences<T, U> =
+//   h.Pipe<T, [h.Unions.ToTuple, h.Tuples.Filter<h.Booleans.Extends<Primitive>>]>
+//   // T extends Primitive ? T
+//   // :
+
+//   // [T, U] extends [Primitive, Primitive]
+//   //   ? HandlePrimitives<T, U>
+//   // : [T, U] extends [Primitive, any] | [any, Primitive]
+//   //   ? T
+//   // : [T, U] extends [Tuple, Tuple]
+//   //   ? HandleTuples<T, U>
+//   // : [T, U] extends [Tuple, any] | [any, Tuple]
+//   //   ? T
+//   // : [T, U] extends [AnyArray<infer TItem>, AnyArray<infer UItem>]
+//   //   ? Array<NonContradictingSupertype<TItem, UItem>>
+//   // : [T, U] extends [AnyArray, any] | [any, AnyArray]
+//   //   ? T
+//   // : [T, U] extends [object, object]
+//   //   ? Prettify<HandleObjects<T, U>>
+//   // : T;
+
+// type _r = HandleDifferences<string | number | { type: "foo"}, string | number | boolean>
+
+// /**
+//  * Finds the least common supertype with some restrictions.
+//  */
+// export type NonContradictingSupertype<T, U> =
+//   IsUnknown<T> extends true
+//     ? U
+//     : T extends U
+//       ? U extends T
+//         ? U
+//         : HandleDifferences<T, U>
+//       : HandleDifferences<T, U>;
+// : U extends any
+//   ? HandleDifferences<T, U>
+//   : never;
 
 ///////////
 
