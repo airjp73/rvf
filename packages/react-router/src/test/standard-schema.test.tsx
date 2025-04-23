@@ -38,7 +38,7 @@ describe.skip("Standard schema types", () => {
           baz: "baz",
         },
       },
-      validator: {} as Validator<any>,
+      validator: successValidator,
     });
     form.setValue("foo.bar", "test");
   });
@@ -149,7 +149,7 @@ describe.skip("Standard schema types", () => {
     >();
     f1.setValue("foo", "test");
 
-    useForm({
+    const f2 = useForm({
       schema: z.object({
         foo: z.string(),
         bar: z.string(),
@@ -224,6 +224,7 @@ describe.skip("Standard schema types", () => {
         file: null as File | null,
       },
     });
+    expectTypeOf(form.value("file")).toEqualTypeOf<File | null>();
   });
 
   test("should work with unions", () => {
@@ -276,8 +277,6 @@ describe.skip("Standard schema types", () => {
     });
   });
 
-  const tuple = <T extends any[]>(...value: T): [...T] => [...value];
-
   test("should work with tuples", () => {
     const form = useForm({
       schema: z.object({
@@ -328,7 +327,7 @@ describe.skip("Standard schema types", () => {
         foo: ["one", "two", "three"],
       },
     });
-    expectTypeOf(form).toEqualTypeOf<FormApi<{ foo: readonly string[] }>>();
+    expectTypeOf(form).toEqualTypeOf<FormApi<{ foo: string[] }>>();
     form.array("foo").push("");
   });
 
@@ -364,6 +363,88 @@ describe.skip("Standard schema types", () => {
     expectTypeOf(form).toEqualTypeOf<FormApi<{ option: Option }>>();
   });
 
+  test("should require the default value type to overlap", () => {
+    const form = useForm({
+      schema: {} as any as StandardSchemaV1<{
+        bar: string | number;
+        baz: string | number;
+      }>,
+      defaultValues: {
+        bar: "bar" as string | number | boolean,
+        // @ts-expect-error
+        baz: "baz" as string | boolean,
+      },
+    });
+
+    expectTypeOf(form).toEqualTypeOf<
+      FormApi<{
+        bar: string | number | boolean;
+        baz: string | number;
+      }>
+    >();
+  });
+
+  test("should not attempt to resolve a discrimintated union", () => {
+    const form = useForm({
+      schema: {} as any as StandardSchemaV1<
+        | {
+            type: "foo";
+            foo: string;
+          }
+        | {
+            type: "bar";
+            bar: string;
+          }
+      >,
+      defaultValues: {
+        type: "foo",
+        foo: "foo",
+      },
+    });
+    expectTypeOf(form).toEqualTypeOf<
+      FormApi<
+        | {
+            type: "foo";
+            foo: string;
+          }
+        | {
+            type: "bar";
+            bar: string;
+          }
+      >
+    >();
+
+    const form2 = useForm({
+      schema: {} as any as StandardSchemaV1<
+        | {
+            type: "foo";
+            foo: string;
+          }
+        | {
+            type: "bar";
+            bar: string;
+          }
+      >,
+      defaultValues: {
+        type: "foo",
+        // @ts-expect-error
+        foo: "foo" as string | number,
+      },
+    });
+    expectTypeOf(form2).toEqualTypeOf<
+      FormApi<
+        | {
+            type: "foo";
+            foo: string;
+          }
+        | {
+            type: "bar";
+            bar: string;
+          }
+      >
+    >();
+  });
+
   class Custom<T> {
     _value: T;
     constructor(value: T) {
@@ -377,13 +458,64 @@ describe.skip("Standard schema types", () => {
         foo: z.instanceof(Custom<string>),
       }),
       defaultValues: {
-        foo: null as Custom<string | null> | null,
+        foo: new Custom("hi") as Custom<string | null>,
       },
     });
 
     // It isn't able to preserve the class name in the output type but it works
+    expectTypeOf(form).toEqualTypeOf<FormApi<{ foo: Custom<string | null> }>>();
+
+    const form2 = useForm({
+      schema: z.object({
+        foo: z.instanceof(Custom<string>),
+      }),
+      defaultValues: {
+        foo: null as Custom<string> | null,
+      },
+    });
+    expectTypeOf(form2).toEqualTypeOf<
+      FormApi<{ foo: Custom<string> | null }>
+    >();
+  });
+
+  test("should not choke on recursive types", () => {
+    type Node = {
+      value: string;
+      children: Node[];
+    };
+    const form = useForm({
+      schema: {} as any as StandardSchemaV1<Node>,
+      defaultValues: {
+        value: "" as string | number,
+        children: [],
+      },
+    });
     expectTypeOf(form).toEqualTypeOf<
-      FormApi<{ foo: Custom<string | null> | null }>
+      FormApi<{ value: string | number; children: Node[] }>
+    >();
+  });
+
+  // It does choke on this one a bit
+  test("should not choke on conflicting recursive types", () => {
+    type Node1 = {
+      value: string;
+      child: Node1 | null;
+    };
+    type Node2 = {
+      value: number;
+      child: Node2 | null;
+    };
+    const form = useForm({
+      schema: {} as any as StandardSchemaV1<Node1>,
+      defaultValues: {
+        // @ts-expect-error
+        value: 1,
+        // @ts-expect-error
+        child: null as Node2 | null,
+      },
+    });
+    expectTypeOf(form).toEqualTypeOf<
+      FormApi<{ value: string; child: Node1 | null }>
     >();
   });
 });
