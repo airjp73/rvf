@@ -494,4 +494,28 @@ describe.skip("Standard schema types", () => {
       FormApi<{ value: string | number; children: Node[] }>
     >();
   });
+
+  // It does choke on this one a bit
+  test("should not choke on conflicting recursive types", () => {
+    type Node1 = {
+      value: string;
+      child: Node1 | null;
+    };
+    type Node2 = {
+      value: number;
+      child: Node2 | null;
+    };
+    const form = useForm({
+      schema: {} as any as StandardSchemaV1<Node1>,
+      defaultValues: {
+        // @ts-expect-error
+        value: 1,
+        // @ts-expect-error
+        child: null as Node2 | null,
+      },
+    });
+    expectTypeOf(form).toEqualTypeOf<
+      FormApi<{ value: string; child: Node1 | null }>
+    >();
+  });
 });
