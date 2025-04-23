@@ -477,4 +477,21 @@ describe.skip("Standard schema types", () => {
       FormApi<{ foo: Custom<string> | null }>
     >();
   });
+
+  test("should not choke on recursive types", () => {
+    type Node = {
+      value: string;
+      children: Node[];
+    };
+    const form = useForm({
+      schema: {} as any as StandardSchemaV1<Node>,
+      defaultValues: {
+        value: "" as string | number,
+        children: [],
+      },
+    });
+    expectTypeOf(form).toEqualTypeOf<
+      FormApi<{ value: string | number; children: Node[] }>
+    >();
+  });
 });
