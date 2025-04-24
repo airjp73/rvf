@@ -164,6 +164,24 @@ describe.skip("Standard schema types", () => {
     });
   });
 
+  test("should work with optional fields", () => {
+    const f3 = useForm({
+      schema: z.object({
+        foo: z.string().optional(),
+        bar: z.string().optional(),
+      }),
+      defaultValues: {
+        foo: "hi",
+      },
+    });
+    expectTypeOf(f3).toEqualTypeOf<
+      FormApi<{
+        foo?: string;
+        bar?: string;
+      }>
+    >();
+  });
+
   test("should error if default values are missing a field and the types are expanded", () => {
     const form = useForm({
       schema: z.object({

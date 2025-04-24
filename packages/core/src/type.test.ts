@@ -90,7 +90,6 @@ describe("NonContradictingSupertype", () => {
     expectTypeOf<Result>().toEqualTypeOf<{
       foo: string;
       bar: number;
-      baz: never;
     }>();
   });
 
@@ -140,5 +139,16 @@ describe("NonContradictingSupertype", () => {
   it("should resolve to U if T is unknown", () => {
     type Result = NonContradictingSupertype<unknown, number>;
     expectTypeOf<Result>().toEqualTypeOf<number>();
+  });
+
+  it("should resolve optional fields properly", () => {
+    type Result = NonContradictingSupertype<
+      { foo?: string; bar?: string },
+      { foo: string }
+    >;
+    expectTypeOf<Result>().toEqualTypeOf<{
+      foo?: string;
+      bar?: string;
+    }>();
   });
 });

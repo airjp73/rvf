@@ -137,11 +137,9 @@ interface HasMatchIn<T extends Tuple> extends h.Fn {
 type ToUnion<T extends Tuple> = h.Call<h.Tuples.ToUnion<T>>;
 
 type ReconcileObjects<T extends object, U extends object> = {
-  [K in keyof T | keyof U]: K extends keyof T
-    ? K extends keyof U
-      ? NonContradictingSupertype<T[K], U[K]>
-      : T[K]
-    : never;
+  [K in keyof T]: K extends keyof U
+    ? NonContradictingSupertype<T[K], U[K]>
+    : T[K];
 };
 
 // prettier-ignore
