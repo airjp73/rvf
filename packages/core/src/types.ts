@@ -144,18 +144,19 @@ type ReconcileObjects<T extends object, U extends object> = {
     : never;
 };
 
-interface NestedSupertypeFn extends h.Fn {
-  return: this["arg0"] extends [infer one, infer two]
-    ? NonContradictingSupertype<one, two>
-    : never;
-}
-
+// prettier-ignore
 type ReconcileTuple<T extends Tuple, U extends Tuple> =
-  h.Call<
-    h.Booleans.Equals<h.Call<h.Tuples.Length<T>>, h.Call<h.Tuples.Length<U>>>
-  > extends true
-    ? h.Pipe<h.Call<h.Tuples.Zip<T, U>>, [h.Tuples.Map<NestedSupertypeFn>]>
-    : T;
+  U extends [] ? T
+  : T extends [] ? []
+  : [T, U] extends [
+      [infer THead, ...infer TTail],
+      [infer UHead, ...infer UTail],
+    ]
+    ? [
+        NonContradictingSupertype<THead, UHead>,
+        ...ReconcileTuple<TTail, UTail>,
+      ]
+  : never;
 
 // prettier-ignore
 type Reconcile<T, U> =

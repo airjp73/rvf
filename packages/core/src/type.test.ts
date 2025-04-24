@@ -102,6 +102,20 @@ describe("NonContradictingSupertype", () => {
     expectTypeOf<Result>().toEqualTypeOf<[string | number, number | boolean]>();
   });
 
+  it("should use the length of T but still resolve tuple parts against U", () => {
+    type Result = NonContradictingSupertype<
+      [string, number],
+      [string | number, number | boolean, boolean]
+    >;
+    expectTypeOf<Result>().toEqualTypeOf<[string | number, number | boolean]>();
+
+    type Result2 = NonContradictingSupertype<
+      [string, number],
+      [string | number]
+    >;
+    expectTypeOf<Result2>().toEqualTypeOf<[string | number, number]>();
+  });
+
   it("should resolve differences that can be resolved, while returning T for conflicts", () => {
     type Result = NonContradictingSupertype<
       [string, number],
