@@ -308,12 +308,12 @@ describe.skip("Standard schema types", () => {
       }),
       defaultValues: {
         // @ts-expect-error
-        foo: ["one", "two", "three"],
+        foo: ["one" as string | number, "two", "three"],
       },
     });
     expectTypeOf(form).toEqualTypeOf<
       FormApi<{
-        foo: [string, string];
+        foo: [string | number, string];
       }>
     >();
     form.array("foo").push("");
