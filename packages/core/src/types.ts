@@ -104,12 +104,14 @@ type Prettify<T> = {
 
 // https://github.com/sindresorhus/type-fest/blob/44c1766504a2a5024f063ac83bc67d28ec52cba9/source/is-null.d.ts
 type IsNull<T> = [T] extends [null] ? true : false;
+
 // https://github.com/sindresorhus/type-fest/blob/44c1766504a2a5024f063ac83bc67d28ec52cba9/source/is-unknown.d.ts
 type IsUnknown<T> = unknown extends T // `T` can be `unknown` or `any`
   ? IsNull<T> extends false // `any` can be `null`, but `unknown` can't be
     ? true
     : false
   : false;
+
 // https://github.com/sindresorhus/type-fest/blob/86a3a6929f87948f708126083bfb760582e48989/source/is-never.d.ts#L42
 type IsNever<T> = [T] extends [never] ? true : false;
 interface IsNeverFn extends h.Fn {
@@ -196,9 +198,9 @@ type Work<
   ? h.Call<h.Tuples.ToUnion, TExact> | Prettify<HandleDifferences<TDiff, UDiff>>
   : never;
 
-// /**
-//  * Finds the least common supertype with some restrictions.
-//  */
+/**
+ * Widens the the type of the second argument while still applying some restrictions from T.
+ */
 export type NonContradictingSupertype<T, U> =
   IsUnknown<T> extends true
     ? U
