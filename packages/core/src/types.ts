@@ -116,6 +116,9 @@ interface IsNeverFn extends h.Fn {
   return: IsNever<this["arg0"]>;
 }
 
+// https://github.com/sindresorhus/type-fest/blob/main/source/is-any.d.ts
+export type IsAny<T> = 0 extends 1 & NoInfer<T> ? true : false;
+
 type Tuple<T = any> = [...T[]];
 
 interface HasMatchIn<T extends Tuple> extends h.Fn {
@@ -197,7 +200,11 @@ type Work<
 //  * Finds the least common supertype with some restrictions.
 //  */
 export type NonContradictingSupertype<T, U> =
-  IsUnknown<T> extends true ? U : Prettify<Work<T, U>>;
+  IsUnknown<T> extends true
+    ? U
+    : IsAny<T> extends true
+      ? T
+      : Prettify<Work<T, U>>;
 
 type AnyReadStatus<T> = T | Readonly<T>;
 
