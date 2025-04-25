@@ -1,3 +1,4 @@
+import * as h from "hotscript";
 import { GenericObject } from "./native-form-data/flatten";
 
 export type FieldValues = Record<string | number, any>;
@@ -90,3 +91,122 @@ export type AllProps<T> = {
     ? T[P]
     : T[P] | undefined;
 };
+
+///////////////////////////////////////////////////
+/////////////// Schema & Default Values ///////////
+///////////////////////////////////////////////////
+
+type Prettify<T> = {
+  [K in keyof T]: T[K];
+  // necessary for this type
+  // eslint-disable-next-line @typescript-eslint/ban-types
+} & {};
+
+// https://github.com/sindresorhus/type-fest/blob/44c1766504a2a5024f063ac83bc67d28ec52cba9/source/is-null.d.ts
+type IsNull<T> = [T] extends [null] ? true : false;
+
+// https://github.com/sindresorhus/type-fest/blob/44c1766504a2a5024f063ac83bc67d28ec52cba9/source/is-unknown.d.ts
+type IsUnknown<T> = unknown extends T // `T` can be `unknown` or `any`
+  ? IsNull<T> extends false // `any` can be `null`, but `unknown` can't be
+    ? true
+    : false
+  : false;
+
+// https://github.com/sindresorhus/type-fest/blob/86a3a6929f87948f708126083bfb760582e48989/source/is-never.d.ts#L42
+type IsNever<T> = [T] extends [never] ? true : false;
+interface IsNeverFn extends h.Fn {
+  return: IsNever<this["arg0"]>;
+}
+
+// https://github.com/sindresorhus/type-fest/blob/main/source/is-any.d.ts
+export type IsAny<T> = 0 extends 1 & NoInfer<T> ? true : false;
+
+type Tuple<T = any> = [...T[]];
+
+interface HasMatchIn<T extends Tuple> extends h.Fn {
+  return: h.Pipe<
+    T,
+    [
+      h.Tuples.Find<h.Booleans.Equals<this["arg0"]>, T>,
+      IsNeverFn,
+      h.Booleans.Not,
+    ]
+  >;
+}
+
+type ToUnion<T extends Tuple> = h.Call<h.Tuples.ToUnion<T>>;
+
+type ReconcileObjects<T extends object, U extends object> = {
+  [K in keyof T]: K extends keyof U
+    ? NonContradictingSupertype<T[K], U[K]>
+    : T[K];
+};
+
+// prettier-ignore
+type ReconcileTuple<T extends Tuple, U extends Tuple> =
+  U extends [] ? T
+  : T extends [] ? []
+  : [T, U] extends [
+      [infer THead, ...infer TTail],
+      [infer UHead, ...infer UTail],
+    ]
+    ? [
+        NonContradictingSupertype<THead, UHead>,
+        ...ReconcileTuple<TTail, UTail>,
+      ]
+  : never;
+
+// prettier-ignore
+type Reconcile<T, U> =
+  T extends Primitive ? U extends Primitive
+    ? T extends U ? U : T
+    : T
+  : T extends AnyReadStatus<[infer THead, ...infer TTail]>
+    ? U extends AnyReadStatus<[infer UHead, ...infer UTail]>
+      ? ReconcileTuple<[THead, ...TTail], [UHead, ...UTail]>
+    : T
+  : T extends AnyReadStatus<Array<infer TItem>>
+    ? U extends AnyReadStatus<Array<infer UItem>>
+      ? Array<NonContradictingSupertype<TItem, UItem>>
+    : U extends AnyReadStatus<[infer UHead, ...infer UTail]>
+      ? Array<NonContradictingSupertype<TItem, ToUnion<[UHead, ...UTail]>>>
+    : T
+  : T extends object
+    ? U extends object ? ReconcileObjects<T, U>
+    : T
+  : T
+
+type HandleDifferences<T extends Tuple, U extends Tuple> = T extends []
+  ? ToUnion<U>
+  : [T, U] extends [[infer TOnly], [infer UOnly]]
+    ? Reconcile<TOnly, UOnly>
+    : ToUnion<T>;
+
+type Work<
+  T,
+  U,
+  TTuple extends Tuple = h.Call<h.Unions.ToTuple, T>,
+  UTuple extends Tuple = h.Call<h.Unions.ToTuple, U>,
+> = [
+  h.Pipe<TTuple, [h.Tuples.Partition<HasMatchIn<UTuple>>]>,
+  h.Pipe<UTuple, [h.Tuples.Partition<HasMatchIn<TTuple>>]>,
+] extends [
+  [infer TExact, infer TDiff extends Tuple],
+  [any, infer UDiff extends Tuple],
+]
+  ? h.Call<h.Tuples.ToUnion, TExact> | Prettify<HandleDifferences<TDiff, UDiff>>
+  : never;
+
+/**
+ * Widens the the type of the second argument while still applying some restrictions from T.
+ */
+export type NonContradictingSupertype<T, U> =
+  IsUnknown<T> extends true
+    ? U
+    : IsAny<T> extends true
+      ? T
+      : Prettify<Work<T, U>>;
+
+type AnyReadStatus<T> = T | Readonly<T>;
+
+type Primitive = string | number | boolean | symbol | bigint | null | undefined;

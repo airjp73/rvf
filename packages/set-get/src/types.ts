@@ -17,7 +17,7 @@ export type ValidStringPaths<Obj, ValueType = any> = StringPaths<
 >;
 
 export type ValidStringPathsToArrays<Obj> = StringPaths<
-  PathsOfObject<Obj, [], Array<any>>,
+  PathsOfObject<Obj, [], Array<any> | readonly any[]>,
   true
 >;
 

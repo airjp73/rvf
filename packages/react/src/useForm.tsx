@@ -1,4 +1,5 @@
 import { useEffect, useState, useId, ComponentProps } from "react";
+import * as h from "hotscript";
 import {
   FieldValues,
   ValidationBehaviorConfig,
@@ -10,10 +11,13 @@ import {
   DomSubmitHandler,
   BeforeSubmitApi,
   withStandardSchema,
+  NonContradictingSupertype,
 } from "@rvf/core";
 import { FormApi, useFormInternal } from "./base";
 import { FieldErrors } from "@rvf/core";
 import { StandardSchemaV1 } from "@standard-schema/spec";
+
+///////////
 
 const noOp = () => {};
 
@@ -26,67 +30,6 @@ type FormSubmitOpts<FormOutputData, ResponseData> =
       submitSource?: "dom";
       handleSubmit?: DomSubmitHandler<FormOutputData, ResponseData>;
     };
-
-// Kinda hacky, but we do this to improve the type errors you get when you pass in `schema` & `handleSubmit`.
-type WithDefaultValues<FormInputData, T> = T extends { schema: any }
-  ? T & {
-      /**
-       * Sets the default values of the form.
-       *
-       * For Typescript users, `defaultValues` is one of the most important props you'll use.
-       * The type of the object you pass here, will determine the type of the data you get
-       * when interacting with the form. For example, `form.value('myField')` will be typed based on
-       * the type of `defaultValues.myField`.
-       *
-       * It's recommended that you provide a default value for every field in the form.
-       */
-      defaultValues: FormInputData;
-    }
-  : T extends { validator: any }
-    ? T & {
-        /**
-         * Sets the default values of the form.
-         *
-         * For Typescript users, `defaultValues` is one of the most important props you'll use.
-         * The type of the object you pass here, will determine the type of the data you get
-         * when interacting with the form. For example, `form.value('myField')` will be typed based on
-         * the type of `defaultValues.myField`.
-         *
-         * It's recommended that you provide a default value for every field in the form.
-         */
-        defaultValues?: FormInputData;
-      }
-    : never;
-
-export type internal_ValidatorAndDefaultValueOpts<
-  FormInputData extends FieldValues,
-  FormOutputData,
-> = WithDefaultValues<
-  FormInputData,
-  | {
-      /**
-       * A validator object created by a validation adapter such a `withZod` or `withYup`.
-       * See [these docs](https://rvf-js.io/validation-library-support) for more details
-       * and information on how to create a validator for other validation libraries.
-       *
-       * This option is soft-deprecated. For libraries that support Standard Schema,
-       * we recommend passing the schema directly to the `schema` option.
-       * For `yup`, the `withYup` adapter will eventually return a Standard Schema intead of a custom validator.
-       * If you have a custom adapter, we recommend using this approach as well, if the library doesn't support Standard Schema.
-       */
-      validator: Validator<FormOutputData>;
-      schema?: never;
-    }
-  | {
-      /**
-       * A [Standard Schema](https://standardschema.dev/) compliant schema.
-       * The input type of this schema will be used to help make `defaultValues` typesafe,
-       * as well as determine the types when using the `FormApi` returned from this hook.
-       */
-      schema: StandardSchemaV1<FormInputData, FormOutputData>;
-      validator?: never;
-    }
->;
 
 export type internal_BaseFormOpts<
   FormInputData extends FieldValues = FieldValues,
@@ -106,7 +49,7 @@ export type internal_BaseFormOpts<
    * Can be useful for showing a toast message or redirecting the user to a different page.
    * If you return a `Promise` from this callback, the `isSubmitting` state will still be `true` while this callback is running.
    *
-   * If you're using an adapter like `@rvf/react-router`, this will be called even if you aren't using `handleSubmit`.
+   * If you''t using `handleSubmit`.
    */
   onSubmitSuccess?: (
     handleSubmitResponse: NoInfer<SubmitResponseData>,
@@ -179,13 +122,84 @@ export type internal_BaseFormOpts<
   serverValidationErrors?: FieldErrors;
 };
 
+export type internal_ValidatorAndDefaultValueOpts<
+  SchemaInput extends FieldValues,
+  SchemaOutput,
+  DefaultValues extends FieldValues,
+  FormInputData extends FieldValues,
+> =
+  | ({
+      /**
+       * A validator object created by a validation adapter such a `withZod` or `withYup`.
+       * See [these docs](https://rvf-js.io/validation-library-support) for more details
+       * and information on how to create a validator for other validation libraries.
+       *
+       * This option is soft-deprecated. For libraries that support Standard Schema,
+       * we recommend passing the schema directly to the `schema` option.
+       * For `yup`, the `withYup` adapter will eventually return a Standard Schema intead of a custom validator.
+       * If you have a custom adapter, we recommend using this approach as well, if the library doesn't support Standard Schema.
+       */
+      validator: Validator<SchemaOutput>;
+
+      /**
+       * Sets the default values of the form.
+       *
+       * For Typescript users, `defaultValues` is one of the most important props you'll use.
+       * The type of the object you pass here, will determine the type of the data you get
+       * when interacting with the form. For example, `form.value('myField')` will be typed based on
+       * the type of `defaultValues.myField`.
+       *
+       * It's recommended that you provide a default value for every field in the form.
+       */
+      defaultValues?: FormInputData;
+    } & { schema?: never })
+  | ({
+      /**
+       * A [Standard Schema](https://standardschema.dev/) compliant schema.
+       * The input type of this schema will be used to help make `defaultValues` typesafe,
+       * as well as determine the types when using the `FormApi` returned from this hook.
+       */
+      schema: StandardSchemaV1<SchemaInput, SchemaOutput>;
+      // Adding this intersection lets us still get the correct output inferred
+      // even if `defaultValues` isn't provided yet
+    } & {
+      /**
+       * Sets the default values of the form.
+       *
+       * For Typescript users, `defaultValues` is one of the most important props you'll use.
+       * The type of the object you pass here, will determine the type of the data you get
+       * when interacting with the form. For example, `form.value('myField')` will be typed based on
+       * the type of `defaultValues.myField`.
+       *
+       * It's recommended that you provide a default value for every field in the form.
+       */
+      defaultValues: NonContradictingSupertype<
+        SchemaInput,
+        Readonly<DefaultValues>
+      >;
+    });
+
 export type FormOpts<
-  FormInputData extends FieldValues = FieldValues,
-  FormOutputData = never,
+  SchemaInput extends FieldValues = any,
+  SchemaOutput = unknown,
   SubmitResponseData = unknown,
-> = internal_ValidatorAndDefaultValueOpts<FormInputData, FormOutputData> &
-  internal_BaseFormOpts<FormInputData, FormOutputData, SubmitResponseData> &
-  FormSubmitOpts<FormOutputData, SubmitResponseData>;
+  DefaultValues extends FieldValues = SchemaInput,
+  FormInputData extends FieldValues = NonContradictingSupertype<
+    SchemaInput,
+    DefaultValues
+  >,
+> = internal_ValidatorAndDefaultValueOpts<
+  SchemaInput,
+  SchemaOutput,
+  DefaultValues,
+  FormInputData
+> &
+  internal_BaseFormOpts<
+    NoInfer<FormInputData>,
+    NoInfer<SchemaOutput>,
+    SubmitResponseData
+  > &
+  FormSubmitOpts<NoInfer<SchemaOutput>, SubmitResponseData>;
 
 const maybeThen = <T,>(
   maybePromise: T | Promise<T>,
@@ -199,14 +213,25 @@ const maybeThen = <T,>(
 };
 
 /**
- * Create and use an `FormScope`.
+ * Create and use a `FormScope`.
  */
 export function useForm<
-  FormInputData extends FieldValues,
-  FormOutputData,
-  SubmitResponseData,
+  SchemaInput extends FieldValues = any,
+  SchemaOutput = unknown,
+  SubmitResponseData = unknown,
+  const DefaultValues extends FieldValues = SchemaInput,
+  FormInputData extends FieldValues = NonContradictingSupertype<
+    SchemaInput,
+    DefaultValues
+  >,
 >(
-  options: FormOpts<FormInputData, FormOutputData, SubmitResponseData>,
+  options: FormOpts<
+    SchemaInput,
+    SchemaOutput,
+    SubmitResponseData,
+    DefaultValues,
+    FormInputData
+  >,
 ): FormApi<FormInputData> {
   // everything from below
   const {
@@ -224,12 +249,14 @@ export function useForm<
     reloadDocument,
     validationBehaviorConfig,
     id,
-  } = options;
+  } = options as any;
 
   const validator =
     "schema" in options && !!options.schema
       ? withStandardSchema(options.schema)
-      : options.validator;
+      : "validator" in options
+        ? options.validator
+        : (undefined as never);
 
   const defaultFormId = useId();
   const [form] = useState<FormScope<unknown>>(() => {
@@ -240,7 +267,7 @@ export function useForm<
       onBeforeSubmit: onBeforeSubmit as never,
       onSubmit: onSubmit as never,
       onSubmitSuccess: (data) => {
-        onSubmitSuccess?.(data as SubmitResponseData);
+        onSubmitSuccess?.(data);
         if (resetAfterSubmit) {
           const formElement = form.__store__.formRef.current;
           if (formElement) formElement.reset();
@@ -278,7 +305,7 @@ export function useForm<
       onBeforeSubmit,
       onSubmit,
       onSubmitSuccess: (data: unknown) => {
-        const successResult = onSubmitSuccess?.(data as SubmitResponseData);
+        const successResult = onSubmitSuccess?.(data);
         return maybeThen(successResult, () => {
           if (resetAfterSubmit) {
             const formElement = form.__store__.formRef.current;

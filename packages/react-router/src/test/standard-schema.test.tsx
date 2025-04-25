@@ -1,8 +1,8 @@
 import { z } from "zod";
 import { useForm } from "../useForm";
-import { FormApi } from "../base";
 import { StandardSchemaV1 } from "@standard-schema/spec";
-import { successValidator } from "./util/successValidator";
+import { Validator } from "@rvf/core";
+import { FormApi } from "@rvf/react";
 import { ValidatedForm } from "../ValidatedForm";
 
 // Skipped because these are only types tests
@@ -26,7 +26,7 @@ describe.skip("Standard schema types", () => {
         foo: z.string(),
       }),
       // @ts-expect-error
-      validator: successValidator,
+      validator: {} as any as Validator<any>,
       defaultValues: { foo: "" },
     });
   });
@@ -39,7 +39,7 @@ describe.skip("Standard schema types", () => {
           baz: "baz",
         },
       },
-      validator: successValidator,
+      validator: {} as any as Validator<any>,
     });
     form.setValue("foo.bar", "test");
   });
@@ -91,24 +91,6 @@ describe.skip("Standard schema types", () => {
     });
     expectTypeOf(form.value("foo")).toEqualTypeOf<string | number>();
     form.setValue("foo", "test");
-  });
-
-  test("should work with optional fields", () => {
-    const f3 = useForm({
-      schema: z.object({
-        foo: z.string().optional(),
-        bar: z.string().optional(),
-      }),
-      defaultValues: {
-        foo: "hi",
-      },
-    });
-    expectTypeOf(f3).toEqualTypeOf<
-      FormApi<{
-        foo?: string;
-        bar?: string;
-      }>
-    >();
   });
 
   test("should error if default values are missing a field", () => {
@@ -180,6 +162,24 @@ describe.skip("Standard schema types", () => {
         baz: "",
       },
     });
+  });
+
+  test("should work with optional fields", () => {
+    const f3 = useForm({
+      schema: z.object({
+        foo: z.string().optional(),
+        bar: z.string().optional(),
+      }),
+      defaultValues: {
+        foo: "hi",
+      },
+    });
+    expectTypeOf(f3).toEqualTypeOf<
+      FormApi<{
+        foo?: string;
+        bar?: string;
+      }>
+    >();
   });
 
   test("should error if default values are missing a field and the types are expanded", () => {
