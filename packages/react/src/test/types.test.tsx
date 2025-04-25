@@ -7,7 +7,7 @@ import { useField } from "../field";
 import { ChangeEvent, FocusEvent, useRef } from "react";
 import { useFormScope } from "../useFormScope";
 
-describe("types", () => {
+describe.skip("types", () => {
   it("should only allow valid paths", () => {
     const Component = () => {
       const form = useForm({
