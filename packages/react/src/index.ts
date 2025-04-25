@@ -76,3 +76,4 @@ export {
 } from "./useNativeValidity";
 export { Isolate } from "./isolation";
 export * from "./compatability/misc";
+export { createFormScope as unstable_createFormScope } from "./createFormScope";
