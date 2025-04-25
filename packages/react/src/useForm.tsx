@@ -1,5 +1,4 @@
 import { useEffect, useState, useId, ComponentProps } from "react";
-import * as h from "hotscript";
 import {
   FieldValues,
   ValidationBehaviorConfig,
