@@ -83,7 +83,7 @@ it("should include data from the form submitter on submit", async () => {
         foo: 123,
       },
       validator: successValidator as Validator<{ foo: number }>,
-      handleSubmit: async (data) => void submit(data),
+      handleSubmit: submit as any,
     });
 
     return (
@@ -174,7 +174,7 @@ it("should respect changes to the submit source", async () => {
         foo: 123,
       },
       validator: successValidator as Validator<{ foo: number }>,
-      handleSubmit: async (data) => void submit(data),
+      handleSubmit: submit as any,
     });
 
     return (
