@@ -16,8 +16,6 @@ import { FormApi, useFormInternal } from "./base";
 import { FieldErrors } from "@rvf/core";
 import { StandardSchemaV1 } from "@standard-schema/spec";
 
-///////////
-
 const noOp = () => {};
 
 type FormSubmitOpts<FormOutputData, ResponseData> =
