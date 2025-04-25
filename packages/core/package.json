@@ -27,13 +27,13 @@
   },
   "devDependencies": {
     "@standard-schema/spec": "^1.0.0",
-    "hotscript": "^1.0.13",
     "tsconfig": "*",
     "tsup-config": "*",
     "typescript": "^5.8.3"
   },
   "dependencies": {
     "@rvf/set-get": "*",
+    "hotscript": "^1.0.13",
     "immer": "^10.0.4",
     "react-tracked": "^2.0.0",
     "zustand": "^5.0.2"
