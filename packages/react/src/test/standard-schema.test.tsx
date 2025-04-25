@@ -260,6 +260,22 @@ describe.skip("Standard schema types", () => {
     >();
   });
 
+  test("should work with unions that come from ternaries", () => {
+    const someBoolean = true as boolean;
+    const form = useForm({
+      schema: z.object({
+        foo: z.object({ value: z.string(), label: z.string() }),
+      }),
+      defaultValues: {
+        // foo: null as { value: string; label: string } | null,
+        foo: someBoolean ? { value: "hi there", label: "Hi There" } : null,
+      },
+    });
+    expectTypeOf(form).toEqualTypeOf<
+      FormApi<{ foo: { value: string; label: string } | null }>
+    >();
+  });
+
   test("should work with arrays", () => {
     const form = useForm({
       schema: z.object({
