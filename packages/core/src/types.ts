@@ -123,11 +123,22 @@ export type IsAny<T> = 0 extends 1 & NoInfer<T> ? true : false;
 
 type Tuple<T = any> = [...T[]];
 
-interface HasMatchIn<T extends Tuple> extends h.Fn {
+interface IsExtendedBy<ToMatch> extends h.Fn {
+  return: ToMatch extends this["arg0"] ? true : false;
+}
+
+interface ExtendsSomethingIn<T extends Tuple> extends h.Fn {
+  return: h.Pipe<
+    T,
+    [h.Tuples.Find<IsExtendedBy<this["arg0"]>, T>, IsNeverFn, h.Booleans.Not]
+  >;
+}
+
+interface IsExtendedBySomethingIn<T extends Tuple> extends h.Fn {
   return: h.Pipe<
     T,
     [
-      h.Tuples.Find<h.Booleans.Equals<this["arg0"]>, T>,
+      h.Tuples.Find<h.Booleans.Extends<this["arg0"]>, T>,
       IsNeverFn,
       h.Booleans.Not,
     ]
@@ -188,8 +199,8 @@ type Work<
   TTuple extends Tuple = h.Call<h.Unions.ToTuple, T>,
   UTuple extends Tuple = h.Call<h.Unions.ToTuple, U>,
 > = [
-  h.Pipe<TTuple, [h.Tuples.Partition<HasMatchIn<UTuple>>]>,
-  h.Pipe<UTuple, [h.Tuples.Partition<HasMatchIn<TTuple>>]>,
+  h.Pipe<TTuple, [h.Tuples.Partition<IsExtendedBySomethingIn<UTuple>>]>,
+  h.Pipe<UTuple, [h.Tuples.Partition<ExtendsSomethingIn<TTuple>>]>,
 ] extends [
   [infer TExact, infer TDiff extends Tuple],
   [any, infer UDiff extends Tuple],
