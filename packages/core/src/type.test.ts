@@ -172,4 +172,14 @@ describe("NonContradictingSupertype", () => {
       foo: { label: string; value: string } | null;
     }>();
   });
+
+  it("should resolve classes without digging into them", () => {
+    type Result = NonContradictingSupertype<
+      { foo: File },
+      { foo: File | null }
+    >;
+    expectTypeOf<Result>().toEqualTypeOf<{
+      foo: File | null;
+    }>();
+  });
 });
