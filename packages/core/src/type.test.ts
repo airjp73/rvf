@@ -141,6 +141,11 @@ describe("NonContradictingSupertype", () => {
     expectTypeOf<Result>().toEqualTypeOf<number>();
   });
 
+  it("should correctly handle types with nested unknowns", () => {
+    type Result = NonContradictingSupertype<{ foo: unknown }, { foo: string }>;
+    expectTypeOf<Result>().toEqualTypeOf<{ foo: string }>();
+  });
+
   it("should resolve optional fields properly", () => {
     type Result = NonContradictingSupertype<
       { foo?: string; bar?: string },
