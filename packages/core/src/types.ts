@@ -169,7 +169,9 @@ type ReconcileTuple<T extends Tuple, U extends Tuple> =
 
 // prettier-ignore
 type Reconcile<T, U> =
-  T extends Primitive ? U extends Primitive
+  h.Booleans.Equals<T, U> extends true
+    ? T
+  : T extends Primitive ? U extends Primitive
     ? T extends U ? U : T
     : T
   : T extends AnyReadStatus<[infer THead, ...infer TTail]>
@@ -193,19 +195,56 @@ type HandleDifferences<T extends Tuple, U extends Tuple> = T extends []
     ? Reconcile<TOnly, UOnly>
     : ToUnion<T>;
 
+interface Reducer extends h.Fn {
+  return: [this["arg0"], this["arg1"]] extends [
+    {
+      matched: infer Matched extends Tuple;
+      unmatched: infer Unmatched extends Tuple;
+      u: infer U extends Tuple;
+    },
+    infer T,
+  ]
+    ? [h.Call<h.Tuples.Find<h.Booleans.Extends<T>, U>>] extends [infer Found]
+      ? IsNever<Found> extends true
+        ? { matched: Matched; unmatched: [...Unmatched, T]; u: U }
+        : {
+            matched: [...Matched, Reconcile<T, Found>];
+            unmatched: Unmatched;
+            u: U;
+          }
+      : never
+    : never;
+}
+
+type Brand<T, N extends number> = T & { __brand: N };
+
 type Work<
   T,
   U,
   TTuple extends Tuple = h.Call<h.Unions.ToTuple, T>,
   UTuple extends Tuple = h.Call<h.Unions.ToTuple, U>,
 > = [
-  h.Pipe<TTuple, [h.Tuples.Partition<IsExtendedBySomethingIn<UTuple>>]>,
-  h.Pipe<UTuple, [h.Tuples.Partition<ExtendsSomethingIn<TTuple>>]>,
+  h.Call<
+    h.Tuples.Reduce<Reducer, { matched: []; unmatched: []; u: UTuple }, TTuple>
+  >,
 ] extends [
-  [infer TExact, infer TDiff extends Tuple],
-  [any, infer UDiff extends Tuple],
+  {
+    unmatched: infer Unmatched extends Tuple;
+    matched: infer Matched extends Tuple;
+  },
 ]
-  ? h.Call<h.Tuples.ToUnion, TExact> | Prettify<HandleDifferences<TDiff, UDiff>>
+  ? [
+      h.Call<
+        h.Tuples.Filter<
+          h.Compose<[h.Booleans.Not, ExtendsSomethingIn<TTuple>]>,
+          UTuple
+        >
+      >,
+    ] extends [infer UDiff extends Tuple]
+    ?
+        | h.Call<h.Tuples.ToUnion, Matched>
+        | Prettify<HandleDifferences<Unmatched, UDiff>>
+    : never
   : never;
 
 /**
