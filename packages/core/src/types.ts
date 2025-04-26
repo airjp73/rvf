@@ -134,17 +134,6 @@ interface ExtendsSomethingIn<T extends Tuple> extends h.Fn {
   >;
 }
 
-interface IsExtendedBySomethingIn<T extends Tuple> extends h.Fn {
-  return: h.Pipe<
-    T,
-    [
-      h.Tuples.Find<h.Booleans.Extends<this["arg0"]>, T>,
-      IsNeverFn,
-      h.Booleans.Not,
-    ]
-  >;
-}
-
 type ToUnion<T extends Tuple> = h.Call<h.Tuples.ToUnion<T>>;
 
 type ReconcileObjects<T extends object, U extends object> = {
@@ -169,7 +158,7 @@ type ReconcileTuple<T extends Tuple, U extends Tuple> =
 
 // prettier-ignore
 type Reconcile<T, U> =
-  h.Booleans.Equals<T, U> extends true
+  h.Call<h.Booleans.Equals<T, U>> extends true
     ? T
   : T extends Primitive ? U extends Primitive
     ? T extends U ? U : T
@@ -215,8 +204,6 @@ interface Reducer extends h.Fn {
       : never
     : never;
 }
-
-type Brand<T, N extends number> = T & { __brand: N };
 
 type Work<
   T,
