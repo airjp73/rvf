@@ -151,4 +151,20 @@ describe("NonContradictingSupertype", () => {
       bar?: string;
     }>();
   });
+
+  it("should correctly handle unions that are more specific than the schema type", () => {
+    type Result1 = NonContradictingSupertype<
+      { foo: string },
+      { foo: "hi" | 123 }
+    >;
+    expectTypeOf<Result1>().toEqualTypeOf<{ foo: string | 123 }>();
+
+    type Result2 = NonContradictingSupertype<
+      { foo: { label: string; value: string } },
+      { foo: { label: "foo"; value: "bar" } | null }
+    >;
+    expectTypeOf<Result2>().toEqualTypeOf<{
+      foo: { label: string; value: string } | null;
+    }>();
+  });
 });
