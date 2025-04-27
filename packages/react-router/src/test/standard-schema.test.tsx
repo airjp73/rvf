@@ -60,6 +60,23 @@ describe.skip("Standard schema types", () => {
     form.setValue("foo", "test");
   });
 
+  test("should resolve type widening involving ternaries", () => {
+    const condition = true as boolean;
+    const form = useForm({
+      schema: z.object({
+        foo: z.string(),
+      }),
+      defaultValues: {
+        foo: condition ? "hi" : 123,
+      },
+      handleSubmit: (data) => {
+        expectTypeOf(data).toEqualTypeOf<{ foo: string }>();
+      },
+    });
+    expectTypeOf(form.value("foo")).toEqualTypeOf<string | 123>();
+    form.setValue("foo", "test");
+  });
+
   test("should not allow a schema when that doesn't match the default values", () => {
     const form = useForm({
       schema: z.object({
