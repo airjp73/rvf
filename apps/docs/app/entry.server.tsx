@@ -54,6 +54,7 @@ function handleBotRequest(
       <ServerRouter
         context={reactRouterContext}
         url={request.url}
+        // @ts-expect-error TODO: fix this
         abortDelay={ABORT_DELAY}
       />,
       {
@@ -105,6 +106,7 @@ function handleBrowserRequest(
       <ServerRouter
         context={reactRouterContext}
         url={request.url}
+        // @ts-expect-error TODO: fix this
         abortDelay={ABORT_DELAY}
       />,
       {

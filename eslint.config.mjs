@@ -10,6 +10,7 @@ export default [
     ignores: [
       "**/node_modules/",
       "**/.cache/",
+      "**/.vercel/",
       "**/browser/",
       "**/build/",
       "**/dist/",

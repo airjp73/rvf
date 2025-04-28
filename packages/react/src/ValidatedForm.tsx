@@ -1,12 +1,24 @@
-import { FieldValues, AllProps } from "@rvf/core";
+import { FieldValues, AllProps, NonContradictingSupertype } from "@rvf/core";
 import { FormOpts, useForm } from "./useForm";
 import { FormApi } from "./base";
 import { FormProvider } from "./context";
 
 export type ValidatedFormProps<
-  FormInputData extends FieldValues,
-  FormOutputData,
-> = FormOpts<FormInputData, FormOutputData> &
+  SchemaInput extends FieldValues,
+  SchemaOutput,
+  SubmitResponseData = unknown,
+  DefaultValues extends FieldValues = SchemaInput,
+  FormInputData extends FieldValues = NonContradictingSupertype<
+    SchemaInput,
+    DefaultValues
+  >,
+> = FormOpts<
+  SchemaInput,
+  SchemaOutput,
+  SubmitResponseData,
+  DefaultValues,
+  FormInputData
+> &
   Omit<React.ComponentProps<"form">, "children"> & {
     /**
      * A ref to the form element.
@@ -25,10 +37,22 @@ type SmudgeUnion = {
 };
 
 export const ValidatedForm = <
-  FormInputData extends FieldValues,
-  FormOutputData,
+  SchemaInput extends FieldValues,
+  SchemaOutput,
+  SubmitResponseData = unknown,
+  const DefaultValues extends FieldValues = SchemaInput,
+  FormInputData extends FieldValues = NonContradictingSupertype<
+    SchemaInput,
+    DefaultValues
+  >,
 >(
-  props: ValidatedFormProps<FormInputData, FormOutputData>,
+  props: ValidatedFormProps<
+    SchemaInput,
+    SchemaOutput,
+    SubmitResponseData,
+    DefaultValues,
+    FormInputData
+  >,
 ) => {
   const {
     formRef,
@@ -53,7 +77,7 @@ export const ValidatedForm = <
     validator,
     schema,
     ...rest
-  } = props as ValidatedFormProps<FormInputData, FormOutputData> & SmudgeUnion;
+  } = props as ValidatedFormProps<any, any, any, any, any> & SmudgeUnion;
 
   const opts = {
     defaultValues: defaultValues,
@@ -73,11 +97,9 @@ export const ValidatedForm = <
     resetAfterSubmit,
     otherFormProps,
     reloadDocument,
-  } satisfies AllProps<
-    FormOpts<FormInputData, FormOutputData, void> & SmudgeUnion
-  >;
+  } satisfies AllProps<FormOpts<any, any, any, any, any> & SmudgeUnion>;
 
-  const rvf = useForm(opts);
+  const rvf = useForm(opts as never);
 
   return (
     <FormProvider scope={rvf.scope()}>

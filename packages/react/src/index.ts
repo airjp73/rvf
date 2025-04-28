@@ -34,8 +34,8 @@ export { type FormApi, type FormFields } from "./base";
 export {
   useForm,
   FormOpts,
-  internal_BaseFormOpts as BaseFormOpts,
-  internal_ValidatorAndDefaultValueOpts as ValidatorAndDefaultValueOpts,
+  internal_BaseFormOpts,
+  internal_ValidatorAndDefaultValueOpts,
 } from "./useForm";
 export { ValidatedForm, type ValidatedFormProps } from "./ValidatedForm";
 export {
