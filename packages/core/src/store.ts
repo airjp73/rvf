@@ -1016,8 +1016,7 @@ export const createFormStateStore = ({
           void resolvers.queue();
         }
 
-        transientFieldRefs.forEach((fieldName, ref) => {
-          if (!ref) return;
+        transientFieldRefs.getRefs(fieldName).forEach((ref) => {
           setFormControlValue(ref, nextValue);
         });
       },

@@ -108,6 +108,43 @@ it("should reset individual fields", async () => {
   expect(screen.getByTestId("baz.a-touched")).toHaveTextContent("true");
 });
 
+it("should reset individual fields without interferring with other fields", async () => {
+  const submit = vi.fn();
+  const TestComp = () => {
+    const form = useForm({
+      defaultValues: {
+        foo: "bar",
+        bar: "barValue",
+      },
+      validator: successValidator,
+      handleSubmit: submit,
+    });
+
+    return (
+      <form {...form.getFormProps()} data-testid="form">
+        <input data-testid="foo" {...form.field("foo").getInputProps()} />
+        <input data-testid="bar" {...form.field("bar").getInputProps()} />
+        <button
+          type="button"
+          data-testid="reset"
+          onClick={() => form.resetField("foo")}
+        />
+      </form>
+    );
+  };
+
+  render(<TestComp />);
+  expect(screen.getByTestId("foo")).toHaveValue("bar");
+  expect(screen.getByTestId("bar")).toHaveValue("barValue");
+
+  await userEvent.type(screen.getByTestId("foo"), "test");
+  expect(screen.getByTestId("foo")).toHaveValue("bartest");
+
+  await userEvent.click(screen.getByTestId("reset"));
+  expect(screen.getByTestId("foo")).toHaveValue("bar");
+  expect(screen.getByTestId("bar")).toHaveValue("barValue");
+});
+
 it("should reset the whole form using custom initial values", async () => {
   const submit = vi.fn();
   const TestComp = () => {
