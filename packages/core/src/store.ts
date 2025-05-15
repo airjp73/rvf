@@ -709,6 +709,7 @@ export const createFormStateStore = ({
           setPath(state.values, fieldName, value);
           const defaultValue = getFieldDefaultValue(state, fieldName);
           state.dirtyFields[fieldName] = value !== defaultValue;
+          deleteFieldsWithPrefix([state.fieldArrayKeys], fieldName);
         });
 
         if (

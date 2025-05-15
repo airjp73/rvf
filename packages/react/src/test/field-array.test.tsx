@@ -1590,6 +1590,45 @@ it("should update a map operation when changing an array with setValue", async (
   expect(screen.getByText("baz")).toBeInTheDocument();
 });
 
+it("should update a map operation when changing an array with onChange", async () => {
+  const Comp = () => {
+    const form = useForm({
+      defaultValues: {
+        foo: ["foo", "bar"],
+      },
+      validator: successValidator,
+    });
+
+    return (
+      <form {...form.getFormProps()}>
+        {form.array("foo").map((key, item) => {
+          return <div key={key}>{item.value()}</div>;
+        })}
+        <button
+          data-testid="update"
+          type="button"
+          onClick={() => {
+            form.field("foo").onChange(["foo", "jim", "baz"]);
+          }}
+        />
+      </form>
+    );
+  };
+
+  render(<Comp />);
+
+  expect(screen.getByText("foo")).toBeInTheDocument();
+  expect(screen.getByText("bar")).toBeInTheDocument();
+  expect(screen.queryByText("baz")).not.toBeInTheDocument();
+
+  await userEvent.click(screen.getByTestId("update"));
+
+  expect(screen.getByText("foo")).toBeInTheDocument();
+  expect(screen.getByText("jim")).toBeInTheDocument();
+  expect(screen.queryByText("bar")).not.toBeInTheDocument();
+  expect(screen.getByText("baz")).toBeInTheDocument();
+});
+
 it("should not blow up if an array is undefined", async () => {
   const Comp = () => {
     const form = useForm({
