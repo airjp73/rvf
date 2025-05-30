@@ -1,6 +1,6 @@
 import { TestFormData } from "@remix-validated-form/test-utils";
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { z, ZodError } from "zod";
+import { z, ZodError } from "zod/v4";
 import { zfd } from "./";
 
 const expectError = (schema: z.Schema<any>, val: any, error?: ZodError) => {
@@ -19,7 +19,7 @@ const expectValid = (schema: z.Schema<any>, val: any) => {
 
 describe("zod helpers", () => {
   describe("text", () => {
-    it("should interperet an empty string as undefined", () => {
+    it("should interpret an empty string as undefined", () => {
       const s = zfd.text(z.string().optional());
       expect(s.parse("")).toBeUndefined();
     });
@@ -176,18 +176,18 @@ describe("zod helpers", () => {
         ["adsf", -123],
         new ZodError([
           {
-            code: "invalid_type",
             expected: "number",
+            code: "invalid_type",
             path: [0],
             message: "Invalid input: expected number, received string",
           } as any,
           {
+            origin: "number",
             code: "too_small",
             minimum: 0,
             inclusive: false,
-            origin: "number",
-            message: "Too small: expected number to be >0",
             path: [1],
+            message: "Too small: expected number to be >0",
           },
         ]),
       );
