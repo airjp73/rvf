@@ -1,5 +1,5 @@
 import { setPath } from "@rvf/set-get";
-import * as z from "zod";
+import * as z from "zod/v4";
 import {
   ZodPipe,
   ZodTransform,
@@ -8,19 +8,18 @@ import {
   ZodObject,
   ZodString,
   ZodType,
-  ZodTypeAny,
-} from "zod";
+} from "zod/v4";
 
-type InputType<DefaultType extends ZodTypeAny> = {
+type InputType<DefaultType extends ZodType> = {
   (): ZodPipe<ZodTransform, DefaultType>;
-  <ProvidedType extends ZodTypeAny>(
+  <ProvidedType extends ZodType>(
     schema: ProvidedType,
   ): ZodPipe<ZodTransform, ProvidedType>;
 };
 
 const stripEmpty = z.literal("").transform(() => undefined);
 
-const preprocessIfValid = (schema: ZodTypeAny) => (val: unknown) => {
+const preprocessIfValid = (schema: ZodType) => (val: unknown) => {
   const result = schema.safeParse(val);
   if (result.success) return result.data;
   return val;
@@ -109,7 +108,7 @@ export const repeatable: InputType<ZodArray<any>> = (
  * A convenience wrapper for repeatable.
  * Instead of passing the schema for an entire array, you pass in the schema for the item type.
  */
-export const repeatableOfType = <T extends ZodTypeAny>(
+export const repeatableOfType = <T extends ZodType>(
   schema: T,
 ): ZodPipe<ZodTransform, ZodArray<T>> => repeatable(z.array(schema));
 
@@ -130,7 +129,7 @@ type FormDataType = {
     >,
     ZodObject<T>
   >;
-  <T extends ZodTypeAny>(
+  <T extends ZodType>(
     shape: T,
   ): ZodPipe<ZodTransform<T, FormData | FormDataLikeInput | z.input<T>>, T>;
 };
@@ -143,9 +142,7 @@ const safeParseJson = (jsonString: string) => {
   }
 };
 
-export const json = <T extends ZodTypeAny>(
-  schema: T,
-): ZodPipe<ZodTransform, T> =>
+export const json = <T extends ZodType>(schema: T): ZodPipe<ZodTransform, T> =>
   z.preprocess(
     preprocessIfValid(
       z.union([stripEmpty, z.string().transform((val) => safeParseJson(val))]),
