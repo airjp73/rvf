@@ -38,6 +38,7 @@ export const createFormScope = <
     action,
     disableFocusOnError,
     serverValidationErrors,
+    serverFormError,
     resetAfterSubmit,
     otherFormProps,
     reloadDocument,
@@ -57,6 +58,7 @@ export const createFormScope = <
   const rvf = createFormScope_impl({
     defaultValues: options.defaultValues ?? {},
     serverValidationErrors: serverValidationErrors ?? {},
+    serverFormError: serverFormError ?? null,
     validator,
     onBeforeSubmit: onBeforeSubmit as never,
     onSubmit: onSubmit as never,

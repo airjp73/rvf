@@ -47,6 +47,7 @@ export type RemixFormOpts<
   internal_BaseFormOpts<FormInputData, SchemaOutput, void>,
   | keyof SubmitOptions
   | "serverValidationErrors"
+  | "serverFormError"
   | "handleSubmit"
   | "submitSource"
 > &

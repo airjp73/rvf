@@ -169,6 +169,7 @@ type StoreState = {
   dirtyFields: Record<string, boolean>;
   validationErrors: Record<string, string>;
   submitStatus: SubmitStatus;
+  formLevelError: string | null;
   fieldArrayKeys: Record<string, Array<string>>;
   arrayUpdateKeys: Record<string, string>;
   validationBehaviorConfig: ValidationBehaviorConfig;
@@ -208,6 +209,7 @@ type StoreActions = {
   setTouched: (fieldName: string, value: boolean) => void;
   setDirty: (fieldName: string, value: boolean) => void;
   setError: (fieldName: string, value: string | null) => void;
+  setFormError: (value: string | null) => void;
 
   setAllValues: (data: FieldValues) => void;
   setAllTouched: (data: Record<string, boolean>) => void;
@@ -255,7 +257,10 @@ type StoreActions = {
     flags: StoreFlags;
   }) => void;
 
-  syncServerValidationErrors: (errors: FieldErrors) => void;
+  syncServerValidationErrors: (
+    errors: FieldErrors,
+    formError: string | null,
+  ) => void;
 
   reset: (nextValues?: FieldValues) => void;
   resetField: (fieldName: string, opts?: ResetFieldOpts) => void;
@@ -350,6 +355,7 @@ export type FormStoreInit = {
   formProps: StoreFormProps;
   flags: StoreFlags;
   serverValidationErrors: FieldErrors;
+  serverFormError: string | null;
   defaultFormId: string;
 };
 
@@ -443,6 +449,7 @@ export const createFormStateStore = ({
   formProps,
   flags,
   serverValidationErrors = {},
+  serverFormError = null,
   defaultFormId,
 }: FormStoreInit) =>
   create<FormStoreValue>()(
@@ -454,6 +461,7 @@ export const createFormStateStore = ({
       touchedFields: {},
       dirtyFields: {},
       validationErrors: serverValidationErrors,
+      formLevelError: serverFormError,
       // If we have default errors, lets treat that as a failed server-side validation
       submitStatus:
         Object.keys(serverValidationErrors).length > 0 ? "error" : "idle",
@@ -744,6 +752,7 @@ export const createFormStateStore = ({
       onSubmit: async (submitterData, submitterOptions = {}) => {
         set((state) => {
           state.submitStatus = "submitting";
+          state.formLevelError = null;
         });
 
         const [rawValues, formData] = get().getFormValuesForValidation({
@@ -881,12 +890,17 @@ export const createFormStateStore = ({
         });
       },
 
-      syncServerValidationErrors: (errors) => {
-        if (errors === get().validationErrors) return;
+      syncServerValidationErrors: (errors, formError) => {
+        if (
+          errors === get().validationErrors &&
+          get().formLevelError === formError
+        )
+          return;
 
         set((state) => {
           state.validationErrors = errors;
           state.submitStatus = "error";
+          state.formLevelError = formError;
         });
         get().focusFirstInvalidField();
       },
@@ -937,6 +951,12 @@ export const createFormStateStore = ({
         set((state) => {
           if (value == null) delete state.validationErrors[fieldName];
           else state.validationErrors[fieldName] = value;
+        });
+      },
+
+      setFormError: (value) => {
+        set((state) => {
+          state.formLevelError = value;
         });
       },
 

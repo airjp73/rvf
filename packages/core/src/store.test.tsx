@@ -33,6 +33,7 @@ const testStore = (init?: Partial<FormStoreInit>) =>
       reloadDocument: false,
     },
     serverValidationErrors: {},
+    serverFormError: null,
     formProps: {
       id: "test-form",
     },

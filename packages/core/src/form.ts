@@ -40,6 +40,7 @@ type SubmitTypes<FormOutputData> =
 type FormInit<FormInputData extends FieldValues, FormOutputData> = {
   defaultValues: FormInputData;
   serverValidationErrors: FieldErrors;
+  serverFormError: string | null;
   validator: Validator<FormOutputData>;
   validationBehaviorConfig?: ValidationBehaviorConfig;
   onSubmit: StateSubmitHandler | DomSubmitHandler;
@@ -80,6 +81,7 @@ export const createFormScope = <
 >({
   defaultValues,
   serverValidationErrors,
+  serverFormError,
   validator,
   onSubmit,
   onSubmitSuccess,
@@ -108,6 +110,7 @@ export const createFormScope = <
   const store = createFormStateStore({
     defaultValues,
     serverValidationErrors,
+    serverFormError,
     transientFieldRefs,
     controlledFieldRefs,
     fieldSerializerRefs,

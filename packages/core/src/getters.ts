@@ -36,6 +36,10 @@ export const getFieldError = (state: FormStoreValue, fieldName: string) => {
   return state.validationErrors[fieldName] ?? null;
 };
 
+export const getFormError = (state: FormStoreValue) => {
+  return state.formLevelError ?? null;
+};
+
 export const getFieldArrayKeys = (state: FormStoreValue, fieldName: string) =>
   state.fieldArrayKeys[fieldName];
 

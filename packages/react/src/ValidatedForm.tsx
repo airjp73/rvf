@@ -58,6 +58,7 @@ export const ValidatedForm = <
     formRef,
     defaultValues,
     serverValidationErrors,
+    serverFormError,
     action,
     id,
     disableFocusOnError,
@@ -82,6 +83,7 @@ export const ValidatedForm = <
   const opts = {
     defaultValues: defaultValues,
     serverValidationErrors,
+    serverFormError,
     action,
     id,
     disableFocusOnError,

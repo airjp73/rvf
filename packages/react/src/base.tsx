@@ -19,6 +19,7 @@ import {
   SubmitterOptions,
   FORM_ID_FIELD_NAME,
   getFormIdOption,
+  getFormError,
 } from "@rvf/core";
 import {
   StringToPathTuple,
@@ -69,6 +70,7 @@ export type FormState = {
   hasBeenSubmitted: boolean;
   submitStatus: SubmitStatus;
 
+  formError: string | null;
   isValid: boolean;
   isDirty: boolean;
   isTouched: boolean;
@@ -269,6 +271,12 @@ export interface FormApi<FormInputData> {
    * Set the current error of the field in scope.
    */
   clearError(): void;
+
+  /**
+   * Sets the form-level error of the form.
+   * It's accessibel via `form.formState.formError`.
+   */
+  setFormError(value: string | null): void;
 
   /**
    * Manually validates the form.
@@ -538,7 +546,13 @@ export const makeBaseFormApi = <FormInputData,>({
       return Object.values(state().touchedFields).some(Boolean);
     },
     get isValid() {
-      return Object.values(state().validationErrors).every((error) => !error);
+      return (
+        !state().formLevelError &&
+        Object.values(state().validationErrors).every((error) => !error)
+      );
+    },
+    get formError() {
+      return getFormError(state());
     },
     get submitStatus() {
       return state().submitStatus;
@@ -565,6 +579,7 @@ export const makeBaseFormApi = <FormInputData,>({
     touched: (fieldName) => getFieldTouched(trackedState, f(fieldName)),
     dirty: (fieldName) => getFieldDirty(trackedState, f(fieldName)),
     error: (fieldName) => getFieldError(trackedState, f(fieldName)),
+    setFormError: (value) => trackedState.setFormError(value),
 
     transient: {
       value: (fieldName?: string) =>

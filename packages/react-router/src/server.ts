@@ -28,6 +28,7 @@ export function validationError(
       fieldErrors: error.fieldErrors,
       repopulateFields,
       formId: error.formId,
+      formError: null,
     } satisfies ValidationErrorResponseData,
     {
       status: 422,

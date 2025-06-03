@@ -117,6 +117,8 @@ export type internal_BaseFormOpts<
    * So make sure the identity of `serverValidationErrors` is stable.
    */
   serverValidationErrors?: FieldErrors;
+
+  serverFormError?: string;
 };
 
 export type internal_ValidatorAndDefaultValueOpts<
@@ -241,6 +243,7 @@ export function useForm<
     action,
     disableFocusOnError,
     serverValidationErrors,
+    serverFormError,
     resetAfterSubmit,
     otherFormProps,
     reloadDocument,
@@ -260,6 +263,7 @@ export function useForm<
     const rvf = createFormScope({
       defaultValues: options.defaultValues ?? {},
       serverValidationErrors: serverValidationErrors ?? {},
+      serverFormError: serverFormError ?? null,
       validator,
       onBeforeSubmit: onBeforeSubmit as never,
       onSubmit: onSubmit as never,
@@ -365,8 +369,11 @@ export function useForm<
     if (!serverValidationErrors) return;
     form.__store__.store
       .getState()
-      .syncServerValidationErrors(serverValidationErrors ?? {});
-  }, [serverValidationErrors, form.__store__.store]);
+      .syncServerValidationErrors(
+        serverValidationErrors ?? {},
+        serverFormError ?? null,
+      );
+  }, [serverValidationErrors, form.__store__.store, serverFormError]);
 
   return useFormInternal(form) as never;
 }

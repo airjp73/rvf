@@ -83,6 +83,7 @@ export type ValidatorError = {
 export type ValidationErrorResponseData = {
   formId?: string;
   fieldErrors: FieldErrors;
+  formError: string | null;
   repopulateFields?: unknown;
 };
 
