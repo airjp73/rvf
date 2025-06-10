@@ -8,6 +8,7 @@ import {
   ZodObject,
   ZodString,
   ZodType,
+  ZodUndefined,
 } from "zod/v4";
 
 type InputType<DefaultType extends ZodType> = {
@@ -32,8 +33,9 @@ const preprocessIfValid = (schema: ZodType) => (val: unknown) => {
  * If you call `zfd.text` with no arguments, it will assume the field is a required string by default.
  * If you want to customize the schema, you can pass that as an argument.
  */
-export const text: InputType<ZodString> = (schema = z.string()) =>
-  z.preprocess(preprocessIfValid(stripEmpty), schema) as any;
+export const text: InputType<ZodString | ZodUndefined> = (
+  schema = z.string(),
+) => z.preprocess(preprocessIfValid(stripEmpty), schema) as any;
 
 /**
  * Coerces numerical strings to numbers transforms empty strings to `undefined` before validating.
@@ -41,7 +43,9 @@ export const text: InputType<ZodString> = (schema = z.string()) =>
  * it will assume the field is a required number by default.
  * If you want to customize the schema, you can pass that as an argument.
  */
-export const numeric: InputType<ZodNumber> = (schema = z.number()) =>
+export const numeric: InputType<ZodNumber | ZodUndefined> = (
+  schema = z.number(),
+) =>
   z.preprocess(
     preprocessIfValid(
       z.union([
@@ -142,7 +146,9 @@ const safeParseJson = (jsonString: string) => {
   }
 };
 
-export const json = <T extends ZodType>(schema: T): ZodPipe<ZodTransform, T> =>
+export const json = <T extends ZodType>(
+  schema: T,
+): ZodPipe<ZodTransform, T | ZodUndefined> =>
   z.preprocess(
     preprocessIfValid(
       z.union([stripEmpty, z.string().transform((val) => safeParseJson(val))]),
