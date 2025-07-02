@@ -261,6 +261,41 @@ export interface FormApi<FormInputData> {
   setTouched(value: boolean): void;
 
   /**
+   * @unstable This API may change
+   *
+   * Sets a custom error message on the specifie field.
+   * By using this, you're taking manual control of the validation lifecycle for this particular error message.
+   *
+   * When a field has a custom error message, it will always be displayed, regardless of the field's touched state.
+   * Custom errors are not cleared until you explicitly clear them.
+   * Clear custom errors by calling this helper again with `null` as the error.
+   *
+   * When a form with a custom error message is submitted, `onBeforeSubmit` will be called, but `onSubmit` will not.
+   * This gives you a chance to re-check your custom validation and maybe clear it.
+   * If you don't clear the error in `onBeforeSubmit` or explicitly call `performSubmit`, then the submit will fail and `onInvalidSubmit` will be called.
+   */
+  unstable_setCustomError(
+    fieldName: ValidStringPaths<FormInputData>,
+    error: string | null,
+  ): void;
+
+  /**
+   * @unstable This API may change
+   *
+   * Sets a custom error message on the field in scope.
+   * By using this, you're taking manual control of the validation lifecycle for this particular error message.
+   *
+   * When a field has a custom error message, it will always be displayed, regardless of the field's touched state.
+   * Custom errors are not cleared until you explicitly clear them.
+   * Clear custom errors by calling this helper again with `null` as the error.
+   *
+   * When a form with a custom error message is submitted, `onBeforeSubmit` will be called, but `onSubmit` will not.
+   * This gives you a chance to re-check your custom validation and maybe clear it.
+   * If you don't clear the error in `onBeforeSubmit` or explicitly call `performSubmit`, then the submit will fail and `onInvalidSubmit` will be called.
+   */
+  unstable_setCustomError(error: string | null): void;
+
+  /**
    * Clears the error of the specified field.
    */
   clearError(fieldName: ValidStringPaths<FormInputData>): void;
@@ -616,6 +651,8 @@ export const makeBaseFormApi = <FormInputData,>({
       transientState().setTouched(...optionalField(args)),
     clearError: (fieldName?: string) =>
       transientState().setError(f(fieldName), null),
+    unstable_setCustomError: (...args: WithOptionalField<string | null>) =>
+      transientState().setCustomError(...optionalField(args)),
 
     focus: (fieldName) => {
       const elements = [
