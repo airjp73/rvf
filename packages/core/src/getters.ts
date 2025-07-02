@@ -51,10 +51,15 @@ export const getAllTouched = (state: FormStoreValue) => state.touchedFields;
 export const getAllDirty = (state: FormStoreValue) => state.dirtyFields;
 
 export const getAllErrors = (state: FormStoreValue) => {
-  if (state.submitStatus !== "idle") return state.validationErrors;
-  const fieldsWithErrors = Object.entries(state.validationErrors).filter(
+  const allErrors = {
+    ...state.validationErrors,
+    ...state.customValidationErrors,
+  };
+  if (state.submitStatus !== "idle") return allErrors;
+  const fieldsWithErrors = Object.entries(allErrors).filter(
     ([fieldName]) =>
       state.touchedFields[fieldName] ||
+      state.customValidationErrors[fieldName] ||
       state.validationBehaviorConfig.initial === "onChange",
   );
   return Object.fromEntries(fieldsWithErrors);

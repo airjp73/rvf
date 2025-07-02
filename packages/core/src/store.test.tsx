@@ -7,7 +7,12 @@ import {
 } from "./store";
 import { ValidationBehavior } from "./types";
 import { createValidator } from "./createValidator";
-import { getFieldDefaultValue, getFieldError, getFieldValue } from "./getters";
+import {
+  getAllErrors,
+  getFieldDefaultValue,
+  getFieldError,
+  getFieldValue,
+} from "./getters";
 
 const testStore = (init?: Partial<FormStoreInit>) =>
   createFormStateStore({
@@ -2031,6 +2036,11 @@ describe("custom errors", () => {
       defaultValues: {
         firstName: "Jane",
       },
+      validationBehaviorConfig: {
+        whenSubmitted: "onChange",
+        initial: "onChange",
+        whenTouched: "onChange",
+      },
       mutableImplStore: {
         onSubmitFailure: vi.fn(),
         onSubmitSuccess: vi.fn(),
@@ -2055,14 +2065,19 @@ describe("custom errors", () => {
 
     await store.getState().validate();
     expect(getFieldError(store.getState(), "firstName")).toEqual("Invalid");
+    expect(getAllErrors(store.getState())).toEqual({ firstName: "Invalid" });
 
     store.getState().setCustomError("firstName", "Custom error");
     expect(getFieldError(store.getState(), "firstName")).toEqual(
       "Custom error",
     );
+    expect(getAllErrors(store.getState())).toEqual({
+      firstName: "Custom error",
+    });
 
     store.getState().setCustomError("firstName", null);
     expect(getFieldError(store.getState(), "firstName")).toEqual("Invalid");
+    expect(getAllErrors(store.getState())).toEqual({ firstName: "Invalid" });
   });
 
   it("should fail submission when custom errors are the only errors", async () => {

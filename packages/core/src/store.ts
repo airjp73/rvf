@@ -680,11 +680,16 @@ export const createFormStateStore = ({
       focusFirstInvalidField: () => {
         const {
           validationErrors,
+          customValidationErrors,
           flags: { disableFocusOnError },
         } = get();
         if (disableFocusOnError) return;
 
-        const refElementsWithErrors = Object.keys(validationErrors)
+        const allErrors = {
+          ...validationErrors,
+          ...customValidationErrors,
+        };
+        const refElementsWithErrors = Object.keys(allErrors)
           .flatMap((fieldName) => [
             ...transientFieldRefs.getRefs(fieldName),
             ...controlledFieldRefs.getRefs(fieldName),
@@ -692,7 +697,7 @@ export const createFormStateStore = ({
           .filter((val): val is NonNullable<typeof val> => val != null);
 
         if (formRef.current) {
-          const unRegisteredNames = Object.keys(validationErrors).filter(
+          const unRegisteredNames = Object.keys(allErrors).filter(
             (name) =>
               !transientFieldRefs.has(name) && !controlledFieldRefs.has(name),
           );
@@ -841,7 +846,10 @@ export const createFormStateStore = ({
 
         if (!result) result = await doValidation();
 
-        if (result.errors) {
+        if (
+          result.errors ||
+          Object.entries(get().customValidationErrors).length > 0
+        ) {
           get().focusFirstInvalidField();
           await mutableImplStore.onInvalidSubmit?.();
           return;
@@ -977,6 +985,7 @@ export const createFormStateStore = ({
           state.touchedFields = {};
           state.dirtyFields = {};
           state.validationErrors = {};
+          state.customValidationErrors = {};
           state.fieldArrayKeys = {};
           state.arrayUpdateKeys = {};
           state.submitStatus = "idle";
@@ -1007,6 +1016,7 @@ export const createFormStateStore = ({
             [
               state.touchedFields,
               state.validationErrors,
+              state.customValidationErrors,
               state.dirtyFields,
               state.fieldArrayKeys,
               state.defaultValueOverrides,
@@ -1093,6 +1103,7 @@ export const createFormStateStore = ({
             [
               state.touchedFields,
               state.validationErrors,
+              state.customValidationErrors,
               state.dirtyFields,
               state.fieldArrayKeys,
               state.defaultValueOverrides,
@@ -1120,6 +1131,7 @@ export const createFormStateStore = ({
             [
               state.touchedFields,
               state.validationErrors,
+              state.customValidationErrors,
               state.dirtyFields,
               state.fieldArrayKeys,
               state.defaultValueOverrides,
@@ -1130,6 +1142,7 @@ export const createFormStateStore = ({
             [
               state.touchedFields,
               state.validationErrors,
+              state.customValidationErrors,
               state.dirtyFields,
               state.fieldArrayKeys,
               state.defaultValueOverrides,
@@ -1158,6 +1171,7 @@ export const createFormStateStore = ({
             [
               state.touchedFields,
               state.validationErrors,
+              state.customValidationErrors,
               state.dirtyFields,
               state.fieldArrayKeys,
               state.defaultValueOverrides,
@@ -1194,6 +1208,7 @@ export const createFormStateStore = ({
             [
               state.touchedFields,
               state.validationErrors,
+              state.customValidationErrors,
               state.dirtyFields,
               state.fieldArrayKeys,
               state.defaultValueOverrides,
@@ -1225,6 +1240,7 @@ export const createFormStateStore = ({
             [
               state.touchedFields,
               state.validationErrors,
+              state.customValidationErrors,
               state.dirtyFields,
               state.fieldArrayKeys,
               state.defaultValueOverrides,
@@ -1261,6 +1277,7 @@ export const createFormStateStore = ({
             [
               state.touchedFields,
               state.validationErrors,
+              state.customValidationErrors,
               state.dirtyFields,
               state.fieldArrayKeys,
               state.defaultValueOverrides,
@@ -1271,6 +1288,7 @@ export const createFormStateStore = ({
             [
               state.touchedFields,
               state.validationErrors,
+              state.customValidationErrors,
               state.dirtyFields,
               state.fieldArrayKeys,
               state.defaultValueOverrides,
@@ -1308,6 +1326,7 @@ export const createFormStateStore = ({
             [
               state.touchedFields,
               state.validationErrors,
+              state.customValidationErrors,
               state.dirtyFields,
               state.fieldArrayKeys,
               state.defaultValueOverrides,
@@ -1343,6 +1362,7 @@ export const createFormStateStore = ({
             [
               state.touchedFields,
               state.validationErrors,
+              state.customValidationErrors,
               state.dirtyFields,
               state.fieldArrayKeys,
               state.defaultValueOverrides,
