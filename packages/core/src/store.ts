@@ -852,6 +852,10 @@ export const createFormStateStore = ({
         ) {
           get().focusFirstInvalidField();
           await mutableImplStore.onInvalidSubmit?.();
+          if (get().submitStatus === "submitting")
+            set((state) => {
+              state.submitStatus = "error";
+            });
           return;
         }
 

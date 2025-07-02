@@ -29,6 +29,8 @@ it("should handle custom errors", async () => {
       onBeforeSubmit: async (api) => {
         if (api.unvalidatedData.firstName === "Jane")
           form.unstable_setCustomError("firstName", "for real though.");
+        else if (api.unvalidatedData.firstName === "Jane Doe")
+          form.unstable_setCustomError("firstName", "same problem");
         else form.unstable_setCustomError("firstName", null);
       },
       handleSubmit,
@@ -38,6 +40,9 @@ it("should handle custom errors", async () => {
       <form {...form.getFormProps()}>
         <input {...form.getInputProps("firstName")} data-testid="firstName" />
         <pre data-testid="firstName-error">{form.error("firstName")}</pre>
+        <pre data-testid="is-submitting">
+          {form.formState.isSubmitting ? "true" : "false"}
+        </pre>
         <button type="submit" data-testid="submit" />
       </form>
     );
@@ -49,10 +54,12 @@ it("should handle custom errors", async () => {
   expect(screen.getByTestId("firstName-error")).toHaveTextContent("wrong name");
 
   await userEvent.click(screen.getByTestId("submit"));
+  expect(screen.getByTestId("is-submitting")).toHaveTextContent("false");
   expect(screen.getByTestId("firstName-error")).toHaveTextContent(
     "for real though",
   );
   expect(handleSubmit).not.toBeCalled();
+  expect(screen.getByTestId("is-submitting")).toHaveTextContent("false");
 
   // The custom error doesn't go away yet.
   await userEvent.type(screen.getByTestId("firstName"), " Doe");
@@ -61,5 +68,9 @@ it("should handle custom errors", async () => {
   );
 
   await userEvent.click(screen.getByTestId("submit"));
-  expect(handleSubmit).toBeCalled();
+  expect(screen.getByTestId("firstName-error")).toHaveTextContent(
+    "same problem",
+  );
+  expect(handleSubmit).not.toBeCalled();
+  expect(screen.getByTestId("is-submitting")).toHaveTextContent("false");
 });
