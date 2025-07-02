@@ -117,6 +117,12 @@ describe("useNativeValidityForForm", () => {
         <form {...form.getFormProps()}>
           <input name="foo" data-testid="foo" />
           <input name="bar" data-testid="bar" />
+          <button
+            data-testid="custom-error"
+            onClick={() => {
+              form.unstable_setCustomError("foo", "Custom!");
+            }}
+          />
           <button data-testid="submit" />
         </form>
       );
@@ -133,6 +139,10 @@ describe("useNativeValidityForForm", () => {
 
     await userEvent.type(screen.getByTestId("bar"), "test");
     expect(screen.getByTestId("foo")).toBeValid();
+    expect(screen.getByTestId("bar")).toBeValid();
+
+    await userEvent.click(screen.getByTestId("custom-error"));
+    expect(screen.getByTestId("foo")).toBeInvalid();
     expect(screen.getByTestId("bar")).toBeValid();
   });
 
