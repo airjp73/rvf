@@ -168,6 +168,7 @@ type StoreState = {
   touchedFields: Record<string, boolean>;
   dirtyFields: Record<string, boolean>;
   validationErrors: Record<string, string>;
+  customValidationErrors: Record<string, string>;
   submitStatus: SubmitStatus;
   fieldArrayKeys: Record<string, Array<string>>;
   arrayUpdateKeys: Record<string, string>;
@@ -208,6 +209,7 @@ type StoreActions = {
   setTouched: (fieldName: string, value: boolean) => void;
   setDirty: (fieldName: string, value: boolean) => void;
   setError: (fieldName: string, value: string | null) => void;
+  setCustomError: (fieldName: string, value: string | null) => void;
 
   setAllValues: (data: FieldValues) => void;
   setAllTouched: (data: Record<string, boolean>) => void;
@@ -454,6 +456,7 @@ export const createFormStateStore = ({
       touchedFields: {},
       dirtyFields: {},
       validationErrors: serverValidationErrors,
+      customValidationErrors: {},
       // If we have default errors, lets treat that as a failed server-side validation
       submitStatus:
         Object.keys(serverValidationErrors).length > 0 ? "error" : "idle",
@@ -937,6 +940,13 @@ export const createFormStateStore = ({
         set((state) => {
           if (value == null) delete state.validationErrors[fieldName];
           else state.validationErrors[fieldName] = value;
+        });
+      },
+
+      setCustomError: (fieldName, value) => {
+        set((state) => {
+          if (value == null) delete state.customValidationErrors[fieldName];
+          else state.customValidationErrors[fieldName] = value;
         });
       },
 

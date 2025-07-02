@@ -33,7 +33,11 @@ export const getFieldDirty = (state: FormStoreValue, fieldName: string) =>
   state.dirtyFields[fieldName] ?? false;
 
 export const getFieldError = (state: FormStoreValue, fieldName: string) => {
-  return state.validationErrors[fieldName] ?? null;
+  return (
+    state.customValidationErrors[fieldName] ??
+    state.validationErrors[fieldName] ??
+    null
+  );
 };
 
 export const getFieldArrayKeys = (state: FormStoreValue, fieldName: string) =>
