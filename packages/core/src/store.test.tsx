@@ -2108,4 +2108,64 @@ describe("custom errors", () => {
     expect(onBeforeSubmit).toBeCalled();
     expect(onInvalidSubmit).toBeCalled();
   });
+
+  it("should submit successfully if the error is cleared in onBeforeSubmit", async () => {
+    const onInvalidSubmit = vi.fn();
+    const onSubmit = vi.fn();
+    const store = testStore({
+      defaultValues: {
+        firstName: "Jane",
+      },
+      mutableImplStore: {
+        onSubmit,
+        onSubmitFailure: vi.fn(),
+        onSubmitSuccess: vi.fn(),
+        onBeforeSubmit: () => {
+          store.getState().setCustomError("firstName", null);
+        },
+        onInvalidSubmit,
+        validator: createValidator({
+          validate: (data) => Promise.resolve({ data, error: undefined }),
+        }),
+      },
+    });
+
+    store.getState().setCustomError("firstName", "Custom error");
+    store.getState().onSubmit();
+
+    await new Promise((resolve) => setTimeout(resolve, 100));
+    expect(onSubmit).toBeCalled();
+    expect(onInvalidSubmit).not.toBeCalled();
+  });
+
+  it("should submit successfully if onBeforeSubmit explicitly submits", async () => {
+    const onInvalidSubmit = vi.fn();
+    const onSubmit = vi.fn();
+    const store = testStore({
+      defaultValues: {
+        firstName: "Jane",
+      },
+      mutableImplStore: {
+        onSubmit,
+        onSubmitFailure: vi.fn(),
+        onSubmitSuccess: vi.fn(),
+        onBeforeSubmit: (api) => {
+          void api.performSubmit({
+            firstName: "Yo",
+          });
+        },
+        onInvalidSubmit,
+        validator: createValidator({
+          validate: (data) => Promise.resolve({ data, error: undefined }),
+        }),
+      },
+    });
+
+    store.getState().setCustomError("firstName", "Custom error");
+    store.getState().onSubmit();
+
+    await new Promise((resolve) => setTimeout(resolve, 100));
+    expect(onSubmit).toBeCalled();
+    expect(onInvalidSubmit).not.toBeCalled();
+  });
 });
