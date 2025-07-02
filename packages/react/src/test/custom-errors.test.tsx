@@ -2,6 +2,7 @@ import { render, screen } from "@testing-library/react";
 import { useForm } from "../useForm";
 import userEvent from "@testing-library/user-event";
 import { FieldErrors, createValidator } from "@rvf/core";
+import { useNativeValidityForForm } from "../useNativeValidity";
 
 it("should handle custom errors", async () => {
   const handleSubmit = vi.fn();
@@ -135,4 +136,91 @@ it("should still call onBeforeSubmit when there are custom errors", async () => 
   await userEvent.click(screen.getByTestId("submit"));
   expect(screen.getByTestId("firstName-error")).toBeEmptyDOMElement();
   expect(screen.getByTestId("lastName-error")).toBeEmptyDOMElement();
+
+  await userEvent.clear(screen.getByTestId("firstName"));
+  await userEvent.type(screen.getByTestId("firstName"), "wrong");
+  await userEvent.click(screen.getByTestId("submit"));
+  expect(screen.getByTestId("firstName-error")).toHaveTextContent("wrong name");
+  expect(screen.getByTestId("lastName-error")).toBeEmptyDOMElement();
+
+  await userEvent.clear(screen.getByTestId("lastName"));
+  await userEvent.type(screen.getByTestId("lastName"), "wrong");
+  await userEvent.click(screen.getByTestId("submit"));
+  expect(screen.getByTestId("firstName-error")).toHaveTextContent("wrong name");
+  expect(screen.getByTestId("lastName-error")).toHaveTextContent("wrong name");
+});
+
+it("should still call onBeforeSubmit when using native validity", async () => {
+  const handleSubmit = vi.fn();
+  const TextComp = () => {
+    const form = useForm({
+      defaultValues: {
+        firstName: "",
+        lastName: "",
+      },
+      validationBehaviorConfig: {
+        initial: "onChange",
+        whenTouched: "onChange",
+        whenSubmitted: "onChange",
+      },
+      validator: createValidator({
+        validate: (data) => Promise.resolve({ data, error: undefined }),
+      }),
+      onBeforeSubmit: async (api) => {
+        if (api.unvalidatedData.firstName === "wrong")
+          form.unstable_setCustomError("firstName", "wrong name");
+        else form.unstable_setCustomError("firstName", null);
+
+        if (api.unvalidatedData.lastName === "wrong")
+          form.unstable_setCustomError("lastName", "wrong name");
+        else form.unstable_setCustomError("lastName", null);
+      },
+      handleSubmit,
+    });
+    useNativeValidityForForm(form.scope());
+
+    return (
+      <form {...form.getFormProps()}>
+        <input {...form.getInputProps("firstName")} data-testid="firstName" />
+        <input {...form.getInputProps("lastName")} data-testid="lastName" />
+        <pre data-testid="is-submitting">
+          {form.formState.isSubmitting ? "true" : "false"}
+        </pre>
+        <button type="submit" data-testid="submit" />
+      </form>
+    );
+  };
+
+  render(<TextComp />);
+
+  await userEvent.type(screen.getByTestId("firstName"), "wrong");
+  await userEvent.type(screen.getByTestId("lastName"), "wrong");
+  await userEvent.click(screen.getByTestId("submit"));
+  expect(screen.getByTestId("firstName")).toBeInvalid();
+  expect(screen.getByTestId("lastName")).toBeInvalid();
+
+  await userEvent.type(screen.getByTestId("firstName"), "right");
+  expect(screen.getByTestId("firstName")).toBeInvalid();
+  expect(screen.getByTestId("lastName")).toBeInvalid();
+
+  await userEvent.click(screen.getByTestId("submit"));
+  expect(screen.getByTestId("firstName")).toBeValid();
+  expect(screen.getByTestId("lastName")).toBeInvalid();
+
+  await userEvent.type(screen.getByTestId("lastName"), "right");
+  await userEvent.click(screen.getByTestId("submit"));
+  expect(screen.getByTestId("firstName")).toBeValid();
+  expect(screen.getByTestId("lastName")).toBeValid();
+
+  await userEvent.clear(screen.getByTestId("firstName"));
+  await userEvent.type(screen.getByTestId("firstName"), "wrong");
+  await userEvent.click(screen.getByTestId("submit"));
+  expect(screen.getByTestId("firstName")).toBeInvalid();
+  expect(screen.getByTestId("lastName")).toBeValid();
+
+  await userEvent.clear(screen.getByTestId("lastName"));
+  await userEvent.type(screen.getByTestId("lastName"), "wrong");
+  await userEvent.click(screen.getByTestId("submit"));
+  expect(screen.getByTestId("firstName")).toBeInvalid();
+  expect(screen.getByTestId("lastName")).toBeInvalid();
 });
