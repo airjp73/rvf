@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useSyncExternalStore } from "react";
 import {
   FormScope,
   scopeFormScope,
@@ -527,7 +527,10 @@ export type BaseReactFormParams<FormInputData> = {
 export const makeBaseFormApi = <FormInputData,>({
   trackedState,
   form,
-}: BaseReactFormParams<FormInputData>): FormApi<FormInputData> => {
+  isHydrated,
+}: BaseReactFormParams<FormInputData> & {
+  isHydrated: boolean;
+}): FormApi<FormInputData> => {
   const prefix = form.__field_prefix__;
   const f = (fieldName?: string) => mergePathStrings(prefix, fieldName);
   const transientState = () => form.__store__.store.getState();
@@ -549,6 +552,7 @@ export const makeBaseFormApi = <FormInputData,>({
     makeFieldArrayImpl({
       trackedState,
       form: scopeFormScope(form, arrayFieldName) as FormScope<any[]>,
+      isHydrated,
     }),
   );
 
@@ -693,6 +697,7 @@ export const makeBaseFormApi = <FormInputData,>({
     getFormProps: (formProps = {}) => ({
       ...formProps,
       ...getFormProps(trackedState),
+      noValidate: isHydrated,
       onSubmit: (event) => {
         formProps.onSubmit?.(event);
         if (event.defaultPrevented) return;
@@ -777,6 +782,18 @@ export const makeBaseFormApi = <FormInputData,>({
   };
 };
 
+function subscribe() {
+  return () => {};
+}
+
+export function useHydrated() {
+  return useSyncExternalStore(
+    subscribe,
+    () => true,
+    () => false,
+  );
+}
+
 export const useFormInternal = <FormInputData,>(
   form: FormScope<FormInputData>,
 ) => {
@@ -792,13 +809,15 @@ export const useFormInternal = <FormInputData,>(
   // I saw this done in one of the dia-shi's codebases, too, but I can't find it now.
   trackedState.setValue;
 
+  const isHydrated = useHydrated();
   const base = useMemo(
     () =>
       makeBaseFormApi({
         form,
         trackedState,
+        isHydrated,
       }),
-    [form, trackedState],
+    [form, trackedState, isHydrated],
   );
 
   return base;
