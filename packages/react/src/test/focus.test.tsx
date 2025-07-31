@@ -132,6 +132,74 @@ it("should be automatically focus fields when there are submit validation errors
   expect(screen.getByTestId("foo")).toHaveFocus();
 });
 
+it("should be automatically focus fields when there are submit validation errors even when use onBeforeSubmit", async () => {
+  const submit = vi.fn();
+  const TestComp = () => {
+    const form = useForm({
+      defaultValues: {
+        foo: "",
+        bar: "",
+        baz: "",
+      },
+      validator: createValidator({
+        validate: (data) => {
+          const errors: FieldErrors = {};
+          if (data.foo.length > 3) errors.foo = "too long";
+          if (data.bar.length > 3) errors.bar = "too long";
+          if (data.baz.length > 3) errors.baz = "too long";
+          if (Object.keys(errors).length > 0)
+            return Promise.resolve({ error: errors, data: undefined });
+          return Promise.resolve({ data, error: undefined });
+        },
+      }),
+      onBeforeSubmit: async (api) => {
+        await api.getValidatedData();
+      },
+      handleSubmit: submit,
+    });
+
+    return (
+      <form {...form.getFormProps()} data-testid="form">
+        <div>
+          <input data-testid="foo" {...controlInput(form.field("foo"))} />
+        </div>
+
+        <input data-testid="bar" {...controlInput(form.field("bar"))} />
+
+        <div>
+          <input data-testid="baz" {...controlInput(form.field("baz"))} />
+        </div>
+
+        <button type="submit" data-testid="submit" />
+      </form>
+    );
+  };
+
+  render(<TestComp />);
+
+  await userEvent.type(screen.getByTestId("foo"), "1234");
+  await userEvent.type(screen.getByTestId("bar"), "1234");
+  await userEvent.type(screen.getByTestId("baz"), "1234");
+
+  await userEvent.click(screen.getByTestId("submit"));
+  expect(screen.getByTestId("foo")).toHaveFocus();
+
+  await userEvent.type(screen.getByTestId("foo"), "{Backspace}");
+  await userEvent.click(screen.getByTestId("form")); // blur
+  await userEvent.click(screen.getByTestId("submit"));
+  expect(screen.getByTestId("bar")).toHaveFocus();
+
+  await userEvent.type(screen.getByTestId("bar"), "{Backspace}");
+  await userEvent.click(screen.getByTestId("form")); // blur
+  await userEvent.click(screen.getByTestId("submit"));
+  expect(screen.getByTestId("baz")).toHaveFocus();
+
+  await userEvent.type(screen.getByTestId("foo"), "4");
+  await userEvent.click(screen.getByTestId("form")); // blur
+  await userEvent.click(screen.getByTestId("submit"));
+  expect(screen.getByTestId("foo")).toHaveFocus();
+});
+
 it("should focus the selected radio if that is the first invalid field", async () => {
   const TestComp = () => {
     const form = useForm({

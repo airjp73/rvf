@@ -83,7 +83,7 @@ export type BeforeSubmitApi<
    * By using this, you're taking control of the submission lifecycle.
    * `onSubmitFailure` will _not_ be called as a result of this.
    */
-  cancelSubmit: () => never;
+  cancelSubmit: (opts?: CancelSubmitOptions) => never;
   /**
    * This is intended for advanced use-cases.
    * By using this, you're taking control of the submission lifecycle.
@@ -159,7 +159,21 @@ export type StoreFlags = {
   reloadDocument: boolean;
 };
 
-class CancelSubmitError extends Error {}
+export type CancelSubmitOptions = {
+  shouldFocusErrors?: boolean;
+  shouldCallOnInvalidSubmit?: boolean;
+};
+
+class CancelSubmitError extends Error {
+  shouldFocusErrors: boolean;
+  shouldCallOnInvalidSubmit: boolean;
+
+  constructor(opts: CancelSubmitOptions = {}) {
+    super();
+    this.shouldFocusErrors = opts?.shouldFocusErrors ?? false;
+    this.shouldCallOnInvalidSubmit = opts?.shouldCallOnInvalidSubmit ?? false;
+  }
+}
 
 type StoreState = {
   values: FieldValues;
@@ -807,7 +821,10 @@ export const createFormStateStore = ({
             getValidatedData: async () => {
               result = await doValidation();
               if (result.errors) {
-                throw new CancelSubmitError();
+                throw new CancelSubmitError({
+                  shouldCallOnInvalidSubmit: true,
+                  shouldFocusErrors: true,
+                });
               }
               return result.data;
             },
@@ -819,8 +836,8 @@ export const createFormStateStore = ({
               }
               return formData;
             },
-            cancelSubmit: () => {
-              throw new CancelSubmitError();
+            cancelSubmit: (opts) => {
+              throw new CancelSubmitError(opts);
             },
             performSubmit: async (data) => {
               submitted = true;
@@ -830,6 +847,12 @@ export const createFormStateStore = ({
           });
         } catch (err) {
           try {
+            if (err instanceof CancelSubmitError) {
+              if (err.shouldFocusErrors) get().focusFirstInvalidField();
+              if (err.shouldCallOnInvalidSubmit)
+                await mutableImplStore.onInvalidSubmit?.();
+            }
+
             if (!(err instanceof CancelSubmitError)) {
               console.error(err);
               await mutableImplStore.onSubmitFailure?.(err);
