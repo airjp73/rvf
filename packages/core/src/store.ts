@@ -200,7 +200,7 @@ export type SubmitterOptions = {
   formAction?: string;
 };
 
-export type ResetFieldOpts = { defaultValue?: unknown };
+export type ResetFieldOpts = { defaultValue?: unknown; keepError?: boolean };
 
 type StoreEvents = {
   onFieldChange: (
@@ -1042,8 +1042,9 @@ export const createFormStateStore = ({
           deleteFieldsWithPrefix(
             [
               state.touchedFields,
-              state.validationErrors,
-              state.customValidationErrors,
+              ...(opts.keepError
+                ? []
+                : [state.validationErrors, state.customValidationErrors]),
               state.dirtyFields,
               state.fieldArrayKeys,
               state.defaultValueOverrides,

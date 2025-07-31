@@ -1971,6 +1971,30 @@ it("should override resetField overrides with reset or parent resetFields", () =
   expect(getFieldDefaultValue(store.getState(), "foo")).toEqual({ bar: "bar" });
 });
 
+it("should keep errors if keepError is provided", () => {
+  const store = testStore({
+    defaultValues: {
+      foo: { bar: "bar" },
+    },
+  });
+  store.setState({
+    validationErrors: {
+      foo: "error",
+    },
+    customValidationErrors: {
+      foo: "bar",
+    },
+  });
+
+  store.getState().resetField("foo", {
+    keepError: true,
+  });
+  expect(store.getState()).toMatchObject({
+    validationErrors: { foo: "error" },
+    customValidationErrors: { foo: "bar" },
+  });
+});
+
 it("should be able to override the default value with an explicit null or undefined", () => {
   const store = testStore({
     defaultValues: { foo: { bar: "bar" } },

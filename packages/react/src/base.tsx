@@ -84,6 +84,11 @@ export type ResetFieldOpts<FieldValue> = {
    * If you call `resetForm`, this will overwrite any changes made by `resetField`.
    */
   defaultValue?: FieldValue;
+
+  /**
+   * When this is true, resetting the field won't clear any errors on the field.
+   */
+  keepError?: boolean;
 };
 
 type NonUndefined<T> = Exclude<T, undefined>;
