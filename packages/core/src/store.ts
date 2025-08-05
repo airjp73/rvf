@@ -160,7 +160,18 @@ export type StoreFlags = {
 };
 
 export type CancelSubmitOptions = {
+  /**
+   * When true, the first invalid form field will be focused just like it would normally when validation errors occur.
+   *
+   * @default false
+   */
   shouldFocusErrors?: boolean;
+
+  /**
+   * When true, the `onInvalidSubmit` callback passed to `useForm` or `ValidatedForm` will be called as a result of this cancellation.
+   *
+   * @default false
+   */
   shouldCallOnInvalidSubmit?: boolean;
 };
 
