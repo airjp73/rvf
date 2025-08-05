@@ -266,12 +266,20 @@ This also resets any touched, dirty, or validation errors for the field.
 This works for both controlled and uncontrolled fields.
 For uncontrolled fields, this will manually set the value of the form control using the `ref` returned by `field`.
 
-Optionally, you can pass a default value to reset to.
-This will reset cause `form.defaultValue('myField')` to return the new default value,
-and for `form.dirty('myField')` to return use this new default for comparison.
-Calling `resetForm` or calling `resetField` on a parent field, will undo any default value changes made by `resetField`.
-
 Can also be called without a field name, to reset the currently in-scope field.
+
+Optionally, `resetField` takes a second argument with a few options.
+
+- `keepError`
+
+  When this is `true`, resetting the field won't clear any validation errors for that field.
+
+- `defaultValue`
+
+  This will set a new default value for the field before resetting it.
+  `form.defaultValue('myField')` will return the new default value,
+  and `form.dirty('myField')` will use this new default for comparison.
+  Calling `resetForm` or calling `resetField` on a parent field, will undo any default value changes made by `resetField`.
 
 <Note>
   <details>
@@ -291,7 +299,7 @@ Can also be called without a field name, to reset the currently in-scope field.
     });
     ```
     
-    If you call `form.resetField("address.street", "234 Another St")`,
+    If you call `form.resetField("address.street", { defaultValue: "234 Another St" })`,
     then `form.defaultValue("address.street")` will now return `"234 Another St"`.
 
     *BUT* calling `form.defaultValue("address")` will return the original street,
