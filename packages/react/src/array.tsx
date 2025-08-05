@@ -9,7 +9,7 @@ import {
   FieldArrayValidationBehaviorConfig,
 } from "@rvf/core";
 import { makeImplFactory } from "./implFactory";
-import { FormApi, makeBaseFormApi } from "./base";
+import { FormApi, makeBaseFormApi, useHydrated } from "./base";
 import { useFormScopeOrContextInternal } from "./context";
 import { createControlledRef } from "./refs";
 
@@ -119,7 +119,10 @@ export const makeFieldArrayImpl = <FormInputData extends Array<any>>({
   form,
   trackedState,
   validationBehavior,
-}: FieldArrayParams<FormInputData>): FieldArrayApi<FormInputData> => {
+  isHydrated,
+}: FieldArrayParams<FormInputData> & {
+  isHydrated: boolean;
+}): FieldArrayApi<FormInputData> => {
   const arrayFieldName = form.__field_prefix__;
   const itemImpl = makeImplFactory(arrayFieldName, (itemFieldName) =>
     makeBaseFormApi({
@@ -127,6 +130,7 @@ export const makeFieldArrayImpl = <FormInputData extends Array<any>>({
         FormInputData[number]
       >,
       trackedState,
+      isHydrated,
     }),
   );
 
@@ -237,6 +241,7 @@ export function useFieldArray<FormInputData extends any[]>(
   const scope = useFormScopeOrContextInternal(formOrName);
   const { useStoreState } = scope.__store__;
   const trackedState = useStoreState();
+  const isHydrated = useHydrated();
 
   // Accessing _something_ is required. Otherwise, it will rerender on every state update.
   // I saw this done in one of the dia-shi's codebases, too, but I can't find it now.
@@ -248,8 +253,9 @@ export function useFieldArray<FormInputData extends any[]>(
         form: scope as never,
         trackedState,
         validationBehavior,
+        isHydrated,
       }),
-    [scope, trackedState, validationBehavior],
+    [scope, trackedState, validationBehavior, isHydrated],
   );
 
   return base;

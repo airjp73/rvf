@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useSyncExternalStore } from "react";
 import {
   FormScope,
   scopeFormScope,
@@ -84,6 +84,11 @@ export type ResetFieldOpts<FieldValue> = {
    * If you call `resetForm`, this will overwrite any changes made by `resetField`.
    */
   defaultValue?: FieldValue;
+
+  /**
+   * When this is true, resetting the field won't clear any errors on the field.
+   */
+  keepError?: boolean;
 };
 
 type NonUndefined<T> = Exclude<T, undefined>;
@@ -259,6 +264,41 @@ export interface FormApi<FormInputData> {
    * Set the touched state of the field in scope.
    */
   setTouched(value: boolean): void;
+
+  /**
+   * @unstable This API may change
+   *
+   * Sets a custom error message on the specified field.
+   * By using this, you're taking manual control of the validation lifecycle for this particular error message.
+   *
+   * When a field has a custom error message, it will always be displayed, regardless of the field's touched state.
+   * Custom errors are not cleared until you explicitly clear them.
+   * Clear custom errors by calling this helper again with `null` as the error.
+   *
+   * When a form with a custom error message is submitted, `onBeforeSubmit` will be called, but `onSubmit` will not.
+   * This gives you a chance to re-check your custom validation and maybe clear it.
+   * If you don't clear the error in `onBeforeSubmit` or explicitly call `performSubmit`, then the submit will fail and `onInvalidSubmit` will be called.
+   */
+  unstable_setCustomError(
+    fieldName: ValidStringPaths<FormInputData>,
+    error: string | null,
+  ): void;
+
+  /**
+   * @unstable This API may change
+   *
+   * Sets a custom error message on the field in scope.
+   * By using this, you're taking manual control of the validation lifecycle for this particular error message.
+   *
+   * When a field has a custom error message, it will always be displayed, regardless of the field's touched state.
+   * Custom errors are not cleared until you explicitly clear them.
+   * Clear custom errors by calling this helper again with `null` as the error.
+   *
+   * When a form with a custom error message is submitted, `onBeforeSubmit` will be called, but `onSubmit` will not.
+   * This gives you a chance to re-check your custom validation and maybe clear it.
+   * If you don't clear the error in `onBeforeSubmit` or explicitly call `performSubmit`, then the submit will fail and `onInvalidSubmit` will be called.
+   */
+  unstable_setCustomError(error: string | null): void;
 
   /**
    * Clears the error of the specified field.
@@ -492,7 +532,10 @@ export type BaseReactFormParams<FormInputData> = {
 export const makeBaseFormApi = <FormInputData,>({
   trackedState,
   form,
-}: BaseReactFormParams<FormInputData>): FormApi<FormInputData> => {
+  isHydrated,
+}: BaseReactFormParams<FormInputData> & {
+  isHydrated: boolean;
+}): FormApi<FormInputData> => {
   const prefix = form.__field_prefix__;
   const f = (fieldName?: string) => mergePathStrings(prefix, fieldName);
   const transientState = () => form.__store__.store.getState();
@@ -514,6 +557,7 @@ export const makeBaseFormApi = <FormInputData,>({
     makeFieldArrayImpl({
       trackedState,
       form: scopeFormScope(form, arrayFieldName) as FormScope<any[]>,
+      isHydrated,
     }),
   );
 
@@ -616,6 +660,8 @@ export const makeBaseFormApi = <FormInputData,>({
       transientState().setTouched(...optionalField(args)),
     clearError: (fieldName?: string) =>
       transientState().setError(f(fieldName), null),
+    unstable_setCustomError: (...args: WithOptionalField<string | null>) =>
+      transientState().setCustomError(...optionalField(args)),
 
     focus: (fieldName) => {
       const elements = [
@@ -656,6 +702,7 @@ export const makeBaseFormApi = <FormInputData,>({
     getFormProps: (formProps = {}) => ({
       ...formProps,
       ...getFormProps(trackedState),
+      noValidate: isHydrated,
       onSubmit: (event) => {
         formProps.onSubmit?.(event);
         if (event.defaultPrevented) return;
@@ -740,6 +787,18 @@ export const makeBaseFormApi = <FormInputData,>({
   };
 };
 
+function subscribe() {
+  return () => {};
+}
+
+export function useHydrated() {
+  return useSyncExternalStore(
+    subscribe,
+    () => true,
+    () => false,
+  );
+}
+
 export const useFormInternal = <FormInputData,>(
   form: FormScope<FormInputData>,
 ) => {
@@ -755,13 +814,15 @@ export const useFormInternal = <FormInputData,>(
   // I saw this done in one of the dia-shi's codebases, too, but I can't find it now.
   trackedState.setValue;
 
+  const isHydrated = useHydrated();
   const base = useMemo(
     () =>
       makeBaseFormApi({
         form,
         trackedState,
+        isHydrated,
       }),
-    [form, trackedState],
+    [form, trackedState, isHydrated],
   );
 
   return base;

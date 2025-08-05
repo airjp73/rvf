@@ -83,7 +83,7 @@ export type BeforeSubmitApi<
    * By using this, you're taking control of the submission lifecycle.
    * `onSubmitFailure` will _not_ be called as a result of this.
    */
-  cancelSubmit: () => never;
+  cancelSubmit: (opts?: CancelSubmitOptions) => never;
   /**
    * This is intended for advanced use-cases.
    * By using this, you're taking control of the submission lifecycle.
@@ -159,7 +159,32 @@ export type StoreFlags = {
   reloadDocument: boolean;
 };
 
-class CancelSubmitError extends Error {}
+export type CancelSubmitOptions = {
+  /**
+   * When true, the first invalid form field will be focused just like it would normally when validation errors occur.
+   *
+   * @default false
+   */
+  shouldFocusErrors?: boolean;
+
+  /**
+   * When true, the `onInvalidSubmit` callback passed to `useForm` or `ValidatedForm` will be called as a result of this cancellation.
+   *
+   * @default false
+   */
+  shouldCallOnInvalidSubmit?: boolean;
+};
+
+class CancelSubmitError extends Error {
+  shouldFocusErrors: boolean;
+  shouldCallOnInvalidSubmit: boolean;
+
+  constructor(opts: CancelSubmitOptions = {}) {
+    super();
+    this.shouldFocusErrors = opts?.shouldFocusErrors ?? false;
+    this.shouldCallOnInvalidSubmit = opts?.shouldCallOnInvalidSubmit ?? false;
+  }
+}
 
 type StoreState = {
   values: FieldValues;
@@ -168,6 +193,7 @@ type StoreState = {
   touchedFields: Record<string, boolean>;
   dirtyFields: Record<string, boolean>;
   validationErrors: Record<string, string>;
+  customValidationErrors: Record<string, string>;
   submitStatus: SubmitStatus;
   fieldArrayKeys: Record<string, Array<string>>;
   arrayUpdateKeys: Record<string, string>;
@@ -185,7 +211,7 @@ export type SubmitterOptions = {
   formAction?: string;
 };
 
-export type ResetFieldOpts = { defaultValue?: unknown };
+export type ResetFieldOpts = { defaultValue?: unknown; keepError?: boolean };
 
 type StoreEvents = {
   onFieldChange: (
@@ -208,6 +234,7 @@ type StoreActions = {
   setTouched: (fieldName: string, value: boolean) => void;
   setDirty: (fieldName: string, value: boolean) => void;
   setError: (fieldName: string, value: string | null) => void;
+  setCustomError: (fieldName: string, value: string | null) => void;
 
   setAllValues: (data: FieldValues) => void;
   setAllTouched: (data: Record<string, boolean>) => void;
@@ -454,6 +481,7 @@ export const createFormStateStore = ({
       touchedFields: {},
       dirtyFields: {},
       validationErrors: serverValidationErrors,
+      customValidationErrors: {},
       // If we have default errors, lets treat that as a failed server-side validation
       submitStatus:
         Object.keys(serverValidationErrors).length > 0 ? "error" : "idle",
@@ -677,11 +705,16 @@ export const createFormStateStore = ({
       focusFirstInvalidField: () => {
         const {
           validationErrors,
+          customValidationErrors,
           flags: { disableFocusOnError },
         } = get();
         if (disableFocusOnError) return;
 
-        const refElementsWithErrors = Object.keys(validationErrors)
+        const allErrors = {
+          ...validationErrors,
+          ...customValidationErrors,
+        };
+        const refElementsWithErrors = Object.keys(allErrors)
           .flatMap((fieldName) => [
             ...transientFieldRefs.getRefs(fieldName),
             ...controlledFieldRefs.getRefs(fieldName),
@@ -689,7 +722,7 @@ export const createFormStateStore = ({
           .filter((val): val is NonNullable<typeof val> => val != null);
 
         if (formRef.current) {
-          const unRegisteredNames = Object.keys(validationErrors).filter(
+          const unRegisteredNames = Object.keys(allErrors).filter(
             (name) =>
               !transientFieldRefs.has(name) && !controlledFieldRefs.has(name),
           );
@@ -799,7 +832,10 @@ export const createFormStateStore = ({
             getValidatedData: async () => {
               result = await doValidation();
               if (result.errors) {
-                throw new CancelSubmitError();
+                throw new CancelSubmitError({
+                  shouldCallOnInvalidSubmit: true,
+                  shouldFocusErrors: true,
+                });
               }
               return result.data;
             },
@@ -811,8 +847,8 @@ export const createFormStateStore = ({
               }
               return formData;
             },
-            cancelSubmit: () => {
-              throw new CancelSubmitError();
+            cancelSubmit: (opts) => {
+              throw new CancelSubmitError(opts);
             },
             performSubmit: async (data) => {
               submitted = true;
@@ -822,6 +858,12 @@ export const createFormStateStore = ({
           });
         } catch (err) {
           try {
+            if (err instanceof CancelSubmitError) {
+              if (err.shouldFocusErrors) get().focusFirstInvalidField();
+              if (err.shouldCallOnInvalidSubmit)
+                await mutableImplStore.onInvalidSubmit?.();
+            }
+
             if (!(err instanceof CancelSubmitError)) {
               console.error(err);
               await mutableImplStore.onSubmitFailure?.(err);
@@ -838,9 +880,16 @@ export const createFormStateStore = ({
 
         if (!result) result = await doValidation();
 
-        if (result.errors) {
+        if (
+          result.errors ||
+          Object.entries(get().customValidationErrors).length > 0
+        ) {
           get().focusFirstInvalidField();
           await mutableImplStore.onInvalidSubmit?.();
+          if (get().submitStatus === "submitting")
+            set((state) => {
+              state.submitStatus = "error";
+            });
           return;
         }
 
@@ -940,6 +989,13 @@ export const createFormStateStore = ({
         });
       },
 
+      setCustomError: (fieldName, value) => {
+        set((state) => {
+          if (value == null) delete state.customValidationErrors[fieldName];
+          else state.customValidationErrors[fieldName] = value;
+        });
+      },
+
       setAllTouched: (data) => {
         set((state) => {
           state.touchedFields = data;
@@ -967,6 +1023,7 @@ export const createFormStateStore = ({
           state.touchedFields = {};
           state.dirtyFields = {};
           state.validationErrors = {};
+          state.customValidationErrors = {};
           state.fieldArrayKeys = {};
           state.arrayUpdateKeys = {};
           state.submitStatus = "idle";
@@ -996,7 +1053,9 @@ export const createFormStateStore = ({
           deleteFieldsWithPrefix(
             [
               state.touchedFields,
-              state.validationErrors,
+              ...(opts.keepError
+                ? []
+                : [state.validationErrors, state.customValidationErrors]),
               state.dirtyFields,
               state.fieldArrayKeys,
               state.defaultValueOverrides,
@@ -1083,6 +1142,7 @@ export const createFormStateStore = ({
             [
               state.touchedFields,
               state.validationErrors,
+              state.customValidationErrors,
               state.dirtyFields,
               state.fieldArrayKeys,
               state.defaultValueOverrides,
@@ -1110,6 +1170,7 @@ export const createFormStateStore = ({
             [
               state.touchedFields,
               state.validationErrors,
+              state.customValidationErrors,
               state.dirtyFields,
               state.fieldArrayKeys,
               state.defaultValueOverrides,
@@ -1120,6 +1181,7 @@ export const createFormStateStore = ({
             [
               state.touchedFields,
               state.validationErrors,
+              state.customValidationErrors,
               state.dirtyFields,
               state.fieldArrayKeys,
               state.defaultValueOverrides,
@@ -1148,6 +1210,7 @@ export const createFormStateStore = ({
             [
               state.touchedFields,
               state.validationErrors,
+              state.customValidationErrors,
               state.dirtyFields,
               state.fieldArrayKeys,
               state.defaultValueOverrides,
@@ -1184,6 +1247,7 @@ export const createFormStateStore = ({
             [
               state.touchedFields,
               state.validationErrors,
+              state.customValidationErrors,
               state.dirtyFields,
               state.fieldArrayKeys,
               state.defaultValueOverrides,
@@ -1215,6 +1279,7 @@ export const createFormStateStore = ({
             [
               state.touchedFields,
               state.validationErrors,
+              state.customValidationErrors,
               state.dirtyFields,
               state.fieldArrayKeys,
               state.defaultValueOverrides,
@@ -1251,6 +1316,7 @@ export const createFormStateStore = ({
             [
               state.touchedFields,
               state.validationErrors,
+              state.customValidationErrors,
               state.dirtyFields,
               state.fieldArrayKeys,
               state.defaultValueOverrides,
@@ -1261,6 +1327,7 @@ export const createFormStateStore = ({
             [
               state.touchedFields,
               state.validationErrors,
+              state.customValidationErrors,
               state.dirtyFields,
               state.fieldArrayKeys,
               state.defaultValueOverrides,
@@ -1298,6 +1365,7 @@ export const createFormStateStore = ({
             [
               state.touchedFields,
               state.validationErrors,
+              state.customValidationErrors,
               state.dirtyFields,
               state.fieldArrayKeys,
               state.defaultValueOverrides,
@@ -1333,6 +1401,7 @@ export const createFormStateStore = ({
             [
               state.touchedFields,
               state.validationErrors,
+              state.customValidationErrors,
               state.dirtyFields,
               state.fieldArrayKeys,
               state.defaultValueOverrides,

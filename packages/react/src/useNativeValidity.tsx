@@ -1,5 +1,6 @@
 import {
   FormScope,
+  getAllErrors,
   getElementsWithNames,
   isFormControl,
   sortByPosition,
@@ -38,8 +39,8 @@ export const useNativeValidityForForm = (scope: FormScope<any>) => {
       abortController = new AbortController();
       const signal = abortController.signal;
 
-      const currentErrors = state.validationErrors;
-      const prevErrors = prevState.validationErrors;
+      const currentErrors = getAllErrors(state);
+      const prevErrors = getAllErrors(prevState);
 
       const getElements = (field: string) => {
         const allRefs = [

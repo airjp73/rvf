@@ -7,7 +7,12 @@ import {
 } from "./store";
 import { ValidationBehavior } from "./types";
 import { createValidator } from "./createValidator";
-import { getFieldDefaultValue, getFieldValue } from "./getters";
+import {
+  getAllErrors,
+  getFieldDefaultValue,
+  getFieldError,
+  getFieldValue,
+} from "./getters";
 
 const testStore = (init?: Partial<FormStoreInit>) =>
   createFormStateStore({
@@ -1966,6 +1971,30 @@ it("should override resetField overrides with reset or parent resetFields", () =
   expect(getFieldDefaultValue(store.getState(), "foo")).toEqual({ bar: "bar" });
 });
 
+it("should keep errors if keepError is provided", () => {
+  const store = testStore({
+    defaultValues: {
+      foo: { bar: "bar" },
+    },
+  });
+  store.setState({
+    validationErrors: {
+      foo: "error",
+    },
+    customValidationErrors: {
+      foo: "bar",
+    },
+  });
+
+  store.getState().resetField("foo", {
+    keepError: true,
+  });
+  expect(store.getState()).toMatchObject({
+    validationErrors: { foo: "error" },
+    customValidationErrors: { foo: "bar" },
+  });
+});
+
 it("should be able to override the default value with an explicit null or undefined", () => {
   const store = testStore({
     defaultValues: { foo: { bar: "bar" } },
@@ -2021,5 +2050,146 @@ describe("resolver queue", () => {
     await expect(prom1).resolves.toBeUndefined();
     await expect(prom2).resolves.toBeUndefined();
     await expect(prom3).resolves.toBeUndefined();
+  });
+});
+
+describe("custom errors", () => {
+  it("should return custom errors before regular errors", async () => {
+    const onSubmit = vi.fn();
+    const store = testStore({
+      defaultValues: {
+        firstName: "Jane",
+      },
+      validationBehaviorConfig: {
+        whenSubmitted: "onChange",
+        initial: "onChange",
+        whenTouched: "onChange",
+      },
+      mutableImplStore: {
+        onSubmitFailure: vi.fn(),
+        onSubmitSuccess: vi.fn(),
+        onBeforeSubmit: vi.fn(),
+        onInvalidSubmit: vi.fn(),
+        validator: createValidator({
+          validate: (data) => {
+            if (data.firstName === "Jane")
+              return Promise.resolve({
+                error: { firstName: "Invalid" },
+                data: undefined,
+              });
+            return Promise.resolve({
+              data: { transformed: "data" },
+              error: undefined,
+            });
+          },
+        }),
+        onSubmit,
+      },
+    });
+
+    await store.getState().validate();
+    expect(getFieldError(store.getState(), "firstName")).toEqual("Invalid");
+    expect(getAllErrors(store.getState())).toEqual({ firstName: "Invalid" });
+
+    store.getState().setCustomError("firstName", "Custom error");
+    expect(getFieldError(store.getState(), "firstName")).toEqual(
+      "Custom error",
+    );
+    expect(getAllErrors(store.getState())).toEqual({
+      firstName: "Custom error",
+    });
+
+    store.getState().setCustomError("firstName", null);
+    expect(getFieldError(store.getState(), "firstName")).toEqual("Invalid");
+    expect(getAllErrors(store.getState())).toEqual({ firstName: "Invalid" });
+  });
+
+  it("should fail submission when custom errors are the only errors", async () => {
+    const onBeforeSubmit = vi.fn();
+    const onInvalidSubmit = vi.fn();
+    const onSubmit = vi.fn();
+    const store = testStore({
+      defaultValues: {
+        firstName: "Jane",
+      },
+      mutableImplStore: {
+        onSubmit,
+        onSubmitFailure: vi.fn(),
+        onSubmitSuccess: vi.fn(),
+        onBeforeSubmit,
+        onInvalidSubmit,
+        validator: createValidator({
+          validate: (data) => Promise.resolve({ data, error: undefined }),
+        }),
+      },
+    });
+
+    store.getState().setCustomError("firstName", "Custom error");
+    store.getState().onSubmit();
+
+    await new Promise((resolve) => setTimeout(resolve, 100));
+    expect(onSubmit).not.toBeCalled();
+    expect(onBeforeSubmit).toBeCalled();
+    expect(onInvalidSubmit).toBeCalled();
+  });
+
+  it("should submit successfully if the error is cleared in onBeforeSubmit", async () => {
+    const onInvalidSubmit = vi.fn();
+    const onSubmit = vi.fn();
+    const store = testStore({
+      defaultValues: {
+        firstName: "Jane",
+      },
+      mutableImplStore: {
+        onSubmit,
+        onSubmitFailure: vi.fn(),
+        onSubmitSuccess: vi.fn(),
+        onBeforeSubmit: () => {
+          store.getState().setCustomError("firstName", null);
+        },
+        onInvalidSubmit,
+        validator: createValidator({
+          validate: (data) => Promise.resolve({ data, error: undefined }),
+        }),
+      },
+    });
+
+    store.getState().setCustomError("firstName", "Custom error");
+    store.getState().onSubmit();
+
+    await new Promise((resolve) => setTimeout(resolve, 100));
+    expect(onSubmit).toBeCalled();
+    expect(onInvalidSubmit).not.toBeCalled();
+  });
+
+  it("should submit successfully if onBeforeSubmit explicitly submits", async () => {
+    const onInvalidSubmit = vi.fn();
+    const onSubmit = vi.fn();
+    const store = testStore({
+      defaultValues: {
+        firstName: "Jane",
+      },
+      mutableImplStore: {
+        onSubmit,
+        onSubmitFailure: vi.fn(),
+        onSubmitSuccess: vi.fn(),
+        onBeforeSubmit: (api) => {
+          void api.performSubmit({
+            firstName: "Yo",
+          });
+        },
+        onInvalidSubmit,
+        validator: createValidator({
+          validate: (data) => Promise.resolve({ data, error: undefined }),
+        }),
+      },
+    });
+
+    store.getState().setCustomError("firstName", "Custom error");
+    store.getState().onSubmit();
+
+    await new Promise((resolve) => setTimeout(resolve, 100));
+    expect(onSubmit).toBeCalled();
+    expect(onInvalidSubmit).not.toBeCalled();
   });
 });

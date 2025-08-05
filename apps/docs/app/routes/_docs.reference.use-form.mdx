@@ -126,6 +126,16 @@ This is intended for advanced use-cases.
 By using this, you're taking control of the submission lifecycle.
 `onSubmitFailure` will _not_ be called as a result of this.
 
+`cancelSubmit` also takes a couple options.
+
+- `shouldFocusErrors`
+
+  When true, the first invalid form field will be focused just like it would normally when validation errors occur.
+
+- `shouldCallOnInvalidSubmit`
+
+  When true, the `onInvalidSubmit` callback passed to `useForm` or `ValidatedForm` will be called as a result of this cancellation.
+
 #### `performSubmit`
 
 This is intended for advanced use-cases.
