@@ -268,7 +268,7 @@ export interface FormApi<FormInputData> {
   /**
    * @unstable This API may change
    *
-   * Sets a custom error message on the specifie field.
+   * Sets a custom error message on the specified field.
    * By using this, you're taking manual control of the validation lifecycle for this particular error message.
    *
    * When a field has a custom error message, it will always be displayed, regardless of the field's touched state.
