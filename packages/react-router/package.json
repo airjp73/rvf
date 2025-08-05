@@ -1,6 +1,6 @@
 {
   "name": "@rvf/react-router",
-  "version": "7.1.5",
+  "version": "8.0.0",
   "description": "Easy, predictable form state management for React",
   "main": "./dist/index.cjs.js",
   "module": "./dist/index.esm.js",
@@ -26,7 +26,7 @@
     "react": "^18.0.0 || ^19.0.0"
   },
   "dependencies": {
-    "@rvf/react": ">= 7.1.4 < 8.0.0"
+    "@rvf/react": ">= 8.0.0 < 9.0.0"
   },
   "devDependencies": {
     "@rvf/react": "*",
