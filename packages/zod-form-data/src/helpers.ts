@@ -202,7 +202,7 @@ export const formData: FormDataType = (shapeOrSchema: any): any =>
  *   name: zfd.text(),
  * })
  *
- * type Type = zfd.infer<typeof nameSchema> // << This
+ * type Type = zfd.infer<typeof nameSchema>
  *
  * const value:Type = { name: "zod-form-data" }
  * ```
