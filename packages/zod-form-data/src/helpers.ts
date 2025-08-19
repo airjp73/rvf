@@ -193,3 +193,20 @@ export const formData: FormDataType = (shapeOrSchema: any): any =>
     processFormData,
     shapeOrSchema instanceof ZodType ? shapeOrSchema : z.object(shapeOrSchema),
   );
+
+/**
+ * Infers a static type from your schema definition.
+ *
+ * ```ts
+ * const schema = zfd.formData({
+ *   name: zfd.text(),
+ * })
+ *
+ * type Type = zfd.infer<typeof nameSchema> // << This
+ *
+ * const value:Type = { name: "zod-form-data" }
+ * ```
+ *
+ * Note: This is just a re-export of the Zod `infer` type for convenience.
+ */
+export type infer<T extends ZodType> = z.infer<T>;

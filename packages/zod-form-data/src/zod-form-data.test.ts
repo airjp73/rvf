@@ -409,4 +409,26 @@ describe("zod helpers", () => {
       });
     });
   });
+
+  describe("infer", () => {
+    it("should collect the types information correctly", () => {
+      const dataSchema = zfd.formData({
+        name: zfd.text(),
+        age: zfd.numeric(z.number().min(25).max(50)),
+        likesPizza: zfd.checkbox(),
+      });
+
+      type DataType = zfd.infer<typeof dataSchema>;
+
+      const dataValue: DataType = {
+        age: 2,
+        likesPizza: true,
+        name: "Billy",
+      };
+
+      // Just to get the test runner to say it passes
+      // This test is more about TS type logic than about run time logic
+      expect(dataValue).toBe(dataValue);
+    });
+  });
 });
