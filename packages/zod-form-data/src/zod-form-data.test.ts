@@ -105,6 +105,12 @@ describe("zod helpers", () => {
       expect(s.parse("asdf")).toBe(true);
     });
 
+    it("should support boolean values", () => {
+      const s = zfd.checkbox();
+      expect(s.parse(true)).toBe(true);
+      expect(s.parse(false)).toBe(false);
+    });
+
     it("should fail anything else", () => {
       const s = zfd.checkbox();
       expectError(s, 123);
