@@ -247,3 +247,25 @@ const schema = zfd.formData({
   repeatableNumberField: zfd.repeatableOfType(zfd.numeric()),
 });
 ```
+
+### infer
+
+A convenience wrapper for the Zod [infer](https://zod.dev/basics?id=inferring-types) type.
+
+#### Usage
+
+```ts
+const dataSchema = zfd.formData({
+  name: zfd.text(),
+  age: zfd.numeric(),
+  likesPizza: zfd.checkbox(),
+});
+
+type DataType = zfd.infer<typeof dataSchema>;
+
+const dataValue: DataType = {
+  age: 2,
+  likesPizza: true,
+  name: "Billy",
+};
+```
