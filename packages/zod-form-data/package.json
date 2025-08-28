@@ -1,6 +1,6 @@
 {
   "name": "zod-form-data",
-  "version": "2.0.7",
+  "version": "2.0.8",
   "homepage": "https://github.com/airjp73/rvf/tree/main/packages/zod-form-data",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
