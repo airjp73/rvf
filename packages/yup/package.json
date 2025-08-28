@@ -1,6 +1,6 @@
 {
   "name": "@rvf/yup",
-  "version": "7.0.2",
+  "version": "7.0.3",
   "main": "./dist/index.cjs.js",
   "module": "./dist/index.esm.js",
   "types": "./dist/index.d.ts",
@@ -16,7 +16,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@rvf/core": ">= 0.0.1 <= 8.0.0"
+    "@rvf/core": ">= 6.0.3 < 9.0.0"
   },
   "peerDependencies": {
     "yup": "^1.0.0"
