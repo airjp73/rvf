@@ -80,6 +80,7 @@ export const checkbox = ({ trueValue = "on" }: CheckboxOpts = {}) =>
   z.union([
     z.literal(trueValue).transform(() => true),
     z.literal(undefined).transform(() => false),
+    z.boolean(),
   ]);
 
 export const file: InputType<z.ZodType<File>> = (schema = z.instanceof(File)) =>
