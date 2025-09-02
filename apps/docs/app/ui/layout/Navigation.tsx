@@ -235,6 +235,9 @@ const navigation = (
       <NavItem href="/supporting-no-js">
         Support users without JS
       </NavItem>
+      <NavItem href="/next-js-example">
+        Next.js example
+      </NavItem>
     </NavigationGroup>
     <NavigationGroup title="Recipes">
       <NavItem href="/recipes/typesafe-input">
