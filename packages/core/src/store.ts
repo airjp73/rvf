@@ -69,8 +69,11 @@ export type BeforeSubmitApi<
   /**
    * Runs the validations and returns the validated data.
    * If the form is not valid, it will throw an error.
+   * Optionally, you can pass in unvalidated data as an override and validate & submit that data instead.
    */
-  getValidatedData: () => Promise<FormOutputData>;
+  getValidatedData: (
+    unvalidatedData?: FormInputData,
+  ) => Promise<FormOutputData>;
   /**
    * Get's the raw `FormData` object.
    * This is only available when `submitSource` is set to `dom`.
@@ -783,7 +786,8 @@ export const createFormStateStore = ({
           injectedData: submitterData,
         });
 
-        const doValidation = () => get().validate(rawValues, true);
+        const doValidation = (unvalidatedData?: unknown) =>
+          get().validate(unvalidatedData ?? rawValues, true);
         let result: Awaited<ReturnType<typeof doValidation>> | undefined =
           undefined;
 
@@ -829,8 +833,8 @@ export const createFormStateStore = ({
         try {
           await mutableImplStore.onBeforeSubmit?.({
             unvalidatedData: rawValues,
-            getValidatedData: async () => {
-              result = await doValidation();
+            getValidatedData: async (unvalidatedData) => {
+              result = await doValidation(unvalidatedData);
               if (result.errors) {
                 throw new CancelSubmitError({
                   shouldCallOnInvalidSubmit: true,

@@ -299,6 +299,40 @@ describe("onBeforeSubmit", () => {
     expect(success).toBeCalledTimes(1);
   });
 
+  it("should customize pre-validation data for submission", async () => {
+    const submit = vi.fn();
+    const success = vi.fn();
+
+    const TestComp = () => {
+      const form = useForm({
+        defaultValues: { foo: 123 },
+        validator: successValidator as Validator<{ foo: number }>,
+        onBeforeSubmit: async (api) => {
+          const data = await api.getValidatedData({ foo: 456 });
+          await api.performSubmit(data);
+        },
+        onSubmitSuccess: success,
+        handleSubmit: async (data) => submit(data),
+      });
+
+      return (
+        <form {...form.getFormProps()} data-testid="form">
+          <input data-testid="foo" {...form.getInputProps("foo")} />
+          <button type="submit" data-testid="submit" />
+        </form>
+      );
+    };
+
+    render(<TestComp />);
+    await userEvent.click(screen.getByTestId("submit"));
+
+    expect(successValidator.validate).toBeCalledTimes(1);
+    expect(submit).toBeCalledWith({ foo: 456 });
+    expect(submit).toBeCalledTimes(1);
+    expect(submit).toBeCalledWith({ foo: 456 });
+    expect(success).toBeCalledTimes(1);
+  });
+
   it("should customize data for submission", async () => {
     const submit = vi.fn();
     const success = vi.fn();
