@@ -204,7 +204,7 @@ export interface FormApi<FormInputData> {
    */
   subscribe: {
     /**
-     * Subscribes to any change in the values of the form.
+     * Subscribes to any change in the values of the form, or the value in scope.
      * @returns A function that can be called to unsubscribe.
      * @example `useEffect(() => form.subscribe.value(console.log), [])`
      */
@@ -635,9 +635,10 @@ export const makeBaseFormApi = <FormInputData,>({
     subscribe: {
       value: (...args: unknown[]) => {
         type BothParams = [string | undefined, (value: unknown) => void];
-        const [fieldName, callback] = (
+        const [_fieldName, callback] = (
           args.length === 1 ? [undefined, args[0]] : args
         ) as BothParams;
+        const fieldName = f(_fieldName);
 
         return form.__store__.store.subscribe((state, prevState) => {
           const value = fieldName
