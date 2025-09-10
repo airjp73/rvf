@@ -7,7 +7,7 @@ Easy form validation and state management for React.
 ### Progressively enhanced
 
 RVF leans into native form APIs, so it's easy to add to your existing forms.
-It even works without JavaScript on the client if you're using a server-rendered framework like [Remix / React Router](https://remix.run).
+It even works without JavaScript on the client if you're using a server-rendered framework like [Remix / React Router](https://remix.run) or [Next.js](https://nextjs.org/).
 
 ### Powerful
 
