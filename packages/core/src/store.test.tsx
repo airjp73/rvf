@@ -13,6 +13,23 @@ import {
   getFieldError,
   getFieldValue,
 } from "./getters";
+import { FormEventListener } from "./formEventListener";
+
+const mockEventListener = {
+  onFieldSetValue: vi.fn(),
+  onFieldChange: vi.fn(),
+  onFieldReset: vi.fn(),
+  onFormReset: vi.fn(),
+  onArrayPush: vi.fn(),
+  onArrayPop: vi.fn(),
+  onArrayShift: vi.fn(),
+  onArrayUnshift: vi.fn(),
+  onArrayInsert: vi.fn(),
+  onArrayMove: vi.fn(),
+  onArrayRemove: vi.fn(),
+  onArraySwap: vi.fn(),
+  onArrayReplace: vi.fn(),
+} satisfies Required<FormEventListener>;
 
 const testStore = (init?: Partial<FormStoreInit>) =>
   createFormStateStore({
@@ -42,10 +59,15 @@ const testStore = (init?: Partial<FormStoreInit>) =>
       id: "test-form",
     },
     defaultFormId: "test-form",
+    eventListener: mockEventListener,
     ...init,
   });
 
 describe("validation", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
   it("should validate using the provided validator at the right time", async () => {
     const onSubmit = vi.fn();
     const store = testStore({
@@ -82,6 +104,10 @@ describe("validation", () => {
     expect(store.getState().touchedFields).toEqual({});
     expect(store.getState().dirtyFields).toEqual({ firstName: true });
     expect(store.getState().validationErrors).toEqual({});
+    expect(mockEventListener.onFieldChange).toHaveBeenCalledWith(
+      "firstName",
+      "Jane",
+    );
 
     await new Promise((resolve) => setTimeout(resolve, 0));
     expect(store.getState().validationErrors).toEqual({});
@@ -96,6 +122,10 @@ describe("validation", () => {
     store.getState().onFieldChange("firstName", "John again");
     await new Promise((resolve) => setTimeout(resolve, 0));
     expect(store.getState().validationErrors).toEqual({});
+    expect(mockEventListener.onFieldChange).toHaveBeenCalledWith(
+      "firstName",
+      "John again",
+    );
 
     store.getState().onSubmit();
     await new Promise((resolve) => setTimeout(resolve, 0));
@@ -145,6 +175,10 @@ describe("validation", () => {
     store.getState().onFieldChange("firstName", "Jane", behavior("onBlur"));
     await new Promise((resolve) => setTimeout(resolve, 0));
     expect(store.getState().validationErrors).toEqual({});
+    expect(mockEventListener.onFieldChange).toHaveBeenCalledWith(
+      "firstName",
+      "Jane",
+    );
 
     store.getState().onFieldChange("firstName", "Jane", behavior("onChange"));
     await new Promise((resolve) => setTimeout(resolve, 0));
@@ -229,6 +263,7 @@ describe("arrays", () => {
       },
     });
     expect(fieldArrayKeys.foo).toHaveLength(3);
+    expect(mockEventListener.onArrayPush).toHaveBeenCalledWith("foo", "quux");
   });
 
   it("should push into arrays with no field array", () => {
@@ -253,7 +288,6 @@ describe("arrays", () => {
       touchedFields,
       dirtyFields,
       validationErrors,
-      fieldArrayKeys,
       defaultValueOverrides,
     } = store.getState();
     expect({
@@ -279,6 +313,7 @@ describe("arrays", () => {
         "foo[1]": "not equal",
       },
     });
+    expect(mockEventListener.onArrayPush).toHaveBeenCalledWith("foo", "quux");
   });
 
   it("should be able to be called in quick succession", () => {
@@ -307,6 +342,12 @@ describe("arrays", () => {
         bar: [expect.any(String)],
       },
     });
+    expect(mockEventListener.onArrayRemove).toHaveBeenCalledWith("foo", 0);
+    expect(mockEventListener.onArrayInsert).toHaveBeenCalledWith(
+      "bar",
+      0,
+      "bar",
+    );
   });
 
   it("should push into nested arrays", () => {
@@ -330,6 +371,9 @@ describe("arrays", () => {
       },
     });
     store.getState().arrayPush("foo[0].notes", { text: "quux" });
+    expect(mockEventListener.onArrayPush).toHaveBeenCalledWith("foo[0].notes", {
+      text: "quux",
+    });
     const {
       values,
       touchedFields,
@@ -391,6 +435,7 @@ describe("arrays", () => {
       },
     });
     store.getState().arrayPop("foo");
+    expect(mockEventListener.onArrayPop).toHaveBeenCalledWith("foo");
     const {
       values,
       touchedFields,
@@ -505,6 +550,7 @@ describe("arrays", () => {
       },
     });
     store.getState().arrayPop("foo[0].notes");
+    expect(mockEventListener.onArrayPop).toHaveBeenCalledWith("foo[0].notes");
     let {
       values,
       touchedFields,
@@ -541,6 +587,7 @@ describe("arrays", () => {
     });
 
     store.getState().arrayPop("foo");
+    expect(mockEventListener.onArrayPop).toHaveBeenCalledWith("foo");
     ({ values, touchedFields, dirtyFields, validationErrors, fieldArrayKeys } =
       store.getState());
     expect({
@@ -590,6 +637,7 @@ describe("arrays", () => {
       },
     });
     store.getState().arrayShift("foo");
+    expect(mockEventListener.onArrayShift).toHaveBeenCalledWith("foo");
     const {
       values,
       touchedFields,
@@ -647,6 +695,7 @@ describe("arrays", () => {
       },
     });
     store.getState().arrayShift("foo[0].notes");
+    expect(mockEventListener.onArrayShift).toHaveBeenCalledWith("foo[0].notes");
     let {
       values,
       touchedFields,
@@ -732,6 +781,10 @@ describe("arrays", () => {
       },
     });
     store.getState().arrayUnshift("foo", "quux");
+    expect(mockEventListener.onArrayUnshift).toHaveBeenCalledWith(
+      "foo",
+      "quux",
+    );
     const {
       values,
       touchedFields,
@@ -796,6 +849,10 @@ describe("arrays", () => {
     store
       .getState()
       .arrayUnshift("foo", { name: "foo", notes: [{ text: "bar" }] });
+    expect(mockEventListener.onArrayUnshift).toHaveBeenCalledWith("foo", {
+      name: "foo",
+      notes: [{ text: "bar" }],
+    });
     let {
       values,
       touchedFields,
@@ -835,6 +892,10 @@ describe("arrays", () => {
     });
 
     store.getState().arrayUnshift("foo[0].notes", { text: "foo" });
+    expect(mockEventListener.onArrayUnshift).toHaveBeenCalledWith(
+      "foo[0].notes",
+      { text: "foo" },
+    );
     ({ values, touchedFields, dirtyFields, validationErrors, fieldArrayKeys } =
       store.getState());
     expect({
@@ -889,6 +950,11 @@ describe("arrays", () => {
       },
     });
     store.getState().arrayInsert("foo", 1, "quux");
+    expect(mockEventListener.onArrayInsert).toHaveBeenCalledWith(
+      "foo",
+      1,
+      "quux",
+    );
     const {
       values,
       touchedFields,
@@ -955,6 +1021,10 @@ describe("arrays", () => {
     store
       .getState()
       .arrayInsert("foo", 1, { name: "hello", notes: [{ text: "goodbye" }] });
+    expect(mockEventListener.onArrayInsert).toHaveBeenCalledWith("foo", 1, {
+      name: "hello",
+      notes: [{ text: "goodbye" }],
+    });
     let {
       values,
       touchedFields,
@@ -996,6 +1066,11 @@ describe("arrays", () => {
     });
 
     store.getState().arrayInsert("foo[0].notes", 1, { text: "hello" });
+    expect(mockEventListener.onArrayInsert).toHaveBeenCalledWith(
+      "foo[0].notes",
+      1,
+      { text: "hello" },
+    );
     ({ values, touchedFields, dirtyFields, validationErrors, fieldArrayKeys } =
       store.getState());
     expect({
@@ -1061,6 +1136,7 @@ describe("arrays", () => {
       },
     });
     store.getState().arrayMove("foo", 3, 1);
+    expect(mockEventListener.onArrayMove).toHaveBeenCalledWith("foo", 3, 1);
     const {
       values,
       touchedFields,
@@ -1132,6 +1208,7 @@ describe("arrays", () => {
       },
     });
     store.getState().arrayMove("foo", 0, 2);
+    expect(mockEventListener.onArrayMove).toHaveBeenCalledWith("foo", 0, 2);
     let {
       values,
       touchedFields,
@@ -1233,6 +1310,7 @@ describe("arrays", () => {
       },
     });
     store.getState().arrayRemove("foo", 1);
+    expect(mockEventListener.onArrayRemove).toHaveBeenCalledWith("foo", 1);
     const {
       values,
       touchedFields,
@@ -1301,6 +1379,7 @@ describe("arrays", () => {
       },
     });
     store.getState().arrayRemove("foo", 1);
+    expect(mockEventListener.onArrayRemove).toHaveBeenCalledWith("foo", 1);
     const {
       values,
       touchedFields,
@@ -1365,6 +1444,7 @@ describe("arrays", () => {
       },
     });
     store.getState().arrayRemove("foo", 1);
+    expect(mockEventListener.onArrayRemove).toHaveBeenCalledWith("foo", 1);
     let {
       values,
       touchedFields,
@@ -1408,6 +1488,10 @@ describe("arrays", () => {
     });
 
     store.getState().arrayRemove("foo[0].notes", 1);
+    expect(mockEventListener.onArrayRemove).toHaveBeenCalledWith(
+      "foo[0].notes",
+      1,
+    );
     ({
       values,
       touchedFields,
@@ -1478,6 +1562,7 @@ describe("arrays", () => {
       },
     });
     store.getState().arraySwap("foo", 1, 3);
+    expect(mockEventListener.onArraySwap).toHaveBeenCalledWith("foo", 1, 3);
     const {
       values,
       touchedFields,
@@ -1557,6 +1642,7 @@ describe("arrays", () => {
       },
     });
     store.getState().arraySwap("foo", 1, 3);
+    expect(mockEventListener.onArraySwap).toHaveBeenCalledWith("foo", 1, 3);
     const {
       values,
       touchedFields,
@@ -1619,6 +1705,7 @@ describe("arrays", () => {
       },
     });
     store.getState().arraySwap("foo", 1, 3);
+    expect(mockEventListener.onArraySwap).toHaveBeenCalledWith("foo", 1, 3);
     const {
       values,
       touchedFields,
@@ -1666,6 +1753,7 @@ describe("arrays", () => {
       },
     });
     store.getState().arraySwap("foo", 0, 2);
+    expect(mockEventListener.onArraySwap).toHaveBeenCalledWith("foo", 0, 2);
     let {
       values,
       touchedFields,
@@ -1699,6 +1787,11 @@ describe("arrays", () => {
     });
 
     store.getState().arraySwap("foo[2].notes", 0, 1);
+    expect(mockEventListener.onArraySwap).toHaveBeenCalledWith(
+      "foo[2].notes",
+      0,
+      1,
+    );
     ({ values, touchedFields, dirtyFields, validationErrors, fieldArrayKeys } =
       store.getState());
     expect({
@@ -1760,6 +1853,11 @@ describe("arrays", () => {
       },
     });
     store.getState().arrayReplace("foo", 1, "quux");
+    expect(mockEventListener.onArrayReplace).toHaveBeenCalledWith(
+      "foo",
+      1,
+      "quux",
+    );
     const {
       values,
       touchedFields,
@@ -1828,6 +1926,10 @@ describe("arrays", () => {
     store
       .getState()
       .arrayReplace("foo", 0, { name: "foo", notes: [{ text: "bar" }] });
+    expect(mockEventListener.onArrayReplace).toHaveBeenCalledWith("foo", 0, {
+      name: "foo",
+      notes: [{ text: "bar" }],
+    });
     let {
       values,
       touchedFields,
@@ -1907,6 +2009,10 @@ describe("arrays", () => {
     });
 
     store.getState().setValue("foo[0].name", "b");
+    expect(mockEventListener.onFieldSetValue).toHaveBeenCalledWith(
+      "foo[0].name",
+      "b",
+    );
     expect(store.getState().values).toEqual({
       foo: [{ name: "b" }],
     });
@@ -1935,6 +2041,9 @@ it("should be able to `resetField` on a whole array", () => {
   });
 
   store.getState().resetField("foo");
+  expect(mockEventListener.onFieldReset).toHaveBeenCalledWith("foo", [
+    { name: "baz", notes: [{ text: "jimbo" }] },
+  ]);
 
   const { values, defaultValueOverrides } = store.getState();
   expect({ values, defaultValueOverrides }).toEqual({
@@ -1955,18 +2064,26 @@ it("should override resetField overrides with reset or parent resetFields", () =
   expect(getFieldDefaultValue(store.getState(), "foo")).toEqual({ bar: "bar" });
 
   store.getState().resetField("foo.bar", { defaultValue: "baz" });
+  expect(mockEventListener.onFieldReset).toHaveBeenCalledWith("foo.bar", "baz");
   expect(getFieldDefaultValue(store.getState(), "foo.bar")).toBe("baz");
   expect(getFieldDefaultValue(store.getState(), "foo")).toEqual({ bar: "bar" });
 
   store.getState().resetField("foo");
+  expect(mockEventListener.onFieldReset).toHaveBeenCalledWith("foo", {
+    bar: "bar",
+  });
   expect(getFieldDefaultValue(store.getState(), "foo.bar")).toBe("bar");
   expect(getFieldDefaultValue(store.getState(), "foo")).toEqual({ bar: "bar" });
 
   store.getState().resetField("foo.bar", { defaultValue: "baz" });
+  expect(mockEventListener.onFieldReset).toHaveBeenCalledWith("foo.bar", "baz");
   expect(getFieldDefaultValue(store.getState(), "foo.bar")).toBe("baz");
   expect(getFieldDefaultValue(store.getState(), "foo")).toEqual({ bar: "bar" });
 
   store.getState().reset();
+  expect(mockEventListener.onFormReset).toHaveBeenCalledWith({
+    foo: { bar: "bar" },
+  });
   expect(getFieldDefaultValue(store.getState(), "foo.bar")).toBe("bar");
   expect(getFieldDefaultValue(store.getState(), "foo")).toEqual({ bar: "bar" });
 });
@@ -1988,6 +2105,9 @@ it("should keep errors if keepError is provided", () => {
 
   store.getState().resetField("foo", {
     keepError: true,
+  });
+  expect(mockEventListener.onFieldReset).toHaveBeenCalledWith("foo", {
+    bar: "bar",
   });
   expect(store.getState()).toMatchObject({
     validationErrors: { foo: "error" },

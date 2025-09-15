@@ -25,6 +25,7 @@ import { GenericObject, preprocessFormData } from "./native-form-data/flatten";
 import { MultiValueMap } from "./native-form-data/MultiValueMap";
 import { insert, move, remove, replace, toSwapped } from "./arrayUtil";
 import { getFieldDefaultValue, getFieldValue } from "./getters";
+import { FormEventListener } from "./formEventListener";
 
 export type FieldSerializer = (value: unknown) => string;
 
@@ -381,6 +382,7 @@ export type FormStoreInit = {
   flags: StoreFlags;
   serverValidationErrors: FieldErrors;
   defaultFormId: string;
+  eventListener?: FormEventListener;
 };
 
 const genKey = () => `${Math.round(Math.random() * 10_000)}-${Date.now()}`;
@@ -474,6 +476,7 @@ export const createFormStateStore = ({
   flags,
   serverValidationErrors = {},
   defaultFormId,
+  eventListener,
 }: FormStoreInit) =>
   create<FormStoreValue>()(
     immer((set, get) => ({
@@ -741,6 +744,7 @@ export const createFormStateStore = ({
 
       /////// Events
       onFieldChange: (fieldName, value, validationBehaviorConfig) => {
+        eventListener?.onFieldChange?.(fieldName, value);
         set((state) => {
           setPath(state.values, fieldName, value);
           const defaultValue = getFieldDefaultValue(state, fieldName);
@@ -945,6 +949,7 @@ export const createFormStateStore = ({
       },
 
       setValue: (fieldName, value) => {
+        eventListener?.onFieldSetValue?.(fieldName, value);
         set((state) => {
           if (fieldName) setPath(state.values, fieldName, value);
           else state.values = value as any;
@@ -1020,6 +1025,7 @@ export const createFormStateStore = ({
 
       ///////// Other actions
       reset: (nextValues = get().defaultValues) => {
+        eventListener?.onFormReset?.(nextValues);
         set((state) => {
           state.values = nextValues;
           state.defaultValues = nextValues;
@@ -1050,6 +1056,8 @@ export const createFormStateStore = ({
         const nextValue = shouldOverrideDefaultValue
           ? opts.defaultValue
           : currentDefaultValue;
+
+        eventListener?.onFieldReset?.(fieldName, nextValue);
 
         set((state) => {
           setPath(state.values, fieldName, nextValue);
@@ -1111,6 +1119,7 @@ export const createFormStateStore = ({
       },
 
       arrayPush: (fieldName, value, validationBehaviorConfig) => {
+        eventListener?.onArrayPush?.(fieldName, value);
         set((state) => {
           setPathIfUndefined(state.values, fieldName, []);
           const val = getPath(state.values, fieldName);
@@ -1132,6 +1141,7 @@ export const createFormStateStore = ({
         );
       },
       arrayPop: (fieldName, validationBehaviorConfig) => {
+        eventListener?.onArrayPop?.(fieldName);
         set((state) => {
           setPathIfUndefined(state.values, fieldName, []);
           const val = getPath(state.values, fieldName);
@@ -1160,6 +1170,7 @@ export const createFormStateStore = ({
         );
       },
       arrayShift: (fieldName, validationBehaviorConfig) => {
+        eventListener?.onArrayShift?.(fieldName);
         set((state) => {
           setPathIfUndefined(state.values, fieldName, []);
           const val = getPath(state.values, fieldName);
@@ -1200,6 +1211,7 @@ export const createFormStateStore = ({
         );
       },
       arrayUnshift: (fieldName, value, validationBehaviorConfig) => {
+        eventListener?.onArrayUnshift?.(fieldName, value);
         set((state) => {
           setPathIfUndefined(state.values, fieldName, []);
           const val = getPath(state.values, fieldName);
@@ -1236,6 +1248,7 @@ export const createFormStateStore = ({
         validationBehaviorConfig,
       ) => {
         set((state) => {
+          eventListener?.onArrayInsert?.(fieldName, insertAtIndex, value);
           setPathIfUndefined(state.values, fieldName, []);
           const val = getPath(state.values, fieldName);
 
@@ -1267,6 +1280,7 @@ export const createFormStateStore = ({
         );
       },
       arrayMove: (fieldName, fromIndex, toIndex, validationBehaviorConfig) => {
+        eventListener?.onArrayMove?.(fieldName, fromIndex, toIndex);
         set((state) => {
           setPathIfUndefined(state.values, fieldName, []);
           const val = getPath(state.values, fieldName);
@@ -1304,6 +1318,7 @@ export const createFormStateStore = ({
         );
       },
       arrayRemove: (fieldName, removeIndex, validationBehaviorConfig) => {
+        eventListener?.onArrayRemove?.(fieldName, removeIndex);
         set((state) => {
           setPathIfUndefined(state.values, fieldName, []);
           const val = getPath(state.values, fieldName);
@@ -1346,6 +1361,7 @@ export const createFormStateStore = ({
         );
       },
       arraySwap: (fieldName, fromIndex, toIndex, validationBehaviorConfig) => {
+        eventListener?.onArraySwap?.(fieldName, fromIndex, toIndex);
         set((state) => {
           setPathIfUndefined(state.values, fieldName, []);
           const val = getPath(state.values, fieldName);
@@ -1388,6 +1404,7 @@ export const createFormStateStore = ({
         );
       },
       arrayReplace: (fieldName, index, value, validationBehaviorConfig) => {
+        eventListener?.onArrayReplace?.(fieldName, index, value);
         set((state) => {
           setPathIfUndefined(state.values, fieldName, []);
           const val = getPath(state.values, fieldName);

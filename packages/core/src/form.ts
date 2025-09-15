@@ -26,6 +26,7 @@ import {
   ValueAtPath,
   mergePathStrings,
 } from "@rvf/set-get";
+import { FormEventListener } from "./formEventListener";
 
 type SubmitTypes<FormOutputData> =
   | {
@@ -50,6 +51,7 @@ type FormInit<FormInputData extends FieldValues, FormOutputData> = {
   formProps: StoreFormProps;
   flags: StoreFlags;
   defaultFormId: string;
+  eventListener?: FormEventListener;
 } & SubmitTypes<FormOutputData>;
 
 export interface FormScope<FormInputData> {
