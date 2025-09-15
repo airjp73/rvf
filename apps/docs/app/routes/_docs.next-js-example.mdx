@@ -1,0 +1,118 @@
+import { DefaultValuesExample } from "../examples/default-values/example";
+
+export const meta = () => [
+  {
+    title: "Next.js example (RVF)",
+  },
+];
+
+# Next.js example
+
+<Row>
+  <Col>
+    RVF can also be used in Next.js projects to have full-stack form validation and type safety using the app router.
+  </Col>
+  <Col>
+    ```tsx
+    // app/users/create/actions.tsx
+    'use server'
+
+    import {schema} from "@/app/users/create/schema";
+    import prisma from "@/lib/prisma";
+    import {revalidatePath} from "next/cache";
+    import {parseFormData} from "@rvf/react";
+
+
+    export async function createUser(initialState: unknown,formData: FormData) {
+        const result = await parseFormData(formData, schema);
+
+        if (result.error) {
+            return result.error
+        }
+
+        const {firstName, lastName} = result.data;
+
+        const existingUser = await prisma.user.findFirst({
+            where: {
+                lastName
+            }
+        })
+        if (existingUser) {
+            return {
+                fieldErrors: {
+                    lastName: 'A user with this last name already exists'
+                }
+            }
+        }
+
+        await prisma.user.create({
+            data: {
+                firstName,
+                lastName,
+            }
+        })
+
+        revalidatePath('/users')
+    }
+    ```
+  </Col>
+  <Col>
+      ```tsx
+      // app/users/create/page.tsx
+      'use client'
+      import {useForm} from "@rvf/react";
+      import {Button} from "@mui/material";
+      import {schema} from "@/app/users/create/schema";
+      import {createUser} from "@/app/users/create/actions";
+      import {ValidatedTextField} from "@/components/validated-text-field";
+      import {useActionState, useTransition} from "react";
+
+      export default function CreateUserPage() {
+      	const [lastResult, action] = useActionState(createUser, undefined);
+      	const [_, startTransition] = useTransition();
+      	const form = useForm({
+      		schema,
+      		defaultValues: {
+      			firstName: "",
+      			lastName: "",
+      		},
+      		handleSubmit: async (_, formData) => {
+      			startTransition(() => {
+      				action(formData);
+      			});
+      		},
+      		serverValidationErrors:lastResult?.fieldErrors,
+      	});
+
+
+      	return (
+		<form {...form.getFormProps()}>
+			<label>
+				First name
+				<input name="firstName" />
+			</label>
+
+			<label>
+				Last name
+				<input name="lastName" />
+			</label>
+			<button type="submit">Submit</button>
+		</form>
+      	)
+      }
+      ```
+    </Col>
+    <Col>
+          ```tsx
+          // app/users/create/schema.tsx
+          import { z } from "zod";
+
+          export const schema = z.object({
+          	firstName: z.string().min(2).max(100),
+          	lastName: z.string().min(2).max(100),
+          })
+
+          export type User = z.infer<typeof schema>;
+          ```
+        </Col>
+</Row>
