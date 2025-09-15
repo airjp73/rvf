@@ -360,6 +360,7 @@ export type MutableImplStore = {
   onSubmitFailure: (error: unknown) => void | Promise<void>;
   onBeforeSubmit: (beforeSubmitApi: BeforeSubmitApi) => void | Promise<void>;
   onInvalidSubmit: () => void | Promise<void>;
+  experimental_eventListener?: FormEventListener;
 };
 
 const defaultValidationBehaviorConfig: ValidationBehaviorConfig = {
@@ -382,7 +383,6 @@ export type FormStoreInit = {
   flags: StoreFlags;
   serverValidationErrors: FieldErrors;
   defaultFormId: string;
-  eventListener?: FormEventListener;
 };
 
 const genKey = () => `${Math.round(Math.random() * 10_000)}-${Date.now()}`;
@@ -476,7 +476,6 @@ export const createFormStateStore = ({
   flags,
   serverValidationErrors = {},
   defaultFormId,
-  eventListener,
 }: FormStoreInit) =>
   create<FormStoreValue>()(
     immer((set, get) => ({
@@ -744,7 +743,10 @@ export const createFormStateStore = ({
 
       /////// Events
       onFieldChange: (fieldName, value, validationBehaviorConfig) => {
-        eventListener?.onFieldChange?.(fieldName, value);
+        mutableImplStore.experimental_eventListener?.onFieldChange?.(
+          fieldName,
+          value,
+        );
         set((state) => {
           setPath(state.values, fieldName, value);
           const defaultValue = getFieldDefaultValue(state, fieldName);
@@ -949,7 +951,10 @@ export const createFormStateStore = ({
       },
 
       setValue: (fieldName, value) => {
-        eventListener?.onFieldSetValue?.(fieldName, value);
+        mutableImplStore.experimental_eventListener?.onFieldSetValue?.(
+          fieldName,
+          value,
+        );
         set((state) => {
           if (fieldName) setPath(state.values, fieldName, value);
           else state.values = value as any;
@@ -1025,7 +1030,7 @@ export const createFormStateStore = ({
 
       ///////// Other actions
       reset: (nextValues = get().defaultValues) => {
-        eventListener?.onFormReset?.(nextValues);
+        mutableImplStore.experimental_eventListener?.onFormReset?.(nextValues);
         set((state) => {
           state.values = nextValues;
           state.defaultValues = nextValues;
@@ -1057,7 +1062,10 @@ export const createFormStateStore = ({
           ? opts.defaultValue
           : currentDefaultValue;
 
-        eventListener?.onFieldReset?.(fieldName, nextValue);
+        mutableImplStore.experimental_eventListener?.onFieldReset?.(
+          fieldName,
+          nextValue,
+        );
 
         set((state) => {
           setPath(state.values, fieldName, nextValue);
@@ -1119,7 +1127,10 @@ export const createFormStateStore = ({
       },
 
       arrayPush: (fieldName, value, validationBehaviorConfig) => {
-        eventListener?.onArrayPush?.(fieldName, value);
+        mutableImplStore.experimental_eventListener?.onArrayPush?.(
+          fieldName,
+          value,
+        );
         set((state) => {
           setPathIfUndefined(state.values, fieldName, []);
           const val = getPath(state.values, fieldName);
@@ -1141,7 +1152,7 @@ export const createFormStateStore = ({
         );
       },
       arrayPop: (fieldName, validationBehaviorConfig) => {
-        eventListener?.onArrayPop?.(fieldName);
+        mutableImplStore.experimental_eventListener?.onArrayPop?.(fieldName);
         set((state) => {
           setPathIfUndefined(state.values, fieldName, []);
           const val = getPath(state.values, fieldName);
@@ -1170,7 +1181,7 @@ export const createFormStateStore = ({
         );
       },
       arrayShift: (fieldName, validationBehaviorConfig) => {
-        eventListener?.onArrayShift?.(fieldName);
+        mutableImplStore.experimental_eventListener?.onArrayShift?.(fieldName);
         set((state) => {
           setPathIfUndefined(state.values, fieldName, []);
           const val = getPath(state.values, fieldName);
@@ -1211,7 +1222,10 @@ export const createFormStateStore = ({
         );
       },
       arrayUnshift: (fieldName, value, validationBehaviorConfig) => {
-        eventListener?.onArrayUnshift?.(fieldName, value);
+        mutableImplStore.experimental_eventListener?.onArrayUnshift?.(
+          fieldName,
+          value,
+        );
         set((state) => {
           setPathIfUndefined(state.values, fieldName, []);
           const val = getPath(state.values, fieldName);
@@ -1248,7 +1262,11 @@ export const createFormStateStore = ({
         validationBehaviorConfig,
       ) => {
         set((state) => {
-          eventListener?.onArrayInsert?.(fieldName, insertAtIndex, value);
+          mutableImplStore.experimental_eventListener?.onArrayInsert?.(
+            fieldName,
+            insertAtIndex,
+            value,
+          );
           setPathIfUndefined(state.values, fieldName, []);
           const val = getPath(state.values, fieldName);
 
@@ -1280,7 +1298,11 @@ export const createFormStateStore = ({
         );
       },
       arrayMove: (fieldName, fromIndex, toIndex, validationBehaviorConfig) => {
-        eventListener?.onArrayMove?.(fieldName, fromIndex, toIndex);
+        mutableImplStore.experimental_eventListener?.onArrayMove?.(
+          fieldName,
+          fromIndex,
+          toIndex,
+        );
         set((state) => {
           setPathIfUndefined(state.values, fieldName, []);
           const val = getPath(state.values, fieldName);
@@ -1318,7 +1340,10 @@ export const createFormStateStore = ({
         );
       },
       arrayRemove: (fieldName, removeIndex, validationBehaviorConfig) => {
-        eventListener?.onArrayRemove?.(fieldName, removeIndex);
+        mutableImplStore.experimental_eventListener?.onArrayRemove?.(
+          fieldName,
+          removeIndex,
+        );
         set((state) => {
           setPathIfUndefined(state.values, fieldName, []);
           const val = getPath(state.values, fieldName);
@@ -1361,7 +1386,11 @@ export const createFormStateStore = ({
         );
       },
       arraySwap: (fieldName, fromIndex, toIndex, validationBehaviorConfig) => {
-        eventListener?.onArraySwap?.(fieldName, fromIndex, toIndex);
+        mutableImplStore.experimental_eventListener?.onArraySwap?.(
+          fieldName,
+          fromIndex,
+          toIndex,
+        );
         set((state) => {
           setPathIfUndefined(state.values, fieldName, []);
           const val = getPath(state.values, fieldName);
@@ -1404,7 +1433,11 @@ export const createFormStateStore = ({
         );
       },
       arrayReplace: (fieldName, index, value, validationBehaviorConfig) => {
-        eventListener?.onArrayReplace?.(fieldName, index, value);
+        mutableImplStore.experimental_eventListener?.onArrayReplace?.(
+          fieldName,
+          index,
+          value,
+        );
         set((state) => {
           setPathIfUndefined(state.values, fieldName, []);
           const val = getPath(state.values, fieldName);

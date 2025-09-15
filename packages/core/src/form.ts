@@ -51,7 +51,6 @@ type FormInit<FormInputData extends FieldValues, FormOutputData> = {
   formProps: StoreFormProps;
   flags: StoreFlags;
   defaultFormId: string;
-  eventListener?: FormEventListener;
 } & SubmitTypes<FormOutputData>;
 
 export interface FormScope<FormInputData> {

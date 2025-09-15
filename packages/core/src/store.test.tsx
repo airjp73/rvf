@@ -49,6 +49,7 @@ const testStore = (init?: Partial<FormStoreInit>) =>
         validate: () => Promise.resolve({ data: null, error: undefined }),
       }),
       onSubmit: () => Promise.resolve(),
+      experimental_eventListener: mockEventListener,
     },
     flags: {
       disableFocusOnError: false,
@@ -59,7 +60,6 @@ const testStore = (init?: Partial<FormStoreInit>) =>
       id: "test-form",
     },
     defaultFormId: "test-form",
-    eventListener: mockEventListener,
     ...init,
   });
 
@@ -90,6 +90,7 @@ describe("validation", () => {
           },
         }),
         onSubmit,
+        experimental_eventListener: mockEventListener,
       },
     });
     store.setState({
@@ -156,6 +157,7 @@ describe("validation", () => {
           },
         }),
         onSubmit,
+        experimental_eventListener: mockEventListener,
       },
     });
     store.setState({
