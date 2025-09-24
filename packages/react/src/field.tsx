@@ -14,6 +14,7 @@ import {
 import { GetInputProps, createGetInputProps } from "./inputs/getInputProps";
 import { useFormScopeOrContextInternal } from "./context";
 import { createControlledRef, createTransientRef } from "./refs";
+import { ResetFieldOpts } from "./base";
 
 export type GetControlPropsParam<FieldValue> = {
   onChange?: (value: FieldValue) => void;
@@ -93,7 +94,7 @@ export interface FieldApi<FormInputData> {
   error(): string | null;
   clearError(): void;
 
-  reset(): void;
+  reset(opts?: ResetFieldOpts<FormInputData>): void;
   validate(): void;
 }
 
@@ -184,7 +185,7 @@ export const makeFieldImpl = <FormInputData,>({
     setDirty: (value) => trackedState.setDirty(fieldName, value),
     error: () => getFieldError(trackedState, fieldName),
     clearError: () => trackedState.setError(fieldName, null),
-    reset: () => trackedState.resetField(fieldName),
+    reset: (opts) => trackedState.resetField(fieldName, opts),
     validate: () => {
       void trackedState.validate();
     },
