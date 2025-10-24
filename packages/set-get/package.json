@@ -11,6 +11,8 @@
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
-    "tsconfig": "*"
+    "tsconfig": "*",
+    "tsup-config": "*",
+    "typescript": "^5.9.3"
   }
 }

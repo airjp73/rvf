@@ -23,12 +23,13 @@
     "zod": ">= 3.11.0"
   },
   "devDependencies": {
+    "@rvf/core": "*",
+    "@rvf/set-get": "*",
     "@rvf/yup": "*",
     "@types/semver": "^7.5.0",
-    "@rvf/core": "*",
     "semver": "^7.5.1",
-    "@rvf/set-get": "*",
     "tsconfig": "*",
+    "tsup": "^8.5.0",
     "tsup-config": "*",
     "typescript": "^5.8.3",
     "zod": "3.24.3"

@@ -33,6 +33,7 @@
   "devDependencies": {
     "@rvf/set-get": "*",
     "tsconfig": "*",
+    "tsup": "^8.5.0",
     "tsup-config": "*",
     "typescript": "^5.8.3",
     "zod": "3.24.3"
