@@ -187,7 +187,7 @@ export const makeFieldImpl = <FormInputData,>({
     clearError: () => trackedState.setError(fieldName, null),
     reset: (opts) => trackedState.resetField(fieldName, opts),
     validate: () => {
-      void trackedState.validate();
+      void trackedState.validateField(fieldName);
     },
   };
 };
