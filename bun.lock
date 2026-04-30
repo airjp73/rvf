@@ -1,5 +1,6 @@
 {
   "lockfileVersion": 1,
+  "configVersion": 0,
   "workspaces": {
     "": {
       "name": "remix-validated-form-monorepo",
@@ -132,9 +133,9 @@
     },
     "packages/core": {
       "name": "@rvf/core",
-      "version": "8.1.0",
+      "version": "8.1.1",
       "dependencies": {
-        "@rvf/set-get": "*",
+        "@rvf/set-get": ">= 7.0.2 < 8.0.0",
         "hotscript": "^1.0.13",
         "immer": "^10.0.4",
         "react-tracked": "^2.0.0",
@@ -153,10 +154,10 @@
     },
     "packages/react": {
       "name": "@rvf/react",
-      "version": "8.1.0",
+      "version": "8.1.2",
       "dependencies": {
-        "@rvf/core": ">= 8.1.0 < 9.0.0",
-        "@rvf/set-get": ">= 7.0.1 < 8.0.0",
+        "@rvf/core": ">= 8.1.1 < 9.0.0",
+        "@rvf/set-get": ">= 7.0.2 < 8.0.0",
         "@standard-schema/spec": "^1.0.0",
       },
       "devDependencies": {
@@ -176,10 +177,10 @@
     },
     "packages/react-router": {
       "name": "@rvf/react-router",
-      "version": "8.1.0",
+      "version": "8.1.2",
       "dependencies": {
         "@rvf/react": ">= 8.1.0 < 9.0.0",
-        "@rvf/set-get": ">=7.0.1",
+        "@rvf/set-get": ">=7.0.2",
       },
       "devDependencies": {
         "@rvf/react": "*",
@@ -196,7 +197,7 @@
     },
     "packages/set-get": {
       "name": "@rvf/set-get",
-      "version": "7.0.1",
+      "version": "7.0.2",
       "devDependencies": {
         "tsconfig": "*",
         "tsup-config": "*",
@@ -220,10 +221,10 @@
     },
     "packages/valibot": {
       "name": "@rvf/valibot",
-      "version": "7.0.4",
+      "version": "7.0.5",
       "dependencies": {
         "@rvf/core": ">= 0.0.0 < 9.0.0",
-        "@rvf/set-get": ">= 6.0.3 < 8.0.0",
+        "@rvf/set-get": ">= 6.0.4 < 8.0.0",
       },
       "devDependencies": {
         "@rvf/core": "*",
@@ -244,7 +245,7 @@
       "name": "@rvf/yup",
       "version": "7.0.3",
       "dependencies": {
-        "@rvf/core": ">= 6.0.3 < 9.0.0",
+        "@rvf/core": ">= 6.0.4 < 9.0.0",
       },
       "devDependencies": {
         "@rvf/core": "*",
@@ -259,10 +260,10 @@
     },
     "packages/zod": {
       "name": "@rvf/zod",
-      "version": "7.0.4",
+      "version": "7.0.5",
       "dependencies": {
         "@rvf/core": ">= 0.0.0 < 9.0.0",
-        "@rvf/set-get": ">= 6.0.3 < 8.0.0",
+        "@rvf/set-get": ">= 6.0.4 < 8.0.0",
       },
       "devDependencies": {
         "@rvf/core": "*",
@@ -282,9 +283,9 @@
     },
     "packages/zod-form-data": {
       "name": "zod-form-data",
-      "version": "2.0.8",
+      "version": "2.0.9",
       "dependencies": {
-        "@rvf/set-get": "^7.0.0",
+        "@rvf/set-get": "^7.0.2",
       },
       "devDependencies": {
         "@rvf/set-get": "*",
