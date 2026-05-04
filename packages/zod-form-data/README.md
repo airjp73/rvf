@@ -96,6 +96,7 @@ This makes it so empty strings will fail required checks,
 allowing you to use `optional` for optional fields instead of `nonempty` for required fields.
 If you call `zfd.text` with no arguments, it will assume the field is a required string by default.
 If you want to customize the schema, you can pass that as an argument.
+One can pass `null` as second argument to transform emptty strings to `null` instead of `undefined`.
 
 #### Usage
 
@@ -104,6 +105,7 @@ const const schema = zfd.formData({
   requiredString: zfd.text(),
   stringWithMinLength: zfd.text(z.string().min(10)),
   optional: zfd.text(z.string().optional()),
+  nullable: zfd.text(z.string().nullable(), null),
 })
 ```
 
@@ -117,6 +119,8 @@ If you want to customize the schema, you can pass that as an argument.
 _Note:_ The preprocessing only _coerces_ the value into a number. It doesn't use `parseInt`.
 Something like `"24px"` will not be transformed and will be treated as a string.
 
+One can pass `null` as second argument to transform emptty strings to `null` instead of `undefined`.
+
 #### Usage
 
 ```ts
@@ -124,6 +128,7 @@ const schema = zfd.formData({
   requiredNumber: zfd.numeric(),
   numberWithMin: zfd.numeric(z.number().min(13)),
   optional: zfd.numeric(z.number().optional()),
+  nullable: zfd.numeric(z.number().nullable(), null),
 });
 ```
 
@@ -180,6 +185,7 @@ Transforms any empty File objects to `undefined` before validating.
 This makes it so empty files will fail required checks,
 allowing you to use `optional` for optional fields.
 If you call `zfd.file` with no arguments, it will assume the field is a required file by default.
+One can pass `null` as second argument to transform emptty strings to `null` instead of `undefined`.
 
 #### Usage
 
@@ -187,6 +193,7 @@ If you call `zfd.file` with no arguments, it will assume the field is a required
 const schema = zfd.formData({
   requiredFile: zfd.file(),
   optional: zfd.file(z.instanceof(File).optional()),
+  nullable: zfd.file(z.instanceof(File).nullable(), null),
 });
 ```
 
@@ -246,4 +253,14 @@ Instead of passing the schema for an entire array, you pass in the schema for th
 const schema = zfd.formData({
   repeatableNumberField: zfd.repeatableOfType(zfd.numeric()),
 });
+```
+
+## The mini flavor
+
+Just like [Zod](https://zod.dev/packages/mini), there's a "mini" flavor of `zod-form-data` which uses zod mini internally:
+
+```ts
+import { zfd } from 'zod-form-data/mini'
+// or
+import { zfdMini } from 'zod-form-data'
 ```

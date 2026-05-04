@@ -1,4 +1,6 @@
-import * as zfd from "./helpers";
+import * as zfdMini from "./mini";
+import * as zfd from "./v4";
 
-export * from "./helpers";
-export { zfd };
+export * from "./v4";
+
+export { zfd, zfdMini };

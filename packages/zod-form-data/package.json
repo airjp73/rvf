@@ -7,9 +7,14 @@
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
+      "types": "./dist/index.d.ts",
       "import": "./dist/index.mjs",
-      "require": "./dist/index.js",
-      "types": "./dist/index.d.ts"
+      "require": "./dist/index.js"
+    },
+    "./mini": {
+      "types": "./dist/mini.d.ts",
+      "import": "./dist/mini.mjs",
+      "require": "./dist/mini.js"
     }
   },
   "license": "MIT",
@@ -28,7 +33,7 @@
     "@rvf/set-get": "^7.0.2"
   },
   "peerDependencies": {
-    "zod": ">= 3.11.0"
+    "zod": ">= 4.2.0"
   },
   "devDependencies": {
     "@rvf/set-get": "*",
@@ -36,6 +41,6 @@
     "tsup": "^8.5.0",
     "tsup-config": "*",
     "typescript": "^5.8.3",
-    "zod": "3.24.3"
+    "zod": "4.4.2"
   }
 }
