@@ -96,4 +96,17 @@ describe("string path", () => {
       },
     });
   });
+
+  test("should throw when trying to set a forbidden key", () => {
+    const state = {};
+    expect(() => setPath(state, "__proto__.polluted", "yes")).toThrow(
+      "Attempted to set a forbidden key: __proto__"
+    );
+    expect(() => setPath(state, "constructor.polluted", "yes")).toThrow(
+      "Attempted to set a forbidden key: constructor"
+    );
+    expect(() => setPath(state, "prototype.polluted", "yes")).toThrow(
+      "Attempted to set a forbidden key: prototype"
+    );
+  });
 });
