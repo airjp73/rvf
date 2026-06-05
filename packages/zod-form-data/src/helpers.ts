@@ -143,7 +143,7 @@ const safeParseJson = (jsonString: string) => {
   }
 };
 
-export const json = <T extends ZodType>(schema: T): ZodPipe<ZodTransform, T> =>
+export const json = <T extends ZodType>(schema: T): z.ZodPreprocess<T> =>
   z.preprocess(
     preprocessIfValid(
       z.union([stripEmpty, z.string().transform((val) => safeParseJson(val))]),
