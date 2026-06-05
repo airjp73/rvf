@@ -81,7 +81,7 @@ export const checkbox = ({ trueValue = "on" }: CheckboxOpts = {}) =>
     z.literal(trueValue).transform(() => true),
     z.literal(undefined).transform(() => false),
     z.boolean(),
-  ]);
+  ]).optional().transform(v => v ?? false);
 
 export const file: InputType<z.ZodType<File>> = (schema = z.instanceof(File)) =>
   z.preprocess((val) => {

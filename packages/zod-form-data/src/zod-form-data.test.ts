@@ -115,6 +115,13 @@ describe("zod helpers", () => {
       const s = zfd.checkbox();
       expectError(s, 123);
     });
+
+    it("should interpret missing keys as false", () => {
+      const s = z.object({
+        checkbox: zfd.checkbox()
+      })
+      expect(s.parse({})).toEqual({ checkbox: false })
+    })
   });
 
   describe("repeatable", () => {
