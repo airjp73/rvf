@@ -11,10 +11,10 @@ import {
 } from "zod/v4";
 
 type InputType<DefaultType extends ZodType> = {
-  (): ZodPipe<ZodTransform, DefaultType>;
+  (): ZodPipe<DefaultType, DefaultType>;
   <ProvidedType extends ZodType>(
     schema: ProvidedType,
-  ): ZodPipe<ZodTransform, ProvidedType>;
+  ): ZodPipe<ProvidedType, ProvidedType>;
 };
 
 const stripEmpty = z.literal("").transform(() => undefined);
@@ -111,7 +111,7 @@ export const repeatable: InputType<ZodArray<any>> = (
  */
 export const repeatableOfType = <T extends ZodType>(
   schema: T,
-): ZodPipe<ZodTransform, ZodArray<T>> => repeatable(z.array(schema));
+): ZodPipe<ZodArray<T>, ZodArray<T>> => repeatable(z.array(schema));
 
 const entries = z.array(z.tuple([z.string(), z.any()]));
 

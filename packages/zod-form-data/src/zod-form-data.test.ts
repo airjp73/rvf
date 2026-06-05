@@ -49,6 +49,22 @@ describe("zod helpers", () => {
       expectError(s, "hi!");
       expectValid(s, "testing@example.com");
     });
+
+    it("should be interpreted as optional", () => {
+      const s = z.object({
+        required: zfd.text(z.string()),
+        optional: zfd.text(z.string().optional())
+      })
+      expectValid(s, { required:"hi" })
+      expectTypeOf<z.infer<typeof s>>().toEqualTypeOf<{
+        required: string,
+        optional?: string
+      }>()
+      expectTypeOf<z.input<typeof s>>().toEqualTypeOf<{
+        required: string,
+        optional?: string
+      }>()
+    })
   });
 
   describe("numeric", () => {
