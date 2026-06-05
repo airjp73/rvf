@@ -1,6 +1,6 @@
 {
   "name": "@rvf/valibot",
-  "version": "7.0.4",
+  "version": "7.0.5",
   "main": "./dist/index.cjs.js",
   "module": "./dist/index.esm.js",
   "types": "./dist/index.d.ts",
@@ -17,17 +17,18 @@
   },
   "dependencies": {
     "@rvf/core": ">= 0.0.0 < 9.0.0",
-    "@rvf/set-get": ">= 6.0.3 < 8.0.0"
+    "@rvf/set-get": ">= 6.0.4 < 8.0.0"
   },
   "peerDependencies": {
     "valibot": ">= 0.39.0"
   },
   "devDependencies": {
-    "@types/semver": "^7.5.0",
     "@rvf/core": "*",
-    "semver": "^7.5.1",
     "@rvf/set-get": "*",
+    "@types/semver": "^7.5.0",
+    "semver": "^7.5.1",
     "tsconfig": "*",
+    "tsup": "^8.5.0",
     "tsup-config": "*",
     "typescript": "^5.8.3",
     "valibot": "^0.39.0"

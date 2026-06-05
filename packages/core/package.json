@@ -1,6 +1,6 @@
 {
   "name": "@rvf/core",
-  "version": "8.0.0",
+  "version": "8.1.1",
   "description": "Easy, predictable form state management for React",
   "main": "./dist/index.cjs.js",
   "module": "./dist/index.esm.js",
@@ -27,11 +27,12 @@
   "devDependencies": {
     "@standard-schema/spec": "^1.0.0",
     "tsconfig": "*",
+    "tsup": "^8.5.0",
     "tsup-config": "*",
     "typescript": "^5.8.3"
   },
   "dependencies": {
-    "@rvf/set-get": "*",
+    "@rvf/set-get": ">= 7.0.2 < 8.0.0",
     "hotscript": "^1.0.13",
     "immer": "^10.0.4",
     "react-tracked": "^2.0.0",

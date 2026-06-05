@@ -24,6 +24,7 @@
   "devDependencies": {
     "@rvf/core": "*",
     "tsconfig": "*",
+    "tsup": "^8.5.0",
     "tsup-config": "*",
     "typescript": "^5.8.3"
   }

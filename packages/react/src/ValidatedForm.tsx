@@ -76,6 +76,7 @@ export const ValidatedForm = <
     reloadDocument,
     validator,
     schema,
+    experimental_eventListener,
     ...rest
   } = props as ValidatedFormProps<any, any, any, any, any> & SmudgeUnion;
 
@@ -97,6 +98,7 @@ export const ValidatedForm = <
     resetAfterSubmit,
     otherFormProps,
     reloadDocument,
+    experimental_eventListener,
   } satisfies AllProps<FormOpts<any, any, any, any, any> & SmudgeUnion>;
 
   const rvf = useForm(opts as never);

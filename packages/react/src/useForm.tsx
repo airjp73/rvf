@@ -11,6 +11,7 @@ import {
   BeforeSubmitApi,
   withStandardSchema,
   NonContradictingSupertype,
+  experimental_FormEventListener,
 } from "@rvf/core";
 import { FormApi, useFormInternal } from "./base";
 import { FieldErrors } from "@rvf/core";
@@ -117,6 +118,8 @@ export type internal_BaseFormOpts<
    * So make sure the identity of `serverValidationErrors` is stable.
    */
   serverValidationErrors?: FieldErrors;
+
+  experimental_eventListener?: experimental_FormEventListener;
 };
 
 export type internal_ValidatorAndDefaultValueOpts<
@@ -246,6 +249,7 @@ export function useForm<
     reloadDocument,
     validationBehaviorConfig,
     id,
+    experimental_eventListener,
   } = options as any;
 
   const validator =
@@ -313,6 +317,7 @@ export function useForm<
       },
       onInvalidSubmit,
       onSubmitFailure,
+      experimental_eventListener,
     });
   }, [
     validator,
@@ -325,6 +330,7 @@ export function useForm<
     form.__store__.formRef,
     onInvalidSubmit,
     onBeforeSubmit,
+    experimental_eventListener,
   ]);
 
   useEffect(() => {

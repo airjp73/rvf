@@ -259,6 +259,63 @@ it("should reset individual fields using custom initial values", async () => {
   expect(screen.getByTestId("foo-default")).toHaveTextContent("testing 123");
 });
 
+it("should reset individual fields through the field api using custom initial values", async () => {
+  const submit = vi.fn();
+  const TestComp = () => {
+    const form = useForm({
+      defaultValues: {
+        foo: "bar",
+        baz: { a: "quux" },
+      },
+      validator: successValidator,
+      handleSubmit: submit,
+    });
+
+    return (
+      <form {...form.getFormProps()} data-testid="form">
+        <input data-testid="foo" {...form.field("foo").getInputProps()} />
+        <pre data-testid="foo-touched">
+          {form.touched("foo") ? "true" : "false"}
+        </pre>
+        <pre data-testid="foo-default">{form.defaultValue("foo")}</pre>
+
+        <input data-testid="baz.a" {...controlInput(form.field("baz.a"))} />
+        <pre data-testid="baz.a-touched">
+          {form.touched("baz.a") ? "true" : "false"}
+        </pre>
+
+        <button
+          type="button"
+          data-testid="reset"
+          onClick={() =>
+            form.field("foo").reset({ defaultValue: "testing 123" })
+          }
+        />
+      </form>
+    );
+  };
+
+  render(<TestComp />);
+  expect(screen.getByTestId("foo-touched")).toHaveTextContent("false");
+  expect(screen.getByTestId("baz.a-touched")).toHaveTextContent("false");
+  expect(screen.getByTestId("foo-default")).toHaveTextContent("bar");
+
+  await userEvent.type(screen.getByTestId("foo"), "test");
+  expect(screen.getByTestId("foo")).toHaveValue("bartest");
+
+  await userEvent.type(screen.getByTestId("baz.a"), "test");
+  expect(screen.getByTestId("baz.a")).toHaveValue("quuxtest");
+  expect(screen.getByTestId("foo-touched")).toHaveTextContent("true");
+  expect(screen.getByTestId("baz.a-touched")).toHaveTextContent("false");
+
+  await userEvent.click(screen.getByTestId("reset"));
+  expect(screen.getByTestId("foo")).toHaveValue("testing 123");
+  expect(screen.getByTestId("baz.a")).toHaveValue("quuxtest");
+  expect(screen.getByTestId("foo-touched")).toHaveTextContent("false");
+  expect(screen.getByTestId("baz.a-touched")).toHaveTextContent("true");
+  expect(screen.getByTestId("foo-default")).toHaveTextContent("testing 123");
+});
+
 it("should reset field array fields, then the whole field array", async () => {
   const submit = vi.fn();
   const TestComp = () => {

@@ -1,5 +1,7 @@
 import { stringToPathArray } from "./stringToPathArray";
 
+const REJECT_KEYS = ["__proto__", "constructor", "prototype"];
+
 export function setPath<T>(
   object: T,
   path: string | (string | number)[],
@@ -12,6 +14,10 @@ export function setPath<T>(
   for (let i = 0; i < parts.length - 1; i++) {
     const part = parts[i];
     const nextPart = parts[i + 1];
+
+    if (typeof part === "string" && REJECT_KEYS.includes(part))
+      throw new Error(`Attempted to set a forbidden key: ${part}`);
+
     if (obj[part] === undefined) {
       if (typeof nextPart === "number") {
         obj[part] = [];

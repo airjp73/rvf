@@ -75,6 +75,7 @@ export const ValidatedForm = <
     otherFormProps,
     reloadDocument,
     viewTransition,
+    experimental_eventListener,
     ...rest
   } = props as ValidatedFormProps<any, any, any, any> & SmudgeUnion;
 
@@ -105,6 +106,7 @@ export const ValidatedForm = <
     defaultValues,
     viewTransition,
     fetcher,
+    experimental_eventListener,
   } satisfies AllProps<
     RemixFormOpts<SchemaInput, SchemaOutput, DefaultValues, FormInputData> &
       SmudgeUnion

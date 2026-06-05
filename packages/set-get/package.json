@@ -1,6 +1,6 @@
 {
   "name": "@rvf/set-get",
-  "version": "7.0.1",
+  "version": "7.0.2",
   "license": "MIT",
   "main": "./dist/index.cjs.js",
   "module": "./dist/index.esm.js",
@@ -11,6 +11,8 @@
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
-    "tsconfig": "*"
+    "tsconfig": "*",
+    "tsup-config": "*",
+    "typescript": "^5.9.3"
   }
 }
