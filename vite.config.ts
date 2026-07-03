@@ -8,7 +8,7 @@ export default defineConfig({
       "./**/dist",
       "./**/build",
     ],
-    environment: "jsdom",
+    environment: "./vitest.jsdom-environment.ts",
     globals: true,
     setupFiles: ["./vitest.setup.ts"],
   },
