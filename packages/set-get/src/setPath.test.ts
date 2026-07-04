@@ -158,5 +158,8 @@ describe("string path", () => {
     expect(() => setPath(state, "prototype.polluted", "yes")).toThrow(
       "Attempted to set a forbidden key: prototype",
     );
+    expect(() => setPath(state, "polluted.prototype", "yes")).toThrow(
+      "Attempted to set a forbidden key: prototype",
+    );
   });
 });

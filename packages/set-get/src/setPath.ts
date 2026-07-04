@@ -28,6 +28,11 @@ export function setPath<T>(
     obj = obj[part];
   }
 
-  obj[parts[parts.length - 1]] = value;
+  const finalKey = parts[parts.length - 1];
+  if (typeof finalKey === "string" && REJECT_KEYS.includes(finalKey))
+    throw new Error(`Attempted to set a forbidden key: ${finalKey}`);
+
+  obj[finalKey] = value;
+
   return object;
 }
