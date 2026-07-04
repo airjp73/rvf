@@ -17,10 +17,10 @@
     "@radix-ui/react-label": "^2.1.1",
     "@radix-ui/react-slot": "^1.1.1",
     "@radix-ui/react-tabs": "^1.1.2",
-    "@react-router/express": "^7.9.4",
-    "@react-router/fs-routes": "^7.0.2",
-    "@react-router/node": "^7.0.0",
-    "@react-router/serve": "^7.0.0",
+    "@react-router/express": "^8.0.0",
+    "@react-router/fs-routes": "^8.0.0",
+    "@react-router/node": "^8.0.0",
+    "@react-router/serve": "^8.0.0",
     "@rvf/react": "*",
     "@rvf/react-router": "*",
     "@rvf/zod": "*",
@@ -33,7 +33,7 @@
     "lucide-react": "^0.468.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-router": "^7.0.0",
+    "react-router": "^8.0.0",
     "remark-gfm": "^4.0.0",
     "remix-utils": "^8.0.0",
     "shiki": "^1.6.4",
@@ -48,7 +48,7 @@
   "devDependencies": {
     "@mdx-js/mdx": "^3.1.1",
     "@mdx-js/rollup": "^3.1.0",
-    "@react-router/dev": "^7.0.0",
+    "@react-router/dev": "^8.0.0",
     "@shikijs/rehype": "^1.6.4",
     "@tailwindcss/typography": "^0.5.13",
     "@types/express": "^5.0.0",
@@ -66,10 +66,10 @@
     "postcss": "^8.4.38",
     "tailwindcss": "^3.4.4",
     "typescript": "^5.8.3",
-    "vite": "^6.0.3",
+    "vite": "^7.0.0",
     "vite-tsconfig-paths": "^5.1.4"
   },
   "engines": {
-    "node": ">=20.0.0"
+    "node": ">=22.0.0"
   }
 }
