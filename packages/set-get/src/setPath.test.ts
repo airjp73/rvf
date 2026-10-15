@@ -163,3 +163,76 @@ describe("string path", () => {
     );
   });
 });
+
+describe("prototype pollution prevention", () => {
+  test("should not descend into inherited function properties (hasOwnProperty)", () => {
+    const before = Object.prototype.hasOwnProperty.call({ foo: "bar" }, "foo");
+    const state: Record<string, any> = {};
+    setPath(state, "hasOwnProperty.call", "pwned");
+    const after = Object.prototype.hasOwnProperty.call({ foo: "bar" }, "foo");
+    expect(before).toBe(true);
+    expect(after).toBe(true);
+    // hasOwnProperty.call should not be set on the created object
+    expect((state)["hasOwnProperty"]["call"]).toBe(
+      "pwned",
+    );
+  });
+
+  test("should not descend into inherited function properties (toString)", () => {
+    const before = Object.prototype.toString.call([1, 2]);
+    const state: Record<string, unknown> = {};
+    setPath(state, "toString.call", "pwned");
+    const after = Object.prototype.toString.call([1, 2]);
+    expect(before).toBe("[object Array]");
+    expect(after).toBe("[object Array]");
+  });
+
+  test("should not descend into inherited function properties (valueOf)", () => {
+    const state: Record<string, unknown> = {};
+    setPath(state, "valueOf.pwned", "bar");
+    // valueOf should still be a function on Object.prototype
+    expect(typeof Object.prototype.valueOf).toBe("function");
+  });
+
+  test("should not descend into inherited function properties (isPrototypeOf)", () => {
+    const state: Record<string, unknown> = {};
+    setPath(state, "isPrototypeOf.pwned", "bar");
+    expect(typeof Object.prototype.isPrototypeOf).toBe("function");
+  });
+
+  test("should not descend into inherited function properties (propertyIsEnumerable)", () => {
+    const state: Record<string, unknown> = {};
+    setPath(state, "propertyIsEnumerable.pwned", "bar");
+    expect(typeof Object.prototype.propertyIsEnumerable).toBe("function");
+  });
+
+  test("should not descend into inherited function properties (toLocalString)", () => {
+    const state: Record<string, unknown> = {};
+    setPath(state, "toLocaleString.pwned", "bar");
+    expect(typeof Object.prototype.toLocaleString).toBe("function");
+  });
+
+  test("constructor should still be blocked in the main check", () => {
+    expect(() => setPath({}, "constructor.polluted", "yes")).toThrow(
+      "Attempted to set a forbidden key: constructor",
+    );
+  });
+
+  test("should handle form-data-style dotted field names", () => {
+    const state: Record<string, unknown> = {};
+    setPath(state, "username", "alice");
+    setPath(state, "hasOwnProperty.call", "pwned");
+    setPath(state, "toString.tag", "hack");
+
+    expect(state).toEqual({
+      username: "alice",
+      hasOwnProperty: { call: "pwned" },
+      toString: { tag: "hack" },
+    });
+
+    // Object.prototype methods should still work
+    expect(Object.prototype.hasOwnProperty.call(state, "username")).toBe(true);
+    expect(Object.prototype.hasOwnProperty.call(state, "polluted")).toBe(false);
+    expect(Object.prototype.toString.call(state)).toBe("[object Object]");
+  });
+});

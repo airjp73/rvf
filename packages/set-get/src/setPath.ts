@@ -18,7 +18,11 @@ export function setPath<T>(
     if (typeof part === "string" && REJECT_KEYS.includes(part))
       throw new Error(`Attempted to set a forbidden key: ${part}`);
 
-    if (obj[part] === undefined) {
+    // Use Object.hasOwn to only check own properties.
+    // obj[part] === undefined matches inherited properties too,
+    // which allows prototype pollution (e.g. hasOwnProperty calls the
+    // function from Object.prototype instead of creating a new key).
+    if (!Object.hasOwn(obj, part)) {
       if (typeof nextPart === "number") {
         obj[part] = [];
       } else {
