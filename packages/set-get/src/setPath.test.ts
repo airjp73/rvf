@@ -147,7 +147,7 @@ describe("string path", () => {
     });
   });
 
-  test("should throw when trying to set a forbidden key", () => {
+  test("should throw when trying to set a forbidden key (intermediate segment)", () => {
     const state = {};
     expect(() => setPath(state, "__proto__.polluted", "yes")).toThrow(
       "Attempted to set a forbidden key: __proto__",
@@ -160,6 +160,40 @@ describe("string path", () => {
     );
     expect(() => setPath(state, "polluted.prototype", "yes")).toThrow(
       "Attempted to set a forbidden key: prototype",
+    );
+  });
+
+  test("should throw when forbidden key is the terminal segment", () => {
+    expect(() => setPath({}, "__proto__", "yes")).toThrow(
+      "Attempted to set a forbidden key: __proto__",
+    );
+    expect(() => setPath({}, "constructor", "yes")).toThrow(
+      "Attempted to set a forbidden key: constructor",
+    );
+    expect(() => setPath({}, "prototype", "yes")).toThrow(
+      "Attempted to set a forbidden key: prototype",
+    );
+  });
+
+  test("should throw when forbidden key is terminal segment in nested path", () => {
+    expect(() => setPath({}, "user.__proto__", { isAdmin: true })).toThrow(
+      "Attempted to set a forbidden key: __proto__",
+    );
+    expect(() => setPath({}, "user.constructor", {})).toThrow(
+      "Attempted to set a forbidden key: constructor",
+    );
+  });
+
+  test("should throw when forbidden key is terminal segment via array path", () => {
+    expect(() => setPath({}, ["__proto__"], ["A", "B"])).toThrow(
+      "Attempted to set a forbidden key: __proto__",
+    );
+  });
+
+  test("should throw when trying to set a forbidden key via coercion / invalid types", () => {
+    const state = {};
+    expect(() => setPath(state, [["__proto__"], "polluted"] as any, "yes")).toThrow(
+      "Attempted to set a forbidden key: __proto__",
     );
   });
 });

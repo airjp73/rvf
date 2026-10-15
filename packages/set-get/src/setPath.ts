@@ -15,7 +15,7 @@ export function setPath<T>(
     const part = parts[i];
     const nextPart = parts[i + 1];
 
-    if (typeof part === "string" && REJECT_KEYS.includes(part))
+    if (REJECT_KEYS.includes(String(part)))
       throw new Error(`Attempted to set a forbidden key: ${part}`);
 
     // Use Object.hasOwn to only check own properties.
@@ -33,7 +33,7 @@ export function setPath<T>(
   }
 
   const finalKey = parts[parts.length - 1];
-  if (typeof finalKey === "string" && REJECT_KEYS.includes(finalKey))
+  if ((REJECT_KEYS.includes(String(finalKey))))
     throw new Error(`Attempted to set a forbidden key: ${finalKey}`);
 
   obj[finalKey] = value;
